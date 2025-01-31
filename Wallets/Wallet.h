@@ -71,6 +71,11 @@ inline constexpr size_t SEED_SIZE = 64;
 
 class Wallet {
 public:
+    struct KeyPair {
+        std::string public_key;
+        std::string private_key;
+    };
+
     Wallet();
     virtual ~Wallet();
 
@@ -84,7 +89,9 @@ public:
     virtual void fromMnemonic(
         const std::string& mnemonic, const std::string& passphrase = "");
 
-    virtual std::string deriveAddress(uint32_t account) = 0;
+    [[nodiscard]] virtual std::string deriveAddress(uint32_t index = 0) = 0;
+    [[nodiscard]] virtual std::string getPrivateKey(uint32_t index = 0) = 0;
+    [[nodiscard]] virtual struct KeyPair deriveKeyPair(uint32_t index = 0) = 0;
     [[nodiscard]] virtual std::vector<uint8_t> signMessage(
         std::span<const uint8_t> message)
         = 0;
@@ -97,11 +104,12 @@ public:
     void secureErase();
 
 protected:
-    // std::vector<uint8_t> seed_;
     SecureBytes seed_;
     std::string mnemonic_;
+    HDNode node_;
 
-private:
+protected:
+    virtual void initNode(uint32_t index = 0) = 0;
     virtual void cleanup() = 0;
 };
 

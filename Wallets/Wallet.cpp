@@ -105,6 +105,8 @@ std::string Wallet::mnemonic() const
 void Wallet::secureErase()
 {
     seed_.clear();
+    mnemonic_.clear();
+    sodium_memzero(&node_, sizeof(HDNode));
 }
 
 }

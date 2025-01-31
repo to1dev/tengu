@@ -2,32 +2,68 @@
 
 namespace Daitengu::Wallets {
 
-Wallet::Wallet()
+SecureBytes::SecureBytes(std::span<const uint8_t> data)
+    : bytes_(data.begin(), data.end())
 {
+}
+
+SecureBytes::SecureBytes(size_t size)
+    : bytes_(size)
+{
+}
+
+SecureBytes::~SecureBytes()
+{
+    clear();
+}
+
+SecureBytes::SecureBytes(SecureBytes&& other) noexcept
+    : bytes_(std::move(other.bytes_))
+{
+}
+
+SecureBytes& SecureBytes::operator=(SecureBytes&& other) noexcept
+{
+    if (this != &other) {
+        clear();
+        bytes_ = std::move(other.bytes_);
+    }
+
+    return *this;
+}
+
+void SecureBytes::clear()
+{
+    if (!bytes_.empty()) {
+        sodium_memzero(bytes_.data(), bytes_.size());
+        bytes_.clear();
+    }
+}
+
+Wallet::Wallet()
+    : seed_(SEED_SIZE)
+{
+    if (sodium_init() < 0) {
+        throw std::runtime_error("libsodium initialization failed.");
+    }
+}
+
+Wallet::~Wallet()
+{
+    secureErase();
 }
 
 std::string Wallet::generateMnemonic(int strength)
 {
     try {
-        cleanup();
-
-        std::string mnemonic = Mnemonic::generate(strength);
-        if (mnemonic.empty()) {
+        mnemonic_ = Mnemonic::generate(strength);
+        if (mnemonic_.empty()) {
             throw std::runtime_error("Failed to generate mnemonic");
         }
 
-        if (!validateMnemonic(mnemonic)) {
-            throw std::runtime_error("Generated mnemonic validation failed");
-        }
+        fromMnemonic(mnemonic_);
 
-        std::vector<uint8_t> _seed = Mnemonic::toSeed(mnemonic);
-        if (_seed.empty()) {
-            throw std::runtime_error("Failed to generate seed from mnemonic");
-        }
-
-        seed_ = std::move(_seed);
-
-        return mnemonic;
+        return mnemonic_;
     } catch (const std::exception& e) {
         seed_.clear();
         throw;
@@ -41,32 +77,34 @@ void Wallet::fromMnemonic(
         throw std::invalid_argument("Mnemonic cannot be empty");
     }
 
-    if (!validateMnemonic(mnemonic)) {
+    if (!Mnemonic::check(mnemonic)) {
         throw std::invalid_argument("Invalid mnemonic");
     }
 
     try {
-        cleanup();
-
-        std::vector<uint8_t> _seed = Mnemonic::toSeed(mnemonic, passphrase);
-        if (_seed.empty()) {
+        mnemonic_ = mnemonic;
+        std::vector<uint8_t> seed = Mnemonic::toSeed(mnemonic_, passphrase);
+        if (seed.empty()) {
             throw std::runtime_error("Failed to generate seed from mnemonic");
         }
-        seed_ = std::move(_seed);
+
+        // seed_ = std::move(seed);
+        std::copy(seed.begin(), seed.end(), seed_.data());
+        sodium_memzero(seed.data(), seed.size());
     } catch (const std::exception& e) {
         seed_.clear();
         throw;
     }
 }
 
-bool Wallet::validateMnemonic(const std::string& mnemonic)
-{
-    return mnemonic_check(mnemonic.c_str()) != 0;
-}
-
 std::string Wallet::mnemonic() const
 {
     return mnemonic_;
+}
+
+void Wallet::secureErase()
+{
+    seed_.clear();
 }
 
 }

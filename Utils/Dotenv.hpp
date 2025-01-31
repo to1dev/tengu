@@ -8,7 +8,9 @@
 #include <sstream>
 #include <stdexcept>
 
+#ifdef _WIN32
 #include <windows.h>
+#endif
 
 #include "ankerl/unordered_dense.h"
 #include "nlohmann/json.hpp"

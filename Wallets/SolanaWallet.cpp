@@ -26,11 +26,10 @@ std::string SolanaWallet::deriveAddress(uint32_t index)
         0 | HARDENED      // 0'
     };
 
-    uint32_t fingerprint;
     if (hdnode_private_ckd_cached(
-            &node, path, sizeof(path) / sizeof(uint32_t), &fingerprint)
+            &node, path, sizeof(path) / sizeof(uint32_t), nullptr)
         != 1) {
-        throw std::runtime_error("Invalid fingerprint.");
+        throw std::runtime_error("Failed to derive parent.");
     }
 
     uint8_t public_key[32];
@@ -40,8 +39,13 @@ std::string SolanaWallet::deriveAddress(uint32_t index)
     return EncodeBase58(pubkey_span);
 }
 
-std::vector<uint8_t> SolanaWallet::signMessage(
-    const std::vector<uint8_t>& message, uint32_t index)
+std::vector<uint8_t> SolanaWallet::signMessage(std::span<const uint8_t> message)
+{
+    return std::vector<uint8_t>();
+}
+
+std::vector<uint8_t> SolanaWallet::signTransaction(
+    std::span<const uint8_t> transaction)
 {
     return std::vector<uint8_t>();
 }

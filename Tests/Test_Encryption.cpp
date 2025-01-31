@@ -14,11 +14,9 @@ TEST_CASE("Random functions")
 {
     SECTION("Generate random password")
     {
-        std::cout << Encryption::genRandomHash() << std::endl;
         QString hash1 = Encryption::easyHash(QString("Hello World!"));
         std::string hash2 = Encryption::easyHash(std::string("Hello World!"));
         REQUIRE(hash1.toStdString() == hash2);
-        std::cout << Encryption::generateStrongPassword(16) << std::endl;
     }
 }
 

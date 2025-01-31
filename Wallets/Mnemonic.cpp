@@ -42,7 +42,7 @@ void Mnemonic::clear()
 
 bool Mnemonic::check(const std::string& mnemonic)
 {
-    return mnemonic_check(mnemonic.c_str()) == 1;
+    return mnemonic_check(mnemonic.c_str()) != 0;
 }
 
 std::vector<uint8_t> Mnemonic::toBits(const std::string& mnemonic)

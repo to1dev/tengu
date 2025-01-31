@@ -1,11 +1,14 @@
 #ifndef DOTENV_H
 #define DOTENV_H
 
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <optional>
 #include <sstream>
 #include <stdexcept>
+
+#include <windows.h>
 
 #include "ankerl/unordered_dense.h"
 #include "nlohmann/json.hpp"
@@ -22,6 +25,17 @@ public:
 
 class DotEnv {
 public:
+    static inline std::filesystem::path getExePath()
+    {
+#ifdef _WIN32
+        wchar_t path[MAX_PATH] = { 0 };
+        GetModuleFileNameW(NULL, path, MAX_PATH);
+        return std::filesystem::path(path).parent_path();
+#else
+        return std::filesystem::current_path();
+#endif
+    }
+
     static DotEnv& getInstance()
     {
         static DotEnv instance;

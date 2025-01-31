@@ -5,6 +5,7 @@
 
 #include "catch_amalgamated.hpp"
 
+#include "Utils/Dotenv.hpp"
 #include "Wallets/SolanaWallet.h"
 
 using namespace Daitengu::Wallets;
@@ -14,18 +15,14 @@ TEST_CASE("Generate bip39 mnemonic")
 
     SECTION("New wallet")
     {
-        SolanaWallet wallet;
-        // std::cout << wallet.generateMnemonic() << std::endl;
-        wallet.fromMnemonic("velvet pink canoe patient razor retreat spike "
-                            "outdoor struggle deliver raw obscure");
-        for (int i = 0; i < 5; i++) {
-            std::string address = wallet.deriveAddress(i);
-            std::cout << "Solana " << i << ": " << address << std::endl;
-        }
-    }
+        auto currentPath = DotEnv::getExePath();
+        auto& parser = DotEnv::getInstance();
+        parser.load((currentPath / ".env").string());
 
-    SECTION("BIP32 and BIP39")
-    {
+        SolanaWallet wallet;
+        wallet.fromMnemonic(*parser.get("MNEMONIC"));
+        REQUIRE(wallet.deriveAddress(0)
+            == "9uvC3PMMzX4DgGrxDmheXNkMRWVfYqLsVpQjAaTD2uAp");
     }
 }
 

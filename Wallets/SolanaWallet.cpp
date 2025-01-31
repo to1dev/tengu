@@ -15,7 +15,9 @@ std::string SolanaWallet::deriveAddress(uint32_t index)
 {
     HDNode node;
 
-    hdnode_from_seed(seed_.data(), 64, "ed25519", &node);
+    if (hdnode_from_seed(seed_.data(), SEED_SIZE, "ed25519", &node) != 1) {
+        throw std::invalid_argument("Invalid seed");
+    }
 
     uint32_t path[] = {
         44 | HARDENED,    // 44'
@@ -45,7 +47,6 @@ void SolanaWallet::cleanup()
 {
     mnemonic_.clear();
     seed_.clear();
-    memset(&node_, 0, sizeof(HDNode));
 }
 
 }

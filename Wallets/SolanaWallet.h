@@ -1,8 +1,6 @@
 #ifndef SOLANAWALLET_H
 #define SOLANAWALLET_H
 
-#include <sodium.h>
-
 #include "Utils/Base58.h"
 #include "Wallet.h"
 
@@ -10,7 +8,8 @@ using namespace Daitengu::Utils;
 
 namespace Daitengu::Wallets {
 
-#define HARDENED 0x80000000
+inline constexpr uint32_t HARDENED = 0x80000000;
+inline constexpr size_t SEED_SIZE = 64;
 
 class SolanaWallet : public Wallet {
 public:
@@ -23,9 +22,6 @@ public:
 
 private:
     void cleanup() override;
-
-private:
-    HDNode node_;
 };
 
 }

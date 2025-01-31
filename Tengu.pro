@@ -50,6 +50,7 @@ SOURCES += \
     Managers/WindowManager.cpp \
     Tengu.cpp \
     Tests/Test_BIP39.cpp \
+    Tests/Test_DotEnv.cpp \
     Tests/Test_Encryption.cpp \
     UI/Frameless.cpp \
     Utils/Base58.cpp \
@@ -75,6 +76,7 @@ HEADERS += \
     Tengu.h \
     UI/Frameless.h \
     Utils/Base58.h \
+    Utils/DotEnv.hpp \
     Utils/Encryption.h \
     Utils/RunGuard.h \
     Wallets/Mnemonic.h \

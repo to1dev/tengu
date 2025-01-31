@@ -16,7 +16,7 @@ std::string SolanaWallet::deriveAddress(uint32_t index)
     HDNode node;
 
     if (hdnode_from_seed(seed_.data(), SEED_SIZE, "ed25519", &node) != 1) {
-        throw std::invalid_argument("Invalid seed");
+        throw std::invalid_argument("Invalid seed.");
     }
 
     uint32_t path[] = {
@@ -27,8 +27,11 @@ std::string SolanaWallet::deriveAddress(uint32_t index)
     };
 
     uint32_t fingerprint;
-    hdnode_private_ckd_cached(
-        &node, path, sizeof(path) / sizeof(uint32_t), &fingerprint);
+    if (hdnode_private_ckd_cached(
+            &node, path, sizeof(path) / sizeof(uint32_t), &fingerprint)
+        != 1) {
+        throw std::runtime_error("Invalid fingerprint.");
+    }
 
     uint8_t public_key[32];
     ed25519_publickey(node.private_key, public_key);

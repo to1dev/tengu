@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/fonts">
+        <file alias="TsangerLiyuan">fonts/TsangerLiyuan.ttf</file>
+        <file alias="LobsterTwo">fonts/LobsterTwo-Bold.ttf</file>
+    </qresource>
+</RCC>

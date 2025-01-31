@@ -1,0 +1,17 @@
+<RCC>
+    <qresource prefix="/Icons">
+        <file alias="layer.svg">Images/Icons/layer.svg</file>
+        <file alias="gas.svg">Images/Icons/gas.svg</file>
+        <file alias="menu.svg">Images/Icons/menu.svg</file>
+    </qresource>
+    <qresource prefix="/Logos">
+        <file alias="main.svg">Images/Logos/main.svg</file>
+    </qresource>
+    <qresource prefix="/Buttons">
+        <file alias="wallet.svg">Images/Buttons/wallet.svg</file>
+    </qresource>
+    <qresource prefix="/Splash">
+        <file alias="1">Images/Splash/1.png</file>
+        <file alias="2">Images/Splash/2.png</file>
+    </qresource>
+</RCC>

@@ -1,0 +1,39 @@
+--- rand.c	2025-01-29 16:56:11.000000000 +0100
++++ src/rand.c	2025-01-29 18:10:45.765594000 +0100
+@@ -23,6 +23,8 @@
+ 
+ #include "rand.h"
+ 
++#include <sodium.h>
++
+ #ifdef USE_INSECURE_PRNG
+ 
+ #pragma message( \
+@@ -54,6 +56,7 @@
+ // The following code is platform independent
+ //
+ 
++#ifdef false
+ void __attribute__((weak)) random_buffer(uint8_t *buf, size_t len) {
+   uint32_t r = 0;
+   for (size_t i = 0; i < len; i++) {
+@@ -63,6 +66,19 @@
+     buf[i] = (r >> ((i % 4) * 8)) & 0xFF;
+   }
+ }
++#endif
++
++uint32_t random32(void) {
++    return randombytes_random();
++}
++
++void random_buffer(uint8_t *buf, size_t len) {
++    if (sodium_init() < 0) {
++        return;
++    }
++
++    randombytes_buf(buf, len);
++}
+ 
+ void random_xor(uint8_t *buf, size_t len) {
+   uint8_t r[4] = {0};

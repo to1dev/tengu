@@ -1,0 +1,13 @@
+#ifndef SECURITY_H
+#define SECURITY_H
+
+#include <QString>
+
+namespace Daitengu::Security {
+
+inline constexpr char X_CUSTOM_TOKEN[] = "random string for headers token";
+inline const QString defaultKey = "default key for encryption and decryption";
+
+}
+
+#endif // SECURITY_H

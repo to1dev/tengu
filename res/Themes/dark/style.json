@@ -1,0 +1,44 @@
+{
+    "Name": "Dark",
+    "Style": "Fusion",
+    "Palette": {
+        "text": {
+            "color": "#F0F0F0",
+            "disabled": "#787878"
+        },
+        "windowText": {
+            "color": "#F0F0F0",
+            "disabled": "#787878"
+        },
+        "buttonText": {
+            "color": "#F0F0F0",
+            "disabled": "#787878"
+        },
+        "window": {
+            "color": "#19232D"
+        },
+        "light": {
+            "color": "#19232D"
+        },
+        "button": {
+            "color": "#505F69",
+            "disabled": "#32414B"
+        },
+        "base": {
+            "color": "#505f69"
+        },
+        "alternateBase": {
+            "color": "#19232D"
+        },
+        "highlight": {
+            "color": "#1464A0"
+        },
+        "highlightedText": {
+            "color": "#F0F0F0",
+            "disabled": "#787878"
+        },
+        "link": {
+            "color": "#7B68EE"
+        }
+    }
+}

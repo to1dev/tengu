@@ -1,0 +1,20 @@
+--- ed25519.c	2025-01-29 16:56:11.000000000 +0100
++++ src/ed25519-donna/ed25519.c	2025-01-30 01:44:03.454403800 +0100
+@@ -172,7 +172,7 @@
+ 		return -1;
+ 
+ 	/* SB - H(R,A,m)A */
+-	ge25519_double_scalarmult_vartime(&R, &A, hram, S);
++	_ge25519_double_scalarmult_vartime(&R, &A, hram, S);
+ 	ge25519_pack(checkR, &R);
+ 
+ 	/* check that R = SB - H(R,A,m)A */
+@@ -193,7 +193,7 @@
+ 		return -1;
+ 	}
+ 
+-	ge25519_scalarmult(&A, &P, a);
++	_ge25519_scalarmult(&A, &P, a);
+ 	memzero(&a, sizeof(a));
+ 	curve25519_neg(A.x, A.x);
+ 	ge25519_pack(res, &A);

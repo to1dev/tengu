@@ -1,0 +1,998 @@
+QMenuBar {
+    border: 0;
+    padding: 3px 6px 3px 3px;
+}
+
+QMenuBar:focus {
+    border: 0;
+}
+
+QMenu::item {
+  padding: 6px 24px 6px 28px;
+}
+
+QToolTip {
+    padding: 3px;
+}
+
+QListWidget {
+    padding: 3px;
+}
+
+QListWidget::item {
+    padding: 6px;
+}
+
+QPlainTextEdit {
+    border-radius: 0;
+    border-color: #32414b;
+    padding: 9;
+    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(20, 20, 20, 150), stop:.03 palette(window));
+}
+
+QPlainTextEdit:hover,
+QPlainTextEdit:focus {
+    border-color: #32414b;
+}
+
+QComboBox {
+    border-radius: 0;
+}
+
+QComboBox:hover,
+QComboBox:focus {
+    border: 1px solid #346792;
+}
+
+QComboBox::item:checked {
+    font-weight: normal;
+}
+
+QComboBox::item {
+    height: 16px;
+    padding: 6px;
+}
+
+QComboBox::item::selected {
+    background-color: #1464A0;
+    color: #F0F0F0;
+}
+
+QComboBox::drop-down {
+    width: 20px;
+}
+
+QComboBox::icon {
+    margin-left: 4px;
+}
+
+QComboBox::indicator {
+    margin-left: 4px;
+}
+
+QComboBox::indicator:checked {
+    image: url(:/Media/Check);
+}
+
+QComboBox::down-arrow {
+    image: url(":/Media/Down");
+    height: 20px;
+    width: 20px;
+}
+
+QComboBox::down-arrow:on, QComboBox::down-arrow:hover, QComboBox::down-arrow:focus {
+    image: url(":/Media/Down");
+}
+
+#listWidgetAddress {
+    border-radius: 0;
+    border-color: #32414b;
+    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(20, 20, 20, 150), stop:.03 palette(window));
+}
+
+#listWidgetAddress::item {
+    padding: 12;
+}
+
+#tokenWidget {
+    border-radius: 0;
+    border: 0;
+}
+
+#tokenWidget:item {
+    padding: 6;
+}
+
+#nftWidget {
+    border-radius: 0;
+    border: 0;
+}
+
+#nftWidget::item {
+    border-radius: 3;
+}
+
+#nftWidget::item:hover {
+    background: transparent;
+}
+
+#nftWidget::item:selected {
+    background: transparent;
+}
+
+#realmWidget {
+    border-radius: 0;
+    border: 0;
+}
+
+#realmWidget::item {
+    padding: 6;
+}
+
+#realmWidget::item:hover {
+}
+
+#realmWidget::item:selected {
+}
+
+#walletFrame {
+    border: 0;
+    border-radius: 6;
+    /*background-color: #16202A;*/
+    background-color: #1E2832;
+}
+
+#userCard {
+    background: transparent;
+}
+
+#userCard QLabel {
+    color: Darkgray;
+    background: transparent;
+}
+
+#userCard #nameLabel {
+    color: white;
+    font-weight: bold;
+}
+
+#userCard #addressLabel {
+    text-decoration: underline;
+}
+
+#userCard #selectButton {
+    color: white;
+    background-color: #1C88E5;
+    border-radius: 15;
+}
+
+#userCard #selectButton:hover {
+    background-color: #309cf9;
+}
+
+#userCard #selectButton:pressed {
+    background-color: #0874d1;
+}
+
+#userCard #infoButton {
+    color: white;
+    background-color: #1C88E5;
+    border-radius: 0;
+}
+
+#userCard #infoButton:hover {
+    background-color: #309cf9;
+}
+
+#userCard #infoButton:pressed {
+    background-color: #0874d1;
+}
+
+#userCard #refreshButton {
+    color: white;
+    background-color: #E74C3C;
+    border-radius: 0;
+}
+
+#userCard #refreshButton:hover {
+    background-color: #EA6451;
+}
+
+#userCard #refreshButton:pressed {
+    background-color: #C03D31;
+}
+
+#userCard #actionButton {
+    color: white;
+    background-color: #025E3B;
+    border-radius: 0;
+}
+
+#userCard #actionButton:hover {
+    background-color: #027A50;
+}
+
+#userCard #actionButton:pressed {
+    background-color: #014E31;
+}
+
+#valueCard {
+    background: transparent;
+}
+
+#valueCard #valueLabel {
+    font-size: 32px;
+    color: Lightgray;
+    background: transparent;
+}
+
+#objectsFrame {
+    border: 0;
+    padding: 9;
+    border-radius: 6;
+    background-color: #1E2832;
+}
+
+#objectsFrame #editSearch {
+    padding: 6;
+    border-radius: 6;
+    border: 3px solid #32414b;
+}
+
+#objectsFrame #editSearch:focus {
+    border: 3px solid #3e4c59;
+}
+
+#objectsFrame QPushButton {
+    font-weight: bold;
+    padding: 6;
+    color: white;
+    background-color: palette(window);
+    border-radius: 3;
+}
+
+#objectsFrame QPushButton:hover {
+    background-color: #309cf9;
+}
+
+#objectsFrame QPushButton:checked,
+#objectsFrame QPushButton:pressed {
+    background-color: #0874d1;
+}
+
+#objectsCard {
+    border: 0;
+    padding: 0;
+    border-radius: 0;
+    background-color: #1E2832;
+}
+
+#objectsCard::pane {
+    padding: 0;
+    border: 0;
+    background-color: #1E2832;
+    border-radius: 6;
+}
+
+#objectsCard:selected {
+    border: 0;
+}
+
+#objectsCard::tab {
+    font-weight: bold;
+    color: Lightgray;
+    background: transparent;
+    padding: 3;
+    border: 0;
+    border-radius: 0;
+}
+
+#objectsCard::tab:disabled {
+    color: #788D9C;
+}
+
+#objectsCard::tab:selected {
+    background: transparent;
+    border: 0;
+}
+
+#objectsCard::tab:selected:disabled {
+    background: transparent;
+    border: 0;
+}
+
+#objectsCard::tab:!selected {
+    background: transparent;
+    border: 0;
+}
+
+#objectsCard::tab:!selected:disabled {
+    background: transparent;
+}
+
+#objectsCard::tab:hover {
+    border: 0;
+}
+
+#objectsCard QScrollArea {
+    padding: 6;
+    border: 0;
+    background: transparent;
+}
+
+#listWidgetWallet {
+    border-radius: 0;
+    border-color: #32414b;
+    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(20, 20, 20, 150), stop:.03 palette(window));
+}
+
+#listWidgetWallet::item {
+    border-radius: 6;
+    width: 100;
+    height: 120;
+}
+
+#walletPanel {
+    /*border: 1px solid #32414B;*/
+    border: 0;
+}
+
+#WalletForm #dragBar,
+#WalletSelectorForm #dragBar,
+#MessageForm #dragBar {
+    border-top-left-radius: 6;
+    border-top-right-radius: 6;
+}
+
+#WalletForm #titleBar,
+#WalletSelectorForm #titleBar,
+#AddressInfoForm #titleBar,
+#MessageForm #titleBar {
+    border-top-left-radius: 6;
+    border-top-right-radius: 6;
+    border-bottom: 3 solid palette(highlight);
+}
+
+#WalletForm #labelTitle,
+#WalletSelectorForm #labelTitle,
+#MessageForm #labelTitle {
+    border-top-left-radius: 6;
+    border-top-right-radius: 6;
+}
+
+#topFrame {
+    border-top: 0;
+    border-left: 0;
+    border-right: 0;
+    border-radius: 0;
+    border-bottom: 3 solid #32414B;
+}
+
+#line {
+    background: transparent;
+}
+
+/* ---------------------------------------------------------------------------
+
+--------------------------------------------------------------------------- */
+
+#viewMnemonic {
+    border-radius: 0;
+    border-color: #32414b;
+    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(20, 20, 20, 150), stop:.03 palette(window));
+}
+
+#labelMnemonic {
+    border-radius: 0;
+    border: 0;
+    font-size: 20px;
+    color: white;
+    background-color: #0d1117;
+}
+
+#ButtonMint,
+#ButtonTrade,
+#ButtonBuild,
+#ButtonData,
+#ButtonSocial,
+#ButtonIssue,
+#ButtonWallet {
+    border-radius: 0;
+    border: 1 solid #32414b;
+    background: transparent;
+    width: 60px;
+    height: 60px;
+    padding: 8px;
+}
+
+#ButtonMint:pressed,
+#ButtonTrade:pressed,
+#ButtonBuild:pressed,
+#ButtonData:pressed,
+#ButtonSocial:pressed,
+#ButtonIssue:pressed,
+#ButtonWallet:pressed {
+    padding: 9px;
+}
+
+#ButtonMint:hover,
+#ButtonTrade:hover,
+#ButtonBuild:hover,
+#ButtonData:hover,
+#ButtonSocial:hover,
+#ButtonIssue:hover,
+#ButtonWallet:hover {
+    border-color: palette(highlight);
+}
+
+#ButtonLeftTop, #ButtonLeftBottom, #ButtonRightTop, #ButtonRightBottom {
+    color: #aaaaaa;
+    padding: 0;
+    border-radius: 0;
+    border: 1 solid #32414b;
+    width: 12px;
+    height: 12px;
+}
+
+#ButtonLeftTop:hover, #ButtonLeftBottom:hover, #ButtonRightTop:hover, #ButtonRightBottom:hover {
+    border-color: palette(highlight);
+}
+
+#ButtonFees,
+#ButtonMainMenu,
+#ButtonReset,
+#ButtonPopup,
+#ButtonProcess,
+#ButtonGold,
+#ButtonMacro,
+#ButtonAddon {
+    color: palette(text);
+    background: transparent;
+    padding: 6px;
+    border-radius: 0;
+    border: 1 solid #455364;
+    width: 20;
+    height: 20;
+}
+
+#ButtonFees:hover,
+#ButtonMainMenu:hover,
+#ButtonReset:hover,
+#ButtonPopup:hover,
+#ButtonProcess:hover,
+#ButtonGold:hover,
+#ButtonMacro:hover,
+#ButtonAddon:hover {
+    border-color: palette(highlight);
+}
+
+#ButtonFees:pressed,
+#ButtonMainMenu:pressed,
+#ButtonReset:pressed,
+#ButtonPopup:pressed,
+#ButtonProcess:pressed,
+#ButtonGold:pressed,
+#ButtonMacro:pressed,
+#ButtonAddon:pressed {
+    border-color: #455364;
+}
+
+#ButtonGroup:checked,
+#ButtonReset:checked,
+#ButtonProcess:checked {
+    border-color: palette(highlight);
+}
+
+#ButtonMin,
+#ButtonMax,
+#ButtonFixed,
+#ButtonClose {
+    color: #ffffff;
+    background: transparent;
+    padding: 1;
+    border-radius: 0;
+    border: 1 solid #32414b;
+    min-width: 24px;
+    min-height: 24px;
+    height: 24px;
+    width: 24px;
+}
+
+#ButtonFixed:checked {
+    background: palette(highlight);
+}
+
+#ButtonMin:hover,
+#ButtonMax:hover,
+#ButtonFixed:hover,
+#ButtonClose:hover {
+    border: 1 solid palette(highlight);
+}
+
+#ButtonMin:pressed,
+#ButtonMax:pressed,
+#ButtonFixed:pressed,
+#ButtonClose:pressed {
+}
+
+#frameMain {
+    background: rgba(25, 35, 45, 200);
+    border-radius: 6;
+    border-top-left-radius: 6;
+    border-top-right-radius: 6;
+    border: 3 solid #455364;
+}
+
+#frameContent {
+    border-radius: 0;
+}
+
+#labelStatus {
+    padding: 6;
+    color: #aaaaaa;
+    border: 1 solid #455364;
+    background-origin: content;
+    background: rgba(25, 35, 45, 200);
+}
+
+#titleBar {
+    min-height: 50;
+    border-radius: 0;
+    border-top-left-radius: 6;
+    border-top-right-radius: 6;
+}
+
+#dragBar {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+#frameTop {
+    border-radius: 0;
+}
+
+#labelTitle {
+    font-family: "Lobster Two";
+    border-top-right-radius: 0;
+}
+
+#labelIcon {
+    border-top-left-radius: 0;
+}
+
+#listWidgetTask {
+    border-radius: 0;
+    border-color: #32414b;
+    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(20, 20, 20, 150), stop:.03 palette(window));
+}
+
+#listWidgetTask::item {
+    border-radius: 6;
+    width: 100;
+    height: 120;
+}
+
+QScrollBar:horizontal {
+    border-radius: 0;
+    border: 0;
+}
+
+QScrollBar::handle:horizontal {
+    border-radius: 2;
+    border: 0;
+    background: #174c6d;
+}
+
+QScrollBar::handle:horizontal:hover {
+    border-radius: 2;
+    border: 0;
+    background: #174c6d;
+}
+
+QScrollBar:vertical {
+    border-radius: 0;
+    border: 0;
+    width: 20px;
+    margin: 16px 3px 16px 3px;
+}
+
+QScrollBar::handle:vertical {
+    border-radius: 2;
+    border: 0;
+    background: #174c6d;
+}
+
+QScrollBar::handle:vertical:hover {
+    border-radius: 2;
+    border: 0;
+    background: #174c6d;
+}
+
+#ButtonClipboard {
+    border-radius: 16;
+    border: 0;
+    color: white;
+    height: 32;
+}
+
+#ButtonClipboard:hover {
+    border: 0;
+}
+
+#ButtonNewWallet,
+#ButtonDeleteWallet,
+#ButtonEditWallet,
+#ButtonRefresh,
+#ButtonNewAddress,
+#ButtonEditAddress,
+#ButtonImportWallet {
+    border-radius: 16;
+    border: 0;
+    background-color: #1ABC9C;
+    color: white;
+    width: 96;
+    height: 32;
+}
+
+#ButtonNewWallet:hover,
+#ButtonDeleteWallet:hover,
+#ButtonEditWallet:hover,
+#ButtonRefresh:hover,
+#ButtonNewAddress:hover,
+#ButtonEditAddress:hover,
+#ButtonImportWallet:hover {
+    border: 0;
+    background-color: #12AB8D;
+}
+
+#ButtonNewWallet:pressed,
+#ButtonDeleteWallet:pressed,
+#ButtonEditWallet:pressed,
+#ButtonRefresh:pressed,
+#ButtonNewAddress:pressed,
+#ButtonEditAddress:pressed,
+#ButtonImportWallet:pressed {
+    background-color: #1ABC9C;
+}
+
+#ButtonNewWallet:disabled,
+#ButtonDeleteWallet:disabled,
+#ButtonEditWallet:disabled,
+#ButtonRefresh:disabled,
+#ButtonNewAddress:disabled,
+#ButtonEditAddress:disabled,
+#ButtonImportWallet:disabled {
+    color: #787878;
+    background-color: #454545;
+}
+
+#ButtonRunGroup, #ButtonBindGroup, #ButtonReleaseGroup, #ButtonBindProfile, #ButtonBindLayout {
+    border-radius: 16;
+    border: 0;
+    background-color: #34495E;
+    color: white;
+    width: 96;
+    height: 32;
+}
+
+#ButtonRunGroup:hover, #ButtonBindGroup:hover, #ButtonReleaseGroup:hover, #ButtonBindProfile:hover, #ButtonBindLayout:hover {
+    border: 0;
+    background-color: #263849;
+}
+
+#ButtonRunGroup:pressed, #ButtonBindGroup:pressed, #ButtonReleaseGroup:pressed, #ButtonBindProfile:pressed, #ButtonBindLayout:pressed {
+    background-color: #34495E;
+}
+
+#ButtonRunGroup:disabled, #ButtonBindGroup:disabled, #ButtonReleaseGroup:disabled, #ButtonBindProfile:disabled, #ButtonBindLayout:disabled {
+    color: #787878;
+    background-color: #454545;
+}
+
+#labelGroup, #labelProcess {
+    color: #aaaaaa;
+    padding: 6;
+    border: 1 solid #32414b;
+    border-radius: 0;
+    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(20, 20, 20, 150), stop:0.2 palette(window));
+}
+
+QTextEdit {
+    padding: 9;
+    border-radius: 0;
+    border-color: #32414b;
+    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(20, 20, 20, 150), stop:.03 palette(window));
+}
+
+QTextEdit:focus {
+    border-color: #32414b;
+}
+
+QTextEdit:hover {
+    border-color: #32414b;
+}
+
+QListWidget:hover {
+    border-color: #32414b;
+}
+
+QTabWidget::pane {
+    border-radius: 0;
+}
+
+QTabBar::tab {
+    border: 1 solid #32414b;
+    border-radius: 0;
+    background-color: #19232d;
+    padding: 9;
+    height: 30;
+    margin:0 9 9 0;
+}
+
+QTabBar::tab:top:selected:disabled {
+    border: 1 solid #32414b;
+    color: #787878;
+    background-color: #19232d;
+}
+
+QTabBar::tab:bottom:selected:disabled {
+    border: 1 solid #32414b;
+    color: #787878;
+    background-color: #19232d;
+}
+
+QTabBar::tab:left:selected:disabled {
+    border: 1 solid #32414b;
+    color: #787878;
+    background-color: #19232d;
+}
+
+QTabBar::tab:right:selected:disabled {
+    border: 1 solid #32414b;
+    color: #787878;
+    background-color: #19232d;
+}
+
+QTabBar::tab:top:!selected:disabled {
+    border: 1 solid #32414b;
+    color: #787878;
+    background-color: #19232D;
+}
+
+QTabBar::tab:bottom:!selected:disabled {
+    border: 1 solid #32414b;
+    color: #787878;
+    background-color: #19232D;
+}
+
+QTabBar::tab:left:!selected:disabled {
+    border: 1 solid #32414b;
+    color: #787878;
+    background-color: #19232D;
+}
+
+QTabBar::tab:right:!selected:disabled {
+    border: 1 solid #32414b;
+    color: #787878;
+    background-color: #19232D;
+}
+
+QTabBar::tab:top:!selected {
+    border: 1 solid #32414b;
+    margin:0 9 9 0;
+}
+
+QTabBar::tab:bottom:!selected {
+    border: 1 solid #32414b;
+    margin: 3;
+}
+
+QTabBar::tab:left:!selected {
+    border: 1 solid #32414b;
+    margin:0 9 9 0;
+}
+
+QTabBar::tab:right:!selected {
+    border: 1 solid #32414b;
+    margin:0 9 9 0;
+}
+
+QTabBar::tab:top {
+    background-color: #19232d;
+    color: #F0F0F0;
+    padding: 9;
+    height: 30;
+    margin:0 9 9 0;
+    min-width: 5;
+    border: 1 solid #32414b;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+QTabBar::tab:top:selected {
+    background-color: #19232d;
+    color: #F0F0F0;
+    border: 1 solid palette(highlight);
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+QTabBar::tab:top:!selected:hover {
+    border: 1 solid palette(highlight);
+    padding: 9;
+    height: 30;
+    margin:0 9 9 0;
+}
+
+QTabBar::tab:bottom {
+    color: #F0F0F0;
+    border: 1 solid #32414b;
+    background-color: #19232d;
+    padding: 3;
+    height: 30;
+    margin: 3;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    min-width: 5;
+}
+
+QTabBar::tab:bottom:selected {
+    color: #F0F0F0;
+    background-color: #19232d;
+    border: 1 solid palette(highlight);
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+QTabBar::tab:bottom:!selected:hover {
+    border: 1 solid #32414b;
+    padding: 3;
+    height: 30;
+    margin: 3;
+}
+
+QTabBar::tab:left {
+    color: #F0F0F0;
+    background-color: #19232d;
+    padding: 9;
+    height: 30;
+    margin:0 9 9 0;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    min-height: 5;
+}
+
+QTabBar::tab:left:selected {
+    color: #F0F0F0;
+    background-color: #19232d;
+    border: 1 solid palette(highlight);
+}
+
+QTabBar::tab:left:!selected:hover {
+    border: 1 solid #32414b;
+    padding: 9;
+}
+
+QTabBar::tab:right {
+    color: #F0F0F0;
+    background-color: #19232d;
+    padding: 9;
+    height: 30;
+    margin:0 9 9 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    min-height: 5;
+}
+
+QTabBar::tab:right:selected {
+    color: #F0F0F0;
+    background-color: #19232d;
+    border: 1 solid palette(highlight);
+}
+
+QTabBar::tab:right:!selected:hover {
+    border: 1 solid #32414b;
+    padding: 9;
+}
+
+QTabBar QToolButton {
+    /* Fixes #136 */
+    background-color: #19232d;
+    height: 12px;
+    width: 12px;
+}
+
+QTabBar QToolButton:pressed {
+    background-color: #19232d;
+}
+
+QTabBar QToolButton:pressed:hover {
+    border: 1px solid #148CD2;
+}
+
+QGroupBox {
+    font-weight: normal;
+    border-radius: 0;
+}
+
+QLineEdit {
+    border-radius: 0;
+    padding: 6px;
+}
+
+QSpinBox {
+    border-radius: 0;
+}
+
+#ButtonOK,
+#ButtonCancel,
+#ButtonExit,
+#ButtonSave {
+    border-radius: 16;
+    border: 0;
+    background-color: #E74C3C;
+    color: white;
+    width: 96;
+    height: 32;
+}
+
+#ButtonOK:hover,
+#ButtonCancel:hover,
+#ButtonExit:hover,
+#ButtonSave:hover {
+    border: 0;
+    background-color: #DB4334;
+}
+
+#ButtonOK:pressed,
+#ButtonCancel:pressed,
+#ButtonExit:pressed,
+#ButtonSave:pressed {
+    background-color: #E74C3C;
+}
+
+#ButtonOK:disabled,
+#ButtonCancel:disabled,
+#ButtonExit:disabled,
+#ButtonSave:disabled {
+    color: #787878;
+    background-color: #454545;
+}
+
+#ProfileForm #ButtonBlacklistAdd, #ProfileForm #ButtonBlacklistDelete, #ProfileForm #ButtonBlacklistEdit, #ProfileForm #ButtonWhitelistAdd, #ProfileForm #ButtonWhitelistDelete, #ProfileForm #ButtonWhitelistEdit {
+    color: #aaaaaa;
+    padding: 6;
+    border-radius: 0;
+    border: 1 solid #32414b;
+    width: 20;
+    height: 20;
+}
+
+#ProfileForm #ButtonBlacklistAdd:hover, #ProfileForm #ButtonBlacklistDelete:hover, #ProfileForm #ButtonBlacklistEdit:hover, #ProfileForm #ButtonWhitelistAdd:hover, #ProfileForm #ButtonWhitelistDelete:hover, #ProfileForm #ButtonWhitelistEdit:hover {
+    border-color: palette(highlight);
+}
+
+#ProfileForm #ButtonBlacklistAdd:checked, #ProfileForm #ButtonBlacklistDelete:checked, #ProfileForm #ButtonBlacklistEdit:checked, #ProfileForm #ButtonWhitelistAdd:checked, #ProfileForm #ButtonWhitelistDelete:checked, #ProfileForm #ButtonWhitelistEdit:checked {
+    border-color: palette(highlight);
+}
+
+#LoginForm #labelInfo {
+    color: Darkgray;
+}
+
+#LoginForm #progressBarDownload {
+    padding: 1px;
+    border-radius: 0;
+}
+
+#LoginForm #progressBarDownload::chunk {
+    border-radius: 0;
+}
+
+#LoginForm #progressBarDownload::chunk:disabled {
+    border-radius: 0;
+}
+
+#MacroInfoForm #textEditMacroInfo {
+    /*font-family: 'FontquanXinYiGuanHeiTi';*/
+}

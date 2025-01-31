@@ -15,10 +15,17 @@ namespace Daitengu::Wallets {
 class SolanaWallet : public Wallet {
 public:
     SolanaWallet();
+    ~SolanaWallet();
 
     std::string deriveAddress(uint32_t index) override;
     std::vector<uint8_t> signMessage(
         const std::vector<uint8_t>& message, uint32_t index) override;
+
+private:
+    void cleanup() override;
+
+private:
+    HDNode node_;
 };
 
 }

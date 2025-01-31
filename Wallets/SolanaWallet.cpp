@@ -6,23 +6,16 @@ SolanaWallet::SolanaWallet()
 {
 }
 
+SolanaWallet::~SolanaWallet()
+{
+    cleanup();
+}
+
 std::string SolanaWallet::deriveAddress(uint32_t index)
 {
-    /*if (seed.empty()) {
-        throw std::runtime_error("Wallet is NOT initialized.");
-    }
-
-    uint8_t privKey[crypto_sign_SECRETKEYBYTES];
-    derivePrivateKey(account, privKey);
-
-    uint8_t pubKey[crypto_sign_PUBLICKEYBYTES];
-    crypto_sign_ed25519_sk_to_pk(pubKey, privKey);
-
-    return EncodeBase58(std::span<const unsigned char>(pubKey, 32));*/
-
     HDNode node;
 
-    hdnode_from_seed(seed.data(), 64, "ed25519", &node);
+    hdnode_from_seed(seed_.data(), 64, "ed25519", &node);
 
     uint32_t path[] = {
         44 | HARDENED,    // 44'
@@ -46,6 +39,13 @@ std::vector<uint8_t> SolanaWallet::signMessage(
     const std::vector<uint8_t>& message, uint32_t index)
 {
     return std::vector<uint8_t>();
+}
+
+void SolanaWallet::cleanup()
+{
+    mnemonic_.clear();
+    seed_.clear();
+    memset(&node_, 0, sizeof(HDNode));
 }
 
 }

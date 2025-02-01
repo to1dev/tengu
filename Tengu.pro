@@ -97,7 +97,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 RESOURCES += \
     res/Fonts.qrc \
-    res/Global.qrc \
     res/Images.qrc \
     res/Logos.qrc \
     res/Themes/dark/dark.qrc \

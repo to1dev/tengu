@@ -12,16 +12,16 @@ using namespace Daitengu::Wallets;
 
 TEST_CASE("Generate bip39 mnemonic")
 {
-
     SECTION("New wallet")
     {
+        SolanaWallet wallet;
+        std::cout << "Decent mnemonic: " << wallet.generateMnemonic()
+                  << std::endl;
+
         auto currentPath = DotEnv::getExePath();
         auto& parser = DotEnv::getInstance();
         parser.load((currentPath / ".env").string());
 
-        SolanaWallet wallet;
-        std::cout << "Decent mnemonic: " << wallet.generateMnemonic()
-                  << std::endl;
         wallet.fromMnemonic(*parser.get("MNEMONIC"));
         REQUIRE(wallet.deriveAddress(0)
             == "9uvC3PMMzX4DgGrxDmheXNkMRWVfYqLsVpQjAaTD2uAp");

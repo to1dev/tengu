@@ -11,9 +11,32 @@ SolanaWallet::~SolanaWallet()
     cleanup();
 }
 
+void SolanaWallet::fromPrivateKey(const std::string& privateKey)
+{
+    std::vector<unsigned char> decoded;
+    if (!DecodeBase58(privateKey, decoded, 64) || decoded.size() != 64) {
+        throw std::invalid_argument("Invalid private key format");
+    }
+
+    std::memset(&node_, 0, sizeof(HDNode));
+
+    std::memcpy(node_.private_key, decoded.data(), 32);
+
+    uint8_t expected_public_key[32];
+    ed25519_publickey(node_.private_key, expected_public_key);
+
+    if (std::memcmp(expected_public_key, decoded.data() + 32, 32) != 0) {
+        throw std::invalid_argument("Invalid private key: public key mismatch");
+    }
+
+    seed_.clear();
+    mnemonic_.clear();
+}
+
 std::string SolanaWallet::deriveAddress(uint32_t index)
 {
-    initNode(index);
+    if (!mnemonic_.empty())
+        initNode(index);
 
     uint8_t public_key[32];
     ed25519_publickey(node_.private_key, public_key);
@@ -22,9 +45,10 @@ std::string SolanaWallet::deriveAddress(uint32_t index)
     return EncodeBase58(pubkey_span);
 }
 
-std::string SolanaWallet::getPrivateKey(uint32_t index)
+std::string SolanaWallet::derivePrivateKey(uint32_t index)
 {
-    initNode(index);
+    if (!mnemonic_.empty())
+        initNode(index);
 
     std::vector<uint8_t> full_private_key(64);
     std::copy(

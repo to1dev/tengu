@@ -13,8 +13,9 @@ public:
     SolanaWallet();
     ~SolanaWallet();
 
+    void fromPrivateKey(const std::string& privateKey) override;
     std::string deriveAddress(uint32_t index = 0) override;
-    std::string getPrivateKey(uint32_t index = 0) override;
+    std::string derivePrivateKey(uint32_t index = 0) override;
     [[nodiscard]] KeyPair deriveKeyPair(uint32_t index = 0) override;
     std::vector<uint8_t> signMessage(std::span<const uint8_t> message) override;
     std::vector<uint8_t> signTransaction(

@@ -91,6 +91,7 @@ void Wallet::fromMnemonic(
         // seed_ = std::move(seed);
         std::copy(seed.begin(), seed.end(), seed_.data());
         sodium_memzero(seed.data(), seed.size());
+
     } catch (const std::exception& e) {
         seed_.clear();
         throw;

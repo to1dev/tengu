@@ -21,9 +21,9 @@ public:
     std::vector<uint8_t> signTransaction(
         std::span<const uint8_t> transaction) override;
 
-protected:
+private:
     void initNode(uint32_t index = 0);
-    void cleanup() override;
+    void cleanup();
 };
 
 }

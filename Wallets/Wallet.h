@@ -108,10 +108,6 @@ protected:
     SecureBytes seed_;
     std::string mnemonic_;
     HDNode node_;
-
-protected:
-    virtual void initNode(uint32_t index = 0) = 0;
-    virtual void cleanup() = 0;
 };
 
 }

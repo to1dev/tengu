@@ -128,10 +128,15 @@ void Frameless::init(const bool isMain)
     layout->setSpacing(0);
 
     index = 0;
-    QLabel* labelIcon = new QLabel(bar);
+    /*QLabel* labelIcon = new QLabel(bar);
     labelIcon->setPixmap(QPixmap(STR_MAIN_ICON));
     labelIcon->setMargin(ICON_MARGIN);
-    layout->insertWidget(index++, labelIcon);
+    layout->insertWidget(index++, labelIcon);*/
+
+    SVGWidget* svgIcon = new SVGWidget(STR_MAIN_ICON, bar);
+    svgIcon->setContentsMargins(3, 3, 3, 3);
+    svgIcon->setFixedSize(24, 24);
+    layout->insertWidget(index++, svgIcon);
 
     QLabel* labelTitle = new QLabel(bar);
     labelTitle->setAttribute(Qt::WA_TransparentForMouseEvents);
@@ -167,14 +172,20 @@ void Frameless::init(const bool isMain)
             int index = randomIndex(0, RandomLogos.size() - 1);
             int range = randomIndex(
                 RandomLogos[index].second.start, RandomLogos[index].second.end);
-            QPixmap logoPixmap(
-                QString(":/%1/%2").arg(RandomLogos[index].first).arg(range));
 
+            /*QPixmap logoPixmap(
+                QString(":/%1/%2").arg(RandomLogos[index].first).arg(range));
             QLabel* labelLogo = new QLabel(mTopFrame);
             labelLogo->setMargin(3);
             labelLogo->setPixmap(logoPixmap.scaled(LOGO_SIZE, LOGO_SIZE,
                 Qt::KeepAspectRatio, Qt::SmoothTransformation));
-            topLayout->addWidget(labelLogo);
+            topLayout->addWidget(labelLogo);*/
+
+            SVGWidget* svgLogo = new SVGWidget(
+                QString(":/%1/%2").arg(RandomLogos[index].first).arg(range),
+                mTopFrame);
+            svgLogo->setFixedSize(LOGO_SIZE, LOGO_SIZE);
+            topLayout->addWidget(svgLogo);
         }
 
         layoutMain->insertWidget(index++, mTopFrame);

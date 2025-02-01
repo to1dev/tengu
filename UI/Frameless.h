@@ -12,6 +12,7 @@
 
 #include "Consts.h"
 
+#include "Components/SVGWidget.h"
 #include "Components/TitleBar.h"
 
 #include "Utils/Encryption.h"

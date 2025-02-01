@@ -39,6 +39,7 @@ win32:contains(QT_ARCH, i386) {
 }
 
 SOURCES += \
+    Components/SVGWidget.cpp \
     Components/Splash.cpp \
     Components/TitleBar.cpp \
     Databases/InternalDatabase.cpp \
@@ -61,6 +62,7 @@ SOURCES += \
     Wallets/Wallet.cpp
 
 HEADERS += \
+    Components/SVGWidget.h \
     Components/Splash.h \
     Components/TitleBar.h \
     Consts.h \

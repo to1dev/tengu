@@ -46,10 +46,10 @@ SOURCES += \
     Databases/InternalDatabase.cpp \
     Main.cpp \
     Managers/GlobalManager.cpp \
+    Managers/LayoutManager.cpp \
     Managers/ResourceManager.cpp \
     Managers/SettingManager.cpp \
     Managers/ThemeManager.cpp \
-    Managers/WindowManager.cpp \
     Tengu.cpp \
     Tests/Test_BIP39.cpp \
     Tests/Test_DotEnv.cpp \
@@ -70,10 +70,10 @@ HEADERS += \
     Databases/InternalDatabase.h \
     Globals.h \
     Managers/GlobalManager.h \
+    Managers/LayoutManager.h \
     Managers/ResourceManager.h \
     Managers/SettingManager.h \
     Managers/ThemeManager.h \
-    Managers/WindowManager.h \
     Rust.h \
     Security/Security.h \
     Tengu.h \

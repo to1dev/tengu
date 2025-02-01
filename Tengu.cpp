@@ -20,8 +20,8 @@ Tengu::Tengu(
     mFrameless->setButtonClose(ui->ButtonClose);
     mFrameless->init(true);
 
-    mGlobalManager->getWindowManager()->setWindow(this);
-    mGlobalManager->getWindowManager()->reset();
+    mGlobalManager->getLayoutManager()->setWindow(this);
+    mGlobalManager->getLayoutManager()->reset();
 
     ui->tabWidget->tabBar()->hide();
 
@@ -55,7 +55,7 @@ void Tengu::initPopupMenu()
     QMenu* appMenu = mPopup->addMenu(STR_MENU_APP);
 
     appMenu->addAction(STR_WINDOW_CENTER, this,
-        [this]() { mGlobalManager->getWindowManager()->center(); });
+        [this]() { mGlobalManager->getLayoutManager()->center(); });
     // appMenu->addAction(STR_APP_SOCKET, this, &Tengu::socket);
     appMenu->addSeparator();
     QAction* resetDbAction = appMenu->addAction(STR_APP_RESET_DB,

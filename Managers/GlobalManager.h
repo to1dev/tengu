@@ -4,7 +4,7 @@
 #include "Managers/ResourceManager.h"
 #include "Managers/SettingManager.h"
 #include "Managers/ThemeManager.h"
-#include "Managers/WindowManager.h"
+#include "Managers/LayoutManager.h"
 
 namespace Daitengu::Base {
 
@@ -13,7 +13,7 @@ public:
     GlobalManager(QApplication* app = nullptr);
 
     ThemeManager* getThemeManager() const;
-    WindowManager* getWindowManager() const;
+    LayoutManager* getLayoutManager() const;
     ResourceManager* getResourceManager() const;
     SettingManager* getSettingManager() const;
 
@@ -22,7 +22,7 @@ private:
     std::unique_ptr<ResourceManager> resourceManager;
     std::unique_ptr<SettingManager> settingManager;
     std::unique_ptr<ThemeManager> themeManager;
-    std::unique_ptr<WindowManager> windowManager;
+    std::unique_ptr<LayoutManager> layoutManager;
 };
 
 }

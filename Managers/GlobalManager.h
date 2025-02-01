@@ -10,7 +10,7 @@ namespace Daitengu::Base {
 
 class GlobalManager {
 public:
-    GlobalManager(int argc, char* argv[], QApplication* app = nullptr);
+    GlobalManager(QApplication* app = nullptr);
 
     ThemeManager* getThemeManager() const;
     WindowManager* getWindowManager() const;

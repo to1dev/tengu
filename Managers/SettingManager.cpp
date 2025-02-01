@@ -2,10 +2,8 @@
 
 namespace Daitengu::Base {
 
-SettingManager::SettingManager(int argc, char* argv[])
+SettingManager::SettingManager()
 {
-    (void)argc;
-
     mDataPath = QDir::toNativeSeparators(QString("%1/%2/%3")
             .arg(QStandardPaths::writableLocation(
                 QStandardPaths::GenericDataLocation))
@@ -15,8 +13,11 @@ SettingManager::SettingManager(int argc, char* argv[])
     if (!QDir(mDataPath).exists())
         QDir().mkpath(mDataPath);
 
-    QString path = QDir::toNativeSeparators(QString(argv[0]));
-    mOptions.sysOpt.appPath = mAppPath = QFileInfo(path).absolutePath();
+    // QString path = QDir::toNativeSeparators(QString(argv[0]));
+    // mOptions.sysOpt.appPath = mAppPath = QFileInfo(path).absolutePath();
+
+    mOptions.sysOpt.appPath = mAppPath
+        = QString::fromStdString(PathUtils::getExecutableDir().string());
 
     mDatabase = std::make_unique<InternalDatabase>(mDataPath);
 

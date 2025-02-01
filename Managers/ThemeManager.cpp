@@ -18,7 +18,7 @@ ThemeManager::ThemeManager(QApplication* app)
     initFonts();
     initThemes();
 
-    // mApp->font().setHintingPreference(QFont::PreferNoHinting);
+    // mApp->font().setHintingPreference(QFont::PreferDefaultHinting);
 }
 
 ThemeManager::~ThemeManager()

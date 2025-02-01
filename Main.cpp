@@ -29,6 +29,9 @@ int main(int argc, char* argv[])
 {
     int currentExitCode = 0;
 
+    QByteArray platform = "windows:fontengine=freetype";
+    qputenv("QT_QPA_PLATFORM", platform);
+
     if (!Encryption::init())
         return -1;
 
@@ -37,8 +40,9 @@ int main(int argc, char* argv[])
         return currentExitCode;
 
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    // QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-    //  QCoreApplication::setAttribute(Qt::AA_DisableHighDpiScaling);
+#ifdef USE_HDPI
+    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+#endif
     QCoreApplication::setAttribute(Qt::AA_Use96Dpi);
     QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
 #endif
@@ -59,7 +63,7 @@ int main(int argc, char* argv[])
         a.processEvents();
 
         std::shared_ptr<GlobalManager> globalManager
-            = std::make_shared<GlobalManager>(argc, argv, &a);
+            = std::make_shared<GlobalManager>(&a);
 
         Tengu w(globalManager);
 

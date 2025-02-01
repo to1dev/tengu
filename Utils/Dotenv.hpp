@@ -17,6 +17,8 @@
 
 using json = nlohmann::json;
 
+namespace Daitengu::Utils {
+
 class DotEnvException : public std::runtime_error {
 public:
     explicit DotEnvException(const std::string& message)
@@ -27,17 +29,6 @@ public:
 
 class DotEnv {
 public:
-    static inline std::filesystem::path getExePath()
-    {
-#ifdef _WIN32
-        wchar_t path[MAX_PATH] = { 0 };
-        GetModuleFileNameW(NULL, path, MAX_PATH);
-        return std::filesystem::path(path).parent_path();
-#else
-        return std::filesystem::current_path();
-#endif
-    }
-
     static DotEnv& getInstance()
     {
         static DotEnv instance;
@@ -172,4 +163,5 @@ private:
     }
 };
 
+}
 #endif // DOTENV_H

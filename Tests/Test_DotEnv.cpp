@@ -3,12 +3,15 @@
 #include "catch_amalgamated.hpp"
 
 #include "Utils/Dotenv.hpp"
+#include "Utils/PathUtils.hpp"
+
+using namespace Daitengu::Utils;
 
 TEST_CASE("Test DotEnv")
 {
     SECTION("Load .env")
     {
-        auto currentPath = DotEnv::getExePath();
+        auto currentPath = PathUtils::getExecutableDir();
         try {
             auto& parser = DotEnv::getInstance();
             parser.load((currentPath / ".env").string());

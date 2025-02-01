@@ -7,10 +7,10 @@ CONFIG += c++2a
 
 CONFIG(release, debug|release): QMAKE_CXXFLAGS += -Wno-unused-parameter \
     -Wno-template-id-cdtor -Wno-tautological-compare -Wno-unused-local-typedefs \
-    -Wno-volatile
+    -Wno-volatile -Wno-misleading-indentation
 else: CONFIG(debug, debug|release): QMAKE_CXXFLAGS += -Wno-unused-parameter \
     -Wno-template-id-cdtor -Wno-tautological-compare -Wno-unused-local-typedefs \
-    -Wno-volatile
+    -Wno-volatile -Wno-misleading-indentation
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -27,6 +27,7 @@ win32:contains(QT_ARCH, i386) {
         INCLUDEPATH += $$PWD/3rd/inc $$PWD/3rd/inc/izanagi
 
         DEFINES += USE_TEST
+        #DEFINES += USE_HDPI
 
         LIBS += -lizanagi
 
@@ -80,6 +81,7 @@ HEADERS += \
     Utils/Base58.h \
     Utils/DotEnv.hpp \
     Utils/Encryption.h \
+    Utils/PathUtils.hpp \
     Utils/RunGuard.h \
     Wallets/Mnemonic.h \
     Wallets/SolanaWallet.h \

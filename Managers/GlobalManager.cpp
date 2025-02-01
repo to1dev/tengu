@@ -2,13 +2,13 @@
 
 namespace Daitengu::Base {
 
-GlobalManager::GlobalManager(int argc, char* argv[], QApplication* app)
+GlobalManager::GlobalManager(QApplication* app)
     : mApp(app)
 {
-    settingManager = std::make_unique<SettingManager>(argc, argv);
+    settingManager = std::make_unique<SettingManager>();
     themeManager = std::make_unique<ThemeManager>(app);
     windowManager = std::make_unique<WindowManager>(app);
-    resourceManager = std::make_unique<ResourceManager>(ResourceManager());
+    resourceManager = std::make_unique<ResourceManager>();
 }
 
 ResourceManager* GlobalManager::getResourceManager() const

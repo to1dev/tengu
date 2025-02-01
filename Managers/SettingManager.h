@@ -12,8 +12,10 @@ using json = nlohmann::json;
 #include "Globals.h"
 
 #include "Databases/InternalDatabase.h"
+#include "Utils/PathUtils.hpp"
 
 using namespace Daitengu::Database;
+using namespace Daitengu::Utils;
 
 namespace Daitengu::Base {
 
@@ -35,7 +37,7 @@ struct Options {
 
 class SettingManager {
 public:
-    SettingManager(int argc, char* argv[]);
+    SettingManager();
     ~SettingManager();
 
     InternalDatabase* database() const;

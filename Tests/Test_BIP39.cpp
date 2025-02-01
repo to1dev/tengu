@@ -6,8 +6,11 @@
 #include "catch_amalgamated.hpp"
 
 #include "Utils/Dotenv.hpp"
+#include "Utils/PathUtils.hpp"
+
 #include "Wallets/SolanaWallet.h"
 
+using namespace Daitengu::Utils;
 using namespace Daitengu::Wallets;
 
 TEST_CASE("Generate bip39 mnemonic")
@@ -18,7 +21,7 @@ TEST_CASE("Generate bip39 mnemonic")
         std::cout << "Decent mnemonic: " << wallet.generateMnemonic()
                   << std::endl;
 
-        auto currentPath = DotEnv::getExePath();
+        auto currentPath = PathUtils::getExecutableDir();
         auto& parser = DotEnv::getInstance();
         parser.load((currentPath / ".env").string());
 

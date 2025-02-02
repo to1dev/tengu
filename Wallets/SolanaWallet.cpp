@@ -2,7 +2,8 @@
 
 namespace Daitengu::Wallets {
 
-SolanaWallet::SolanaWallet()
+SolanaWallet::SolanaWallet(bool solanaMode)
+    : solanaMode_(solanaMode)
 {
 }
 
@@ -39,7 +40,11 @@ std::string SolanaWallet::deriveAddress(uint32_t index)
         initNode(index);
 
     uint8_t public_key[32];
-    ed25519_publickey(node_.private_key, public_key);
+    if (solanaMode_) {
+        ed25519_publickey(seed_.data(), public_key);
+    } else {
+        ed25519_publickey(node_.private_key, public_key);
+    }
 
     std::span<const unsigned char> pubkey_span(public_key, 32);
     return EncodeBase58(pubkey_span);
@@ -51,11 +56,16 @@ std::string SolanaWallet::derivePrivateKey(uint32_t index)
         initNode(index);
 
     std::vector<uint8_t> full_private_key(64);
-    std::copy(
-        node_.private_key, node_.private_key + 32, full_private_key.begin());
-
     uint8_t public_key[32];
-    ed25519_publickey(node_.private_key, public_key);
+
+    if (solanaMode_) {
+        std::copy(seed_.data(), seed_.data() + 32, full_private_key.begin());
+        ed25519_publickey(seed_.data(), public_key);
+    } else {
+        std::copy(node_.private_key, node_.private_key + 32,
+            full_private_key.begin());
+        ed25519_publickey(node_.private_key, public_key);
+    }
 
     std::copy(public_key, public_key + 32, full_private_key.begin() + 32);
 
@@ -88,23 +98,35 @@ void SolanaWallet::initNode(uint32_t index)
         throw std::runtime_error("Failed to create HD node from seed.");
     }
 
-    uint32_t path[] = {
-        44 | HARDENED,    // 44'
-        501 | HARDENED,   // 501'
-        index | HARDENED, // 0'
-        0 | HARDENED      // 0'
-    };
+    if (!solanaMode_) {
+        uint32_t path[] = {
+            44 | HARDENED,    // 44'
+            501 | HARDENED,   // 501'
+            index | HARDENED, // 0'
+            0 | HARDENED      // 0'
+        };
 
-    if (hdnode_private_ckd_cached(
-            &node_, path, sizeof(path) / sizeof(uint32_t), nullptr)
-        != 1) {
-        throw std::runtime_error("Failed to derive key path.");
+        if (hdnode_private_ckd_cached(
+                &node_, path, sizeof(path) / sizeof(uint32_t), nullptr)
+            != 1) {
+            throw std::runtime_error("Failed to derive key path.");
+        }
     }
 }
 
 void SolanaWallet::cleanup()
 {
     // Todo
+}
+
+bool SolanaWallet::solanaMode() const
+{
+    return solanaMode_;
+}
+
+void SolanaWallet::setSolanaMode(bool newSolanaMode)
+{
+    solanaMode_ = newSolanaMode;
 }
 
 }

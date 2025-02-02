@@ -10,7 +10,7 @@ namespace Daitengu::Wallets {
 
 class SolanaWallet : public Wallet {
 public:
-    SolanaWallet();
+    SolanaWallet(bool solanaMode = false);
     ~SolanaWallet();
 
     void fromPrivateKey(const std::string& privateKey) override;
@@ -21,9 +21,15 @@ public:
     std::vector<uint8_t> signTransaction(
         std::span<const uint8_t> transaction) override;
 
+    bool solanaMode() const;
+    void setSolanaMode(bool newSolanaMode);
+
 private:
     void initNode(uint32_t index = 0);
     void cleanup();
+
+private:
+    bool solanaMode_;
 };
 
 }

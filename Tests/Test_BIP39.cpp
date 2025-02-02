@@ -20,13 +20,17 @@ TEST_CASE("Generate bip39 mnemonic")
         SolanaWallet wallet;
         std::cout << "Decent mnemonic: " << wallet.generateMnemonic()
                   << std::endl;
-        std::cout << "Here is the pubkey: " << wallet.deriveAddress() << std::endl;
+        std::cout << "Here is the pubkey: " << wallet.deriveAddress()
+                  << std::endl;
 
         auto currentPath = PathUtils::getExecutableDir();
         auto& parser = DotEnv::getInstance();
         parser.load((currentPath / ".env").string());
 
         wallet.fromMnemonic(*parser.get("MNEMONIC"));
+
+        std::cout << wallet.derivePrivateKey() << std::endl;
+
         REQUIRE(wallet.deriveAddress(0)
             == "9uvC3PMMzX4DgGrxDmheXNkMRWVfYqLsVpQjAaTD2uAp");
         REQUIRE(wallet.deriveAddress(1)

@@ -88,8 +88,8 @@ public:
     [[nodiscard]] virtual std::string generateMnemonic(int strength = 128);
     virtual void fromMnemonic(
         const std::string& mnemonic, const std::string& passphrase = "");
-
     virtual void fromPrivateKey(const std::string& privateKey) = 0;
+
     [[nodiscard]] virtual std::string deriveAddress(uint32_t index = 0) = 0;
     [[nodiscard]] virtual std::string derivePrivateKey(uint32_t index = 0) = 0;
     [[nodiscard]] virtual struct KeyPair deriveKeyPair(uint32_t index = 0) = 0;

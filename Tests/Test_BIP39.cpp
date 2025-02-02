@@ -28,7 +28,6 @@ TEST_CASE("Generate bip39 mnemonic")
         parser.load((currentPath / ".env").string());
 
         wallet.fromMnemonic(*parser.get("MNEMONIC"));
-
         std::cout << wallet.derivePrivateKey() << std::endl;
 
         REQUIRE(wallet.deriveAddress(0)

@@ -1,12 +1,3 @@
 {
-    "rust-analyzer.linkedProjects": [
-        ".\\sol\\Cargo.toml"
-    ],
-    "files.associations": {
-        "ostream": "cpp",
-        "iostream": "cpp",
-        "istream": "cpp",
-        "string": "cpp"
-    },
-    "cmake.ignoreCMakeListsMissing": true
+    "rust-analyzer.linkedProjects": [".\\sol\\Cargo.toml"]
 }

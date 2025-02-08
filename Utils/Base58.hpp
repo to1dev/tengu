@@ -2,9 +2,15 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "Base58.h"
+#ifndef BASE58_HPP
+#define BASE58_HPP
 
-namespace Daitengu::Utils {
+#include <cassert>
+#include <cstdint>
+#include <cstring>
+#include <span>
+#include <string>
+#include <vector>
 
 /** All alphanumeric characters except for "0", "I", "O", and "l" */
 static const char* pszBase58
@@ -115,7 +121,7 @@ constexpr inline bool IsSpace(char c) noexcept
     return true;
 }
 
-std::string EncodeBase58(std::span<const unsigned char> input)
+inline std::string EncodeBase58(std::span<const unsigned char> input)
 {
     // Skip & count leading zeroes.
     int zeroes = 0;
@@ -156,7 +162,7 @@ std::string EncodeBase58(std::span<const unsigned char> input)
     return str;
 }
 
-bool DecodeBase58(
+inline bool DecodeBase58(
     const std::string& str, std::vector<unsigned char>& vchRet, int max_ret_len)
 {
     if (!ContainsNoNUL(str)) {
@@ -165,4 +171,4 @@ bool DecodeBase58(
     return DecodeBase58(str.c_str(), vchRet, max_ret_len);
 }
 
-}
+#endif

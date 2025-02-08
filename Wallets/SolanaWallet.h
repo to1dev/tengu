@@ -1,10 +1,9 @@
 #ifndef SOLANAWALLET_H
 #define SOLANAWALLET_H
 
-#include "Utils/Base58.h"
-#include "Wallet.h"
+#include "Utils/Base58.hpp"
 
-using namespace Daitengu::Utils;
+#include "Wallet.h"
 
 namespace Daitengu::Wallets {
 

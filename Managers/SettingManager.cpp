@@ -19,7 +19,7 @@ SettingManager::SettingManager()
     mOptions.sysOpt.appPath = mAppPath
         = QString::fromStdString(PathUtils::getExecutableDir().string());
 
-    mDatabase = std::make_unique<InternalDatabase>(mDataPath);
+    database_ = std::make_unique<Database>(mDataPath);
 
     readSettings();
 }
@@ -29,9 +29,9 @@ SettingManager::~SettingManager()
     writeSettings();
 }
 
-InternalDatabase* SettingManager::database() const
+Database* SettingManager::database() const
 {
-    return mDatabase.get();
+    return database_.get();
 }
 
 QString SettingManager::dataPath() const

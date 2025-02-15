@@ -14,7 +14,7 @@ using json = nlohmann::json;
 #include "Databases/InternalDatabase.h"
 #include "Utils/PathUtils.hpp"
 
-using namespace Daitengu::Database;
+using namespace Daitengu::Core;
 using namespace Daitengu::Utils;
 
 namespace Daitengu::Base {
@@ -40,7 +40,7 @@ public:
     SettingManager();
     ~SettingManager();
 
-    InternalDatabase* database() const;
+    Database* database() const;
 
     QString dataPath() const;
     QString appPath() const;
@@ -55,7 +55,7 @@ private:
     QString mAppPath;
     Options mOptions;
 
-    std::unique_ptr<InternalDatabase> mDatabase;
+    std::unique_ptr<Database> database_;
 };
 
 }

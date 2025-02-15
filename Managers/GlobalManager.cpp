@@ -3,32 +3,32 @@
 namespace Daitengu::Base {
 
 GlobalManager::GlobalManager(QApplication* app)
-    : mApp(app)
+    : app_(app)
 {
-    settingManager = std::make_unique<SettingManager>();
-    themeManager = std::make_unique<ThemeManager>(app);
-    layoutManager = std::make_unique<LayoutManager>(app);
-    resourceManager = std::make_unique<ResourceManager>();
+    settingManager_ = std::make_unique<SettingManager>();
+    themeManager_ = std::make_unique<ThemeManager>(app);
+    layoutManager_ = std::make_unique<LayoutManager>(app);
+    resourceManager_ = std::make_unique<ResourceManager>();
 }
 
-ResourceManager* GlobalManager::getResourceManager() const
+ResourceManager* GlobalManager::resourceManager() const
 {
-    return resourceManager.get();
+    return resourceManager_.get();
 }
 
-SettingManager* GlobalManager::getSettingManager() const
+SettingManager* GlobalManager::settingManager() const
 {
-    return settingManager.get();
+    return settingManager_.get();
 }
 
-ThemeManager* GlobalManager::getThemeManager() const
+ThemeManager* GlobalManager::themeManager() const
 {
-    return themeManager.get();
+    return themeManager_.get();
 }
 
-LayoutManager* GlobalManager::getLayoutManager() const
+LayoutManager* GlobalManager::layoutManager() const
 {
-    return layoutManager.get();
+    return layoutManager_.get();
 }
 
 }

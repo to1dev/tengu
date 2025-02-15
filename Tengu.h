@@ -41,9 +41,9 @@ private:
 private:
     Ui::Tengu* ui;
 
-    std::shared_ptr<const GlobalManager> mGlobalManager;
-    std::unique_ptr<Frameless> mFrameless;
+    std::shared_ptr<const GlobalManager> globalManager_;
+    std::unique_ptr<Frameless> frameless_;
 
-    QMenu* mPopup;
+    QMenu* popup_;
 };
 #endif // TENGU_H

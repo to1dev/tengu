@@ -7,10 +7,10 @@ CONFIG += c++2a
 
 CONFIG(release, debug|release): QMAKE_CXXFLAGS += -Wno-unused-parameter \
     -Wno-template-id-cdtor -Wno-tautological-compare -Wno-unused-local-typedefs \
-    -Wno-volatile -Wno-misleading-indentation
+    -Wno-volatile -Wno-misleading-indentation -Wno-unused-but-set-parameter
 else: CONFIG(debug, debug|release): QMAKE_CXXFLAGS += -Wno-unused-parameter \
     -Wno-template-id-cdtor -Wno-tautological-compare -Wno-unused-local-typedefs \
-    -Wno-volatile -Wno-misleading-indentation
+    -Wno-volatile -Wno-misleading-indentation -Wno-unused-but-set-parameter
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -44,6 +44,7 @@ SOURCES += \
     Components/Splash.cpp \
     Components/TitleBar.cpp \
     Databases/InternalDatabase.cpp \
+    Layouts/Core/GridSystem.cpp \
     Main.cpp \
     Managers/GlobalManager.cpp \
     Managers/LayoutManager.cpp \
@@ -55,7 +56,6 @@ SOURCES += \
     Tests/Test_DotEnv.cpp \
     Tests/Test_Encryption.cpp \
     UI/Frameless.cpp \
-    Utils/Base58.cpp \
     Utils/Encryption.cpp \
     Utils/RunGuard.cpp \
     Wallets/Mnemonic.cpp \
@@ -69,6 +69,8 @@ HEADERS += \
     Consts.h \
     Databases/InternalDatabase.h \
     Globals.h \
+    Layouts/Core/GridSystem.h \
+    Layouts/Core/Types.h \
     Managers/GlobalManager.h \
     Managers/LayoutManager.h \
     Managers/ResourceManager.h \
@@ -78,7 +80,7 @@ HEADERS += \
     Security/Security.h \
     Tengu.h \
     UI/Frameless.h \
-    Utils/Base58.h \
+    Utils/Base58.hpp \
     Utils/DotEnv.hpp \
     Utils/Encryption.h \
     Utils/PathUtils.hpp \

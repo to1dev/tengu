@@ -15,7 +15,7 @@ protected:
     void paintEvent(QPaintEvent* event) override;
 
 private:
-    QSvgRenderer* renderer;
+    QSvgRenderer* renderer_;
 };
 
 }

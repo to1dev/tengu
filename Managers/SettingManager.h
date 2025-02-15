@@ -51,9 +51,9 @@ public:
     Options& options();
 
 private:
-    QString mDataPath;
-    QString mAppPath;
-    Options mOptions;
+    QString dataPath_;
+    QString appPath_;
+    Options options_;
 
     std::unique_ptr<Database> database_;
 };

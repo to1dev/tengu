@@ -68,21 +68,21 @@ private:
     void max();
 
 private:
-    QWidget* mWindow;
-    QString mTitle;
+    QWidget* window_;
+    QString title_;
 
-    bool mFixed { false };
+    bool fixed_ { false };
 
-    QWidget* mMainFrame { nullptr };
-    QWidget* mTopFrame { nullptr };
-    QWidget* mContentFrame { nullptr };
+    QWidget* mainFrame_ { nullptr };
+    QWidget* topFrame_ { nullptr };
+    QWidget* contentFrame_ { nullptr };
 
-    QToolButton* mButtonMin { nullptr };
-    QToolButton* mButtonMax { nullptr };
-    QToolButton* mButtonClose { nullptr };
-    QToolButton* mButtonFixed { nullptr };
+    QToolButton* buttonMin_ { nullptr };
+    QToolButton* buttonMax_ { nullptr };
+    QToolButton* buttonClose_ { nullptr };
+    QToolButton* buttonFixed_ { nullptr };
 
-    QMenuBar* mMainMenu { nullptr };
+    QMenuBar* mainMenu_ { nullptr };
 };
 
 }

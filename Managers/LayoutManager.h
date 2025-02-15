@@ -33,9 +33,9 @@ public:
     void setWindow(QWidget* newWindow);
 
 private:
-    QApplication* mApp;
-    QWidget* mWindow { nullptr };
-    double mRatio { 1.0 };
+    QApplication* app_;
+    QWidget* window_ { nullptr };
+    double ratio_ { 1.0 };
 };
 
 }

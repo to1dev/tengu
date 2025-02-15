@@ -3,22 +3,22 @@
 namespace Daitengu::Base {
 
 ThemeManager::ThemeManager(QApplication* app)
-    : mApp(app)
-    , mScale(1.0)
+    : app_(app)
+    , scale_(1.0)
 {
-    if (nullptr == mApp) {
-        mApp = qobject_cast<QApplication*>(QApplication::instance());
+    if (nullptr == app_) {
+        app_ = qobject_cast<QApplication*>(QApplication::instance());
     }
 
     if (FIXED_DPI == QGuiApplication::primaryScreen()->logicalDotsPerInch())
-        mScale = SCALED_125;
+        scale_ = SCALED_125;
     else
-        mScale = SCALED_150;
+        scale_ = SCALED_150;
 
     initFonts();
     initThemes();
 
-    // mApp->font().setHintingPreference(QFont::PreferDefaultHinting);
+    // app_->font().setHintingPreference(QFont::PreferDefaultHinting);
 }
 
 ThemeManager::~ThemeManager()
@@ -29,7 +29,7 @@ void ThemeManager::setCursor(
     const QVector<QWidget*> widgets, const CursorName name)
 {
     for (const auto& obj : widgets) {
-        obj->setCursor(mCursors[name]);
+        obj->setCursor(cursors_[name]);
     }
 }
 
@@ -45,8 +45,8 @@ void ThemeManager::initFonts()
 
 void ThemeManager::initThemes()
 {
-    mTheme.name = QString(DEFAULT_THEME_NAME).toLower();
-    mTheme.path = EMPTY_STRING;
+    theme_.name = QString(DEFAULT_THEME_NAME).toLower();
+    theme_.path = EMPTY_STRING;
 
     parseTheme();
     initStyle();
@@ -54,18 +54,18 @@ void ThemeManager::initThemes()
 
 void ThemeManager::parseTheme()
 {
-    QFile file(QString(STR_THEME_STYlE).arg(mTheme.name));
+    QFile file(QString(STR_THEME_STYlE).arg(theme_.name));
     if (file.exists()) {
         if (file.open(QFile::ReadOnly | QFile::Text)) {
             try {
                 json jObj = json::parse(file.readAll().toStdString());
 
                 if (jObj.contains(STR_JSON_STYLE)) {
-                    mTheme.style = QString::fromStdString(jObj[STR_JSON_STYLE]);
+                    theme_.style = QString::fromStdString(jObj[STR_JSON_STYLE]);
                 }
 
-                mApp->setStyle(
-                    mTheme.style.isEmpty() ? STR_DEFAULT_STYLE : mTheme.style);
+                app_->setStyle(
+                    theme_.style.isEmpty() ? STR_DEFAULT_STYLE : theme_.style);
 
                 if (jObj.contains(STR_JSON_CURSORS)
                     && jObj[STR_JSON_CURSORS].is_array()) {
@@ -114,7 +114,7 @@ void ThemeManager::initPalette(const json& palette)
             }
         }
 
-        mApp->setPalette(pal);
+        app_->setPalette(pal);
     }
 }
 
@@ -122,7 +122,7 @@ void ThemeManager::initStyle()
 {
     QString styles;
 
-    QString qss = QString(STR_THEME_QSS).arg(mTheme.name);
+    QString qss = QString(STR_THEME_QSS).arg(theme_.name);
     QFile file(qss);
 
     if (file.exists()) {
@@ -132,14 +132,14 @@ void ThemeManager::initStyle()
             QString extraStyles
                 = QString(STR_GLOBAL_STYLE)
                       .arg(Fonts[i].first)
-                      .arg(qRound(mScale * DEFAULT_FONT_SIZE))
+                      .arg(qRound(scale_ * DEFAULT_FONT_SIZE))
                       .arg(Fonts[i].second.italic ? "font-style:italic;"
                                                   : EMPTY_STRING);
             styles = extraStyles + ts.readAll();
         }
     }
 
-    QString qss2 = QString(STR_THEME_QSS2).arg(mTheme.name);
+    QString qss2 = QString(STR_THEME_QSS2).arg(theme_.name);
     QFile file2(qss2);
     if (file2.exists()) {
         if (file2.open(QFile::ReadOnly | QFile::Text)) {
@@ -148,7 +148,7 @@ void ThemeManager::initStyle()
         }
     }
 
-    mApp->setStyleSheet(styles);
+    app_->setStyleSheet(styles);
 }
 
 }

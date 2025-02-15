@@ -3,17 +3,17 @@
 namespace Daitengu::Utils {
 
 RunGuard::RunGuard()
-    : mMemLockKey(Encryption::easyHash(QString(STR_KEY), 23))
-    , mSharedMemKey(Encryption::easyHash(QString(STR_KEY), 78))
-    , mSharedMem(mSharedMemKey)
-    , mMemLock(mMemLockKey, 1)
+    : memLockKey_(Encryption::easyHash(QString(STR_KEY), 23))
+    , sharedMemKey_(Encryption::easyHash(QString(STR_KEY), 78))
+    , sharedMem_(sharedMemKey_)
+    , memLock_(memLockKey_, 1)
 {
-    mMemLock.acquire();
+    memLock_.acquire();
     {
-        QSharedMemory fix(mSharedMemKey);
+        QSharedMemory fix(sharedMemKey_);
         fix.attach();
     }
-    mMemLock.release();
+    memLock_.release();
 }
 
 RunGuard::~RunGuard()
@@ -23,15 +23,15 @@ RunGuard::~RunGuard()
 
 bool RunGuard::isRunning()
 {
-    if (mSharedMem.isAttached())
+    if (sharedMem_.isAttached())
         return false;
 
-    mMemLock.acquire();
+    memLock_.acquire();
 
-    const bool isRunning = mSharedMem.attach();
+    const bool isRunning = sharedMem_.attach();
     if (isRunning)
-        mSharedMem.detach();
-    mMemLock.release();
+        sharedMem_.detach();
+    memLock_.release();
 
     return isRunning;
 }
@@ -41,10 +41,10 @@ bool RunGuard::tryToRun()
     if (isRunning())
         return false;
 
-    mMemLock.acquire();
+    memLock_.acquire();
 
-    const bool result = mSharedMem.create(sizeof(quint64));
-    mMemLock.release();
+    const bool result = sharedMem_.create(sizeof(quint64));
+    memLock_.release();
 
     if (!result) {
         release();
@@ -56,10 +56,10 @@ bool RunGuard::tryToRun()
 
 void RunGuard::release()
 {
-    mMemLock.acquire();
-    if (mSharedMem.isAttached())
-        mSharedMem.detach();
-    mMemLock.release();
+    memLock_.acquire();
+    if (sharedMem_.isAttached())
+        sharedMem_.detach();
+    memLock_.release();
 }
 
 }

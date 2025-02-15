@@ -131,11 +131,11 @@ private:
     void initStyle();
 
 private:
-    QApplication* mApp;
-    CursorList mCursors;
-    QStringList mThemes;
-    Theme mTheme;
-    double mScale;
+    QApplication* app_;
+    CursorList cursors_;
+    QStringList themes_;
+    Theme theme_;
+    double scale_;
 };
 
 }

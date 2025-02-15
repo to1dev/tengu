@@ -22,10 +22,10 @@ public:
     void release();
 
 private:
-    const QString mMemLockKey;
-    const QString mSharedMemKey;
-    QSharedMemory mSharedMem;
-    QSystemSemaphore mMemLock;
+    const QString memLockKey_;
+    const QString sharedMemKey_;
+    QSharedMemory sharedMem_;
+    QSystemSemaphore memLock_;
 };
 
 }

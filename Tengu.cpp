@@ -5,23 +5,23 @@ Tengu::Tengu(
     const std::shared_ptr<const GlobalManager>& globalManager, QWidget* parent)
     : QMainWindow(parent)
     , ui(new Ui::Tengu)
-    , mGlobalManager(globalManager)
+    , globalManager_(globalManager)
 {
     ui->setupUi(this);
     setWindowTitle(DEFAULT_TITLE);
 
-    mFrameless = std::make_unique<Frameless>(this);
-    mFrameless->setMainFrame(ui->frameMain);
-    mFrameless->setContentFrame(ui->frameContent);
-    mFrameless->setTopFrame(ui->topFrame);
-    mFrameless->setMainMenu(ui->menubar);
-    mFrameless->setButtonMin(ui->ButtonMin);
-    mFrameless->setButtonMax(ui->ButtonMax);
-    mFrameless->setButtonClose(ui->ButtonClose);
-    mFrameless->init(true);
+    frameless_ = std::make_unique<Frameless>(this);
+    frameless_->setMainFrame(ui->frameMain);
+    frameless_->setContentFrame(ui->frameContent);
+    frameless_->setTopFrame(ui->topFrame);
+    frameless_->setMainMenu(ui->menubar);
+    frameless_->setButtonMin(ui->ButtonMin);
+    frameless_->setButtonMax(ui->ButtonMax);
+    frameless_->setButtonClose(ui->ButtonClose);
+    frameless_->init(true);
 
-    mGlobalManager->getLayoutManager()->setWindow(this);
-    mGlobalManager->getLayoutManager()->reset();
+    globalManager_->layoutManager()->setWindow(this);
+    globalManager_->layoutManager()->reset();
 
     ui->tabWidget->tabBar()->hide();
 
@@ -36,7 +36,7 @@ Tengu::~Tengu()
 void Tengu::onPopup()
 {
     QPoint pt = ui->frameContent->mapToGlobal(ui->ButtonPopup->pos());
-    mPopup->exec(pt);
+    popup_->exec(pt);
 }
 
 void Tengu::reboot()
@@ -50,25 +50,25 @@ void Tengu::about()
 
 void Tengu::initPopupMenu()
 {
-    mPopup = new QMenu(this);
+    popup_ = new QMenu(this);
 
-    QMenu* appMenu = mPopup->addMenu(STR_MENU_APP);
+    QMenu* appMenu = popup_->addMenu(STR_MENU_APP);
 
     appMenu->addAction(STR_WINDOW_CENTER, this,
-        [this]() { mGlobalManager->getLayoutManager()->center(); });
+        [this]() { globalManager_->layoutManager()->center(); });
     // appMenu->addAction(STR_APP_SOCKET, this, &Tengu::socket);
     appMenu->addSeparator();
     QAction* resetDbAction = appMenu->addAction(STR_APP_RESET_DB,
-        [this]() { mGlobalManager->getSettingManager()->database()->reset(); });
+        [this]() { globalManager_->settingManager()->database()->reset(); });
     resetDbAction->setEnabled(false);
 
     appMenu->addSeparator();
     appMenu->addAction(STR_APP_REBOOT, this, &Tengu::reboot);
 
-    mPopup->addAction(STR_MENU_ABOUT, this, &Tengu::about);
-    mPopup->addSeparator();
-    mPopup->addAction(STR_MENU_EXIT, this, &Tengu::close);
-    mPopup->addSeparator();
+    popup_->addAction(STR_MENU_ABOUT, this, &Tengu::about);
+    popup_->addSeparator();
+    popup_->addAction(STR_MENU_EXIT, this, &Tengu::close);
+    popup_->addSeparator();
 
     connect(ui->ButtonPopup, &QToolButton::released, this, &Tengu::onPopup);
 }

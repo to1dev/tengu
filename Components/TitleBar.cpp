@@ -13,52 +13,52 @@ inline QRect desktopRect()
 
 TitleBar::TitleBar(QWidget* parent)
     : QWidget(parent)
-    , mWindow(parent)
+    , window_(parent)
 {
 }
 
 bool TitleBar::fixed() const
 {
-    return mFixed;
+    return fixed_;
 }
 
 void TitleBar::setFixed(bool newFixed)
 {
-    mFixed = newFixed;
+    fixed_ = newFixed;
 }
 
 void TitleBar::mousePressEvent(QMouseEvent* event)
 {
     if (Qt::LeftButton == event->buttons()) {
-        mPressed = true;
+        pressed_ = true;
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-        mPos = event->globalPos();
+        pos_ = event->globalPos();
 #else
-        mPos = event->globalPosition().toPoint();
+        pos_ = event->globalPosition().toPoint();
 #endif
-        mOldPos = mWindow->pos();
+        oldPos_ = window_->pos();
     }
 }
 
 void TitleBar::mouseMoveEvent(QMouseEvent* event)
 {
-    if (!mWindow->isMaximized() && mPressed
+    if (!window_->isMaximized() && pressed_
         && Qt::LeftButton == event->buttons()) {
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-        QPoint newPos = mOldPos + (event->globalPos() - mPos);
+        QPoint newPos = oldPos_ + (event->globalPos() - pos_);
 #else
         QPoint newPos = mOldPos + (event->globalPosition().toPoint() - mPos);
 #endif
 
-        if (mFixed) {
+        if (fixed_) {
             QRect virtualRect = desktopRect();
 
             if (newPos.x() < virtualRect.left())
                 newPos.setX(virtualRect.left());
             if (newPos.y() < virtualRect.top())
                 newPos.setY(virtualRect.top());
-            int dx = virtualRect.width() - mWindow->frameSize().width();
-            int dy = virtualRect.height() - mWindow->frameSize().height();
+            int dx = virtualRect.width() - window_->frameSize().width();
+            int dy = virtualRect.height() - window_->frameSize().height();
 
             if (newPos.x() > dx)
                 newPos.setX(dx);
@@ -66,7 +66,7 @@ void TitleBar::mouseMoveEvent(QMouseEvent* event)
                 newPos.setY(dy);
         }
 
-        mWindow->move(newPos);
+        window_->move(newPos);
     }
 }
 
@@ -74,7 +74,7 @@ void TitleBar::mouseReleaseEvent(QMouseEvent* event)
 {
     (void)event;
     if (Qt::LeftButton == event->buttons()) {
-        mPressed = false;
+        pressed_ = false;
     }
 }
 

@@ -3,13 +3,13 @@
 namespace Daitengu::UI {
 
 Frameless::Frameless(QWidget* window)
-    : mWindow(window)
+    : window_(window)
 {
 }
 
 void Frameless::init(const bool isMain)
 {
-    if (!mWindow || !mMainFrame || !mContentFrame)
+    if (!window_ || !mainFrame_ || !contentFrame_)
         return;
 
     int index = 0;
@@ -17,40 +17,40 @@ void Frameless::init(const bool isMain)
         ? Qt::FramelessWindowHint | Qt::Window | Qt::WindowMinMaxButtonsHint
         : Qt::FramelessWindowHint | Qt::Dialog;
 
-    mWindow->setWindowFlags(flags);
-    mWindow->setAttribute(Qt::WA_TranslucentBackground);
+    window_->setWindowFlags(flags);
+    window_->setAttribute(Qt::WA_TranslucentBackground);
 
     if (isMain) {
-        QMainWindow* mainWindow = dynamic_cast<QMainWindow*>(mWindow);
+        QMainWindow* mainWindow = dynamic_cast<QMainWindow*>(window_);
         if (mainWindow) {
             mainWindow->setContentsMargins(
                 QMargins(MAIN_MARGIN, MAIN_MARGIN, MAIN_MARGIN, MAIN_MARGIN));
-            mainWindow->setCentralWidget(mMainFrame);
+            mainWindow->setCentralWidget(mainFrame_);
         }
     } else {
-        mWindow->setContentsMargins(
+        window_->setContentsMargins(
             QMargins(MAIN_MARGIN, MAIN_MARGIN, MAIN_MARGIN, MAIN_MARGIN));
     }
 
-    mContentFrame->setContentsMargins(QMargins(
+    contentFrame_->setContentsMargins(QMargins(
         CONTENT_MARGIN, CONTENT_MARGIN, CONTENT_MARGIN, CONTENT_MARGIN));
 
-    if (mContentFrame->layout()) {
-        mContentFrame->layout()->setSpacing(20);
+    if (contentFrame_->layout()) {
+        contentFrame_->layout()->setSpacing(20);
     }
 
     QGraphicsDropShadowEffect* windowShadow = new QGraphicsDropShadowEffect;
     windowShadow->setBlurRadius(18.0);
     windowShadow->setColor(QColor(0, 0, 0, 220));
     windowShadow->setOffset(0.0);
-    mMainFrame->setGraphicsEffect(windowShadow);
+    mainFrame_->setGraphicsEffect(windowShadow);
 
-    QVBoxLayout* layoutMain = new QVBoxLayout(mMainFrame);
+    QVBoxLayout* layoutMain = new QVBoxLayout(mainFrame_);
     layoutMain->setContentsMargins(QMargins(0, 0, 0, 0));
     layoutMain->setSpacing(0);
 
     QHBoxLayout* layoutTop = new QHBoxLayout;
-    QFrame* titleBar = new QFrame(mMainFrame);
+    QFrame* titleBar = new QFrame(mainFrame_);
     titleBar->setObjectName(STR_TITLE_BAR);
     titleBar->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
     layoutTop->insertWidget(index++, titleBar);
@@ -59,67 +59,67 @@ void Frameless::init(const bool isMain)
     layoutTitleBar->setSpacing(3);
 
     index = 0;
-    TitleBar* bar = new TitleBar(mWindow);
+    TitleBar* bar = new TitleBar(window_);
     bar->setObjectName(STR_DRAG_BAR);
-    bar->setFixed(mFixed);
+    bar->setFixed(fixed_);
     // bar->setAttribute(Qt::WA_OpaquePaintEvent);
     layoutTitleBar->insertWidget(index++, bar);
 
     if (isMain) {
-        if (mButtonMin) {
-            layoutTitleBar->insertWidget(index++, mButtonMin);
-            mButtonMin->setToolTip(STR_MAIN_TOOLTIP_MINIMIZE);
+        if (buttonMin_) {
+            layoutTitleBar->insertWidget(index++, buttonMin_);
+            buttonMin_->setToolTip(STR_MAIN_TOOLTIP_MINIMIZE);
             QObject::connect(
-                mButtonMin, &QToolButton::clicked, this, &Frameless::min);
+                buttonMin_, &QToolButton::clicked, this, &Frameless::min);
         }
-        if (mButtonMax) {
-            layoutTitleBar->insertWidget(index++, mButtonMax);
-            mButtonMax->setToolTip(STR_FORM_TOOLTIP_MAX);
+        if (buttonMax_) {
+            layoutTitleBar->insertWidget(index++, buttonMax_);
+            buttonMax_->setToolTip(STR_FORM_TOOLTIP_MAX);
             QObject::connect(
-                mButtonMax, &QToolButton::clicked, this, &Frameless::max);
+                buttonMax_, &QToolButton::clicked, this, &Frameless::max);
 
             QObject::connect(
-                bar, &TitleBar::doubleClick, mButtonMax, &QToolButton::click);
+                bar, &TitleBar::doubleClick, buttonMax_, &QToolButton::click);
         }
-        if (mButtonFixed) {
-            mButtonFixed->setCheckable(true);
-            layoutTitleBar->insertWidget(index++, mButtonFixed);
-            mButtonFixed->setToolTip(STR_FORM_TOOLTIP_FIXED);
+        if (buttonFixed_) {
+            buttonFixed_->setCheckable(true);
+            layoutTitleBar->insertWidget(index++, buttonFixed_);
+            buttonFixed_->setToolTip(STR_FORM_TOOLTIP_FIXED);
             QObject::connect(
-                mButtonFixed, &QToolButton::toggled, [this, bar](bool checked) {
-                    mFixed = checked;
-                    bar->setFixed(mFixed);
+                buttonFixed_, &QToolButton::toggled, [this, bar](bool checked) {
+                    fixed_ = checked;
+                    bar->setFixed(fixed_);
                 });
         }
-        if (mButtonClose) {
-            layoutTitleBar->insertWidget(index++, mButtonClose);
-            mButtonClose->setToolTip(STR_MAIN_TOOLTIP_CLOSE);
-            QObject::connect(mButtonClose, &QToolButton::clicked,
-                [this]() { mWindow->close(); });
+        if (buttonClose_) {
+            layoutTitleBar->insertWidget(index++, buttonClose_);
+            buttonClose_->setToolTip(STR_MAIN_TOOLTIP_CLOSE);
+            QObject::connect(buttonClose_, &QToolButton::clicked,
+                [this]() { window_->close(); });
         }
     } else {
-        if (mButtonFixed) {
-            mButtonFixed->setCheckable(true);
-            layoutTitleBar->insertWidget(index++, mButtonFixed);
+        if (buttonFixed_) {
+            buttonFixed_->setCheckable(true);
+            layoutTitleBar->insertWidget(index++, buttonFixed_);
 
-            mButtonFixed->setToolTip(STR_FORM_TOOLTIP_FIXED);
+            buttonFixed_->setToolTip(STR_FORM_TOOLTIP_FIXED);
 
-            mFixed = mButtonFixed->isChecked();
-            bar->setFixed(mFixed);
+            fixed_ = buttonFixed_->isChecked();
+            bar->setFixed(fixed_);
 
             QObject::connect(
-                mButtonFixed, &QToolButton::toggled, [this, bar](bool checked) {
-                    mFixed = checked;
-                    bar->setFixed(mFixed);
+                buttonFixed_, &QToolButton::toggled, [this, bar](bool checked) {
+                    fixed_ = checked;
+                    bar->setFixed(fixed_);
                 });
         }
-        if (mButtonClose) {
-            layoutTitleBar->insertWidget(index++, mButtonClose);
+        if (buttonClose_) {
+            layoutTitleBar->insertWidget(index++, buttonClose_);
 
-            mButtonClose->setToolTip(STR_FORM_TOOLTIP_CLOSE);
+            buttonClose_->setToolTip(STR_FORM_TOOLTIP_CLOSE);
 
             QObject::connect(
-                mButtonClose, &QToolButton::clicked, mWindow, &QWidget::close);
+                buttonClose_, &QToolButton::clicked, window_, &QWidget::close);
         }
     }
 
@@ -145,7 +145,7 @@ void Frameless::init(const bool isMain)
         labelTitle->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     else
         labelTitle->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-    labelTitle->setText(mWindow->windowTitle());
+    labelTitle->setText(window_->windowTitle());
     layout->insertWidget(index++, labelTitle);
     layout->addStretch(1);
 
@@ -153,20 +153,20 @@ void Frameless::init(const bool isMain)
     QHBoxLayout* layoutMiddle = new QHBoxLayout;
     layoutMiddle->setContentsMargins(QMargins(20, 20, 20, 20));
     layoutMiddle->setSpacing(9);
-    layoutMiddle->insertWidget(index++, mContentFrame);
+    layoutMiddle->insertWidget(index++, contentFrame_);
 
     index = 0;
     layoutMain->insertLayout(index++, layoutTop);
-    if (mMainMenu) {
-        layoutMain->insertWidget(index++, mMainMenu);
+    if (mainMenu_) {
+        layoutMain->insertWidget(index++, mainMenu_);
     }
 
-    if (mTopFrame) {
-        mTopFrame->setContentsMargins(QMargins(9, 9, 9, 9));
+    if (topFrame_) {
+        topFrame_->setContentsMargins(QMargins(9, 9, 9, 9));
 
-        if (mTopFrame->layout()) {
+        if (topFrame_->layout()) {
             QBoxLayout* topLayout
-                = qobject_cast<QBoxLayout*>(mTopFrame->layout());
+                = qobject_cast<QBoxLayout*>(topFrame_->layout());
             topLayout->addStretch(1);
 
             int index = randomIndex(0, RandomLogos.size() - 1);
@@ -183,12 +183,12 @@ void Frameless::init(const bool isMain)
 
             SVGWidget* svgLogo = new SVGWidget(
                 QString(":/%1/%2").arg(RandomLogos[index].first).arg(range),
-                mTopFrame);
+                topFrame_);
             svgLogo->setFixedSize(LOGO_SIZE, LOGO_SIZE);
             topLayout->addWidget(svgLogo);
         }
 
-        layoutMain->insertWidget(index++, mTopFrame);
+        layoutMain->insertWidget(index++, topFrame_);
         layoutMain->insertLayout(index++, layoutMiddle);
     } else
         layoutMain->insertLayout(index++, layoutMiddle);
@@ -196,73 +196,73 @@ void Frameless::init(const bool isMain)
 
 void Frameless::setMainFrame(QWidget* newMainFrame)
 {
-    mMainFrame = newMainFrame;
+    mainFrame_ = newMainFrame;
 }
 
 void Frameless::setTopFrame(QWidget* newTopFrame)
 {
-    mTopFrame = newTopFrame;
+    topFrame_ = newTopFrame;
 }
 
 void Frameless::setContentFrame(QWidget* newContentFrame)
 {
-    mContentFrame = newContentFrame;
+    contentFrame_ = newContentFrame;
 }
 
 void Frameless::setButtonMin(QToolButton* newButtonMin)
 {
-    mButtonMin = newButtonMin;
+    buttonMin_ = newButtonMin;
 }
 
 void Frameless::setButtonMax(QToolButton* newButtonMax)
 {
-    mButtonMax = newButtonMax;
+    buttonMax_ = newButtonMax;
 }
 
 void Frameless::setButtonClose(QToolButton* newButtonClose)
 {
-    mButtonClose = newButtonClose;
+    buttonClose_ = newButtonClose;
 }
 
 void Frameless::setButtonFixed(QToolButton* newButtonFixed)
 {
-    mButtonFixed = newButtonFixed;
+    buttonFixed_ = newButtonFixed;
 }
 
 void Frameless::setMainMenu(QMenuBar* newMainMenu)
 {
-    mMainMenu = newMainMenu;
+    mainMenu_ = newMainMenu;
 }
 
 void Frameless::min()
 {
-    mWindow->showMinimized();
+    window_->showMinimized();
 }
 
 void Frameless::max()
 {
-    if (mWindow->isMaximized()) {
-        mButtonMax->setToolTip(STR_FORM_TOOLTIP_MAX);
-        mWindow->setContentsMargins(
+    if (window_->isMaximized()) {
+        buttonMax_->setToolTip(STR_FORM_TOOLTIP_MAX);
+        window_->setContentsMargins(
             QMargins(MAIN_MARGIN, MAIN_MARGIN, MAIN_MARGIN, MAIN_MARGIN));
-        mMainFrame->setStyleSheet("#frameMain {border-radius: 6;}");
-        mWindow->showNormal();
+        mainFrame_->setStyleSheet("#frameMain {border-radius: 6;}");
+        window_->showNormal();
     } else {
-        mButtonMax->setToolTip(STR_FORM_TOOLTIP_NORMAL);
-        mWindow->setContentsMargins(0, 0, 0, 0);
-        mMainFrame->setStyleSheet("#frameMain {border-radius: 0;}");
-        mWindow->showMaximized();
+        buttonMax_->setToolTip(STR_FORM_TOOLTIP_NORMAL);
+        window_->setContentsMargins(0, 0, 0, 0);
+        mainFrame_->setStyleSheet("#frameMain {border-radius: 0;}");
+        window_->showMaximized();
     }
 }
 
 bool Frameless::fixed() const
 {
-    return mFixed;
+    return fixed_;
 }
 
 void Frameless::setFixed(bool newFixed)
 {
-    mFixed = newFixed;
+    fixed_ = newFixed;
 }
 
 }

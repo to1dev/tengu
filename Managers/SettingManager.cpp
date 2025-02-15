@@ -4,22 +4,22 @@ namespace Daitengu::Base {
 
 SettingManager::SettingManager()
 {
-    mDataPath = QDir::toNativeSeparators(QString("%1/%2/%3")
+    dataPath_ = QDir::toNativeSeparators(QString("%1/%2/%3")
             .arg(QStandardPaths::writableLocation(
                 QStandardPaths::GenericDataLocation))
             .arg(COMPANY)
             .arg(NAME));
 
-    if (!QDir(mDataPath).exists())
-        QDir().mkpath(mDataPath);
+    if (!QDir(dataPath_).exists())
+        QDir().mkpath(dataPath_);
 
     // QString path = QDir::toNativeSeparators(QString(argv[0]));
     // mOptions.sysOpt.appPath = mAppPath = QFileInfo(path).absolutePath();
 
-    mOptions.sysOpt.appPath = mAppPath
+    options_.sysOpt.appPath = appPath_
         = QString::fromStdString(PathUtils::getExecutableDir().string());
 
-    database_ = std::make_unique<Database>(mDataPath);
+    database_ = std::make_unique<Database>(dataPath_);
 
     readSettings();
 }
@@ -36,12 +36,12 @@ Database* SettingManager::database() const
 
 QString SettingManager::dataPath() const
 {
-    return mDataPath;
+    return dataPath_;
 }
 
 QString SettingManager::appPath() const
 {
-    return mAppPath;
+    return appPath_;
 }
 
 bool SettingManager::readSettings()
@@ -60,7 +60,7 @@ bool SettingManager::writeSettings()
 
 Options& SettingManager::options()
 {
-    return mOptions;
+    return options_;
 }
 
 }

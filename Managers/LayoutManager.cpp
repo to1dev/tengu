@@ -3,7 +3,7 @@
 namespace Daitengu::Base {
 
 LayoutManager::LayoutManager(QApplication* app)
-    : mApp(app)
+    : app_(app)
 {
 }
 
@@ -13,9 +13,9 @@ LayoutManager::~LayoutManager()
 
 void LayoutManager::center()
 {
-    QSize ss = mApp->primaryScreen()->availableSize();
-    mWindow->move((ss.width() - mWindow->frameSize().width()) / 2,
-        (ss.height() - mWindow->frameSize().height()) / 2);
+    QSize ss = app_->primaryScreen()->availableSize();
+    window_->move((ss.width() - window_->frameSize().width()) / 2,
+        (ss.height() - window_->frameSize().height()) / 2);
 }
 
 void LayoutManager::reset(double percent, WindowShape shape)
@@ -26,7 +26,7 @@ void LayoutManager::reset(double percent, WindowShape shape)
         percent = 0.8;
     }
 
-    QSize screenSize = mApp->primaryScreen()->availableSize();
+    QSize screenSize = app_->primaryScreen()->availableSize();
 
     int targetWidth = DEFAULT_WINDOW_WIDTH;
     int targetHeight = DEFAULT_WINDOW_HEIGHT;
@@ -70,18 +70,18 @@ void LayoutManager::reset(double percent, WindowShape shape)
     targetWidth = std::max(targetWidth, DEFAULT_WINDOW_WIDTH);
     targetHeight = std::max(targetHeight, DEFAULT_WINDOW_HEIGHT);
 
-    mWindow->resize(targetWidth, targetHeight);
+    window_->resize(targetWidth, targetHeight);
     center();
 }
 
 QWidget* LayoutManager::window() const
 {
-    return mWindow;
+    return window_;
 }
 
 void LayoutManager::setWindow(QWidget* newWindow)
 {
-    mWindow = newWindow;
+    window_ = newWindow;
 }
 
 }

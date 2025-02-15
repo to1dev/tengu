@@ -27,11 +27,11 @@ protected:
     void mouseDoubleClickEvent(QMouseEvent* event) override;
 
 private:
-    QWidget* mWindow { nullptr };
-    bool mPressed { false };
-    bool mFixed { false };
-    QPoint mPos;
-    QPoint mOldPos;
+    QWidget* window_ { nullptr };
+    bool pressed_ { false };
+    bool fixed_ { false };
+    QPoint pos_;
+    QPoint oldPos_;
 };
 
 }

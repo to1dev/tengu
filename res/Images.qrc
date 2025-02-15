@@ -13,5 +13,7 @@
     <qresource prefix="/Splash">
         <file alias="1">Images/Splash/1.png</file>
         <file alias="2">Images/Splash/2.png</file>
+        <file alias="3">Images/Splash/3.png</file>
+        <file alias="4">Images/Splash/7.png</file>
     </qresource>
 </RCC>

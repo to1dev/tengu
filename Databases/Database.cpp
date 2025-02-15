@@ -45,6 +45,76 @@ std::vector<WalletGroup> WalletGroupRepo::getAll()
     return storage_->get_all<WalletGroup>();
 }
 
+WalletRepo::WalletRepo(Storage* storage)
+    : storage_(storage)
+{
+}
+
+int WalletRepo::insert(const Wallet& wallet)
+{
+    return storage_->insert(wallet);
+}
+
+void WalletRepo::update(const Wallet& wallet)
+{
+    storage_->update(wallet);
+}
+
+void WalletRepo::remove(int id)
+{
+    storage_->remove_all<Address>(where(c(&Address::walletId) == id));
+    storage_->remove<Wallet>(id);
+}
+
+std::optional<Wallet> WalletRepo::get(int id)
+{
+    if (auto wallet = storage_->get_pointer<Wallet>(id))
+        return *wallet;
+    return std::nullopt;
+}
+
+std::vector<Wallet> WalletRepo::getAll()
+{
+    return storage_->get_all<Wallet>();
+}
+
+std::vector<Wallet> WalletRepo::getByGroup(int groupId)
+{
+    return storage_->get_all<Wallet>(where(c(&Wallet::groupId) == groupId));
+}
+
+AddressRepo::AddressRepo(Storage* storage)
+    : storage_(storage)
+{
+}
+
+int AddressRepo::insert(const Address& address)
+{
+    return storage_->insert(address);
+}
+
+void AddressRepo::update(const Address& address)
+{
+    storage_->update(address);
+}
+
+void AddressRepo::remove(int id)
+{
+    storage_->remove<Address>(id);
+}
+
+std::optional<Address> AddressRepo::get(int id)
+{
+    if (auto addr = storage_->get_pointer<Address>(id))
+        return *addr;
+    return std::nullopt;
+}
+
+std::vector<Address> AddressRepo::getAllByWallet(int walletId)
+{
+    return storage_->get_all<Address>(where(c(&Address::walletId) == walletId));
+}
+
 Database::Database(const QString& dataPath)
     : context_(dataPath)
 {

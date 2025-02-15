@@ -18,6 +18,11 @@ namespace Daitengu::Core {
 
 inline constexpr char DB_NAME[] = "tengu";
 
+enum class WalletGroupType {
+    User = 0,
+    Smart = 1,
+};
+
 struct WalletGroup {
     int id;
     std::string name;
@@ -50,6 +55,20 @@ struct Address {
     std::string privKey;
     std::string pubKey;
     std::string wifKey;
+};
+
+struct Tag {
+    int id;
+    std::string name;
+    std::string description;
+    long long createTimestamp;
+};
+
+struct addressTag {
+    int id;
+    int addressId;
+    int tagId;
+    long long timestamp;
 };
 
 enum class OrderType {
@@ -210,10 +229,60 @@ private:
     Storage* storage_;
 };
 
+class IWalletRepo {
+public:
+    virtual ~IWalletRepo() = default;
+    virtual int insert(const Wallet& wallet) = 0;
+    virtual void update(const Wallet& wallet) = 0;
+    virtual void remove(int id) = 0;
+    virtual std::optional<Wallet> get(int id) = 0;
+    virtual std::vector<Wallet> getAll() = 0;
+    virtual std::vector<Wallet> getByGroup(int groupId) = 0;
+};
+
+class WalletRepo : public IWalletRepo {
+public:
+    WalletRepo(Storage* storage);
+    int insert(const Wallet& wallet) override;
+    void update(const Wallet& wallet) override;
+    void remove(int id) override;
+    std::optional<Wallet> get(int id) override;
+    std::vector<Wallet> getAll() override;
+    std::vector<Wallet> getByGroup(int groupId) override;
+
+private:
+    Storage* storage_;
+};
+
+class IAddressRepo {
+public:
+    virtual ~IAddressRepo() = default;
+    virtual int insert(const Address& address) = 0;
+    virtual void update(const Address& address) = 0;
+    virtual void remove(int id) = 0;
+    virtual std::optional<Address> get(int id) = 0;
+    virtual std::vector<Address> getAllByWallet(int walletId) = 0;
+};
+
+class AddressRepo : public IAddressRepo {
+public:
+    AddressRepo(Storage* storage);
+    int insert(const Address& address) override;
+    void update(const Address& address) override;
+    void remove(int id) override;
+    std::optional<Address> get(int id) override;
+    std::vector<Address> getAllByWallet(int walletId) override;
+
+private:
+    Storage* storage_;
+};
+
 class IDatabsae {
 public:
     virtual ~IDatabsae() = default;
     virtual IWalletGroupRepo* walletGroupRepo() = 0;
+    virtual IWalletRepo* walletRepo() = 0;
+    virtual IAddressRepo* addressRepo() = 0;
     template <typename Func> auto transaction(Func&& func) -> decltype(func())
     {
         return storage()->transaction(std::forward<Func>(func));
@@ -235,6 +304,8 @@ private:
     DatabaseContext context_;
     Storage* storage_;
     std::unique_ptr<IWalletGroupRepo> walletGroupRepo_;
+    std::unique_ptr<IWalletRepo> walletRepo;
+    std::unique_ptr<IAddressRepo> addressRepo;
 };
 
 }

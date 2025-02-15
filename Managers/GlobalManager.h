@@ -6,7 +6,7 @@
 #include "Managers/SettingManager.h"
 #include "Managers/ThemeManager.h"
 
-namespace Daitengu::Base {
+namespace Daitengu::Core {
 
 class GlobalManager {
 public:

@@ -18,7 +18,7 @@
 
 using json = nlohmann::json;
 
-namespace Daitengu::Base {
+namespace Daitengu::Core {
 
 inline constexpr int FIXED_DPI = 96;
 inline constexpr double SCALED_125 = 1.25;

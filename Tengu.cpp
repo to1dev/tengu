@@ -41,7 +41,7 @@ void Tengu::onPopup()
 
 void Tengu::reboot()
 {
-    QApplication::exit(Daitengu::Base::EXIT_CODE_REBOOT);
+    QApplication::exit(Daitengu::Core::EXIT_CODE_REBOOT);
 }
 
 void Tengu::about()

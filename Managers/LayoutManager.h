@@ -6,7 +6,7 @@
 #include <QScreen>
 #include <QWidget>
 
-namespace Daitengu::Base {
+namespace Daitengu::Core {
 
 inline constexpr int DEFAULT_WINDOW_WIDTH = 1024;
 inline constexpr int DEFAULT_WINDOW_HEIGHT = 633;

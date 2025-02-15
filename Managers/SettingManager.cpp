@@ -1,6 +1,6 @@
 #include "SettingManager.h"
 
-namespace Daitengu::Base {
+namespace Daitengu::Core {
 
 SettingManager::SettingManager()
 {

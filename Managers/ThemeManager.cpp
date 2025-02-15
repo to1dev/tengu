@@ -1,6 +1,6 @@
 #include "ThemeManager.h"
 
-namespace Daitengu::Base {
+namespace Daitengu::Core {
 
 ThemeManager::ThemeManager(QApplication* app)
     : app_(app)

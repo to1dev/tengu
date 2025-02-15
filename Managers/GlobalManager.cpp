@@ -1,6 +1,6 @@
 #include "GlobalManager.h"
 
-namespace Daitengu::Base {
+namespace Daitengu::Core {
 
 GlobalManager::GlobalManager(QApplication* app)
     : app_(app)

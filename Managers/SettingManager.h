@@ -17,7 +17,7 @@ using json = nlohmann::json;
 using namespace Daitengu::Core;
 using namespace Daitengu::Utils;
 
-namespace Daitengu::Base {
+namespace Daitengu::Core {
 
 inline constexpr char STR_VAULT_OPTIONS[] = "Vault";
 inline constexpr char STR_VAULT_ID[] = "vaultId";

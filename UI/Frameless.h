@@ -17,7 +17,7 @@
 
 #include "Utils/Encryption.h"
 
-using namespace Daitengu::Base;
+using namespace Daitengu::Core;
 using namespace Daitengu::Components;
 using namespace Daitengu::Utils;
 

@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QVector>
 
-namespace Daitengu::Base {
+namespace Daitengu::Core {
 
 inline constexpr int EXIT_CODE_REBOOT = -6987913;
 

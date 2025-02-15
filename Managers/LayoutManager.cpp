@@ -1,6 +1,6 @@
 #include "LayoutManager.h"
 
-namespace Daitengu::Base {
+namespace Daitengu::Core {
 
 LayoutManager::LayoutManager(QApplication* app)
     : app_(app)

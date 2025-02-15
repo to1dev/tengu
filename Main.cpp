@@ -17,7 +17,7 @@
 
 using Guard = Daitengu::Utils::RunGuard;
 
-using namespace Daitengu::Base;
+using namespace Daitengu::Core;
 using namespace Daitengu::Components;
 using namespace Daitengu::Utils;
 

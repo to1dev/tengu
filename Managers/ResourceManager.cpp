@@ -1,6 +1,6 @@
 #include "ResourceManager.h"
 
-namespace Daitengu::Base {
+namespace Daitengu::Core {
 
 ResourceManager::ResourceManager()
 {

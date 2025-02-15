@@ -11,7 +11,7 @@
 
 #include "UI/Frameless.h"
 
-using namespace Daitengu::Base;
+using namespace Daitengu::Core;
 using namespace Daitengu::UI;
 
 QT_BEGIN_NAMESPACE

@@ -11,7 +11,7 @@ using json = nlohmann::json;
 #include "Consts.h"
 #include "Globals.h"
 
-#include "Databases/InternalDatabase.h"
+#include "Databases/Database.h"
 #include "Utils/PathUtils.hpp"
 
 using namespace Daitengu::Core;

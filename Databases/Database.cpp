@@ -1,4 +1,4 @@
-#include "InternalDatabase.h"
+#include "Database.h"
 
 namespace Daitengu::Core {
 

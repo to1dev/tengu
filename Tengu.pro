@@ -43,7 +43,7 @@ SOURCES += \
     Components/SVGWidget.cpp \
     Components/Splash.cpp \
     Components/TitleBar.cpp \
-    Databases/InternalDatabase.cpp \
+    Databases/Database.cpp \
     Layouts/Core/GridSystem.cpp \
     Main.cpp \
     Managers/GlobalManager.cpp \
@@ -67,7 +67,7 @@ HEADERS += \
     Components/Splash.h \
     Components/TitleBar.h \
     Consts.h \
-    Databases/InternalDatabase.h \
+    Databases/Database.h \
     Globals.h \
     Layouts/Core/GridSystem.h \
     Layouts/Core/Types.h \

@@ -295,6 +295,8 @@ public:
     Database(const QString& dataPath);
 
     IWalletGroupRepo* walletGroupRepo() override;
+    IWalletRepo* walletRepo() override;
+    IAddressRepo* addressRepo() override;
 
     Storage* storage() override;
 
@@ -304,8 +306,8 @@ private:
     DatabaseContext context_;
     Storage* storage_;
     std::unique_ptr<IWalletGroupRepo> walletGroupRepo_;
-    std::unique_ptr<IWalletRepo> walletRepo;
-    std::unique_ptr<IAddressRepo> addressRepo;
+    std::unique_ptr<IWalletRepo> walletRepo_;
+    std::unique_ptr<IAddressRepo> addressRepo_;
 };
 
 }

@@ -127,6 +127,16 @@ IWalletGroupRepo* Database::walletGroupRepo()
     return walletGroupRepo_.get();
 }
 
+IWalletRepo* Database::walletRepo()
+{
+    return walletRepo_.get();
+}
+
+IAddressRepo* Database::addressRepo()
+{
+    return addressRepo_.get();
+}
+
 Storage* Database::storage()
 {
     return storage_;

@@ -8,10 +8,6 @@ InternalDatabase::InternalDatabase(const QString& dataPath)
     stor->sync_schema();
 }
 
-InternalDatabase::~InternalDatabase()
-{
-}
-
 void InternalDatabase::reset()
 {
     // Todo

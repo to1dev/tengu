@@ -47,7 +47,7 @@ static std::unique_ptr<Storage> stor;
 class InternalDatabase {
 public:
     InternalDatabase(const QString& dataPath);
-    ~InternalDatabase();
+    virtual ~InternalDatabase() = default;
 
     void reset();
     void vacuum();

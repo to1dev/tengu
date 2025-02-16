@@ -10,7 +10,15 @@ namespace Daitengu::Layouts {
 
 class GridSystem {
 public:
-    GridSystem();
+    GridSystem(int rows = 12, int cols = 12);
+
+private:
+    int rows_;
+    int cols_;
+    QRect screenGeometry_;
+    int horizontalGap_;
+    int verticalGap_;
+    QVector<QVector<bool>> occupied_;
 };
 
 }

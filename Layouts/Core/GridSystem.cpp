@@ -2,7 +2,7 @@
 
 namespace Daitengu::Layouts {
 
-GridSystem::GridSystem()
+GridSystem::GridSystem(int rows, int cols)
 {
 }
 

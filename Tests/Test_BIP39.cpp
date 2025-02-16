@@ -22,6 +22,8 @@ TEST_CASE("Generate bip39 mnemonic")
                   << std::endl;
         std::cout << "Here is the new pubkey: " << wallet.deriveAddress()
                   << std::endl;
+        std::cout << "Here is the new privkey: " << wallet.derivePrivateKey()
+                  << std::endl;
 
         auto currentPath = PathUtils::getExecutableDir();
         auto& parser = DotEnv::getInstance();

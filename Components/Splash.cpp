@@ -38,9 +38,9 @@ bool SplashThread::interruptibleSleep(unsigned long secs)
 
 void SplashThread::run()
 {
-    emit started();
+    Q_EMIT started();
     exec();
-    emit finished();
+    Q_EMIT finished();
 }
 
 void SplashThread::requestStop()
@@ -81,7 +81,7 @@ bool SplashThreadEx::interruptibleSleepWithTimeout(
 
     while (remainingTime > 0 && !isInterruptionRequested()) {
         if (deadline.hasExpired()) {
-            emit error("Operation timed out");
+            Q_EMIT error("Operation timed out");
             return false;
         }
 

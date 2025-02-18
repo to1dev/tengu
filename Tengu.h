@@ -30,7 +30,7 @@ public:
         QWidget* parent = nullptr);
     ~Tengu();
 
-private slots:
+private Q_SLOTS:
     void onPopup();
     void reboot();
     void about();

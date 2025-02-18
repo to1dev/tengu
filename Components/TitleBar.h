@@ -17,7 +17,7 @@ public:
     bool fixed() const;
     void setFixed(bool newFixed);
 
-signals:
+Q_SIGNALS:
     void doubleClick();
 
 protected:

@@ -80,7 +80,7 @@ void TitleBar::mouseReleaseEvent(QMouseEvent* event)
 
 void TitleBar::mouseDoubleClickEvent(QMouseEvent* event)
 {
-    emit doubleClick();
+    Q_EMIT doubleClick();
 
     QWidget::mouseDoubleClickEvent(event);
 }

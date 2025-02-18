@@ -26,7 +26,7 @@ win32:contains(QT_ARCH, i386) {
         LIBS += -L$$PWD/3rd/lib -lxxhash -lsodium -lsqlite3
         INCLUDEPATH += $$PWD/3rd/inc $$PWD/3rd/inc/izanagi
 
-        DEFINES += USE_TEST
+        DEFINES += USE_TEST QT_NO_KEYWORDS
         #DEFINES += USE_HDPI
 
         LIBS += -lizanagi
@@ -44,7 +44,9 @@ SOURCES += \
     Components/Splash.cpp \
     Components/TitleBar.cpp \
     Databases/Database.cpp \
+    Layouts/Core/AnimationManager.cpp \
     Layouts/Core/GridSystem.cpp \
+    Layouts/Core/WindowConfig.cpp \
     Main.cpp \
     Managers/GlobalManager.cpp \
     Managers/LayoutManager.cpp \
@@ -69,8 +71,10 @@ HEADERS += \
     Consts.h \
     Databases/Database.h \
     Globals.h \
+    Layouts/Core/AnimationManager.h \
     Layouts/Core/GridSystem.h \
     Layouts/Core/Types.h \
+    Layouts/Core/WindowConfig.h \
     Managers/GlobalManager.h \
     Managers/LayoutManager.h \
     Managers/ResourceManager.h \

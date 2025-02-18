@@ -35,12 +35,12 @@ public:
 protected:
     void run() override;
 
-signals:
+Q_SIGNALS:
     void started();
     void finished();
     void error(const QString& errorMessage);
 
-public slots:
+public Q_SLOTS:
     void requestStop();
 };
 

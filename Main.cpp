@@ -12,7 +12,7 @@
 #include "Managers/SettingManager.h"
 #include "Managers/ThemeManager.h"
 
-#include "Utils/Encryption.h"
+#include "Utils/Helpers.hpp"
 #include "Utils/RunGuard.h"
 
 using Guard = Daitengu::Utils::RunGuard;

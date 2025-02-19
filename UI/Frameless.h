@@ -15,7 +15,7 @@
 #include "Components/SVGWidget.h"
 #include "Components/TitleBar.h"
 
-#include "Utils/Encryption.h"
+#include "Utils/Helpers.hpp"
 
 using namespace Daitengu::Core;
 using namespace Daitengu::Components;

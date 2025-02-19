@@ -3,7 +3,6 @@
 
 #include <cstring>
 #include <format>
-#include <random>
 #include <stdexcept>
 #include <vector>
 
@@ -19,14 +18,6 @@ using namespace Daitengu::Security;
 namespace Daitengu::Utils {
 
 inline constexpr int DEFAULT_EASYHASH_SEED = 6978;
-
-inline int randomIndex(int start, int end)
-{
-    std::random_device device;
-    std::mt19937 generator(device());
-    std::uniform_int_distribution<int> distribution(start, end);
-    return distribution(generator);
-}
 
 class Encryption {
 public:

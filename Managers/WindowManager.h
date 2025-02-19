@@ -1,5 +1,5 @@
-#ifndef LAYOUTMANAGER_H
-#define LAYOUTMANAGER_H
+#ifndef WINDOWMANAGER_H
+#define WINDOWMANAGER_H
 
 #include <QApplication>
 #include <QDebug>
@@ -20,10 +20,10 @@ enum class WindowShape {
     SQUARE,
 };
 
-class LayoutManager {
+class WindowManager {
 public:
-    LayoutManager(QApplication* app = nullptr);
-    ~LayoutManager();
+    WindowManager(QApplication* app = nullptr);
+    ~WindowManager();
 
     void center();
     void reset(double percent = HORIZONTAL_RATIO,
@@ -39,4 +39,4 @@ private:
 };
 
 }
-#endif // LAYOUTMANAGER_H
+#endif // WINDOWMANAGER_H

@@ -1,10 +1,10 @@
 #ifndef GLOBALMANAGER_H
 #define GLOBALMANAGER_H
 
-#include "Managers/LayoutManager.h"
 #include "Managers/ResourceManager.h"
 #include "Managers/SettingManager.h"
 #include "Managers/ThemeManager.h"
+#include "Managers/WindowManager.h"
 
 namespace Daitengu::Core {
 
@@ -13,7 +13,7 @@ public:
     GlobalManager(QApplication* app = nullptr);
 
     ThemeManager* themeManager() const;
-    LayoutManager* layoutManager() const;
+    WindowManager* windowManager() const;
     ResourceManager* resourceManager() const;
     SettingManager* settingManager() const;
 
@@ -22,7 +22,7 @@ private:
     std::unique_ptr<ResourceManager> resourceManager_;
     std::unique_ptr<SettingManager> settingManager_;
     std::unique_ptr<ThemeManager> themeManager_;
-    std::unique_ptr<LayoutManager> layoutManager_;
+    std::unique_ptr<WindowManager> windowManager_;
 };
 
 }

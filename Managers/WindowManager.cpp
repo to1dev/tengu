@@ -1,24 +1,24 @@
-#include "LayoutManager.h"
+#include "WindowManager.h"
 
 namespace Daitengu::Core {
 
-LayoutManager::LayoutManager(QApplication* app)
+WindowManager::WindowManager(QApplication* app)
     : app_(app)
 {
 }
 
-LayoutManager::~LayoutManager()
+WindowManager::~WindowManager()
 {
 }
 
-void LayoutManager::center()
+void WindowManager::center()
 {
     QSize ss = app_->primaryScreen()->availableSize();
     window_->move((ss.width() - window_->frameSize().width()) / 2,
         (ss.height() - window_->frameSize().height()) / 2);
 }
 
-void LayoutManager::reset(double percent, WindowShape shape)
+void WindowManager::reset(double percent, WindowShape shape)
 {
     if (percent <= 0.0 || percent > 1.0) {
         qWarning() << "Invalid percent value: " << percent
@@ -74,12 +74,12 @@ void LayoutManager::reset(double percent, WindowShape shape)
     center();
 }
 
-QWidget* LayoutManager::window() const
+QWidget* WindowManager::window() const
 {
     return window_;
 }
 
-void LayoutManager::setWindow(QWidget* newWindow)
+void WindowManager::setWindow(QWidget* newWindow)
 {
     window_ = newWindow;
 }

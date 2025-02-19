@@ -7,7 +7,7 @@ GlobalManager::GlobalManager(QApplication* app)
 {
     settingManager_ = std::make_unique<SettingManager>();
     themeManager_ = std::make_unique<ThemeManager>(app);
-    layoutManager_ = std::make_unique<LayoutManager>(app);
+    windowManager_ = std::make_unique<WindowManager>(app);
     resourceManager_ = std::make_unique<ResourceManager>();
 }
 
@@ -26,9 +26,9 @@ ThemeManager* GlobalManager::themeManager() const
     return themeManager_.get();
 }
 
-LayoutManager* GlobalManager::layoutManager() const
+WindowManager* GlobalManager::windowManager() const
 {
-    return layoutManager_.get();
+    return windowManager_.get();
 }
 
 }

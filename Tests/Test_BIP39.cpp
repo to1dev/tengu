@@ -8,7 +8,7 @@
 #include "Utils/Dotenv.hpp"
 #include "Utils/PathUtils.hpp"
 
-#include "Wallets/SolanaWallet.h"
+#include "Wallets/Core/SolanaWallet.h"
 
 using namespace Daitengu::Utils;
 using namespace Daitengu::Wallets;
@@ -20,9 +20,9 @@ TEST_CASE("Generate bip39 mnemonic")
         SolanaWallet wallet;
         std::cout << "Decent mnemonic: " << wallet.generateMnemonic()
                   << std::endl;
-        std::cout << "Here is the new pubkey: " << wallet.deriveAddress()
+        std::cout << "Here is the new pubkey: " << wallet.getAddress()
                   << std::endl;
-        std::cout << "Here is the new privkey: " << wallet.derivePrivateKey()
+        std::cout << "Here is the new privkey: " << wallet.getPrivateKey()
                   << std::endl;
 
         auto currentPath = PathUtils::getExecutableDir();
@@ -30,8 +30,8 @@ TEST_CASE("Generate bip39 mnemonic")
         parser.load((currentPath / ".env").string());
 
         wallet.fromMnemonic(*parser.get("MNEMONIC"));
-        std::cout << wallet.deriveAddress() << std::endl;
-        std::cout << wallet.derivePrivateKey() << std::endl;
+        std::cout << wallet.getAddress() << std::endl;
+        std::cout << wallet.getPrivateKey() << std::endl;
 
         /*REQUIRE(wallet.deriveAddress(0)
             == "9uvC3PMMzX4DgGrxDmheXNkMRWVfYqLsVpQjAaTD2uAp");

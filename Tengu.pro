@@ -64,9 +64,11 @@ SOURCES += \
     UI/Frameless.cpp \
     Utils/Encryption.cpp \
     Utils/RunGuard.cpp \
-    Wallets/Mnemonic.cpp \
-    Wallets/SolanaWallet.cpp \
-    Wallets/Wallet.cpp
+    Wallets/Core/BaseMnemonic.cpp \
+    Wallets/Core/BaseWallet.cpp \
+    Wallets/Core/ChainWallet.cpp \
+    Wallets/Core/SolanaWallet.cpp \
+    Wallets/Utils/SecureBytes.cpp
 
 HEADERS += \
     Components/SVGWidget.h \
@@ -97,9 +99,12 @@ HEADERS += \
     Utils/Encryption.h \
     Utils/PathUtils.hpp \
     Utils/RunGuard.h \
-    Wallets/Mnemonic.h \
-    Wallets/SolanaWallet.h \
-    Wallets/Wallet.h
+    Wallets/Core/BaseMnemonic.h \
+    Wallets/Core/BaseWallet.h \
+    Wallets/Core/ChainWallet.h \
+    Wallets/Core/SolanaWallet.h \
+    Wallets/Core/Types.h \
+    Wallets/Utils/SecureBytes.h
 
 FORMS += \
     Tengu.ui

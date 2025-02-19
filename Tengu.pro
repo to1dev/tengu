@@ -118,6 +118,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 RESOURCES += \
+    res/Avatars.qrc \
     res/Fonts.qrc \
     res/Images.qrc \
     res/Logos.qrc \

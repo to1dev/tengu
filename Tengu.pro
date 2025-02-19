@@ -43,6 +43,7 @@ SOURCES += \
     Components/SVGWidget.cpp \
     Components/Splash.cpp \
     Components/TitleBar.cpp \
+    Components/WalletPanel.cpp \
     Databases/Database.cpp \
     Layouts/Core/AnimationManager.cpp \
     Layouts/Core/GridSystem.cpp \
@@ -74,6 +75,7 @@ HEADERS += \
     Components/SVGWidget.h \
     Components/Splash.h \
     Components/TitleBar.h \
+    Components/WalletPanel.h \
     Consts.h \
     Databases/Database.h \
     Globals.h \
@@ -97,6 +99,7 @@ HEADERS += \
     Utils/Base58.hpp \
     Utils/DotEnv.hpp \
     Utils/Encryption.h \
+    Utils/Helpers.hpp \
     Utils/PathUtils.hpp \
     Utils/RunGuard.h \
     Wallets/Core/BaseMnemonic.h \

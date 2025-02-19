@@ -46,7 +46,11 @@ SOURCES += \
     Databases/Database.cpp \
     Layouts/Core/AnimationManager.cpp \
     Layouts/Core/GridSystem.cpp \
+    Layouts/Core/LayoutFactory.cpp \
+    Layouts/Core/LayoutManager.cpp \
+    Layouts/Core/PredefinedLayouts.cpp \
     Layouts/Core/WindowConfig.cpp \
+    Layouts/Utils/GeometryUtils.cpp \
     Main.cpp \
     Managers/GlobalManager.cpp \
     Managers/LayoutManager.cpp \
@@ -73,8 +77,12 @@ HEADERS += \
     Globals.h \
     Layouts/Core/AnimationManager.h \
     Layouts/Core/GridSystem.h \
+    Layouts/Core/LayoutFactory.h \
+    Layouts/Core/LayoutManager.h \
+    Layouts/Core/PredefinedLayouts.h \
     Layouts/Core/Types.h \
     Layouts/Core/WindowConfig.h \
+    Layouts/Utils/GeometryUtils.h \
     Managers/GlobalManager.h \
     Managers/LayoutManager.h \
     Managers/ResourceManager.h \

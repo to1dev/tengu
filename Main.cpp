@@ -15,10 +15,6 @@
 #include "Utils/Encryption.h"
 #include "Utils/RunGuard.h"
 
-#include "Layouts/Core/LayoutManager.h"
-
-using namespace Daitengu::Layouts;
-
 using Guard = Daitengu::Utils::RunGuard;
 
 using namespace Daitengu::Core;
@@ -71,20 +67,10 @@ int main(int argc, char* argv[])
 
         Tengu w(globalManager);
 
-        auto layoutManager = new LayoutManager(&a);
-        QWidget* leftPanel = new QWidget;
-        WindowConfig leftConfig;
-        leftConfig.setMinSize(200, 400);
-        leftConfig.setResizable(true);
-        layoutManager->registerWindow(leftPanel, leftConfig);
-
         SplashThread::sleep(SLEEP_TIME);
         splash.hide();
 
         w.show();
-
-        leftPanel->show();
-        layoutManager->applyLayout(LayoutType::IDE_STYLE);
 
         splash.finish(&w);
         splash.close();

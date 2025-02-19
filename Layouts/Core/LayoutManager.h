@@ -1,6 +1,7 @@
 #ifndef LAYOUTMANAGER_H
 #define LAYOUTMANAGER_H
 
+#include <QApplication>
 #include <QEvent>
 #include <QMap>
 #include <QMoveEvent>
@@ -49,6 +50,7 @@ Q_SIGNALS:
     void layoutChanged();
     void windowAdded(QWidget* window);
     void windowRemoved(QWidget* window);
+    void windowConfigChanged(QWidget* window);
     void animationStarted();
     void animationFinished();
 

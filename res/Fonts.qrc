@@ -2,5 +2,7 @@
     <qresource prefix="/fonts">
         <file alias="TsangerLiyuan">fonts/TsangerLiyuan.ttf</file>
         <file alias="LobsterTwo">fonts/LobsterTwo-Bold.ttf</file>
+        <file alias="PirataOne">fonts/PirataOne-Regular.ttf</file>
+        <file alias="iFontszhounianti">fonts/iFonts.ttf</file>
     </qresource>
 </RCC>

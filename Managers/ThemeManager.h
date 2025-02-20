@@ -104,6 +104,8 @@ inline const ankerl::unordered_dense::map<std::string, QPalette::ColorRole>
 static QVector<QPair<QString, FontData>> Fonts = {
     { "TsangerLiyuan", { false, false, "TsangerLiyuan" } },
     { "Lobster Two", { false, false, "LobsterTwo" } },
+    { "Pirata One", { false, false, "PirataOne" } },
+    { "iFontszhounianti", { false, false, "iFontszhounianti" } },
 };
 
 typedef ankerl::unordered_dense::map<CursorName, QCursor> CursorList;

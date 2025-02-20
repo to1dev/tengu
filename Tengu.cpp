@@ -26,6 +26,20 @@ Tengu::Tengu(
     ui->tabWidget->tabBar()->hide();
 
     initPopupMenu();
+
+    QHBoxLayout* layout = new QHBoxLayout();
+    layout->setContentsMargins(QMargins(16, 16, 16, 16));
+    layout->setSpacing(19);
+
+    txList_ = new TxListWidget(this);
+    txList_->setObjectName("listWidgetTask");
+
+    walletPanel_ = new WalletPanel(this);
+    walletPanel_->setObjectName("walletPanel");
+
+    layout->addWidget(txList_);
+    layout->addWidget(walletPanel_);
+    ui->tabFirst->setLayout(layout);
 }
 
 Tengu::~Tengu()

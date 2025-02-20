@@ -44,6 +44,7 @@ SOURCES += \
     Components/SVGWidget.cpp \
     Components/Splash.cpp \
     Components/TitleBar.cpp \
+    Components/TxListWidget.cpp \
     Components/WalletPanel.cpp \
     Databases/Database.cpp \
     Layouts/Core/AnimationManager.cpp \
@@ -77,6 +78,7 @@ HEADERS += \
     Components/SVGWidget.h \
     Components/Splash.h \
     Components/TitleBar.h \
+    Components/TxListWidget.h \
     Components/WalletPanel.h \
     Consts.h \
     Databases/Database.h \

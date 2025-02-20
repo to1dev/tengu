@@ -47,6 +47,7 @@ inline QVector<QPair<QString, AvatarRange>> RandomAvatars = {
 inline constexpr int LOGO_RECT_WIDTH = 64;
 inline constexpr int LOGO_RECT_HEIGHT = 64;
 inline constexpr int LOGO_SIZE = 64;
+inline constexpr int AVATAR_SIZE = 64;
 
 inline QVector<QPair<QString, AvatarRange>> RandomLogos = {
     //{ "Logo1", { 1, 20 } },

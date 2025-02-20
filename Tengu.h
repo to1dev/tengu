@@ -1,6 +1,7 @@
 #ifndef TENGU_H
 #define TENGU_H
 
+#include <QHBoxLayout>
 #include <QMainWindow>
 #include <QTabBar>
 
@@ -11,6 +12,10 @@
 
 #include "UI/Frameless.h"
 
+#include "Components/TxListWidget.h"
+#include "Components/WalletPanel.h"
+
+using namespace Daitengu::Components;
 using namespace Daitengu::Core;
 using namespace Daitengu::UI;
 
@@ -45,5 +50,8 @@ private:
     std::unique_ptr<Frameless> frameless_;
 
     QMenu* popup_;
+
+    WalletPanel* walletPanel_;
+    TxListWidget* txList_;
 };
 #endif // TENGU_H

@@ -41,12 +41,12 @@
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
          <widget class="QTabWidget" name="tabWidget">
-          <widget class="QWidget" name="tab">
+          <widget class="QWidget" name="tabFirst">
            <attribute name="title">
             <string>Tab 1</string>
            </attribute>
           </widget>
-          <widget class="QWidget" name="tab_2">
+          <widget class="QWidget" name="tabSecond">
            <attribute name="title">
             <string>Tab 2</string>
            </attribute>

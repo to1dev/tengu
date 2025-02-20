@@ -34,13 +34,9 @@ struct AvatarRange {
 
 inline QVector<QPair<QString, AvatarRange>> RandomAvatars = {
     { "Avatar1", { 1, 25 } },
-    { "Avatar2", { 1, 29 } },
     { "Avatar3", { 1, 50 } },
-    { "Avatar4", { 1, 60 } },
     { "Avatar5", { 1, 43 } },
     { "Avatar6", { 1, 50 } },
-    { "Avatar7", { 1, 50 } },
-    { "Avatar8", { 1, 50 } },
     { "Avatar9", { 1, 40 } },
 };
 

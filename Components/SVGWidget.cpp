@@ -2,12 +2,15 @@
 
 namespace Daitengu::Components {
 
-SVGWidget::SVGWidget(const QString& file, QWidget* parent, int padding)
+SVGWidget::SVGWidget(
+    const QString& file, QWidget* parent, int padding, bool clickable)
     : QWidget(parent)
     , padding_(padding)
+    , clickable_(clickable)
 {
     renderer_ = new QSvgRenderer(file, this);
-    installEventFilter(this);
+    if (clickable)
+        installEventFilter(this);
 }
 
 void SVGWidget::paintEvent(QPaintEvent* event)
@@ -32,6 +35,17 @@ bool SVGWidget::eventFilter(QObject* watched, QEvent* event)
         }
     }
     return QWidget::eventFilter(watched, event);
+}
+
+bool SVGWidget::clickable() const
+{
+    return clickable_;
+}
+
+void SVGWidget::setClickable(bool newClickable)
+{
+    clickable_ = newClickable;
+    // TODO: re-install eventfilter
 }
 
 int SVGWidget::padding() const

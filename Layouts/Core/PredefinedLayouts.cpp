@@ -75,18 +75,16 @@ QVector<GridArea> PredefinedLayouts::getLayoutAreas(LayoutType type)
     case LayoutType::PRESENTATION:
         return getPresentationAreas();
     default:
-        return QVector<GridArea>();
+        return {};
     }
 }
 
 QPair<int, int> PredefinedLayouts::getWindowCountRange(LayoutType type)
 {
-    const auto descriptions = getLayoutDescriptions();
-    auto it = descriptions.find(type);
-    if (it != descriptions.end()) {
-        return qMakePair(it->minWindows, it->maxWindows);
-    }
-    return qMakePair(0, 0);
+    auto descriptions = getLayoutDescriptions();
+    if (descriptions.contains(type))
+        return { descriptions[type].minWindows, descriptions[type].maxWindows };
+    return { 0, 0 };
 }
 
 bool PredefinedLayouts::isLayoutApplicable(LayoutType type, int windowCount)
@@ -101,7 +99,8 @@ QMap<QWidget*, GridArea> PredefinedLayouts::getDefaultLayout(
     QMap<QWidget*, GridArea> layout;
     auto areas = getLayoutAreas(type);
 
-    for (int i = 0; i < qMin(windows.size(), areas.size()); ++i) {
+    for (int i = 0;
+        i < std::min(windows.size(), static_cast<int>(areas.size())); ++i) {
         layout[windows[i]] = areas[i];
     }
 

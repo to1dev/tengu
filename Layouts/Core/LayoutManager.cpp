@@ -2,20 +2,20 @@
 
 namespace Daitengu::Layouts {
 
-LayoutManager::LayoutManager(QApplication* app)
-    : QObject()
+LayoutManager::LayoutManager(QApplication* app, QObject* parent)
+    : QObject(parent)
     , app_(app)
     , grid_(12, 12)
 {
     connect(app, &QApplication::screenAdded, this,
-        &LayoutManager::handleScreenChange);
+        [this]() { handleScreenChange(); });
     connect(app, &QApplication::screenRemoved, this,
-        &LayoutManager::handleScreenChange);
+        [this]() { handleScreenChange(); });
 
     connect(&animations_, &AnimationManager::groupAnimationStarted, this,
-        &LayoutManager::animationStarted);
+        [this]() { Q_EMIT animationStarted(); });
     connect(&animations_, &AnimationManager::groupAnimationFinished, this,
-        &LayoutManager::animationFinished);
+        [this]() { Q_EMIT animationFinished(); });
 
     updateGridGeometry();
 }

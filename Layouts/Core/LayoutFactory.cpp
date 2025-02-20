@@ -5,17 +5,20 @@ namespace Daitengu::Layouts {
 LayoutFactory::LayoutGenerator LayoutFactory::getGenerator(LayoutType type)
 {
     auto& registry = getRegistry();
-    auto it = registry.find(type);
-    if (it != registry.end()) {
-        return it->generator;
-    }
+    if (registry.contains(type))
+        return registry[type].generator;
     return nullptr;
 }
 
 LayoutFactory::LayoutGenerator LayoutFactory::createCustomGenerator(
     const QVector<GridArea>& areas)
 {
-    return nullptr;
+    return [areas](const QList<QWidget*>& windows) -> QMap<QWidget*, GridArea> {
+        QMap<QWidget*, GridArea> layout;
+        for (int i = 0; i < qMin(windows.size(), areas.size()); ++i)
+            layout[windows[i]] = areas[i];
+        return layout;
+    };
 }
 
 void LayoutFactory::registerLayout(LayoutType type,
@@ -44,94 +47,53 @@ QList<LayoutType> LayoutFactory::getRegisteredLayouts()
 QString LayoutFactory::getLayoutName(LayoutType type)
 {
     auto& registry = getRegistry();
-    auto it = registry.find(type);
-    return it != registry.end() ? it->name : QString();
+    return registry.contains(type) ? registry[type].name : QString();
 }
 
 QString LayoutFactory::getLayoutDescription(LayoutType type)
 {
     auto& registry = getRegistry();
-    auto it = registry.find(type);
-    return it != registry.end() ? it->description : QString();
+    return registry.contains(type) ? registry[type].description : QString();
 }
 
 QMap<QWidget*, GridArea> LayoutFactory::generateIdeStyle(
     const QList<QWidget*>& windows)
 {
-    QMap<QWidget*, GridArea> layout;
-    auto areas = PredefinedLayouts::getLayoutAreas(LayoutType::IDE_STYLE);
-
-    for (int i = 0; i < qMin(windows.size(), areas.size()); ++i) {
-        layout[windows[i]] = areas[i];
-    }
-
-    return layout;
+    return PredefinedLayouts::getDefaultLayout(LayoutType::IDE_STYLE, windows);
 }
 
 QMap<QWidget*, GridArea> LayoutFactory::generateDocumentCompare(
     const QList<QWidget*>& windows)
 {
-    QMap<QWidget*, GridArea> layout;
-    auto areas
-        = PredefinedLayouts::getLayoutAreas(LayoutType::DOCUMENT_COMPARE);
-
-    for (int i = 0; i < qMin(windows.size(), areas.size()); ++i) {
-        layout[windows[i]] = areas[i];
-    }
-
-    return layout;
+    return PredefinedLayouts::getDefaultLayout(
+        LayoutType::DOCUMENT_COMPARE, windows);
 }
 
 QMap<QWidget*, GridArea> LayoutFactory::generateTripleColumns(
     const QList<QWidget*>& windows)
 {
-    QMap<QWidget*, GridArea> layout;
-    auto areas = PredefinedLayouts::getLayoutAreas(LayoutType::TRIPLE_COLUMNS);
-
-    for (int i = 0; i < qMin(windows.size(), areas.size()); ++i) {
-        layout[windows[i]] = areas[i];
-    }
-
-    return layout;
+    return PredefinedLayouts::getDefaultLayout(
+        LayoutType::TRIPLE_COLUMNS, windows);
 }
 
 QMap<QWidget*, GridArea> LayoutFactory::generateQuadGrid(
     const QList<QWidget*>& windows)
 {
-    QMap<QWidget*, GridArea> layout;
-    auto areas = PredefinedLayouts::getLayoutAreas(LayoutType::QUAD_GRID);
-
-    for (int i = 0; i < qMin(windows.size(), areas.size()); ++i) {
-        layout[windows[i]] = areas[i];
-    }
-
-    return layout;
+    return PredefinedLayouts::getDefaultLayout(LayoutType::QUAD_GRID, windows);
 }
 
 QMap<QWidget*, GridArea> LayoutFactory::generateMasterDetail(
     const QList<QWidget*>& windows)
 {
-    QMap<QWidget*, GridArea> layout;
-    auto areas = PredefinedLayouts::getLayoutAreas(LayoutType::MASTER_DETAIL);
-
-    for (int i = 0; i < qMin(windows.size(), areas.size()); ++i) {
-        layout[windows[i]] = areas[i];
-    }
-
-    return layout;
+    return PredefinedLayouts::getDefaultLayout(
+        LayoutType::MASTER_DETAIL, windows);
 }
 
 QMap<QWidget*, GridArea> LayoutFactory::generatePresentation(
     const QList<QWidget*>& windows)
 {
-    QMap<QWidget*, GridArea> layout;
-    auto areas = PredefinedLayouts::getLayoutAreas(LayoutType::PRESENTATION);
-
-    for (int i = 0; i < qMin(windows.size(), areas.size()); ++i) {
-        layout[windows[i]] = areas[i];
-    }
-
-    return layout;
+    return PredefinedLayouts::getDefaultLayout(
+        LayoutType::PRESENTATION, windows);
 }
 
 QMap<LayoutType, LayoutFactory::LayoutInfo>& LayoutFactory::getRegistry()
@@ -143,6 +105,31 @@ QMap<LayoutType, LayoutFactory::LayoutInfo>& LayoutFactory::getRegistry()
             &generateIdeStyle,
             "IDE Style",
             "Left sidebar, main content, and right sidebar layout",
+        };
+        registry[LayoutType::DOCUMENT_COMPARE] = {
+            &generateDocumentCompare,
+            "Document Compare",
+            "Side by side document comparison view",
+        };
+        registry[LayoutType::TRIPLE_COLUMNS] = {
+            &generateTripleColumns,
+            "Triple Columns",
+            "Three equal width columns",
+        };
+        registry[LayoutType::QUAD_GRID] = {
+            &generateQuadGrid,
+            "Quad Grid",
+            "2x2 grid layout",
+        };
+        registry[LayoutType::MASTER_DETAIL] = {
+            &generateMasterDetail,
+            "Master Detail",
+            "Master view and detail view layout",
+        };
+        registry[LayoutType::PRESENTATION] = {
+            &generatePresentation,
+            "Presentation",
+            "Main content with presenter notes",
         };
     }
 

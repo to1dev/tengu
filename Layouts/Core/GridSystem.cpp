@@ -14,7 +14,7 @@ GridSystem::GridSystem(int rows, int cols)
 void GridSystem::setGridSize(int rows, int cols)
 {
     if (rows_ <= 0 || cols_ <= 0) {
-        throw std::invalid_argument("Grid dimensions must be positive");
+        throw std::invalid_argument("Grid dimensions must be positive.");
     }
 
     rows_ = rows;
@@ -230,8 +230,10 @@ QRect GridSystem::calculateCellRect(
 
     int x = screenGeometry_.x() + col * (cellWidth + horizontalGap_);
     int y = screenGeometry_.y() + row * (cellHeight + verticalGap_);
-    int width = colSpan * cellWidth + (colSpan - 1) * horizontalGap_;
-    int height = rowSpan * cellHeight + (rowSpan - 1) * verticalGap_;
+    int width = static_cast<int>(
+        colSpan * cellWidth + (colSpan - 1) * horizontalGap_);
+    int height
+        = static_cast<int>(rowSpan * cellHeight + (rowSpan - 1) * verticalGap_);
 
     return QRect(x, y, width, height);
 }
@@ -241,7 +243,7 @@ void GridSystem::validateCell(const GridCell& cell) const
     if (cell.row < 0 || cell.row >= rows_ || cell.col < 0 || cell.col >= cols_
         || cell.rowSpan <= 0 || cell.colSpan <= 0
         || cell.row + cell.rowSpan > rows_ || cell.col + cell.colSpan > cols_) {
-        throw std::out_of_range("Invalid grid cell coordinates");
+        throw std::out_of_range("Invalid grid cell coordinates.");
     }
 }
 
@@ -250,7 +252,7 @@ void GridSystem::validateArea(const GridArea& area) const
     if (!area.isValid() || area.startRow < 0 || area.startRow >= rows_
         || area.startCol < 0 || area.startCol >= cols_ || area.endRow < 0
         || area.endRow >= rows_ || area.endCol < 0 || area.endCol >= cols_) {
-        throw std::out_of_range("Invalid grid area coordinates");
+        throw std::out_of_range("Invalid grid area coordinates.");
     }
 }
 

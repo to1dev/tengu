@@ -8,10 +8,10 @@
 namespace Daitengu::Layouts {
 
 struct GridCell {
-    int row;
-    int col;
-    int rowSpan;
-    int colSpan;
+    int row { 0 };
+    int col { 0 };
+    int rowSpan { 1 };
+    int colSpan { 1 };
 
     GridCell(int r = 0, int c = 0, int rs = 1, int cs = 1)
         : row(r)
@@ -29,10 +29,10 @@ struct GridCell {
 };
 
 struct GridArea {
-    int startRow;
-    int startCol;
-    int endRow;
-    int endCol;
+    int startRow { 0 };
+    int startCol { 0 };
+    int endRow { 0 };
+    int endCol { 0 };
 
     GridArea(int sr = 0, int sc = 0, int er = 0, int ec = 0)
         : startRow(sr)
@@ -65,19 +65,19 @@ enum class LayoutType {
 };
 
 struct WindowConstraints {
-    int minWidth = 100;
-    int minHeight = 100;
-    int maxWidth = 16777215;
-    int maxHeight = 16777215;
-    bool keepAspectRatio = false;
-    bool allowResize = true;
-    bool allowDrag = true;
+    int minWidth { 100 };
+    int minHeight { 100 };
+    int maxWidth { 16777215 };
+    int maxHeight { 16777215 };
+    bool keepAspectRatio { false };
+    bool allowResize { true };
+    bool allowDrag { true };
 };
 
 struct AnimationConfig {
-    int duration = 300;
-    QEasingCurve::Type easing = QEasingCurve::OutCubic;
-    bool enabled = true;
+    int duration { 300 };
+    QEasingCurve::Type easing { QEasingCurve::OutCubic };
+    bool enabled { true };
 };
 
 }

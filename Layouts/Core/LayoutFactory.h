@@ -3,6 +3,11 @@
 
 #include <functional>
 
+#include <QMap>
+#include <QString>
+#include <QVector>
+#include <QWidget>
+
 #include "PredefinedLayouts.h"
 #include "Types.h"
 

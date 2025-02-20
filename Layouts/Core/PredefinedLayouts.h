@@ -1,7 +1,10 @@
 #ifndef PREDEFINEDLAYOUTS_H
 #define PREDEFINEDLAYOUTS_H
 
+#include <algorithm>
+
 #include <QMap>
+#include <QVector>
 #include <QWidget>
 
 #include "Types.h"

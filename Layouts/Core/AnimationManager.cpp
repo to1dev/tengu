@@ -52,7 +52,6 @@ void AnimationManager::startGroupAnimation(
     }
 
     auto* group = new QParallelAnimationGroup(this);
-
     for (auto it = animations.begin(); it != animations.end(); ++it) {
         QWidget* window = it.key();
         if (!window)
@@ -78,13 +77,13 @@ void AnimationManager::stopAll()
     for (auto it = activeAnimations_.begin(); it != activeAnimations_.end();
         ++it) {
         it.value()->stop();
-        delete it.value();
+        it.value()->deleteLater();
     }
     activeAnimations_.clear();
 
     for (auto* group : activeGroups_) {
         group->stop();
-        delete group;
+        group->deleteLater();
     }
     activeGroups_.clear();
 }
@@ -106,10 +105,9 @@ AnimationConfig AnimationManager::defaultConfig() const
 
 void AnimationManager::cleanupAnimation(QWidget* window)
 {
-    auto it = activeAnimations_.find(window);
-    if (it != activeAnimations_.end()) {
-        it.value()->stop();
-        delete it.value();
+    if (activeAnimations_.contains(window)) {
+        activeAnimations_[window]->stop();
+        activeAnimations_[window]->deleteLater();
         activeAnimations_.remove(window);
     }
 }

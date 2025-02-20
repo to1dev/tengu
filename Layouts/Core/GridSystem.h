@@ -1,6 +1,9 @@
 #ifndef GRIDSYSTEM_H
 #define GRIDSYSTEM_H
 
+#include <algorithm>
+#include <stdexcept>
+
 #include <QScreen>
 #include <QVector>
 

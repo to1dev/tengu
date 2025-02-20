@@ -1,6 +1,8 @@
 #ifndef LAYOUTMANAGER_H
 #define LAYOUTMANAGER_H
 
+#include <algorithm>
+
 #include <QApplication>
 #include <QEvent>
 #include <QMap>
@@ -21,7 +23,7 @@ class LayoutManager : public QObject {
     Q_OBJECT
 
 public:
-    explicit LayoutManager(QApplication* app);
+    explicit LayoutManager(QApplication* app, QObject* parent = nullptr);
     ~LayoutManager();
 
     void registerWindow(

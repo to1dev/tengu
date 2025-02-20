@@ -12,7 +12,10 @@ class SVGWidget : public QWidget {
     Q_OBJECT
 
 public:
-    SVGWidget(const QString& file, QWidget* parent = nullptr);
+    SVGWidget(const QString& file, QWidget* parent = nullptr, int padding = 0);
+
+    int padding() const;
+    void setPadding(int newPadding);
 
 Q_SIGNALS:
     void clicked();
@@ -23,6 +26,7 @@ protected:
 
 private:
     QSvgRenderer* renderer_;
+    int padding_ { 0 };
 };
 
 }

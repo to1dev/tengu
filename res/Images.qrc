@@ -16,4 +16,7 @@
         <file alias="3">Images/Splash/3.png</file>
         <file alias="4">Images/Splash/7.png</file>
     </qresource>
+    <qresource prefix="/Media">
+        <file alias="Xmark">Images/Media/xmark.svg</file>
+    </qresource>
 </RCC>

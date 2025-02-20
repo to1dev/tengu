@@ -233,13 +233,13 @@ QComboBox::down-arrow:on, QComboBox::down-arrow:hover, QComboBox::down-arrow:foc
     background-color: #1E2832;
 }
 
-#objectsFrame #editSearch {
+#objectsFrame #editFilter {
     padding: 6;
     border-radius: 6;
     border: 3px solid #32414b;
 }
 
-#objectsFrame #editSearch:focus {
+#objectsFrame #editFilter:focus {
     border: 3px solid #3e4c59;
 }
 

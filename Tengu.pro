@@ -41,6 +41,7 @@ win32:contains(QT_ARCH, i386) {
 
 SOURCES += \
     Components/ClickableLabel.cpp \
+    Components/LineEditEx.cpp \
     Components/SVGWidget.cpp \
     Components/Splash.cpp \
     Components/TitleBar.cpp \
@@ -75,6 +76,7 @@ SOURCES += \
 
 HEADERS += \
     Components/ClickableLabel.h \
+    Components/LineEditEx.h \
     Components/SVGWidget.h \
     Components/Splash.h \
     Components/TitleBar.h \

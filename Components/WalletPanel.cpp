@@ -48,13 +48,14 @@ UserCard::UserCard(QWidget* parent)
     int range = randomIndex(
         RandomAvatars[index].second.start, RandomAvatars[index].second.end);
     SVGWidget* svgAvatar = new SVGWidget(
-        QString(":/%1/%2").arg(RandomAvatars[index].first).arg(range), this);
+        QString(":/%1/%2").arg(RandomAvatars[index].first).arg(range), this, 3);
     svgAvatar->setFixedSize(AVATAR_SIZE, AVATAR_SIZE);
     topLayout->setSpacing(6);
     topLayout->addWidget(svgAvatar);
 
     QVBoxLayout* textLayout = new QVBoxLayout();
     nameLabel_ = new QLabel(this);
+    nameLabel_->setText("冲天小羊羔吖");
     nameLabel_->setObjectName(STR_NAME_LABEL);
     addressLabel_ = new ClickableLabel(this);
     addressLabel_->setObjectName(STR_ADDRESS_LABEL);

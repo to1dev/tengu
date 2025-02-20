@@ -7,6 +7,7 @@ GridSystem::GridSystem(int rows, int cols)
     , cols_(cols)
     , horizontalGap_(0)
     , verticalGap_(0)
+    , margin_(0)
 {
     updateOccupancyGrid();
 }
@@ -209,6 +210,16 @@ int GridSystem::cols()
 QRect GridSystem::screenGeometry() const
 {
     return screenGeometry_;
+}
+
+int GridSystem::margin() const
+{
+    return margin_;
+}
+
+void GridSystem::setMargin(int newMargin)
+{
+    margin_ = newMargin;
 }
 
 void GridSystem::updateOccupancyGrid()

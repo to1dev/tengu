@@ -45,12 +45,16 @@ public:
     int cols();
     QRect screenGeometry() const;
 
+    int margin() const;
+    void setMargin(int newMargin);
+
 private:
     int rows_;
     int cols_;
     QRect screenGeometry_;
     int horizontalGap_;
     int verticalGap_;
+    int margin_;
     QVector<QVector<bool>> occupied_;
 
     void updateOccupancyGrid();

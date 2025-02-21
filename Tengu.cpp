@@ -40,6 +40,8 @@ Tengu::Tengu(
     layout->addWidget(txList_);
     layout->addWidget(walletPanel_);
     ui->tabFirst->setLayout(layout);
+
+    connect(ui->ButtonWallet, &QToolButton::clicked, this, &Tengu::wallet);
 }
 
 Tengu::~Tengu()
@@ -60,6 +62,15 @@ void Tengu::reboot()
 
 void Tengu::about()
 {
+}
+
+void Tengu::wallet()
+{
+    WalletForm wf(this, globalManager_);
+    int ret = wf.exec();
+    if (ret) {
+    } else {
+    }
 }
 
 void Tengu::initPopupMenu()

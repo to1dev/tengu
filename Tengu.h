@@ -15,6 +15,8 @@
 #include "Components/TxListWidget.h"
 #include "Components/WalletPanel.h"
 
+#include "Forms/WalletForm.h"
+
 using namespace Daitengu::Components;
 using namespace Daitengu::Core;
 using namespace Daitengu::UI;
@@ -39,6 +41,7 @@ private Q_SLOTS:
     void onPopup();
     void reboot();
     void about();
+    void wallet();
 
 private:
     void initPopupMenu();

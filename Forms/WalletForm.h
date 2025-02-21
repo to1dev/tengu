@@ -3,11 +3,16 @@
 
 #include <QDialog>
 
+#include "Consts.h"
+
 #include "Managers/GlobalManager.h"
 #include "Managers/WindowManager.h"
 
+#include "Components/WalletListWidget.h"
+
 #include "UI/Frameless.h"
 
+using namespace Daitengu::Components;
 using namespace Daitengu::Core;
 using namespace Daitengu::UI;
 
@@ -33,6 +38,8 @@ private:
         std::make_unique<WindowManager>()
     };
     std::unique_ptr<Frameless> frameless_;
+
+    WalletListWidget* walletList_;
 };
 
 #endif // WALLETFORM_H

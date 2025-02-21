@@ -17,6 +17,29 @@ WalletForm::WalletForm(
     frameless_->setButtonClose(ui->ButtonClose);
     frameless_->init();
 
+    QHBoxLayout* layoutPanel = new QHBoxLayout(ui->groupBoxWallets);
+    layoutPanel->setContentsMargins(DEFAULT_GROUP_MARGINS);
+
+    walletList_ = new WalletListWidget(this);
+
+    QWidget* panelButtons = new QWidget(this);
+    panelButtons->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
+    panelButtons->setContentsMargins(QMargins(0, 0, 0, 0));
+
+    QVBoxLayout* layoutButtons = new QVBoxLayout(panelButtons);
+    layoutButtons->setContentsMargins(QMargins(20, 0, 0, 0));
+    layoutButtons->setSpacing(DEFAULT_SPACING);
+    layoutButtons->addWidget(ui->ButtonNewWallet);
+    layoutButtons->addWidget(ui->ButtonImportWallet);
+    layoutButtons->addWidget(ui->ButtonEditWallet);
+    layoutButtons->addWidget(ui->ButtonDeleteWallet);
+    layoutButtons->addStretch(1);
+    panelButtons->setLayout(layoutButtons);
+
+    layoutPanel->addWidget(walletList_);
+    layoutPanel->addWidget(panelButtons);
+    ui->groupBoxWallets->setLayout(layoutPanel);
+
     windowManager_->setWindow(this);
     windowManager_->reset(0.6);
 }

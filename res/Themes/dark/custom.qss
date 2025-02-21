@@ -221,8 +221,8 @@ QComboBox::down-arrow:on, QComboBox::down-arrow:hover, QComboBox::down-arrow:foc
 }
 
 #valueCard #valueLabel {
-    font-family: "iFontszhounianti";
-    font-size: 32px;
+    font-family: "Jockey One";
+    font-size: 36px;
     color: Lightgray;
     background: transparent;
 }

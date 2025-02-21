@@ -47,6 +47,7 @@ SOURCES += \
     Components/Splash.cpp \
     Components/TitleBar.cpp \
     Components/TxListWidget.cpp \
+    Components/WalletListWidget.cpp \
     Components/WalletPanel.cpp \
     Databases/Database.cpp \
     Forms/WalletForm.cpp \
@@ -84,6 +85,7 @@ HEADERS += \
     Components/Splash.h \
     Components/TitleBar.h \
     Components/TxListWidget.h \
+    Components/WalletListWidget.h \
     Components/WalletPanel.h \
     Consts.h \
     Databases/Database.h \

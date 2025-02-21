@@ -4,5 +4,6 @@
         <file alias="LobsterTwo">fonts/LobsterTwo-Bold.ttf</file>
         <file alias="PirataOne">fonts/PirataOne-Regular.ttf</file>
         <file alias="JockeyOne">fonts/JockeyOne-Regular.ttf</file>
+        <file alias="Sigmar">fonts/Sigmar-Regular.ttf</file>
     </qresource>
 </RCC>

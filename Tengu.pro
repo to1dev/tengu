@@ -49,6 +49,7 @@ SOURCES += \
     Components/TxListWidget.cpp \
     Components/WalletPanel.cpp \
     Databases/Database.cpp \
+    Forms/WalletForm.cpp \
     Layouts/Core/AnimationManager.cpp \
     Layouts/Core/GridSystem.cpp \
     Layouts/Core/LayoutFactory.cpp \
@@ -86,6 +87,7 @@ HEADERS += \
     Components/WalletPanel.h \
     Consts.h \
     Databases/Database.h \
+    Forms/WalletForm.h \
     Globals.h \
     Layouts/Core/AnimationManager.h \
     Layouts/Core/GridSystem.h \
@@ -118,6 +120,7 @@ HEADERS += \
     Wallets/Utils/SecureBytes.h
 
 FORMS += \
+    Forms/WalletForm.ui \
     Tengu.ui
 
 # Default rules for deployment.

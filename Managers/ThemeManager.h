@@ -106,6 +106,7 @@ static QVector<QPair<QString, FontData>> Fonts = {
     { "Lobster Two", { false, false, "LobsterTwo" } },
     { "Pirata One", { false, false, "PirataOne" } },
     { "Jockey One", { false, false, "JockeyOne" } },
+    { "Sigmar", { false, false, "Sigmar" } },
 };
 
 typedef ankerl::unordered_dense::map<CursorName, QCursor> CursorList;

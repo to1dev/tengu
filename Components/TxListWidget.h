@@ -8,7 +8,7 @@ namespace Daitengu::Components {
 
 class TxListWidget : public QListWidget {
 public:
-    TxListWidget(QWidget* parent = nullptr);
+    explicit TxListWidget(QWidget* parent = nullptr);
     ~TxListWidget();
 };
 

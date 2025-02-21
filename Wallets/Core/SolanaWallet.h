@@ -43,6 +43,38 @@ protected:
                 nullptr,
             },
         },
+        {
+            NetworkType::TESTNET,
+            {
+                NetworkType::TESTNET,
+                "testnet",
+                102,
+                AddressEncoding::BASE58,
+                "",
+                {},
+                "",
+                0,
+                false,
+                nullptr,
+                nullptr,
+            },
+        },
+        {
+            NetworkType::DEVNET,
+            {
+                NetworkType::DEVNET,
+                "devnet",
+                103,
+                AddressEncoding::BASE58,
+                "",
+                {},
+                "",
+                0,
+                false,
+                nullptr,
+                nullptr,
+            },
+        },
     };
 
     void onNetworkChanged() override;

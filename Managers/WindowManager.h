@@ -22,7 +22,7 @@ enum class WindowShape {
 
 class WindowManager {
 public:
-    WindowManager(QApplication* app = nullptr);
+    WindowManager();
     ~WindowManager();
 
     void center();

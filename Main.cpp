@@ -63,7 +63,7 @@ int main(int argc, char* argv[])
         a.processEvents();
 
         std::shared_ptr<GlobalManager> globalManager
-            = std::make_shared<GlobalManager>(&a);
+            = std::make_shared<GlobalManager>();
 
         Tengu w(globalManager);
 

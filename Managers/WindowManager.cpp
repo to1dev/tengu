@@ -2,8 +2,8 @@
 
 namespace Daitengu::Core {
 
-WindowManager::WindowManager(QApplication* app)
-    : app_(app)
+WindowManager::WindowManager()
+    : app_(qApp)
 {
 }
 

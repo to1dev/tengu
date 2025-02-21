@@ -2,13 +2,15 @@
 
 namespace Daitengu::Core {
 
-ThemeManager::ThemeManager(QApplication* app)
-    : app_(app)
+ThemeManager::ThemeManager()
+    : app_(qApp)
     , scale_(1.0)
 {
+#ifdef no_app
     if (nullptr == app_) {
         app_ = qobject_cast<QApplication*>(QApplication::instance());
     }
+#endif
 
     if (FIXED_DPI == QGuiApplication::primaryScreen()->logicalDotsPerInch())
         scale_ = SCALED_125;

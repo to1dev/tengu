@@ -2,12 +2,11 @@
 
 namespace Daitengu::Core {
 
-GlobalManager::GlobalManager(QApplication* app)
-    : app_(app)
+GlobalManager::GlobalManager()
+    : app_(qApp)
 {
     settingManager_ = std::make_unique<SettingManager>();
-    themeManager_ = std::make_unique<ThemeManager>(app);
-    windowManager_ = std::make_unique<WindowManager>(app);
+    themeManager_ = std::make_unique<ThemeManager>();
     resourceManager_ = std::make_unique<ResourceManager>();
 }
 
@@ -24,11 +23,6 @@ SettingManager* GlobalManager::settingManager() const
 ThemeManager* GlobalManager::themeManager() const
 {
     return themeManager_.get();
-}
-
-WindowManager* GlobalManager::windowManager() const
-{
-    return windowManager_.get();
 }
 
 }

@@ -120,7 +120,7 @@ class ThemeManager {
     };
 
 public:
-    ThemeManager(QApplication* app = nullptr);
+    ThemeManager();
     ~ThemeManager();
 
     void setCursor(const QVector<QWidget*> widgets, const CursorName name);

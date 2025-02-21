@@ -34,6 +34,11 @@ inline constexpr char STR_DRAG_BAR[] = "dragBar";
 inline constexpr char STR_MAIN_ICON[] = ":/Logos/main.svg";
 inline constexpr char STR_LABEL_TITLE[] = "labelTitle";
 
+inline constexpr char STR_BUTTON_MIN[] = "ButtonMin";
+inline constexpr char STR_BUTTON_MAX[] = "ButtonMax";
+inline constexpr char STR_BUTTON_CLOSE[] = "ButtonClose";
+inline constexpr char STR_BUTTON_FIXED[] = "ButtonFixed";
+
 inline const QString STR_MAIN_TOOLTIP_MINIMIZE = QObject::tr("最小化应用程序");
 inline const QString STR_MAIN_TOOLTIP_CLOSE = QObject::tr("退出应用程序");
 inline const QString STR_FORM_TOOLTIP_CLOSE = QObject::tr("关闭窗体");

@@ -97,12 +97,15 @@ void Frameless::init(const bool isMain)
                     bar->setFixed(fixed_);
                 });
         }
-        if (buttonClose_) {
-            layoutTitleBar->insertWidget(index++, buttonClose_);
-            buttonClose_->setToolTip(STR_MAIN_TOOLTIP_CLOSE);
-            QObject::connect(buttonClose_, &QToolButton::clicked,
-                [this]() { window_->close(); });
+        if (!buttonClose_) {
+            buttonClose_ = new QToolButton(bar);
+            buttonClose_->setText("✖️");
+            buttonClose_->setObjectName(STR_BUTTON_CLOSE);
         }
+        layoutTitleBar->insertWidget(index++, buttonClose_);
+        buttonClose_->setToolTip(STR_MAIN_TOOLTIP_CLOSE);
+        QObject::connect(buttonClose_, &QToolButton::clicked,
+            [this]() { window_->close(); });
     } else {
         if (buttonFixed_) {
             buttonFixed_->setCheckable(true);
@@ -119,14 +122,16 @@ void Frameless::init(const bool isMain)
                     bar->setFixed(fixed_);
                 });
         }
-        if (buttonClose_) {
-            layoutTitleBar->insertWidget(index++, buttonClose_);
 
-            buttonClose_->setToolTip(STR_FORM_TOOLTIP_CLOSE);
-
-            QObject::connect(
-                buttonClose_, &QToolButton::clicked, window_, &QWidget::close);
+        if (!buttonClose_) {
+            buttonClose_ = new QToolButton(bar);
+            buttonClose_->setText("✖️");
+            buttonClose_->setObjectName(STR_BUTTON_CLOSE);
         }
+        layoutTitleBar->insertWidget(index++, buttonClose_);
+        buttonClose_->setToolTip(STR_FORM_TOOLTIP_CLOSE);
+        QObject::connect(
+            buttonClose_, &QToolButton::clicked, window_, &QWidget::close);
     }
 
     QHBoxLayout* layout = new QHBoxLayout(bar);

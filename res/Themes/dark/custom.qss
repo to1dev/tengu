@@ -221,8 +221,8 @@ QComboBox::down-arrow:on, QComboBox::down-arrow:hover, QComboBox::down-arrow:foc
 }
 
 #valueCard #valueLabel {
-    font-family: "Sigmar", "Jockey One";
-    font-size: 36px;
+    font-family: "Pirata One";
+    font-size: 42px;
     color: Lightgray;
     background: transparent;
 }

@@ -21,7 +21,7 @@ Tengu::Tengu(
     frameless_->init(true);
 
     windowManager_->setWindow(this);
-    windowManager_->reset();
+    windowManager_->reset(0.9);
 
     ui->tabWidget->tabBar()->hide();
 

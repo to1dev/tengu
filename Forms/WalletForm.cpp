@@ -41,7 +41,7 @@ WalletForm::WalletForm(
     ui->groupBoxWallets->setLayout(layoutPanel);
 
     windowManager_->setWindow(this);
-    windowManager_->reset(0.6);
+    windowManager_->reset(0.7);
 }
 
 WalletForm::~WalletForm()

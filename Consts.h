@@ -1,6 +1,7 @@
 #ifndef CONSTS_H
 #define CONSTS_H
 
+#include <QMargins>
 #include <QObject>
 #include <QVector>
 
@@ -18,6 +19,10 @@ inline constexpr char EMPTY_STRING[] = "";
 inline constexpr char SPACE_CHAR[] = " ";
 
 inline constexpr char SPLASH_PATH[] = ":/Splash/%1";
+
+inline constexpr QMargins DEFAULT_GROUP_MARGINS = QMargins(20, 24, 20, 20);
+inline constexpr int DEFAULT_SPACING = 9;
+inline constexpr int DEFAULT_MAXLENGTH = 32;
 
 inline const QString STR_MENU_APP = QObject::tr("快捷方式");
 inline const QString STR_WINDOW_CENTER = QObject::tr("窗体复位");

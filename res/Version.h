@@ -8,8 +8,8 @@
 #define VER_PRODUCTVERSION_STR      "0.0.0.1\0"
 
 #define VER_COMPANYNAME_STR         "to1dev"
-#define VER_FILEDESCRIPTION_STR     "to1dev"
-#define VER_INTERNALNAME_STR        "to1dev"
+#define VER_FILEDESCRIPTION_STR     "Tengu"
+#define VER_INTERNALNAME_STR        "Tengu"
 #define VER_LEGALCOPYRIGHT_STR      "to1dev"
 #define VER_LEGALTRADEMARKS1_STR    "Tengu"
 #define VER_LEGALTRADEMARKS2_STR    VER_LEGALTRADEMARKS1_STR

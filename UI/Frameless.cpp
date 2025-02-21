@@ -35,6 +35,9 @@ void Frameless::init(const bool isMain)
     contentFrame_->setContentsMargins(QMargins(
         CONTENT_MARGIN, CONTENT_MARGIN, CONTENT_MARGIN, CONTENT_MARGIN));
 
+    contentFrame_->setSizePolicy(
+        QSizePolicy::Preferred, QSizePolicy::Expanding);
+
     if (contentFrame_->layout()) {
         contentFrame_->layout()->setSpacing(20);
     }
@@ -50,7 +53,10 @@ void Frameless::init(const bool isMain)
     layoutMain->setSpacing(0);
 
     QHBoxLayout* layoutTop = new QHBoxLayout;
+#ifdef v1
     QFrame* titleBar = new QFrame(mainFrame_);
+#endif
+    QWidget* titleBar = new QWidget(mainFrame_);
     titleBar->setObjectName(STR_TITLE_BAR);
     titleBar->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
     layoutTop->insertWidget(index++, titleBar);
@@ -128,26 +134,33 @@ void Frameless::init(const bool isMain)
     layout->setSpacing(0);
 
     index = 0;
-    /*QLabel* labelIcon = new QLabel(bar);
+#ifdef label_as_icon
+    QLabel* labelIcon = new QLabel(bar);
     labelIcon->setPixmap(QPixmap(STR_MAIN_ICON));
     labelIcon->setMargin(ICON_MARGIN);
-    layout->insertWidget(index++, labelIcon);*/
+    layout->insertWidget(index++, labelIcon);
+#endif
 
-    SVGWidget* svgIcon = new SVGWidget(STR_MAIN_ICON, bar);
-    svgIcon->setContentsMargins(3, 3, 3, 3);
-    svgIcon->setFixedSize(24, 24);
-    layout->insertWidget(index++, svgIcon);
+    if (isMain) {
+        SVGWidget* svgIcon = new SVGWidget(STR_MAIN_ICON, bar);
+        svgIcon->setContentsMargins(3, 3, 3, 3);
+        svgIcon->setFixedSize(24, 24);
+        layout->insertWidget(index++, svgIcon);
+    }
 
     QLabel* labelTitle = new QLabel(bar);
     labelTitle->setAttribute(Qt::WA_TransparentForMouseEvents);
     labelTitle->setObjectName(STR_LABEL_TITLE);
-    if (isMain)
+    if (isMain) {
         labelTitle->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-    else
+    } else {
         labelTitle->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+    }
     labelTitle->setText(window_->windowTitle());
     layout->insertWidget(index++, labelTitle);
+#ifdef title_always_left
     layout->addStretch(1);
+#endif
 
     index = 0;
     QHBoxLayout* layoutMiddle = new QHBoxLayout;

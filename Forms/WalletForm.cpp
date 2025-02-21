@@ -17,8 +17,8 @@ WalletForm::WalletForm(
     frameless_->setButtonClose(ui->ButtonClose);
     frameless_->init();
 
-    globalManager_->windowManager()->setWindow(this);
-    globalManager_->windowManager()->reset(0.6);
+    windowManager_->setWindow(this);
+    windowManager_->reset(0.6);
 }
 
 WalletForm::~WalletForm()

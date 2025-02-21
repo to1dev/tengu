@@ -20,9 +20,6 @@
       <property name="frameShape">
        <enum>QFrame::StyledPanel</enum>
       </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
-      </property>
       <widget class="QFrame" name="frameContent">
        <property name="geometry">
         <rect>
@@ -34,9 +31,6 @@
        </property>
        <property name="frameShape">
         <enum>QFrame::StyledPanel</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Raised</enum>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>

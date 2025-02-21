@@ -73,6 +73,7 @@ SOURCES += \
     Utils/RunGuard.cpp \
     Wallets/Core/BaseMnemonic.cpp \
     Wallets/Core/BaseWallet.cpp \
+    Wallets/Core/BitcoinWallet.cpp \
     Wallets/Core/ChainWallet.cpp \
     Wallets/Core/SolanaWallet.cpp \
     Wallets/Utils/SecureBytes.cpp
@@ -116,6 +117,7 @@ HEADERS += \
     Utils/RunGuard.h \
     Wallets/Core/BaseMnemonic.h \
     Wallets/Core/BaseWallet.h \
+    Wallets/Core/BitcoinWallet.h \
     Wallets/Core/ChainWallet.h \
     Wallets/Core/SolanaWallet.h \
     Wallets/Core/Types.h \

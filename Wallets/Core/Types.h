@@ -2,6 +2,7 @@
 #define TYPES_H
 
 #include <cstdint>
+#include <functional>
 #include <string>
 #include <vector>
 
@@ -20,6 +21,16 @@ enum class NetworkType {
     DEVNET,
 };
 
+enum class AddressEncoding {
+    BASE58CHECK,
+    BECH32,
+    BECH32M,
+    HEX,
+    BASE58,
+    SS58,
+    CUSTOM,
+};
+
 struct ChainConfig {
     std::uint32_t coinType;
     std::string curveName;
@@ -29,9 +40,16 @@ struct ChainConfig {
 
 struct ChainNetwork {
     NetworkType type;
-    std::uint8_t addressPrefix;
     std::string networkName;
-    std::string bech32Prefix;
+    std::uint64_t chainId;
+    AddressEncoding addressEncoding;
+    std::string addressPrefix;
+    std::vector<std::uint8_t> prefixBytes;
+    std::string hrp;
+    std::uint8_t versionByte;
+    bool supportsEip55;
+    std::function<std::string(const std::vector<std::uint8_t>&)> customEncoder;
+    std::function<bool(const std::string&)> customValidator;
 };
 
 }

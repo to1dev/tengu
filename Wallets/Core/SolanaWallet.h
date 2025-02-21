@@ -31,27 +31,16 @@ protected:
             NetworkType::MAINNET,
             {
                 NetworkType::MAINNET,
-                0x00,
                 "mainnet-beta",
+                101,
+                AddressEncoding::BASE58,
                 "",
-            },
-        },
-        {
-            NetworkType::TESTNET,
-            {
-                NetworkType::TESTNET,
-                0x00,
-                "testnet",
+                {},
                 "",
-            },
-        },
-        {
-            NetworkType::DEVNET,
-            {
-                NetworkType::DEVNET,
-                0x00,
-                "devnet",
-                "",
+                0,
+                false,
+                nullptr,
+                nullptr,
             },
         },
     };

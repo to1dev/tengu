@@ -42,9 +42,27 @@ WalletForm::WalletForm(
 
     windowManager_->setWindow(this);
     windowManager_->reset(0.7);
+
+    connect(ui->ButtonOK, &QPushButton::clicked, this, &WalletForm::ok);
+    connect(ui->ButtonNewWallet, &QPushButton::clicked, this,
+        &WalletForm::newWallet);
 }
 
 WalletForm::~WalletForm()
 {
     delete ui;
+}
+
+void WalletForm::ok()
+{
+    accept();
+}
+
+void WalletForm::newWallet()
+{
+    NewWalletForm nwf(this, globalManager_);
+    int ret = nwf.exec();
+    if (ret) {
+    } else {
+    }
 }

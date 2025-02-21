@@ -12,6 +12,8 @@
 
 #include "UI/Frameless.h"
 
+#include "Forms/NewWalletForm.h"
+
 using namespace Daitengu::Components;
 using namespace Daitengu::Core;
 using namespace Daitengu::UI;
@@ -29,6 +31,12 @@ public:
     explicit WalletForm(QWidget* parent = nullptr,
         const std::shared_ptr<const GlobalManager>& globalManager = nullptr);
     ~WalletForm();
+
+private Q_SLOTS:
+    void ok();
+
+private:
+    void newWallet();
 
 private:
     Ui::WalletForm* ui;

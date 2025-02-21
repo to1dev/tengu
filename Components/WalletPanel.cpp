@@ -69,7 +69,7 @@ ValueCard::ValueCard(QWidget* parent)
     valueLabel_->setObjectName(STR_VALUE_LABEL);
     valueLabel_->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
 
-    valueLabel_->setText("100.012334 SOL");
+    valueLabel_->setText("12,345,678.90 SOL");
 
     valueLayout->addWidget(valueLabel_);
     mainLayout->addLayout(valueLayout);

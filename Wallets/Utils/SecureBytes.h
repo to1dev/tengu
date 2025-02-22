@@ -2,7 +2,6 @@
 #define SECUREBYTES_H
 
 #include <cstdint>
-#include <span>
 #include <vector>
 
 #include <sodium.h>
@@ -11,8 +10,9 @@ namespace Daitengu::Wallets {
 
 class SecureBytes {
 public:
-    explicit SecureBytes(std::span<const std::uint8_t> data);
+    SecureBytes() = default;
     explicit SecureBytes(std::size_t size);
+    explicit SecureBytes(const std::vector<std::uint8_t>& data);
 
     ~SecureBytes();
 
@@ -24,14 +24,14 @@ public:
 
     void clear();
 
-    std::span<const std::uint8_t> span() const
+    const std::vector<std::uint8_t>& vec() const
     {
-        return std::span<const std::uint8_t>(bytes_);
+        return bytes_;
     }
 
-    std::span<std::uint8_t> span()
+    std::vector<std::uint8_t>& vec()
     {
-        return std::span<std::uint8_t>(bytes_);
+        return bytes_;
     }
 
     std::uint8_t* data()

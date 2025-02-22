@@ -16,10 +16,13 @@
 #include "Components/LineEditEx.h"
 #include "Components/MnemonicView.h"
 
+#include "Wallets/Core/BaseMnemonic.h"
+
 using namespace Daitengu::Components;
 using namespace Daitengu::Core;
 using namespace Daitengu::UI;
 using namespace Daitengu::Utils;
+using namespace Daitengu::Wallets;
 
 namespace Ui {
 class NewWalletForm;

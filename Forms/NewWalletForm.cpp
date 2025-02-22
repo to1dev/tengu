@@ -17,8 +17,15 @@ NewWalletForm::NewWalletForm(
     frameless_->init();
 
     view_ = new MnemonicView(this);
-    view_->setMnemonic("bar deliver nerve onion exercise tonight light display "
-                       "because trash fortune earn");
+    try {
+        std::string mnemonic = BaseMnemonic::generate();
+        view_->setMnemonic(QString::fromStdString(mnemonic));
+    } catch (const std::invalid_argument& e) {
+        std::cerr << "Invalid argument: " << e.what() << std::endl;
+    } catch (const MnemonicException& e) {
+        std::cerr << "Mnemonic generation failed: " << e.what() << std::endl;
+    }
+
     QVBoxLayout* layoutView = new QVBoxLayout(ui->groupBoxMnemonic);
     layoutView->setContentsMargins(DEFAULT_GROUP_MARGINS);
     layoutView->setSpacing(DEFAULT_SPACING);
@@ -73,6 +80,16 @@ void NewWalletForm::refresh()
     QObject* obj = sender();
 
     if (obj == ui->ButtonRefresh) {
+        try {
+            std::string mnemonic = BaseMnemonic::generate();
+            view_->setMnemonic(QString::fromStdString(mnemonic));
+        } catch (const std::invalid_argument& e) {
+            std::cerr << "Invalid argument: " << e.what() << std::endl;
+        } catch (const MnemonicException& e) {
+            std::cerr << "Mnemonic generation failed: " << e.what()
+                      << std::endl;
+        }
+
         editName_->setText(
             QString::fromStdString(NameGenerator(NAME_PATTERN).toString()));
     }

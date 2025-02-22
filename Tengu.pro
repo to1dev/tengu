@@ -42,6 +42,7 @@ win32:contains(QT_ARCH, i386) {
 SOURCES += \
     Components/AnimatedTabWidget.cpp \
     Components/ClickableLabel.cpp \
+    Components/FlowLayout.cpp \
     Components/LineEditEx.cpp \
     Components/SVGWidget.cpp \
     Components/Splash.cpp \
@@ -82,6 +83,7 @@ SOURCES += \
 HEADERS += \
     Components/AnimatedTabWidget.h \
     Components/ClickableLabel.h \
+    Components/FlowLayout.h \
     Components/LineEditEx.h \
     Components/SVGWidget.h \
     Components/Splash.h \

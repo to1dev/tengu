@@ -18,11 +18,21 @@ inline constexpr int PATCH = 1;
 inline constexpr char EMPTY_STRING[] = "";
 inline constexpr char SPACE_CHAR[] = " ";
 
+inline constexpr auto NAME_PATTERN = "<<i|s>v(mon|chu|zard|rtle) the X>";
+
 inline constexpr char SPLASH_PATH[] = ":/Splash/%1";
 
 inline constexpr QMargins DEFAULT_GROUP_MARGINS = QMargins(20, 24, 20, 20);
 inline constexpr int DEFAULT_SPACING = 9;
 inline constexpr int DEFAULT_MAXLENGTH = 32;
+
+inline const QString STR_LABEL_NAME = QObject::tr("名称");
+inline const QString STR_LABEL_PATH = QObject::tr("路径");
+inline const QString STR_LINEEDIT_WALLET_NAME_PLACEHOLDER
+    = QObject::tr("输入钱包名称");
+inline const QString STR_LINEEDIT_ADDRESS_NAME_PLACEHOLDER
+    = QObject::tr("输入地址名称");
+inline const QString STR_BUTTON_CLIPBOARD = QObject::tr("复制助记词到剪贴板");
 
 inline const QString STR_MENU_APP = QObject::tr("快捷方式");
 inline const QString STR_WINDOW_CENTER = QObject::tr("窗体复位");

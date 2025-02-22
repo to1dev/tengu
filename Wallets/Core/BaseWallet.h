@@ -6,6 +6,7 @@
 #include <string>
 
 #include "BaseMnemonic.h"
+#include "Errors.hpp"
 
 #include "../Utils/SecureBytes.h"
 

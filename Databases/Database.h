@@ -12,7 +12,12 @@
 
 #include "sqlite_orm/sqlite_orm.h"
 
+#include "Wallets/Core/Errors.hpp"
+#include "Wallets/Core/Types.h"
+
 using namespace sqlite_orm;
+
+using namespace Daitengu::Wallets;
 
 namespace Daitengu::Core {
 
@@ -125,6 +130,32 @@ enum class DBErrorType {
     haveMnemonic,
 };
 
+inline int chainTypeToInt(ChainType ct)
+{
+    return static_cast<int>(ct);
+}
+
+inline ChainType intToChainType(int val)
+{
+    if (val < 0 || val > static_cast<int>(ChainType::BNBCHAIN)) {
+        throw DatabaseException("Invalid ChainType from DB");
+    }
+    return static_cast<ChainType>(val);
+}
+
+inline int networkTypeToInt(NetworkType nt)
+{
+    return static_cast<int>(nt);
+}
+
+inline NetworkType intToNetworkType(int val)
+{
+    if (val < 0 || val > static_cast<int>(NetworkType::DEVNET)) {
+        throw DatabaseException("Invalid NetworkType from DB");
+    }
+    return static_cast<NetworkType>(val);
+}
+
 inline auto initStorage(const QString& dataPath)
 {
     QString filePath = QDir::toNativeSeparators(
@@ -183,13 +214,16 @@ inline auto initStorage(const QString& dataPath)
             make_column("avgExecutionPrice", &Order::avgExecutionPrice),
             make_column("createTimestamp", &Order::createTimestamp),
             make_column("updateTimestamp", &Order::updateTimestamp),
-            make_column("trailingStopEnabled", &Order::updateTimestamp),
-            make_column("trailingStopOffset", &Order::updateTimestamp),
-            make_column("currentTrailingStopPrice", &Order::updateTimestamp),
-            make_column("trailingTakeProfitEnabled", &Order::updateTimestamp),
-            make_column("trailingTakeProfitOffset", &Order::updateTimestamp),
+            make_column("trailingStopEnabled", &Order::trailingStopEnabled),
+            make_column("trailingStopOffset", &Order::trailingStopOffset),
             make_column(
-                "currentTrailingTakeProfitPrice", &Order::updateTimestamp))
+                "currentTrailingStopPrice", &Order::currentTrailingStopPrice),
+            make_column(
+                "trailingTakeProfitEnabled", &Order::trailingTakeProfitEnabled),
+            make_column(
+                "trailingTakeProfitOffset", &Order::trailingTakeProfitOffset),
+            make_column("currentTrailingTakeProfitPrice",
+                &Order::currentTrailingTakeProfitPrice))
 
     );
 }

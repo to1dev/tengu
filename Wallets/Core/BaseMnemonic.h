@@ -7,6 +7,8 @@
 #include <string>
 #include <vector>
 
+#include "Errors.hpp"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -21,7 +23,7 @@ namespace Daitengu::Wallets {
 
 class BaseMnemonic {
 public:
-    BaseMnemonic();
+    explicit BaseMnemonic() = default;
 
     [[nodiscard]] static std::string generate(int strength = 128);
     [[nodiscard]] static std::string fromData(

@@ -31,6 +31,26 @@ enum class AddressEncoding {
     CUSTOM,
 };
 
+struct WalletRecord {
+    int id = 0;
+    ChainType chainType;
+    NetworkType networkType;
+    std::string name;
+    std::string mnemonic;
+    std::string passphrase;
+    std::string masterPrivateKey;
+    std::string extendedPublicKey;
+};
+
+struct AddressRecord {
+    int id = 0;
+    int walletId = 0;
+    std::string address;
+    std::string derivationPath;
+    std::string privateKey;
+    std::string publicKey;
+};
+
 struct ChainConfig {
     std::uint32_t coinType;
     std::string curveName;

@@ -2,10 +2,6 @@
 
 namespace Daitengu::Wallets {
 
-BaseMnemonic::BaseMnemonic()
-{
-}
-
 std::string BaseMnemonic::generate(int strength)
 {
     if (strength != 128 && strength != 160 && strength != 192 && strength != 224
@@ -16,7 +12,7 @@ std::string BaseMnemonic::generate(int strength)
 
     const char* result = mnemonic_generate(strength);
     if (!result) {
-        throw std::runtime_error("Failed to generate mnemonic.");
+        throw MnemonicException("Failed to generate mnemonic.");
     }
 
     return std::string(result);

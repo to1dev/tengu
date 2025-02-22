@@ -83,10 +83,11 @@ void SolanaWallet::onNetworkChanged()
 
 BaseWallet::KeyPair SolanaWallet::deriveKeyPair(uint32_t index)
 {
-    // Todo
-    return {
-        std::string(),
-        std::string(),
+    auto priv = getPrivateKey(index);
+    auto addr = getAddress(index);
+    return KeyPair {
+        addr,
+        priv,
     };
 }
 

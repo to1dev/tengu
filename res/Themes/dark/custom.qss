@@ -384,12 +384,30 @@ QComboBox::down-arrow:on, QComboBox::down-arrow:hover, QComboBox::down-arrow:foc
 }
 
 #labelMnemonic {
-    border-radius: 0;
-    border: 0;
+    background: qlineargradient(
+        spread: pad,
+        x1: 0, y1: 0,
+        x2: 0, y2: 1,
+        stop: 0 #fafafa,
+        stop: 1 #dfdfdf
+    );
+    color: #333333;
+    border-right: 3px solid #ffffff;
+    border-bottom: 3px solid #ffffff;
+    padding: 6px 12px;
     font-size: 24px;
-    color: white;
-    background-color: #0d1117;
 }
+
+QLabel#labelMnemonic:hover {
+    background: qlineargradient(
+        spread: pad,
+        x1: 0, y1: 0,
+        x2: 0, y2: 1,
+        stop: 0 #ffffff,
+        stop: 1 #e5e5e5
+    );
+}
+
 
 #ButtonMint,
 #ButtonTrade,

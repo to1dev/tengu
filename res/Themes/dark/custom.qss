@@ -386,7 +386,7 @@ QComboBox::down-arrow:on, QComboBox::down-arrow:hover, QComboBox::down-arrow:foc
 #labelMnemonic {
     border-radius: 0;
     border: 0;
-    font-size: 20px;
+    font-size: 24px;
     color: white;
     background-color: #0d1117;
 }

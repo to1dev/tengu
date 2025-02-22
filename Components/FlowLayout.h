@@ -39,5 +39,10 @@ private:
     std::array<qreal, 2> spacing_ { { 6, 6 } };
 };
 
+inline void FlowLayout::addItem(QGraphicsLayoutItem* item)
+{
+    insertItem(-1, item);
+}
+
 }
 #endif // FLOWLAYOUT_H

@@ -1,6 +1,8 @@
 #ifndef CONSTS_H
 #define CONSTS_H
 
+#include <array>
+
 #include <QMargins>
 #include <QObject>
 #include <QVector>
@@ -47,24 +49,24 @@ struct AvatarRange {
     int end;
 };
 
-inline QVector<QPair<QString, AvatarRange>> RandomAvatars = {
-    { "Avatar1", { 1, 25 } },
-    { "Avatar3", { 1, 50 } },
-    { "Avatar5", { 1, 43 } },
-    { "Avatar6", { 1, 50 } },
-    { "Avatar9", { 1, 40 } },
-};
+inline constexpr std::array<std::pair<std::string_view, AvatarRange>, 5>
+    RandomAvatars = { {
+        { "Avatar1", { 1, 25 } },
+        { "Avatar3", { 1, 50 } },
+        { "Avatar5", { 1, 43 } },
+        { "Avatar6", { 1, 50 } },
+        { "Avatar9", { 1, 40 } },
+    } };
 
 inline constexpr int LOGO_RECT_WIDTH = 64;
 inline constexpr int LOGO_RECT_HEIGHT = 64;
 inline constexpr int LOGO_SIZE = 64;
 inline constexpr int AVATAR_SIZE = 64;
 
-inline QVector<QPair<QString, AvatarRange>> RandomLogos = {
-    //{ "Logo1", { 1, 20 } },
-    //{ "Logo2", { 1, 30 } },
-    { "Logo1", { 1, 50 } },
-};
+inline constexpr std::array<std::pair<std::string_view, AvatarRange>, 1>
+    RandomLogos = { {
+        { "Logo1", { 1, 50 } },
+    } };
 
 }
 

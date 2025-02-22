@@ -200,7 +200,10 @@ void Frameless::init(const bool isMain)
             topLayout->addWidget(labelLogo);*/
 
             SVGWidget* svgLogo = new SVGWidget(
-                QString(":/%1/%2").arg(RandomLogos[index].first).arg(range),
+                QString(":/%1/%2")
+                    .arg(QString::fromUtf8(RandomLogos[index].first.data(),
+                        RandomLogos[index].first.size()))
+                    .arg(range),
                 topFrame_);
             svgLogo->setFixedSize(LOGO_SIZE, LOGO_SIZE);
             topLayout->addWidget(svgLogo);

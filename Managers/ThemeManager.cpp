@@ -37,11 +37,12 @@ void ThemeManager::setCursor(
 
 void ThemeManager::initFonts()
 {
-    for (int i = 0; i < Fonts.count(); i++) {
-        if (Fonts.at(i).second.name.isEmpty())
+    for (std::size_t i = 0; i < Fonts.size(); i++) {
+        if (Fonts.at(i).second.name.empty())
             continue;
-        QFontDatabase::addApplicationFont(
-            QString(STR_FONT).arg(Fonts.at(i).second.name));
+        QFontDatabase::addApplicationFont(QString(STR_FONT).arg(
+            QString::fromUtf8(Fonts.at(i).second.name.data(),
+                Fonts.at(i).second.name.size())));
     }
 }
 

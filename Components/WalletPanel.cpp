@@ -16,7 +16,11 @@ UserCard::UserCard(QWidget* parent)
         RandomAvatars[index].second.start, RandomAvatars[index].second.end);
 
     SVGWidget* svgAvatar = new SVGWidget(
-        QString(":/%1/%2").arg(RandomAvatars[index].first).arg(range), this, 3);
+        QString(":/%1/%2")
+            .arg(QString::fromUtf8(RandomAvatars[index].first.data(),
+                RandomAvatars[index].first.size()))
+            .arg(range),
+        this, 3);
     svgAvatar->setFixedSize(AVATAR_SIZE, AVATAR_SIZE);
 
     topLayout->setSpacing(6);

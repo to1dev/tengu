@@ -1,15 +1,25 @@
 #ifndef NEWWALLETFORM_H
 #define NEWWALLETFORM_H
 
+#include <QClipboard>
 #include <QDialog>
+
+#include "Consts.h"
 
 #include "Managers/GlobalManager.h"
 #include "Managers/WindowManager.h"
 
 #include "UI/Frameless.h"
 
+#include "Utils/NameGenerator.h"
+
+#include "Components/LineEditEx.h"
+#include "Components/MnemonicView.h"
+
+using namespace Daitengu::Components;
 using namespace Daitengu::Core;
 using namespace Daitengu::UI;
+using namespace Daitengu::Utils;
 
 namespace Ui {
 class NewWalletForm;
@@ -26,6 +36,12 @@ public:
     ~NewWalletForm();
 
 private:
+    void refresh();
+
+private Q_SLOTS:
+    void ok();
+
+private:
     Ui::NewWalletForm* ui;
 
     std::shared_ptr<const GlobalManager> globalManager_;
@@ -33,6 +49,9 @@ private:
         std::make_unique<WindowManager>()
     };
     std::unique_ptr<Frameless> frameless_;
+
+    MnemonicView* view_;
+    LineEditEx* editName_;
 };
 
 #endif // NEWWALLETFORM_H

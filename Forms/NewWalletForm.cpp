@@ -16,11 +16,69 @@ NewWalletForm::NewWalletForm(
     frameless_->setContentFrame(ui->frameContent);
     frameless_->init();
 
+    view_ = new MnemonicView(this);
+    view_->setMnemonic("bar deliver nerve onion exercise tonight light display "
+                       "because trash fortune earn");
+    QVBoxLayout* layoutView = new QVBoxLayout(ui->groupBoxMnemonic);
+    layoutView->setContentsMargins(DEFAULT_GROUP_MARGINS);
+    layoutView->setSpacing(DEFAULT_SPACING);
+    layoutView->addWidget(view_);
+    ui->groupBoxMnemonic->setLayout(layoutView);
+
+    QVBoxLayout* layoutOptioins = new QVBoxLayout(ui->groupBox);
+    layoutOptioins->setContentsMargins(DEFAULT_GROUP_MARGINS);
+    layoutOptioins->setSpacing(DEFAULT_SPACING);
+
+    QLabel* labelName = new QLabel(this);
+    labelName->setText(STR_LABEL_NAME);
+
+    editName_ = new LineEditEx(this);
+    editName_->setText(
+        QString::fromStdString(NameGenerator(NAME_PATTERN).toString()));
+    editName_->setMaxLength(DEFAULT_MAXLENGTH);
+    editName_->setPlaceholderText(STR_LINEEDIT_WALLET_NAME_PLACEHOLDER);
+    editName_->setCursorPosition(0);
+
+    QPushButton* buttonClipboard = new QPushButton(this);
+    buttonClipboard->setObjectName("ButtonClipboard");
+    buttonClipboard->setText(STR_BUTTON_CLIPBOARD);
+    connect(buttonClipboard, &QPushButton::clicked,
+        [this]() { QApplication::clipboard()->setText(view_->mnemonic()); });
+
+    layoutOptioins->addWidget(labelName);
+    layoutOptioins->addWidget(editName_);
+    layoutOptioins->addStretch(1);
+    layoutOptioins->addWidget(buttonClipboard);
+    ui->groupBox->setLayout(layoutOptioins);
+
+    ui->ButtonOK->setDefault(true);
+
     windowManager_->setWindow(this);
     windowManager_->reset(0.6);
+
+    connect(ui->ButtonOK, &QPushButton::clicked, this, &NewWalletForm::ok);
+    connect(
+        ui->ButtonCancel, &QPushButton::clicked, this, &NewWalletForm::reject);
+    connect(ui->ButtonRefresh, &QPushButton::clicked, this,
+        &NewWalletForm::refresh);
 }
 
 NewWalletForm::~NewWalletForm()
 {
     delete ui;
+}
+
+void NewWalletForm::refresh()
+{
+    QObject* obj = sender();
+
+    if (obj == ui->ButtonRefresh) {
+        editName_->setText(
+            QString::fromStdString(NameGenerator(NAME_PATTERN).toString()));
+    }
+}
+
+void NewWalletForm::ok()
+{
+    accept();
 }

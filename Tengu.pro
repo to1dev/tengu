@@ -44,6 +44,7 @@ SOURCES += \
     Components/ClickableLabel.cpp \
     Components/FlowLayout.cpp \
     Components/LineEditEx.cpp \
+    Components/MnemonicView.cpp \
     Components/SVGWidget.cpp \
     Components/Splash.cpp \
     Components/TitleBar.cpp \
@@ -72,6 +73,7 @@ SOURCES += \
     Tests/Test_Encryption.cpp \
     UI/Frameless.cpp \
     Utils/Encryption.cpp \
+    Utils/NameGenerator.cpp \
     Utils/RunGuard.cpp \
     Wallets/Core/BaseMnemonic.cpp \
     Wallets/Core/BaseWallet.cpp \
@@ -85,6 +87,7 @@ HEADERS += \
     Components/ClickableLabel.h \
     Components/FlowLayout.h \
     Components/LineEditEx.h \
+    Components/MnemonicView.h \
     Components/SVGWidget.h \
     Components/Splash.h \
     Components/TitleBar.h \
@@ -117,12 +120,14 @@ HEADERS += \
     Utils/DotEnv.hpp \
     Utils/Encryption.h \
     Utils/Helpers.hpp \
+    Utils/NameGenerator.h \
     Utils/PathUtils.hpp \
     Utils/RunGuard.h \
     Wallets/Core/BaseMnemonic.h \
     Wallets/Core/BaseWallet.h \
     Wallets/Core/BitcoinWallet.h \
     Wallets/Core/ChainWallet.h \
+    Wallets/Core/Errors.hpp \
     Wallets/Core/SolanaWallet.h \
     Wallets/Core/Types.h \
     Wallets/Utils/SecureBytes.h

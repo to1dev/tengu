@@ -18,6 +18,11 @@ WalletGroupRepo::WalletGroupRepo(Storage* storage)
 {
 }
 
+DBErrorType WalletGroupRepo::before(const WalletGroup& group, bool update)
+{
+    return DBErrorType::none;
+}
+
 int WalletGroupRepo::insert(const WalletGroup& group)
 {
     return storage_->insert(group);
@@ -48,6 +53,11 @@ std::vector<WalletGroup> WalletGroupRepo::getAll()
 WalletRepo::WalletRepo(Storage* storage)
     : storage_(storage)
 {
+}
+
+DBErrorType WalletRepo::before(const Wallet& group, bool update)
+{
+    return DBErrorType::none;
 }
 
 int WalletRepo::insert(const Wallet& wallet)
@@ -88,6 +98,11 @@ AddressRepo::AddressRepo(Storage* storage)
 {
 }
 
+DBErrorType AddressRepo::before(const Address& group, bool update)
+{
+    return DBErrorType::none;
+}
+
 int AddressRepo::insert(const Address& address)
 {
     return storage_->insert(address);
@@ -120,6 +135,8 @@ Database::Database(const QString& dataPath)
 {
     storage_ = context_.storage();
     walletGroupRepo_ = std::make_unique<WalletGroupRepo>(storage_);
+    walletRepo_ = std::make_unique<WalletRepo>(storage_);
+    addressRepo_ = std::make_unique<AddressRepo>(storage_);
 }
 
 IWalletGroupRepo* Database::walletGroupRepo()
@@ -144,6 +161,8 @@ Storage* Database::storage()
 
 void Database::reset()
 {
+    storage_->remove_all<Address>();
+    storage_->remove_all<Wallet>();
     storage_->remove_all<WalletGroup>();
     storage_->vacuum();
 }

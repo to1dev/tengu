@@ -25,7 +25,7 @@ inline constexpr char DB_NAME[] = "tengu";
 
 enum class WalletGroupType {
     User = 0,
-    Smart = 1,
+    Vault = 1,
 };
 
 struct WalletGroup {
@@ -35,31 +35,31 @@ struct WalletGroup {
 };
 
 struct Wallet {
-    int id;
-    int type;
-    int groupId;
+    int id = 0;
+    int type = 0;
+    int groupId = 0;
     std::string hash;
     std::string name;
     std::string nameHash;
     std::string mnemonic;
     std::string mnemonicHash;
-    std::string derivationPath;
+    std::string passphrase;
+    std::string masterPrivateKey;
+    std::string extendedPublicKey;
 };
 
 struct Address {
-    int id;
-    int type;
-    int walletId;
-    int walletType;
+    int id = 0;
+    int type = 0;
+    int walletId = 0;
     std::string hash;
     std::string name;
     std::string nameHash;
     std::string address;
     std::string addressHash;
     std::string derivationPath;
-    std::string privKey;
-    std::string pubKey;
-    std::string wifKey;
+    std::string privateKey;
+    std::string publicKey;
 };
 
 struct Tag {
@@ -67,6 +67,7 @@ struct Tag {
     std::string name;
     std::string description;
     long long createTimestamp;
+    long long updateTimestamp;
 };
 
 struct addressTag {
@@ -162,7 +163,7 @@ inline auto initStorage(const QString& dataPath)
         QString("%1/%2.db").arg(dataPath).arg(DB_NAME));
 
     return make_storage(filePath.toStdString(),
-        make_table("wallet_groups",
+        make_table("groups",
             make_column("id", &WalletGroup::id, primary_key().autoincrement()),
             make_column("name", &WalletGroup::name),
             make_column("type", &WalletGroup::type)),
@@ -176,30 +177,35 @@ inline auto initStorage(const QString& dataPath)
             make_column("nameHash", &Wallet::nameHash),
             make_column("mnemonic", &Wallet::mnemonic),
             make_column("mnemonicHash", &Wallet::mnemonicHash),
-            make_column("derivationPath", &Wallet::derivationPath)),
-
-        make_table("subscriptions",
-            make_column("id", &Subscription::id, primary_key().autoincrement()),
-            make_column("walletId", &Subscription::walletId),
-            make_column("subscribed", &Subscription::subscribed),
-            make_column("followed", &Subscription::followed),
-            make_column("pinned", &Subscription::pinned),
-            make_column("timestamp", &Subscription::timestamp)),
+            make_column("passphrase", &Wallet::passphrase),
+            make_column("masterPrivateKey", &Wallet::masterPrivateKey),
+            make_column("extendedPublicKey", &Wallet::extendedPublicKey)),
 
         make_table("addresses",
             make_column("id", &Address::id, primary_key().autoincrement()),
             make_column("type", &Address::type),
             make_column("walletId", &Address::walletId),
-            make_column("walletType", &Address::walletType),
             make_column("hash", &Address::hash),
             make_column("name", &Address::name),
             make_column("nameHash", &Address::nameHash),
             make_column("address", &Address::address),
             make_column("addressHash", &Address::addressHash),
             make_column("derivationPath", &Address::derivationPath),
-            make_column("privKey", &Address::privKey),
-            make_column("pubKey", &Address::pubKey),
-            make_column("wifKey", &Address::wifKey)),
+            make_column("privateKey", &Address::privateKey),
+            make_column("publicKey", &Address::publicKey)),
+
+        make_table("tags",
+            make_column("id", &Tag::id, primary_key().autoincrement()),
+            make_column("name", &Tag::name),
+            make_column("description", &Tag::description),
+            make_column("createTimestamp", &Tag::createTimestamp),
+            make_column("updateTimestamp", &Tag::updateTimestamp)),
+
+        make_table("address_tags",
+            make_column("id", &addressTag::id, primary_key().autoincrement()),
+            make_column("addressId", &addressTag::addressId),
+            make_column("tagId", &addressTag::tagId),
+            make_column("timestamp", &addressTag::timestamp)),
 
         make_table("orders",
             make_column("id", &Order::id, primary_key().autoincrement()),
@@ -223,7 +229,15 @@ inline auto initStorage(const QString& dataPath)
             make_column(
                 "trailingTakeProfitOffset", &Order::trailingTakeProfitOffset),
             make_column("currentTrailingTakeProfitPrice",
-                &Order::currentTrailingTakeProfitPrice))
+                &Order::currentTrailingTakeProfitPrice)),
+
+        make_table("subscriptions",
+            make_column("id", &Subscription::id, primary_key().autoincrement()),
+            make_column("walletId", &Subscription::walletId),
+            make_column("subscribed", &Subscription::subscribed),
+            make_column("followed", &Subscription::followed),
+            make_column("pinned", &Subscription::pinned),
+            make_column("timestamp", &Subscription::timestamp))
 
     );
 }
@@ -243,6 +257,8 @@ private:
 class IWalletGroupRepo {
 public:
     virtual ~IWalletGroupRepo() = default;
+    virtual DBErrorType before(const WalletGroup& group, bool update = false)
+        = 0;
     virtual int insert(const WalletGroup& group) = 0;
     virtual void update(const WalletGroup& group) = 0;
     virtual void remove(int id) = 0;
@@ -253,6 +269,7 @@ public:
 class WalletGroupRepo : public IWalletGroupRepo {
 public:
     WalletGroupRepo(Storage* storage);
+    DBErrorType before(const WalletGroup& group, bool update) override;
     int insert(const WalletGroup& group) override;
     void update(const WalletGroup& group) override;
     void remove(int id) override;
@@ -266,6 +283,7 @@ private:
 class IWalletRepo {
 public:
     virtual ~IWalletRepo() = default;
+    virtual DBErrorType before(const Wallet& group, bool update = false) = 0;
     virtual int insert(const Wallet& wallet) = 0;
     virtual void update(const Wallet& wallet) = 0;
     virtual void remove(int id) = 0;
@@ -277,6 +295,7 @@ public:
 class WalletRepo : public IWalletRepo {
 public:
     WalletRepo(Storage* storage);
+    DBErrorType before(const Wallet& group, bool update) override;
     int insert(const Wallet& wallet) override;
     void update(const Wallet& wallet) override;
     void remove(int id) override;
@@ -291,6 +310,7 @@ private:
 class IAddressRepo {
 public:
     virtual ~IAddressRepo() = default;
+    virtual DBErrorType before(const Address& group, bool update = false) = 0;
     virtual int insert(const Address& address) = 0;
     virtual void update(const Address& address) = 0;
     virtual void remove(int id) = 0;
@@ -301,6 +321,7 @@ public:
 class AddressRepo : public IAddressRepo {
 public:
     AddressRepo(Storage* storage);
+    DBErrorType before(const Address& group, bool update) override;
     int insert(const Address& address) override;
     void update(const Address& address) override;
     void remove(int id) override;

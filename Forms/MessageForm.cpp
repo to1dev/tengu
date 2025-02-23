@@ -13,6 +13,7 @@ MessageForm::MessageForm(QWidget* parent, const QString& text, int buttons,
     frameless_ = std::make_unique<Frameless>(this);
     frameless_->setMainFrame(ui->frameMain);
     frameless_->setContentFrame(ui->frameContent);
+    frameless_->setFixed(true);
     frameless_->init();
 
     SVGWidget* icon = nullptr;
@@ -23,8 +24,9 @@ MessageForm::MessageForm(QWidget* parent, const QString& text, int buttons,
             QString(":/Emoji/%1").arg(randomIndex(1, 20)), ui->labelIcon);
     }
     if (icon) {
+        icon->setPadding(3);
         icon->setImageSize(QSize(LOGO_SIZE, LOGO_SIZE));
-        ui->labelIcon->setFixedWidth(128);
+        ui->labelIcon->setFixedWidth(72);
     }
 
     ui->labelText->setText(text);

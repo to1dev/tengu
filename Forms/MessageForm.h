@@ -45,9 +45,6 @@ public:
 private:
     Ui::MessageForm* ui;
 
-    std::unique_ptr<WindowManager> windowManager_ {
-        std::make_unique<WindowManager>()
-    };
     std::unique_ptr<Frameless> frameless_;
 };
 

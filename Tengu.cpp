@@ -87,7 +87,7 @@ void Tengu::initPopupMenu()
     appMenu->addSeparator();
     QAction* resetDbAction = appMenu->addAction(STR_APP_RESET_DB,
         [this]() { globalManager_->settingManager()->database()->reset(); });
-    resetDbAction->setEnabled(false);
+    resetDbAction->setEnabled(true);
 
     appMenu->addSeparator();
     appMenu->addAction(STR_APP_REBOOT, this, &Tengu::reboot);

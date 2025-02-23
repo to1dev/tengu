@@ -9,8 +9,15 @@ SVGWidget::SVGWidget(
     , clickable_(clickable)
 {
     renderer_ = new QSvgRenderer(file, this);
+    imageSize_ = renderer_->defaultSize();
     if (clickable)
         installEventFilter(this);
+}
+
+QSize SVGWidget::sizeHint() const
+{
+    return QSize(
+        imageSize_.width() + 2 * padding_, imageSize_.height() + 2 * padding_);
 }
 
 void SVGWidget::paintEvent(QPaintEvent* event)
@@ -19,10 +26,8 @@ void SVGWidget::paintEvent(QPaintEvent* event)
     painter.setRenderHint(QPainter::Antialiasing);
     painter.setRenderHint(QPainter::SmoothPixmapTransform);
 
-    QRect paddedRect
-        = rect().adjusted(padding_, padding_, -padding_, -padding_);
-
-    renderer_->render(&painter, paddedRect);
+    QRect drawRect(padding_, padding_, imageSize_.width(), imageSize_.height());
+    renderer_->render(&painter, drawRect);
 }
 
 bool SVGWidget::eventFilter(QObject* watched, QEvent* event)
@@ -35,6 +40,20 @@ bool SVGWidget::eventFilter(QObject* watched, QEvent* event)
         }
     }
     return QWidget::eventFilter(watched, event);
+}
+
+QSize SVGWidget::imageSize() const
+{
+    return imageSize_;
+}
+
+void SVGWidget::setImageSize(const QSize& newImageSize)
+{
+    imageSize_ = newImageSize;
+    setFixedSize(
+        imageSize_.width() + 2 * padding_, imageSize_.height() + 2 * padding_);
+    updateGeometry();
+    update();
 }
 
 bool SVGWidget::clickable() const
@@ -56,6 +75,10 @@ int SVGWidget::padding() const
 void SVGWidget::setPadding(int newPadding)
 {
     padding_ = newPadding;
+    setFixedSize(
+        imageSize_.width() + 2 * padding_, imageSize_.height() + 2 * padding_);
+    updateGeometry();
+    update();
 }
 
 }

@@ -21,10 +21,14 @@ public:
     bool clickable() const;
     void setClickable(bool newClickable);
 
+    QSize imageSize() const;
+    void setImageSize(const QSize &newImageSize);
+
 Q_SIGNALS:
     void clicked();
 
 protected:
+    QSize sizeHint() const override;
     void paintEvent(QPaintEvent* event) override;
     bool eventFilter(QObject* watched, QEvent* event) override;
 
@@ -32,6 +36,7 @@ private:
     QSvgRenderer* renderer_;
     int padding_ { 0 };
     bool clickable_ { false };
+    QSize imageSize_;
 };
 
 }

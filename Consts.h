@@ -36,6 +36,24 @@ inline const QString STR_LINEEDIT_ADDRESS_NAME_PLACEHOLDER
     = QObject::tr("输入地址名称");
 inline const QString STR_BUTTON_CLIPBOARD = QObject::tr("复制助记词到剪贴板");
 
+inline const QString CONFIRM_WALLET_DELETE
+    = QObject::tr("是否确定删除这个钱包！\n本操作不可逆！请务必谨慎！");
+inline const QString NO_VALID_WALLET_NAME
+    = QObject::tr("请输入有效的钱包名称！");
+inline const QString NO_VALID_ADDRESS_NAME
+    = QObject::tr("请输入有效的地址名称！");
+inline const QString NO_VALID_DERIVATION_PATH
+    = QObject::tr("请输入有效的派生路径！");
+inline const QString SAME_WALLET_NAME
+    = QObject::tr("这个钱包名称已经被占用了！");
+inline const QString SAME_MNEMONIC = QObject::tr("这个助记词已经存在了！");
+inline const QString SAME_PRIV = QObject::tr("这个私钥已经存在了！");
+inline const QString SAME_WIF = QObject::tr("这个WIF私钥已经存在了！");
+inline const QString SAME_ADDRESS = QObject::tr("这个地址已经存在了！");
+inline const QString INVALID_MNEMONIC = QObject::tr("这是一个无效助记词！");
+inline const QString INVALID_PRIV = QObject::tr("这是一个无效私钥！");
+inline const QString INVALID_ADDRESS = QObject::tr("这是一个无效地址！");
+
 inline const QString STR_MENU_APP = QObject::tr("快捷方式");
 inline const QString STR_WINDOW_CENTER = QObject::tr("窗体复位");
 inline const QString STR_APP_REBOOT = QObject::tr("重启程序");

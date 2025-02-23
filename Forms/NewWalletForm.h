@@ -18,6 +18,8 @@
 
 #include "Wallets/Core/BaseMnemonic.h"
 
+#include "Forms/MessageForm.h"
+
 using namespace Daitengu::Components;
 using namespace Daitengu::Core;
 using namespace Daitengu::UI;

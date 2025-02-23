@@ -98,6 +98,8 @@ void NewWalletForm::refresh()
 void NewWalletForm::ok()
 {
     if (editName_->text().isEmpty()) {
+        MessageForm mf(this, NO_VALID_WALLET_NAME);
+        mf.exec();
         return;
     }
 }

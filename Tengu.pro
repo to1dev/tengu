@@ -52,6 +52,7 @@ SOURCES += \
     Components/WalletListWidget.cpp \
     Components/WalletPanel.cpp \
     Databases/Database.cpp \
+    Forms/MessageForm.cpp \
     Forms/NewWalletForm.cpp \
     Forms/WalletForm.cpp \
     Layouts/Core/AnimationManager.cpp \
@@ -96,6 +97,7 @@ HEADERS += \
     Components/WalletPanel.h \
     Consts.h \
     Databases/Database.h \
+    Forms/MessageForm.h \
     Forms/NewWalletForm.h \
     Forms/WalletForm.h \
     Globals.h \
@@ -133,6 +135,7 @@ HEADERS += \
     Wallets/Utils/SecureBytes.h
 
 FORMS += \
+    Forms/MessageForm.ui \
     Forms/NewWalletForm.ui \
     Forms/WalletForm.ui \
     Tengu.ui

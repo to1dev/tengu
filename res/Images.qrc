@@ -19,4 +19,26 @@
     <qresource prefix="/Media">
         <file alias="Xmark">Images/Media/xmark.svg</file>
     </qresource>
+    <qresource prefix="/Emoji">
+        <file alias="1">Images/Emoji/wonder.svg</file>
+        <file alias="2">Images/Emoji/shocked.svg</file>
+        <file alias="3">Images/Emoji/annoyed.svg</file>
+        <file alias="4">Images/Emoji/silly.svg</file>
+        <file alias="5">Images/Emoji/grumble.svg</file>
+        <file alias="6">Images/Emoji/cry.svg</file>
+        <file alias="7">Images/Emoji/wonder2.svg</file>
+        <file alias="8">Images/Emoji/dead.svg</file>
+        <file alias="9">Images/Emoji/feeling.svg</file>
+        <file alias="10">Images/Emoji/joker.svg</file>
+        <file alias="11">Images/Emoji/mad.svg</file>
+        <file alias="12">Images/Emoji/peace.svg</file>
+        <file alias="13">Images/Emoji/pity.svg</file>
+        <file alias="14">Images/Emoji/prejudice.svg</file>
+        <file alias="15">Images/Emoji/shocked2.svg</file>
+        <file alias="16">Images/Emoji/suspicious.svg</file>
+        <file alias="17">Images/Emoji/suspicious3.svg</file>
+        <file alias="18">Images/Emoji/blind.svg</file>
+        <file alias="19">Images/Emoji/happy.svg</file>
+        <file alias="20">Images/Emoji/sleep.svg</file>
+    </qresource>
 </RCC>

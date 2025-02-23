@@ -149,7 +149,7 @@ void Frameless::init(const bool isMain)
     if (isMain) {
         SVGWidget* svgIcon = new SVGWidget(STR_MAIN_ICON, bar);
         svgIcon->setContentsMargins(3, 3, 3, 3);
-        svgIcon->setFixedSize(24, 24);
+        svgIcon->setImageSize(QSize(24, 24));
         layout->insertWidget(index++, svgIcon);
     }
 
@@ -163,6 +163,7 @@ void Frameless::init(const bool isMain)
     }
     labelTitle->setText(window_->windowTitle());
     layout->insertWidget(index++, labelTitle);
+
 #ifdef title_always_left
     layout->addStretch(1);
 #endif
@@ -205,7 +206,7 @@ void Frameless::init(const bool isMain)
                         RandomLogos[index].first.size()))
                     .arg(range),
                 topFrame_);
-            svgLogo->setFixedSize(LOGO_SIZE, LOGO_SIZE);
+            svgLogo->setImageSize(QSize(LOGO_SIZE, LOGO_SIZE));
             topLayout->addWidget(svgLogo);
         }
 

@@ -21,7 +21,7 @@ UserCard::UserCard(QWidget* parent)
                 RandomAvatars[index].first.size()))
             .arg(range),
         this, 3);
-    svgAvatar->setFixedSize(AVATAR_SIZE, AVATAR_SIZE);
+    svgAvatar->setImageSize(QSize(AVATAR_SIZE, AVATAR_SIZE));
 
     topLayout->setSpacing(6);
     topLayout->addWidget(svgAvatar);

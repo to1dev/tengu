@@ -97,5 +97,7 @@ void NewWalletForm::refresh()
 
 void NewWalletForm::ok()
 {
-    accept();
+    if (editName_->text().isEmpty()) {
+        return;
+    }
 }

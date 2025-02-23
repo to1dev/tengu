@@ -11,6 +11,7 @@
 
 #include "UI/Frameless.h"
 
+#include "Utils/Encryption.h"
 #include "Utils/NameGenerator.h"
 
 #include "Components/LineEditEx.h"

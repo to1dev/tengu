@@ -21,6 +21,7 @@ MessageForm::MessageForm(QWidget* parent, const QString& text, int buttons,
         icon = new SVGWidget(QString(":/Emoji/%1").arg(emoji), ui->labelIcon);
     } else {
         icon = new SVGWidget(
+            // TODO
             QString(":/Emoji/%1").arg(randomIndex(1, 20)), ui->labelIcon);
     }
     if (icon) {

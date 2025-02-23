@@ -102,4 +102,9 @@ void NewWalletForm::ok()
         mf.exec();
         return;
     }
+
+    QString name = editName_->text().simplified();
+    QString mnemonic = view_->mnemonic().simplified();
+
+    QString nameHash = Encryption::easyHash(name);
 }

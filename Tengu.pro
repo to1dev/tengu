@@ -55,13 +55,13 @@ SOURCES += \
     Forms/MessageForm.cpp \
     Forms/NewWalletForm.cpp \
     Forms/WalletForm.cpp \
-    Layouts/Core/AnimationManager.cpp \
-    Layouts/Core/GridSystem.cpp \
-    Layouts/Core/LayoutFactory.cpp \
-    Layouts/Core/LayoutManager.cpp \
-    Layouts/Core/PredefinedLayouts.cpp \
-    Layouts/Core/WindowConfig.cpp \
-    Layouts/Utils/GeometryUtils.cpp \
+    Layouts/AnimationController.cpp \
+    Layouts/GridLayoutEngine.cpp \
+    Layouts/LayoutEngine.cpp \
+    Layouts/LayoutOrchestrator.cpp \
+    Layouts/PredefinedLayoutEngine.cpp \
+    Layouts/ScreenManager.cpp \
+    Layouts/WindowState.cpp \
     Main.cpp \
     Managers/GlobalManager.cpp \
     Managers/ResourceManager.cpp \
@@ -101,14 +101,13 @@ HEADERS += \
     Forms/NewWalletForm.h \
     Forms/WalletForm.h \
     Globals.h \
-    Layouts/Core/AnimationManager.h \
-    Layouts/Core/GridSystem.h \
-    Layouts/Core/LayoutFactory.h \
-    Layouts/Core/LayoutManager.h \
-    Layouts/Core/PredefinedLayouts.h \
-    Layouts/Core/Types.h \
-    Layouts/Core/WindowConfig.h \
-    Layouts/Utils/GeometryUtils.h \
+    Layouts/AnimationController.h \
+    Layouts/GridLayoutEngine.h \
+    Layouts/LayoutEngine.h \
+    Layouts/LayoutOrchestrator.h \
+    Layouts/PredefinedLayoutEngine.h \
+    Layouts/ScreenManager.h \
+    Layouts/WindowState.h \
     Managers/GlobalManager.h \
     Managers/ResourceManager.h \
     Managers/SettingManager.h \

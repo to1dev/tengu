@@ -24,6 +24,9 @@ inline constexpr auto NAME_PATTERN = "<<i|s>v(mon|chu|zard|rtle) the X>";
 
 inline constexpr char SPLASH_PATH[] = ":/Splash/%1";
 
+inline constexpr char STR_ADDRESS_NAME[] = "Address %1";
+inline constexpr char STR_DEFAULT_ADDRESS_NAME[] = "Address 1";
+
 inline constexpr QMargins DEFAULT_GROUP_MARGINS = QMargins(20, 24, 20, 20);
 inline constexpr int DEFAULT_SPACING = 9;
 inline constexpr int DEFAULT_MAXLENGTH = 32;

@@ -18,11 +18,15 @@
 #include "Components/MnemonicView.h"
 
 #include "Wallets/Core/BaseMnemonic.h"
+#include "Wallets/Core/SolanaWallet.h"
+
+#include "Databases/Database.h"
 
 #include "Forms/MessageForm.h"
 
 using namespace Daitengu::Components;
 using namespace Daitengu::Core;
+using namespace Daitengu::Databases;
 using namespace Daitengu::UI;
 using namespace Daitengu::Utils;
 using namespace Daitengu::Wallets;
@@ -55,6 +59,8 @@ private:
         std::make_unique<WindowManager>()
     };
     std::unique_ptr<Frameless> frameless_;
+
+    std::shared_ptr<Wallet> walletRecord_;
 
     MnemonicView* view_;
     LineEditEx* editName_;

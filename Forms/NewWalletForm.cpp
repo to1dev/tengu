@@ -107,4 +107,47 @@ void NewWalletForm::ok()
     QString mnemonic = view_->mnemonic().simplified();
 
     QString nameHash = Encryption::easyHash(name);
+    QString mnemonicHash = Encryption::easyHash(mnemonic);
+
+    walletRecord_ = std::make_shared<Wallet>();
+    walletRecord_->nameHash = nameHash.toStdString();
+    walletRecord_->mnemonicHash = mnemonicHash.toStdString();
+    DBErrorType error
+        = globalManager_->settingManager()->database()->walletRepo()->before(
+            *walletRecord_);
+    if (DBErrorType::none == error) {
+        SolanaWallet wallet;
+        wallet.fromMnemonic(mnemonic.toStdString());
+        std::string encrypted = Encryption::encryptText(wallet.mnemonic());
+        {
+            walletRecord_->id = -1;
+            walletRecord_->type = 0;
+            walletRecord_->groupId = 0;
+            walletRecord_->hash = Encryption::genRandomHash();
+            walletRecord_->name = name.toStdString();
+            walletRecord_->mnemonic = encrypted;
+            // walletRecord_->passphrase = "";
+            // walletRecord_->extendedPublicKey = "";
+            // walletRecord_->masterPrivateKey = "";
+        }
+
+        auto walletId = globalManager_->settingManager()
+                            ->database()
+                            ->walletRepo()
+                            ->insert(*walletRecord_);
+
+        std::string address = wallet.getAddress();
+        std::string addressNameHash
+            = Encryption::easyHash(std::string(STR_DEFAULT_ADDRESS_NAME));
+        std::string addressHash = Encryption::easyHash(address);
+
+        Address addressRecord {
+            .id = -1,
+            .type = 0,
+            .walletId = walletId,
+            .nameHash = addressNameHash,
+        };
+
+        accept();
+    }
 }

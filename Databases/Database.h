@@ -29,52 +29,52 @@ enum class WalletGroupType {
 };
 
 struct WalletGroup {
-    int id;
-    std::string name;
-    int type;
+    int id = 0;
+    int type = 0;
+    std::string name = "";
 };
 
 struct Wallet {
     int id = 0;
     int type = 0;
     int groupId = 0;
-    std::string hash;
-    std::string name;
-    std::string nameHash;
-    std::string mnemonic;
-    std::string mnemonicHash;
-    std::string passphrase;
-    std::string masterPrivateKey;
-    std::string extendedPublicKey;
+    std::string hash = "";
+    std::string name = "";
+    std::string nameHash = "";
+    std::string mnemonic = "";
+    std::string mnemonicHash = "";
+    std::string passphrase = "";
+    std::string masterPrivateKey = "";
+    std::string extendedPublicKey = "";
 };
 
 struct Address {
     int id = 0;
     int type = 0;
     int walletId = 0;
-    std::string hash;
-    std::string name;
-    std::string nameHash;
-    std::string address;
-    std::string addressHash;
-    std::string derivationPath;
-    std::string privateKey;
-    std::string publicKey;
+    std::string hash = "";
+    std::string name = "";
+    std::string nameHash = "";
+    std::string address = "";
+    std::string addressHash = "";
+    std::string derivationPath = "";
+    std::string privateKey = "";
+    std::string publicKey = "";
 };
 
 struct Tag {
-    int id;
-    std::string name;
-    std::string description;
-    long long createTimestamp;
-    long long updateTimestamp;
+    int id = 0;
+    std::string name = 0;
+    std::string description = "";
+    long long createTimestamp = 0;
+    long long updateTimestamp = 0;
 };
 
 struct addressTag {
-    int id;
-    int addressId;
-    int tagId;
-    long long timestamp;
+    int id = 0;
+    int addressId = 0;
+    int tagId = 0;
+    long long timestamp = 0;
 };
 
 enum class OrderType {
@@ -95,34 +95,34 @@ enum class OrderStatus {
 };
 
 struct Order {
-    int id;
-    int walletId;
-    std::string symbol;
-    std::string side;
-    double quantity;
-    double price;
-    double stopPrice;
-    int orderType;
-    int status;
-    double executedQuantity;
-    double avgExecutionPrice;
-    long long createTimestamp;
-    long long updateTimestamp;
-    bool trailingStopEnabled;
-    double trailingStopOffset;
-    double currentTrailingStopPrice;
-    bool trailingTakeProfitEnabled;
-    double trailingTakeProfitOffset;
-    double currentTrailingTakeProfitPrice;
+    int id = 0;
+    int walletId = 0;
+    std::string symbol = "";
+    std::string side = "";
+    double quantity = 0.0;
+    double price = 0.0;
+    double stopPrice = 0.0;
+    int orderType = 0;
+    int status = 0;
+    double executedQuantity = 0.0;
+    double avgExecutionPrice = 0.0;
+    long long createTimestamp = 0;
+    long long updateTimestamp = 0;
+    bool trailingStopEnabled = false;
+    double trailingStopOffset = 0.0;
+    double currentTrailingStopPrice = 0.0;
+    bool trailingTakeProfitEnabled = false;
+    double trailingTakeProfitOffset = 0.0;
+    double currentTrailingTakeProfitPrice = 0.0;
 };
 
 struct Subscription {
-    int id;
-    int walletId;
-    bool subscribed;
-    bool followed;
-    bool pinned;
-    long long timestamp;
+    int id = 0;
+    int walletId = 0;
+    bool subscribed = false;
+    bool followed = false;
+    bool pinned = false;
+    long long timestamp = 0;
 };
 
 enum class DBErrorType {
@@ -165,8 +165,8 @@ inline auto initStorage(const QString& dataPath)
     return make_storage(filePath.toStdString(),
         make_table("groups",
             make_column("id", &WalletGroup::id, primary_key().autoincrement()),
-            make_column("name", &WalletGroup::name),
-            make_column("type", &WalletGroup::type)),
+            make_column("type", &WalletGroup::type),
+            make_column("name", &WalletGroup::name)),
 
         make_table("wallets",
             make_column("id", &Wallet::id, primary_key().autoincrement()),
@@ -295,7 +295,7 @@ public:
 class WalletRepo : public IWalletRepo {
 public:
     WalletRepo(Storage* storage);
-    DBErrorType before(const Wallet& group, bool update) override;
+    DBErrorType before(const Wallet& wallet, bool update) override;
     int insert(const Wallet& wallet) override;
     void update(const Wallet& wallet) override;
     void remove(int id) override;
@@ -321,7 +321,7 @@ public:
 class AddressRepo : public IAddressRepo {
 public:
     AddressRepo(Storage* storage);
-    DBErrorType before(const Address& group, bool update) override;
+    DBErrorType before(const Address& address, bool update) override;
     int insert(const Address& address) override;
     void update(const Address& address) override;
     void remove(int id) override;

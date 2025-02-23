@@ -55,8 +55,22 @@ WalletRepo::WalletRepo(Storage* storage)
 {
 }
 
-DBErrorType WalletRepo::before(const Wallet& group, bool update)
+DBErrorType WalletRepo::before(const Wallet& wallet, bool update)
 {
+    int countName = storage_->count<Wallet>(
+        where(c(&Wallet::nameHash) == wallet.nameHash));
+    if (countName > 0) {
+        return DBErrorType::haveName;
+    }
+
+    if (!update) {
+        int countMnemonic = storage_->count<Wallet>(
+            where(c(&Wallet::mnemonicHash) == wallet.mnemonicHash));
+        if (countMnemonic > 0) {
+            return DBErrorType::haveMnemonic;
+        }
+    }
+
     return DBErrorType::none;
 }
 
@@ -98,7 +112,7 @@ AddressRepo::AddressRepo(Storage* storage)
 {
 }
 
-DBErrorType AddressRepo::before(const Address& group, bool update)
+DBErrorType AddressRepo::before(const Address& address, bool update)
 {
     return DBErrorType::none;
 }

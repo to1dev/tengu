@@ -19,7 +19,7 @@ using namespace sqlite_orm;
 
 using namespace Daitengu::Wallets;
 
-namespace Daitengu::Core {
+namespace Daitengu::Databases {
 
 inline constexpr char DB_NAME[] = "tengu";
 

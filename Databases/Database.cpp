@@ -1,6 +1,6 @@
 #include "Database.h"
 
-namespace Daitengu::Core {
+namespace Daitengu::Databases {
 
 DatabaseContext::DatabaseContext(const QString& dataPath)
     : storage_(std::make_unique<Storage>(initStorage(dataPath)))

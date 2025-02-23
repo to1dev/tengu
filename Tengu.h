@@ -16,6 +16,7 @@
 #include "Components/TxListWidget.h"
 #include "Components/WalletPanel.h"
 
+#include "Forms/MessageForm.h"
 #include "Forms/WalletForm.h"
 
 using namespace Daitengu::Components;

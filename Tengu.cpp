@@ -62,6 +62,8 @@ void Tengu::reboot()
 
 void Tengu::about()
 {
+    MessageForm mf(this);
+    mf.exec();
 }
 
 void Tengu::wallet()

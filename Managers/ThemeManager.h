@@ -102,12 +102,11 @@ inline const ankerl::unordered_dense::map<std::string, QPalette::ColorRole>
         { "placeholderText", QPalette::PlaceholderText },
     };
 
-inline constexpr std::array<std::pair<const char*, FontData>, 5> Fonts = { {
+inline constexpr std::array<std::pair<const char*, FontData>, 4> Fonts = { {
     { "TsangerLiyuan", { false, false, "TsangerLiyuan" } },
     { "Lobster Two", { false, false, "LobsterTwo" } },
     { "Pirata One", { false, false, "PirataOne" } },
     { "Jockey One", { false, false, "JockeyOne" } },
-    { "LXGWWenKai", { false, false, "LXGWWenKai" } },
 } };
 
 typedef ankerl::unordered_dense::map<CursorName, QCursor> CursorList;

@@ -15,6 +15,7 @@ using json = nlohmann::json;
 #include "Utils/PathUtils.hpp"
 
 using namespace Daitengu::Core;
+using namespace Daitengu::Databases;
 using namespace Daitengu::Utils;
 
 namespace Daitengu::Core {

@@ -33,7 +33,8 @@ std::string BaseWallet::generateMnemonic(int strength)
 void BaseWallet::fromMnemonic(
     const std::string& mnemonic, const std::string& passphrase)
 {
-    if (mnemonic_.empty()) {
+
+    if (mnemonic.empty()) {
         throw std::invalid_argument("Mnemonic cannot be empty.");
     }
 

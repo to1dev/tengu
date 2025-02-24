@@ -20,7 +20,6 @@ find_package(Qt5 REQUIRED COMPONENTS
     Svg
     Charts
     WebSockets
-    WinExtras
 )
 
 if (WIN32)
@@ -39,6 +38,7 @@ set(PKG_FILES
 )
 
 set(SOURCE_FILES
+    Clients/Solana/gRPC/GeyserClientWorker.cpp
     Clients/Solana/gRPC/SwapFilter.cpp
     Clients/Solana/gRPC/TransactionFilter.cpp
     Components/AnimatedTabWidget.cpp
@@ -86,6 +86,7 @@ set(SOURCE_FILES
 )
 
 set(HEADER_FILES
+    Clients/Solana/gRPC/GeyserClientWorker.h
     Clients/Solana/gRPC/SwapFilter.h
     Clients/Solana/gRPC/TransactionFilter.h
     Components/AnimatedTabWidget.h
@@ -220,7 +221,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt5::Svg
     Qt5::Charts
     Qt5::WebSockets
-    Qt5::WinExtras
     gRPC::grpc++
     protobuf::libprotobuf
     absl::log

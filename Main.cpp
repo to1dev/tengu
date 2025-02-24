@@ -4,7 +4,9 @@
 
 #include <QApplication>
 
+#ifdef WIN32
 #include <windows.h>
+#endif
 
 #include "Consts.h"
 
@@ -29,6 +31,14 @@ using namespace Daitengu::Utils;
 
 int main(int argc, char* argv[])
 {
+#ifdef WIN32
+    if (AttachConsole(ATTACH_PARENT_PROCESS)) {
+        FILE* fp = nullptr;
+        freopen_s(&fp, "CONOUT$", "w", stdout);
+        freopen_s(&fp, "CONOUT$", "w", stderr);
+    }
+#endif
+
     int currentExitCode = 0;
 
     QByteArray platform = "windows:fontengine=freetype";
@@ -47,13 +57,6 @@ int main(int argc, char* argv[])
 #endif
     QCoreApplication::setAttribute(Qt::AA_Use96Dpi);
     QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
-#endif
-
-#ifdef _WIN32
-    if (AttachConsole(ATTACH_PARENT_PROCESS)) {
-        freopen("CONOUT$", "w", stdout);
-        freopen("CONOUT$", "w", stderr);
-    }
 #endif
 
 #ifdef USE_TEST

@@ -52,6 +52,8 @@ struct Address {
     int id = 0;
     int type = 0;
     int walletId = 0;
+    int chainType = 0;
+    int networkType = 0;
     std::string hash = "";
     std::string name = "";
     std::string nameHash = "";
@@ -185,6 +187,8 @@ inline auto initStorage(const QString& dataPath)
             make_column("id", &Address::id, primary_key().autoincrement()),
             make_column("type", &Address::type),
             make_column("walletId", &Address::walletId),
+            make_column("chainType", &Address::chainType),
+            make_column("networkType", &Address::networkType),
             make_column("hash", &Address::hash),
             make_column("name", &Address::name),
             make_column("nameHash", &Address::nameHash),

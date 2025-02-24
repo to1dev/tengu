@@ -4,6 +4,8 @@
 
 #include <QApplication>
 
+#include <windows.h>
+
 #include "Consts.h"
 
 #include "Components/Splash.h"
@@ -45,6 +47,13 @@ int main(int argc, char* argv[])
 #endif
     QCoreApplication::setAttribute(Qt::AA_Use96Dpi);
     QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+#endif
+
+#ifdef _WIN32
+    if (AttachConsole(ATTACH_PARENT_PROCESS)) {
+        freopen("CONOUT$", "w", stdout);
+        freopen("CONOUT$", "w", stderr);
+    }
 #endif
 
 #ifdef USE_TEST

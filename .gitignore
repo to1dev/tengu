@@ -34,5 +34,7 @@
 # Custom
 .env
 /build
+/tmp
+/.vscode
 /Security/Security.h
 *.pro.user

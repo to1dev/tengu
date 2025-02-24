@@ -104,7 +104,6 @@ void SplashThreadEx::checkPause()
     mutex_.unlock();
 }
 
-#if QT_VERSION > QT_VERSION_CHECK(6, 0, 0)
 HBITMAP QImageToHBITMAP(const QImage& image, bool premultiplied = false)
 {
     try {
@@ -140,7 +139,6 @@ HBITMAP QImageToHBITMAPWithPremultipliedAlpha(const QImage& image)
 {
     return QImageToHBITMAP(image, true);
 }
-#endif
 
 Splash::Splash(const QPixmap& pixmap, const SplashConfig& config)
     : QSplashScreen(pixmap)
@@ -221,14 +219,8 @@ void Splash::updateLayeredWindow(const QPixmap& pixmap)
             return;
         }
 
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-        auto hBitmap
-            = QtWin::toHBITMAP(pixmap.isNull() ? this->pixmap() : pixmap,
-                QtWin::HBitmapPremultipliedAlpha);
-#else
         auto hBitmap = QImageToHBITMAPWithPremultipliedAlpha(
             (pixmap.isNull() ? this->pixmap() : pixmap).toImage());
-#endif
 
         BitmapSelector selector(dcMem.get(), hBitmap);
 

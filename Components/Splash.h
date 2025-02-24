@@ -5,11 +5,10 @@
 #include <stdexcept>
 
 #include <QDebug>
+#include <QMutex>
 #include <QSplashScreen>
 #include <QThread>
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-#include <QtWinExtras>
-#endif
+#include <QWaitCondition>
 
 #include <windows.h>
 

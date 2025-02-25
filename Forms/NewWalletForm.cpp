@@ -75,6 +75,11 @@ NewWalletForm::~NewWalletForm()
     delete ui;
 }
 
+std::shared_ptr<Wallet> NewWalletForm::walletRecord() const
+{
+    return walletRecord_;
+}
+
 void NewWalletForm::refresh()
 {
     QObject* obj = sender();
@@ -126,9 +131,6 @@ void NewWalletForm::ok()
             walletRecord_->hash = Encryption::genRandomHash();
             walletRecord_->name = name.toStdString();
             walletRecord_->mnemonic = encrypted;
-            // walletRecord_->passphrase = "";
-            // walletRecord_->extendedPublicKey = "";
-            // walletRecord_->masterPrivateKey = "";
         }
 
         auto walletId = globalManager_->settingManager()

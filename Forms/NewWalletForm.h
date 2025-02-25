@@ -45,6 +45,8 @@ public:
         const std::shared_ptr<const GlobalManager>& globalManager = nullptr);
     ~NewWalletForm();
 
+    std::shared_ptr<Wallet> walletRecord() const;
+
 private:
     void refresh();
 
@@ -60,10 +62,10 @@ private:
     };
     std::unique_ptr<Frameless> frameless_;
 
-    std::shared_ptr<Wallet> walletRecord_;
-
     MnemonicView* view_;
     LineEditEx* editName_;
+
+    std::shared_ptr<Wallet> walletRecord_;
 };
 
 #endif // NEWWALLETFORM_H

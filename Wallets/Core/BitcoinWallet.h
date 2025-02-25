@@ -5,16 +5,23 @@
 
 namespace Daitengu::Wallets {
 
+struct BitcoinNetwork : public Network {
+    enum class Type {
+        REGTEST = static_cast<int>(Network::Type::DEVNET) + 1,
+        TEST4 = REGTEST + 1
+    };
+};
+
 class BitcoinWallet : public ChainWallet {
 public:
-    BitcoinWallet(NetworkType network = NetworkType::MAINNET);
+    BitcoinWallet(Network::Type network = Network::Type::MAINNET);
 
 protected:
-    const std::map<NetworkType, ChainNetwork> networkConfigs_ = {
+    const std::map<Network::Type, ChainNetwork> networkConfigs_ = {
         {
-            NetworkType::MAINNET,
+            Network::Type::MAINNET,
             {
-                NetworkType::MAINNET,
+                Network::Type::MAINNET,
                 "mainnet",
                 1,
                 AddressEncoding::BECH32M,
@@ -28,10 +35,26 @@ protected:
             },
         },
         {
-            NetworkType::TESTNET,
+            Network::Type::TESTNET,
             {
-                NetworkType::TESTNET,
+                Network::Type::TESTNET,
                 "testnet",
+                2,
+                AddressEncoding::BECH32M,
+                "",
+                { 0x6F },
+                "tb",
+                0x6F,
+                false,
+                nullptr,
+                nullptr,
+            },
+        },
+        {
+            static_cast<Network::Type>(BitcoinNetwork::Type::REGTEST),
+            {
+                static_cast<Network::Type>(BitcoinNetwork::Type::REGTEST),
+                "regtest",
                 2,
                 AddressEncoding::BECH32M,
                 "",

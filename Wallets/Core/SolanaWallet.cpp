@@ -2,7 +2,7 @@
 
 namespace Daitengu::Wallets {
 
-SolanaWallet::SolanaWallet(NetworkType network)
+SolanaWallet::SolanaWallet(Network::Type network)
     : ChainWallet(ChainType::SOLANA, network)
 {
 }

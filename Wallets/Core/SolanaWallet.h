@@ -14,8 +14,11 @@
 namespace Daitengu::Wallets {
 
 class SolanaWallet : public ChainWallet {
+    static inline constexpr std::string_view DEFAULT_DERIVATION_PATH
+        = "m/44'/501'/0'";
+
 public:
-    SolanaWallet(NetworkType network = NetworkType::MAINNET);
+    SolanaWallet(Network::Type network = Network::Type::MAINNET);
 
     bool solanaMode() const;
     void setSolanaMode(bool newSolanaMode);
@@ -26,11 +29,11 @@ public:
     [[nodiscard]] KeyPair deriveKeyPair(std::uint32_t index = 0) override;
 
 protected:
-    const std::map<NetworkType, ChainNetwork> networkConfigs_ = {
+    const std::map<Network::Type, ChainNetwork> networkConfigs_ = {
         {
-            NetworkType::MAINNET,
+            Network::Type::MAINNET,
             {
-                NetworkType::MAINNET,
+                Network::Type::MAINNET,
                 "mainnet-beta",
                 101,
                 AddressEncoding::BASE58,
@@ -44,9 +47,9 @@ protected:
             },
         },
         {
-            NetworkType::TESTNET,
+            Network::Type::TESTNET,
             {
-                NetworkType::TESTNET,
+                Network::Type::TESTNET,
                 "testnet",
                 102,
                 AddressEncoding::BASE58,
@@ -60,9 +63,9 @@ protected:
             },
         },
         {
-            NetworkType::DEVNET,
+            Network::Type::DEVNET,
             {
-                NetworkType::DEVNET,
+                Network::Type::DEVNET,
                 "devnet",
                 103,
                 AddressEncoding::BASE58,

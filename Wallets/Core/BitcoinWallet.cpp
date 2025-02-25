@@ -2,7 +2,7 @@
 
 namespace Daitengu::Wallets {
 
-BitcoinWallet::BitcoinWallet(NetworkType network)
+BitcoinWallet::BitcoinWallet(Network::Type network)
     : ChainWallet(ChainType::BITCOIN, network)
 {
 }

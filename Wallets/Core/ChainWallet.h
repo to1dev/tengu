@@ -12,19 +12,19 @@ namespace Daitengu::Wallets {
 class ChainWallet : public BaseWallet {
 public:
     explicit ChainWallet(
-        ChainType chainType, NetworkType network = NetworkType::MAINNET);
+        ChainType chainType, Network::Type network = Network::Type::MAINNET);
 
-    void switchNetwork(NetworkType network);
+    void switchNetwork(Network::Type network);
 
-    NetworkType currentNetwork() const;
+    Network::Type currentNetwork() const;
 
     const ChainNetwork& getCurrentNetworkConfig() const;
 
 protected:
     ChainType chainType_;
     ChainConfig config_;
-    NetworkType currentNetwork_;
-    std::map<NetworkType, ChainNetwork> networkConfigs_;
+    Network::Type currentNetwork_;
+    std::map<Network::Type, ChainNetwork> networkConfigs_;
 
     virtual void onNetworkChanged() = 0;
 

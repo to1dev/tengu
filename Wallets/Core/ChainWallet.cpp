@@ -2,19 +2,19 @@
 
 namespace Daitengu::Wallets {
 
-ChainWallet::ChainWallet(ChainType chainType, NetworkType network)
+ChainWallet::ChainWallet(ChainType chainType, Network::Type network)
     : chainType_(chainType)
     , currentNetwork_(network)
 {
     initChainConfig();
 }
 
-void ChainWallet::switchNetwork(NetworkType network)
+void ChainWallet::switchNetwork(Network::Type network)
 {
     currentNetwork_ = network;
 }
 
-NetworkType ChainWallet::currentNetwork() const
+Network::Type ChainWallet::currentNetwork() const
 {
     return currentNetwork_;
 }

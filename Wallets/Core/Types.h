@@ -15,10 +15,12 @@ enum class ChainType {
     BNBCHAIN,
 };
 
-enum class NetworkType {
-    MAINNET,
-    TESTNET,
-    DEVNET,
+struct Network {
+    enum class Type {
+        MAINNET,
+        TESTNET,
+        DEVNET,
+    };
 };
 
 enum class AddressEncoding {
@@ -39,7 +41,7 @@ struct ChainConfig {
 };
 
 struct ChainNetwork {
-    NetworkType type;
+    Network::Type type;
     std::string networkName;
     std::uint64_t chainId;
     AddressEncoding addressEncoding;

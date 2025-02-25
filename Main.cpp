@@ -68,7 +68,7 @@ int main(int argc, char* argv[])
     do {
         QApplication a(argc, argv);
 
-        Splash splash(QPixmap(QString(SPLASH_PATH).arg(randomIndex(1, 4))));
+        Splash splash(QPixmap(QString(SPLASH_PATH).arg(randomIndex(1, 2))));
         splash.stayOnTop();
         splash.show();
 

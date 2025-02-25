@@ -62,7 +62,7 @@ void Tengu::reboot()
 
 void Tengu::about()
 {
-    MessageForm mf(this);
+    MessageForm mf(this, "<strong>关于</strong> 这个程序！<p>Hello world!</p>");
     mf.exec();
 }
 

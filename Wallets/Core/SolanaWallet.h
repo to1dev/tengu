@@ -14,10 +14,10 @@
 namespace Daitengu::Wallets {
 
 class SolanaWallet : public ChainWallet {
+public:
     static inline constexpr std::string_view DEFAULT_DERIVATION_PATH
         = "m/44'/501'/0'";
 
-public:
     SolanaWallet(Network::Type network = Network::Type::MAINNET);
 
     bool solanaMode() const;

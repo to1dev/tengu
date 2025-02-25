@@ -38,6 +38,7 @@ set(PKG_FILES
 )
 
 set(SOURCE_FILES
+    Clients/Solana/gRPC/GeyserClientManager.cpp
     Clients/Solana/gRPC/GeyserClientWorker.cpp
     Clients/Solana/gRPC/SwapFilter.cpp
     Clients/Solana/gRPC/TransactionFilter.cpp
@@ -86,6 +87,7 @@ set(SOURCE_FILES
 )
 
 set(HEADER_FILES
+    Clients/Solana/gRPC/GeyserClientManager.h
     Clients/Solana/gRPC/GeyserClientWorker.h
     Clients/Solana/gRPC/SwapFilter.h
     Clients/Solana/gRPC/TransactionFilter.h

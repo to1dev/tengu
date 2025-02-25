@@ -161,5 +161,22 @@ void NewWalletForm::ok()
             addressRecord);
 
         accept();
+    } else {
+        switch (error) {
+        case DBErrorType::haveName: {
+            MessageForm mf(this, SAME_WALLET_NAME);
+            mf.exec();
+            break;
+        }
+
+        case DBErrorType::haveMnemonic: {
+            MessageForm mf(this, SAME_MNEMONIC);
+            mf.exec();
+            break;
+        }
+
+        default:
+            break;
+        }
     }
 }

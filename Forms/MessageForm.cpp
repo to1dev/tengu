@@ -1,8 +1,8 @@
 #include "MessageForm.h"
 #include "ui_MessageForm.h"
 
-MessageForm::MessageForm(QWidget* parent, const QString& title,
-    const QString& text, int buttons, int emoji)
+MessageForm::MessageForm(QWidget* parent, const QString& text,
+    const QString& title, int buttons, int emoji)
     : QDialog(parent)
     , ui(new Ui::MessageForm)
 {

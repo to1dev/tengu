@@ -48,7 +48,7 @@ inline const QString NO_VALID_ADDRESS_NAME
 inline const QString NO_VALID_DERIVATION_PATH
     = QObject::tr("请输入有效的派生路径！");
 inline const QString SAME_WALLET_NAME
-    = QObject::tr("这个钱包名称已经被占用了！");
+    = QObject::tr("这个钱包名称已经被占用了！<p>请输入新的钱包名称。</p>");
 inline const QString SAME_MNEMONIC = QObject::tr("这个助记词已经存在了！");
 inline const QString SAME_PRIV = QObject::tr("这个私钥已经存在了！");
 inline const QString SAME_WIF = QObject::tr("这个WIF私钥已经存在了！");

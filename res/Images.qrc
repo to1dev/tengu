@@ -27,6 +27,10 @@
         <file alias="mnemonic.svg">Images/List/mnemonic.svg</file>
         <file alias="token.svg">Images/List/token.svg</file>
     </qresource>
+    <qresource prefix="/Badges">
+        <file alias="check.svg">Images/Badges/check.svg</file>
+        <file alias="bookmark.svg">Images/Badges/bookmark.svg</file>
+    </qresource>
     <qresource prefix="/Emoji">
         <file alias="1">Images/Emoji/wonder.svg</file>
         <file alias="2">Images/Emoji/shocked.svg</file>

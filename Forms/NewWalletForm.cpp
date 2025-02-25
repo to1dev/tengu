@@ -137,16 +137,28 @@ void NewWalletForm::ok()
                             ->insert(*walletRecord_);
 
         std::string address = wallet.getAddress();
-        std::string addressNameHash
-            = Encryption::easyHash(std::string(STR_DEFAULT_ADDRESS_NAME));
+        std::string addressName = std::string(STR_DEFAULT_ADDRESS_NAME);
+        std::string addressNameHash = Encryption::easyHash(addressName);
         std::string addressHash = Encryption::easyHash(address);
 
         Address addressRecord {
             .id = -1,
             .type = 0,
             .walletId = walletId,
+            .chainType = static_cast<int>(ChainType::SOLANA),
+            .hash = Encryption::genRandomHash(),
+            .name = addressName,
             .nameHash = addressNameHash,
+            .address = address,
+            .addressHash = addressHash,
+            .derivationPath
+            = std::string(SolanaWallet::DEFAULT_DERIVATION_PATH),
+            .privateKey = Encryption::encryptText(wallet.getPrivateKey()),
+            .publicKey = wallet.getAddress(),
         };
+
+        globalManager_->settingManager()->database()->addressRepo()->insert(
+            addressRecord);
 
         accept();
     }

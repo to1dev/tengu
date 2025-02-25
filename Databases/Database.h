@@ -133,32 +133,6 @@ enum class DBErrorType {
     haveMnemonic,
 };
 
-inline int chainTypeToInt(ChainType ct)
-{
-    return static_cast<int>(ct);
-}
-
-inline ChainType intToChainType(int val)
-{
-    if (val < 0 || val > static_cast<int>(ChainType::BNBCHAIN)) {
-        throw DatabaseException("Invalid ChainType from DB");
-    }
-    return static_cast<ChainType>(val);
-}
-
-inline int networkTypeToInt(NetworkType nt)
-{
-    return static_cast<int>(nt);
-}
-
-inline NetworkType intToNetworkType(int val)
-{
-    if (val < 0 || val > static_cast<int>(NetworkType::DEVNET)) {
-        throw DatabaseException("Invalid NetworkType from DB");
-    }
-    return static_cast<NetworkType>(val);
-}
-
 inline auto initStorage(const QString& dataPath)
 {
     QString filePath = QDir::toNativeSeparators(

@@ -22,10 +22,6 @@ find_package(Qt5 REQUIRED COMPONENTS
     WebSockets
 )
 
-if (WIN32)
-    add_definitions(-DQT_STATIC)
-endif()
-
 find_package(gRPC CONFIG REQUIRED)
 find_package(Protobuf CONFIG REQUIRED)
 find_package(absl CONFIG REQUIRED)
@@ -228,8 +224,17 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     absl::log
 )
 
+if (WIN32)
+    #add_definitions(-DQT_STATIC)
+    #add_definitions(-DWIN32_LEAN_AND_MEAN)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE
+        WIN32_LEAN_AND_MEAN
+    )
+endif()
+
 target_compile_definitions(${PROJECT_NAME} PRIVATE
     USE_TEST
+    QT_STATIC
     QT_NO_KEYWORDS
 )
 

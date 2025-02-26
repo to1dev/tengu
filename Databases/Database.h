@@ -258,7 +258,9 @@ private:
     Storage* storage_;
 };
 
-class IWalletRepo {
+class IWalletRepo : public QObject {
+    Q_OBJECT
+
 public:
     virtual ~IWalletRepo() = default;
     virtual DBErrorType before(const Wallet& group, bool update = false) = 0;
@@ -268,11 +270,14 @@ public:
     virtual std::optional<Wallet> get(int id) = 0;
     virtual std::vector<Wallet> getAll() = 0;
     virtual std::vector<Wallet> getByGroup(int groupId) = 0;
+
+Q_SIGNALS:
+    void inserted();
+    void updated(const Wallet& wallet);
+    void removed(int id);
 };
 
-class WalletRepo : public QObject, public IWalletRepo {
-    Q_OBJECT
-
+class WalletRepo : public IWalletRepo {
 public:
     WalletRepo(Storage* storage);
     DBErrorType before(const Wallet& wallet, bool update) override;
@@ -282,11 +287,6 @@ public:
     std::optional<Wallet> get(int id) override;
     std::vector<Wallet> getAll() override;
     std::vector<Wallet> getByGroup(int groupId) override;
-
-Q_SIGNALS:
-    void inserted();
-    void updated(const Wallet& wallet);
-    void removed(int id);
 
 private:
     Storage* storage_;

@@ -61,6 +61,7 @@ public:
     bool focusChanged();
 
     void add(const Wallet& wallet, int index = 0);
+    void load(const std::vector<Wallet>& wallets);
     void update(const Wallet& wallet);
     void purge();
 

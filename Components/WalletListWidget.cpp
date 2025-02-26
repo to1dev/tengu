@@ -74,6 +74,18 @@ void WalletListWidget::add(const Wallet& wallet, int index)
     }
 }
 
+void WalletListWidget::load(const std::vector<Wallet>& wallets)
+{
+    setUpdatesEnabled(false);
+
+    int index = 0;
+    for (const Wallet& wallet : wallets) {
+        add(wallet, index++);
+    }
+
+    setUpdatesEnabled(true);
+}
+
 void WalletListWidget::update(const Wallet& wallet)
 {
     QListWidgetItem* item = currentItem();

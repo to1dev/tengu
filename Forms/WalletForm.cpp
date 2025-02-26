@@ -45,6 +45,12 @@ WalletForm::WalletForm(
     connect(ui->ButtonOK, &QPushButton::clicked, this, &WalletForm::ok);
     connect(ui->ButtonNewWallet, &QPushButton::clicked, this,
         &WalletForm::newWallet);
+    connect(ui->ButtonDeleteWallet, &QPushButton::clicked, this,
+        &WalletForm::delWallet);
+
+    walletList_->load(
+        globalManager_->settingManager()->database()->walletRepo()->getByGroup(
+            static_cast<int>(WalletGroupType::User)));
 }
 
 WalletForm::~WalletForm()
@@ -64,5 +70,34 @@ void WalletForm::newWallet()
     if (ret) {
         walletList_->add(*nwf.walletRecord());
     } else {
+    }
+}
+
+void WalletForm::delWallet()
+{
+    /*QListWidgetItem* item = walletList_->currentItem();
+    if (item && item->isSelected()) {
+        int id = item->data(static_cast<int>(WalletListWidget::ItemData::id))
+                     .toInt();
+        MessageForm mf(this, CONFIRM_WALLET_DELETE, CONFIRM_WALLET_DELETE_TITLE,
+            MessageButton::Ok | MessageButton::Cancel);
+        int ret = mf.exec();
+        if (ret) { }
+    }*/
+
+    if (auto* item = walletList_->currentItem(); item && item->isSelected()) {
+        const auto id
+            = item->data(static_cast<int>(WalletListWidget::ItemData::id))
+                  .toInt();
+        MessageForm mf(this, CONFIRM_WALLET_DELETE, CONFIRM_WALLET_DELETE_TITLE,
+            MessageButton::Ok | MessageButton::Cancel);
+        if (mf.exec()) {
+            std::unique_ptr<QListWidgetItem> removedItem {
+                walletList_->takeItem(walletList_->row(item))
+            };
+            walletList_->clearSelection();
+            globalManager_->settingManager()->database()->walletRepo()->remove(
+                id);
+        }
     }
 }

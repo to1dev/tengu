@@ -37,6 +37,7 @@ private Q_SLOTS:
 
 private:
     void newWallet();
+    void delWallet();
 
 private:
     Ui::WalletForm* ui;

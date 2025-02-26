@@ -270,7 +270,9 @@ public:
     virtual std::vector<Wallet> getByGroup(int groupId) = 0;
 };
 
-class WalletRepo : public IWalletRepo {
+class WalletRepo : public QObject, public IWalletRepo {
+    Q_OBJECT
+
 public:
     WalletRepo(Storage* storage);
     DBErrorType before(const Wallet& wallet, bool update) override;
@@ -280,6 +282,11 @@ public:
     std::optional<Wallet> get(int id) override;
     std::vector<Wallet> getAll() override;
     std::vector<Wallet> getByGroup(int groupId) override;
+
+Q_SIGNALS:
+    void inserted();
+    void updated(const Wallet& wallet);
+    void removed(int id);
 
 private:
     Storage* storage_;
@@ -296,7 +303,9 @@ public:
     virtual std::vector<Address> getAllByWallet(int walletId) = 0;
 };
 
-class AddressRepo : public IAddressRepo {
+class AddressRepo : public QObject, public IAddressRepo {
+    Q_OBJECT
+
 public:
     AddressRepo(Storage* storage);
     DBErrorType before(const Address& address, bool update) override;
@@ -305,6 +314,11 @@ public:
     void remove(int id) override;
     std::optional<Address> get(int id) override;
     std::vector<Address> getAllByWallet(int walletId) override;
+
+Q_SIGNALS:
+    void inserted();
+    void updated(const Address& address);
+    void removed(int id);
 
 private:
     Storage* storage_;

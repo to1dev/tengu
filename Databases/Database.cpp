@@ -76,18 +76,21 @@ DBErrorType WalletRepo::before(const Wallet& wallet, bool update)
 
 int WalletRepo::insert(const Wallet& wallet)
 {
+    Q_EMIT inserted();
     return storage_->insert(wallet);
 }
 
 void WalletRepo::update(const Wallet& wallet)
 {
     storage_->update(wallet);
+    Q_EMIT updated(wallet);
 }
 
 void WalletRepo::remove(int id)
 {
     storage_->remove_all<Address>(where(c(&Address::walletId) == id));
     storage_->remove<Wallet>(id);
+    Q_EMIT removed(id);
 }
 
 std::optional<Wallet> WalletRepo::get(int id)
@@ -119,17 +122,20 @@ DBErrorType AddressRepo::before(const Address& address, bool update)
 
 int AddressRepo::insert(const Address& address)
 {
+    Q_EMIT inserted();
     return storage_->insert(address);
 }
 
 void AddressRepo::update(const Address& address)
 {
     storage_->update(address);
+    Q_EMIT updated(address);
 }
 
 void AddressRepo::remove(int id)
 {
     storage_->remove<Address>(id);
+    Q_EMIT removed(id);
 }
 
 std::optional<Address> AddressRepo::get(int id)

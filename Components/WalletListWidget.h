@@ -21,6 +21,7 @@ inline constexpr char WALLET_ICON_TRADE[] = ":/List/trade.svg";
 inline constexpr char WALLET_ICON_SEARCH[] = ":/List/search.svg";
 inline constexpr char WALLET_ICON_GOLD[] = ":/List/gold.svg";
 inline constexpr char WALLET_ICON_COINS[] = ":/List/coins.svg";
+inline constexpr char BADGE_ICON[] = ":/Badges/check.svg";
 
 inline constexpr char WALLET_OBJECT_NAME[] = "listWidgetWallet";
 

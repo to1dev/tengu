@@ -10,7 +10,7 @@ void BadgeItemDelegate::paint(QPainter* painter,
     QVariant data
         = index.data(static_cast<int>(WalletListWidget::ItemData::selected));
     if (data.isValid() && data.toBool()) {
-        QIcon badgeIcon(":/Badges/check.svg");
+        QIcon badgeIcon(BADGE_ICON);
         QSize badgeSize(32, 32);
         // QPoint badgePosition(option.rect.topRight().x() - badgeSize.width(),
         // option.rect.topRight().y() - 6);

@@ -20,6 +20,9 @@ using namespace Daitengu::Utils;
 
 namespace Daitengu::Core {
 
+inline constexpr char STR_WALLET_OPTIONS[] = "Wallet";
+inline constexpr char STR_WALLET_ID[] = "walletId";
+inline constexpr char STR_WALLET_TYPE[] = "walletType";
 inline constexpr char STR_VAULT_OPTIONS[] = "Vault";
 inline constexpr char STR_VAULT_ID[] = "vaultId";
 inline constexpr char STR_VAULT_TYPE[] = "vaultType";

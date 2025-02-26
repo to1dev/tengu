@@ -20,7 +20,7 @@ UserCard::UserCard(QWidget* parent)
             .arg(QString::fromUtf8(RandomAvatars[index].first.data(),
                 RandomAvatars[index].first.size()))
             .arg(range),
-        this, 3);
+        this, 6);
     svgAvatar->setImageSize(QSize(AVATAR_SIZE, AVATAR_SIZE));
 
     topLayout->setSpacing(6);

@@ -125,9 +125,6 @@ void NewWalletForm::ok()
         wallet.fromMnemonic(mnemonic.toStdString());
         std::string encrypted = Encryption::encryptText(wallet.mnemonic());
         {
-            walletRecord_->id = -1;
-            walletRecord_->type = 0;
-            walletRecord_->groupId = 0;
             walletRecord_->hash = Encryption::genRandomHash();
             walletRecord_->name = name.toStdString();
             walletRecord_->mnemonic = encrypted;
@@ -138,14 +135,13 @@ void NewWalletForm::ok()
                             ->walletRepo()
                             ->insert(*walletRecord_);
 
+        walletRecord_->id = walletId;
         std::string address = wallet.getAddress();
         std::string addressName = std::string(STR_DEFAULT_ADDRESS_NAME);
         std::string addressNameHash = Encryption::easyHash(addressName);
         std::string addressHash = Encryption::easyHash(address);
 
         Address addressRecord {
-            .id = -1,
-            .type = 0,
             .walletId = walletId,
             .chainType = static_cast<int>(ChainType::SOLANA),
             .hash = Encryption::genRandomHash(),

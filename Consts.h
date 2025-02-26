@@ -41,6 +41,8 @@ inline const QString STR_BUTTON_CLIPBOARD = QObject::tr("复制助记词到剪�
 
 inline const QString CONFIRM_WALLET_DELETE
     = QObject::tr("是否确定删除这个钱包！<p>本操作不可逆！请务必谨慎！</p>");
+inline const QString CONFIRM_WALLET_DELETE_TITLE
+    = QObject::tr("Confirm Deletion");
 inline const QString NO_VALID_WALLET_NAME
     = QObject::tr("请输入有效的钱包名称！");
 inline const QString NO_VALID_ADDRESS_NAME

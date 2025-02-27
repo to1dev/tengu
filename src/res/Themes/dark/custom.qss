@@ -36,12 +36,16 @@ QPlainTextEdit:focus {
 }
 
 QComboBox {
-    border-radius: 0;
+    background-color: #19232D;
+    padding: 6;
+    border-radius: 6;
+    border: 3px solid #32414b;
+    color: #DFE1E2;
 }
 
 QComboBox:hover,
 QComboBox:focus {
-    border: 1px solid #346792;
+    border: 3px solid #32414b;
 }
 
 QComboBox::item:checked {
@@ -235,7 +239,7 @@ QComboBox::down-arrow:on, QComboBox::down-arrow:hover, QComboBox::down-arrow:foc
 }
 
 #objectsFrame #editFilter {
-    padding: 8;
+    padding: 9;
     border-radius: 6;
     border: 3px solid #32414b;
 }
@@ -919,7 +923,7 @@ QGroupBox {
 
 QLineEdit {
     background-color: #19232D;
-    padding: 8;
+    padding: 9;
     border-radius: 6;
     border: 3px solid #32414b;
     color: #DFE1E2;

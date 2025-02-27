@@ -235,7 +235,7 @@ QComboBox::down-arrow:on, QComboBox::down-arrow:hover, QComboBox::down-arrow:foc
 }
 
 #objectsFrame #editFilter {
-    padding: 6;
+    padding: 8;
     border-radius: 6;
     border: 3px solid #32414b;
 }
@@ -384,30 +384,13 @@ QComboBox::down-arrow:on, QComboBox::down-arrow:hover, QComboBox::down-arrow:foc
 }
 
 #labelMnemonic {
-    background: qlineargradient(
-        spread: pad,
-        x1: 0, y1: 0,
-        x2: 0, y2: 1,
-        stop: 0 #fafafa,
-        stop: 1 #dfdfdf
-    );
-    color: #333333;
-    border-right: 3px solid #ffffff;
-    border-bottom: 3px solid #ffffff;
+    background-color: #346792;
+    color: #DFE1E2;
+    border: 1px solid #455364;
+    border-radius: 4px;
     padding: 6px 12px;
     font-size: 24px;
 }
-
-QLabel#labelMnemonic:hover {
-    background: qlineargradient(
-        spread: pad,
-        x1: 0, y1: 0,
-        x2: 0, y2: 1,
-        stop: 0 #ffffff,
-        stop: 1 #e5e5e5
-    );
-}
-
 
 #ButtonMint,
 #ButtonTrade,
@@ -935,8 +918,21 @@ QGroupBox {
 }
 
 QLineEdit {
-    border-radius: 0;
-    padding: 6px;
+    background-color: #19232D;
+    padding: 8;
+    border-radius: 6;
+    border: 3px solid #32414b;
+    color: #DFE1E2;
+}
+
+QLineEdit:hover {
+    border: 3px solid #32414b;
+    color: #DFE1E2;
+}
+
+QLineEdit:focus {
+    background-color: #232F3A;
+    border: 3px solid #32414b;
 }
 
 QSpinBox {

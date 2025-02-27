@@ -40,6 +40,7 @@ set(SOURCE_FILES
     src/Clients/Solana/gRPC/TransactionFilter.cpp
     src/Components/AnimatedTabWidget.cpp
     src/Components/ClickableLabel.cpp
+    src/Components/ComboBoxEx.cpp
     src/Components/FlowLayout.cpp
     src/Components/LineEditEx.cpp
     src/Components/MnemonicView.cpp
@@ -90,6 +91,7 @@ set(HEADER_FILES
     src/Clients/Solana/gRPC/TransactionFilter.h
     src/Components/AnimatedTabWidget.h
     src/Components/ClickableLabel.h
+    src/Components/ComboBoxEx.h
     src/Components/FlowLayout.h
     src/Components/LineEditEx.h
     src/Components/MnemonicView.h

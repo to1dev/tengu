@@ -52,6 +52,7 @@ set(SOURCE_FILES
     Databases/Database.cpp
     Forms/MessageForm.cpp
     Forms/NewWalletForm.cpp
+    Forms/UpdateWalletForm.cpp
     Forms/WalletForm.cpp
     Layouts/AnimationController.cpp
     Layouts/GridLayoutEngine.cpp
@@ -102,6 +103,7 @@ set(HEADER_FILES
     Databases/Database.h
     Forms/MessageForm.h
     Forms/NewWalletForm.h
+    Forms/UpdateWalletForm.h
     Forms/WalletForm.h
     Globals.h
     Layouts/AnimationController.h
@@ -140,6 +142,7 @@ set(HEADER_FILES
 set(UI_FILES
     Forms/MessageForm.ui
     Forms/NewWalletForm.ui
+    Forms/UpdateWalletForm.ui
     Forms/WalletForm.ui
     Tengu.ui
 )

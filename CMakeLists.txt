@@ -34,130 +34,130 @@ set(PKG_FILES
 )
 
 set(SOURCE_FILES
-    Clients/Solana/gRPC/GeyserClientManager.cpp
-    Clients/Solana/gRPC/GeyserClientWorker.cpp
-    Clients/Solana/gRPC/SwapFilter.cpp
-    Clients/Solana/gRPC/TransactionFilter.cpp
-    Components/AnimatedTabWidget.cpp
-    Components/ClickableLabel.cpp
-    Components/FlowLayout.cpp
-    Components/LineEditEx.cpp
-    Components/MnemonicView.cpp
-    Components/SVGWidget.cpp
-    Components/Splash.cpp
-    Components/TitleBar.cpp
-    Components/TxListWidget.cpp
-    Components/WalletListWidget.cpp
-    Components/WalletPanel.cpp
-    Databases/Database.cpp
-    Forms/MessageForm.cpp
-    Forms/NewWalletForm.cpp
-    Forms/UpdateWalletForm.cpp
-    Forms/WalletForm.cpp
-    Layouts/AnimationController.cpp
-    Layouts/GridLayoutEngine.cpp
-    Layouts/LayoutEngine.cpp
-    Layouts/LayoutOrchestrator.cpp
-    Layouts/PredefinedLayoutEngine.cpp
-    Layouts/ScreenManager.cpp
-    Layouts/WindowState.cpp
-    Main.cpp
-    Managers/GlobalManager.cpp
-    Managers/ResourceManager.cpp
-    Managers/SettingManager.cpp
-    Managers/ThemeManager.cpp
-    Managers/WindowManager.cpp
-    Tengu.cpp
-    Tests/Test_BIP39.cpp
-    Tests/Test_DotEnv.cpp
-    Tests/Test_Encryption.cpp
-    UI/Frameless.cpp
-    Utils/Encryption.cpp
-    Utils/NameGenerator.cpp
-    Utils/RunGuard.cpp
-    Wallets/Core/BaseMnemonic.cpp
-    Wallets/Core/BaseWallet.cpp
-    Wallets/Core/BitcoinWallet.cpp
-    Wallets/Core/ChainWallet.cpp
-    Wallets/Core/SolanaWallet.cpp
-    Wallets/Utils/SecureBytes.cpp
+    src/Clients/Solana/gRPC/GeyserClientManager.cpp
+    src/Clients/Solana/gRPC/GeyserClientWorker.cpp
+    src/Clients/Solana/gRPC/SwapFilter.cpp
+    src/Clients/Solana/gRPC/TransactionFilter.cpp
+    src/Components/AnimatedTabWidget.cpp
+    src/Components/ClickableLabel.cpp
+    src/Components/FlowLayout.cpp
+    src/Components/LineEditEx.cpp
+    src/Components/MnemonicView.cpp
+    src/Components/SVGWidget.cpp
+    src/Components/Splash.cpp
+    src/Components/TitleBar.cpp
+    src/Components/TxListWidget.cpp
+    src/Components/WalletListWidget.cpp
+    src/Components/WalletPanel.cpp
+    src/Databases/Database.cpp
+    src/Forms/MessageForm.cpp
+    src/Forms/NewWalletForm.cpp
+    src/Forms/UpdateWalletForm.cpp
+    src/Forms/WalletForm.cpp
+    src/Layouts/AnimationController.cpp
+    src/Layouts/GridLayoutEngine.cpp
+    src/Layouts/LayoutEngine.cpp
+    src/Layouts/LayoutOrchestrator.cpp
+    src/Layouts/PredefinedLayoutEngine.cpp
+    src/Layouts/ScreenManager.cpp
+    src/Layouts/WindowState.cpp
+    src/Main.cpp
+    src/Managers/GlobalManager.cpp
+    src/Managers/ResourceManager.cpp
+    src/Managers/SettingManager.cpp
+    src/Managers/ThemeManager.cpp
+    src/Managers/WindowManager.cpp
+    src/Tengu.cpp
+    src/Tests/Test_BIP39.cpp
+    src/Tests/Test_DotEnv.cpp
+    src/Tests/Test_Encryption.cpp
+    src/UI/Frameless.cpp
+    src/Utils/Encryption.cpp
+    src/Utils/NameGenerator.cpp
+    src/Utils/RunGuard.cpp
+    src/Wallets/Core/BaseMnemonic.cpp
+    src/Wallets/Core/BaseWallet.cpp
+    src/Wallets/Core/BitcoinWallet.cpp
+    src/Wallets/Core/ChainWallet.cpp
+    src/Wallets/Core/SolanaWallet.cpp
+    src/Wallets/Utils/SecureBytes.cpp
 )
 
 set(HEADER_FILES
-    Clients/Solana/gRPC/GeyserClientManager.h
-    Clients/Solana/gRPC/GeyserClientWorker.h
-    Clients/Solana/gRPC/SwapFilter.h
-    Clients/Solana/gRPC/TransactionFilter.h
-    Components/AnimatedTabWidget.h
-    Components/ClickableLabel.h
-    Components/FlowLayout.h
-    Components/LineEditEx.h
-    Components/MnemonicView.h
-    Components/SVGWidget.h
-    Components/Splash.h
-    Components/TitleBar.h
-    Components/TxListWidget.h
-    Components/WalletListWidget.h
-    Components/WalletPanel.h
-    Consts.h
-    Databases/Database.h
-    Forms/MessageForm.h
-    Forms/NewWalletForm.h
-    Forms/UpdateWalletForm.h
-    Forms/WalletForm.h
-    Globals.h
-    Layouts/AnimationController.h
-    Layouts/GridLayoutEngine.h
-    Layouts/LayoutEngine.h
-    Layouts/LayoutOrchestrator.h
-    Layouts/PredefinedLayoutEngine.h
-    Layouts/ScreenManager.h
-    Layouts/WindowState.h
-    Managers/GlobalManager.h
-    Managers/ResourceManager.h
-    Managers/SettingManager.h
-    Managers/ThemeManager.h
-    Managers/WindowManager.h
-    Rust.h
-    Security/Security.h
-    Tengu.h
-    UI/Frameless.h
-    Utils/Base58.hpp
-    Utils/DotEnv.hpp
-    Utils/Encryption.h
-    Utils/Helpers.hpp
-    Utils/NameGenerator.h
-    Utils/PathUtils.hpp
-    Utils/RunGuard.h
-    Wallets/Core/BaseMnemonic.h
-    Wallets/Core/BaseWallet.h
-    Wallets/Core/BitcoinWallet.h
-    Wallets/Core/ChainWallet.h
-    Wallets/Core/Errors.hpp
-    Wallets/Core/SolanaWallet.h
-    Wallets/Core/Types.h
-    Wallets/Utils/SecureBytes.h
+    src/Clients/Solana/gRPC/GeyserClientManager.h
+    src/Clients/Solana/gRPC/GeyserClientWorker.h
+    src/Clients/Solana/gRPC/SwapFilter.h
+    src/Clients/Solana/gRPC/TransactionFilter.h
+    src/Components/AnimatedTabWidget.h
+    src/Components/ClickableLabel.h
+    src/Components/FlowLayout.h
+    src/Components/LineEditEx.h
+    src/Components/MnemonicView.h
+    src/Components/SVGWidget.h
+    src/Components/Splash.h
+    src/Components/TitleBar.h
+    src/Components/TxListWidget.h
+    src/Components/WalletListWidget.h
+    src/Components/WalletPanel.h
+    src/Consts.h
+    src/Databases/Database.h
+    src/Forms/MessageForm.h
+    src/Forms/NewWalletForm.h
+    src/Forms/UpdateWalletForm.h
+    src/Forms/WalletForm.h
+    src/Globals.h
+    src/Layouts/AnimationController.h
+    src/Layouts/GridLayoutEngine.h
+    src/Layouts/LayoutEngine.h
+    src/Layouts/LayoutOrchestrator.h
+    src/Layouts/PredefinedLayoutEngine.h
+    src/Layouts/ScreenManager.h
+    src/Layouts/WindowState.h
+    src/Managers/GlobalManager.h
+    src/Managers/ResourceManager.h
+    src/Managers/SettingManager.h
+    src/Managers/ThemeManager.h
+    src/Managers/WindowManager.h
+    src/Rust.h
+    src/Security/Security.h
+    src/Tengu.h
+    src/UI/Frameless.h
+    src/Utils/Base58.hpp
+    src/Utils/DotEnv.hpp
+    src/Utils/Encryption.h
+    src/Utils/Helpers.hpp
+    src/Utils/NameGenerator.h
+    src/Utils/PathUtils.hpp
+    src/Utils/RunGuard.h
+    src/Wallets/Core/BaseMnemonic.h
+    src/Wallets/Core/BaseWallet.h
+    src/Wallets/Core/BitcoinWallet.h
+    src/Wallets/Core/ChainWallet.h
+    src/Wallets/Core/Errors.hpp
+    src/Wallets/Core/SolanaWallet.h
+    src/Wallets/Core/Types.h
+    src/Wallets/Utils/SecureBytes.h
 )
 
 set(UI_FILES
-    Forms/MessageForm.ui
-    Forms/NewWalletForm.ui
-    Forms/UpdateWalletForm.ui
-    Forms/WalletForm.ui
-    Tengu.ui
+    src/Forms/MessageForm.ui
+    src/Forms/NewWalletForm.ui
+    src/Forms/UpdateWalletForm.ui
+    src/Forms/WalletForm.ui
+    src/Tengu.ui
 )
 
 set(RESOURCE_FILES
-    res/Avatars.qrc
-    res/Fonts.qrc
-    res/Images.qrc
-    res/Logos.qrc
-    res/Themes/dark/dark.qrc
-    res/Themes/light/light.qrc
+    src/res/Avatars.qrc
+    src/res/Fonts.qrc
+    src/res/Images.qrc
+    src/res/Logos.qrc
+    src/res/Themes/dark/dark.qrc
+    src/res/Themes/light/light.qrc
 )
 
 if(WIN32)
-    set(WIN32_RC_FILE res/Tengu.rc)
+    set(WIN32_RC_FILE src/res/Tengu.rc)
 endif()
 
 add_executable(${PROJECT_NAME} WIN32
@@ -171,9 +171,9 @@ add_executable(${PROJECT_NAME} WIN32
 
 target_include_directories(${PROJECT_NAME}
     PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}
-        ${CMAKE_CURRENT_SOURCE_DIR}/3rd/inc
-        ${CMAKE_CURRENT_SOURCE_DIR}/3rd/inc/izanagi
+        ${CMAKE_CURRENT_SOURCE_DIR}/src
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/3rd/inc
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/3rd/inc/izanagi
 )
 
 if (CMAKE_BUILD_TYPE STREQUAL "Release")
@@ -201,7 +201,7 @@ endif()
 
 target_link_directories(${PROJECT_NAME}
     PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/3rd/lib
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/3rd/lib
 )
 
 set(THIRD_PARTY_LIBS

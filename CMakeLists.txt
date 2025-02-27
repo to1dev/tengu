@@ -208,6 +208,7 @@ set(THIRD_PARTY_LIBS
     xxhash
     sodium
     sqlite3
+    luajit-5.1
     izanagi
     catch2
 )

@@ -1,3 +1,8 @@
+#popupList {
+    border-radius: 0;
+    border: 3px solid #32414b;
+}
+
 QMenuBar {
     border: 0;
     padding: 3px 6px 3px 3px;

@@ -49,6 +49,8 @@ NewWalletForm::NewWalletForm(
     QPushButton* buttonClipboard = new QPushButton(this);
     buttonClipboard->setObjectName("ButtonClipboard");
     buttonClipboard->setText(STR_BUTTON_CLIPBOARD);
+    buttonClipboard->setMinimumHeight(30);
+    buttonClipboard->setMaximumHeight(30);
     connect(buttonClipboard, &QPushButton::clicked,
         [this]() { QApplication::clipboard()->setText(view_->mnemonic()); });
 
@@ -125,6 +127,7 @@ void NewWalletForm::ok()
         wallet.fromMnemonic(mnemonic.toStdString());
         std::string encrypted = Encryption::encryptText(wallet.mnemonic());
         {
+            walletRecord_->chainType = static_cast<int>(ChainType::SOLANA),
             walletRecord_->hash = Encryption::genRandomHash();
             walletRecord_->name = name.toStdString();
             walletRecord_->mnemonic = encrypted;
@@ -143,7 +146,6 @@ void NewWalletForm::ok()
 
         Address addressRecord {
             .walletId = walletId,
-            .chainType = static_cast<int>(ChainType::SOLANA),
             .hash = Encryption::genRandomHash(),
             .name = addressName,
             .nameHash = addressNameHash,

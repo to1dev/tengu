@@ -14,6 +14,7 @@
 #include "Utils/Encryption.h"
 #include "Utils/NameGenerator.h"
 
+#include "Components/ComboBoxEx.h"
 #include "Components/LineEditEx.h"
 #include "Components/MnemonicView.h"
 
@@ -64,6 +65,7 @@ private:
 
     MnemonicView* view_;
     LineEditEx* editName_;
+    ComboBoxEx* comboChain_;
 
     std::shared_ptr<Wallet> walletRecord_;
 };

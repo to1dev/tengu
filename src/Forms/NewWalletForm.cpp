@@ -46,6 +46,12 @@ NewWalletForm::NewWalletForm(
     editName_->setPlaceholderText(STR_LINEEDIT_WALLET_NAME_PLACEHOLDER);
     editName_->setCursorPosition(0);
 
+    QLabel* labelChain = new QLabel(this);
+    labelChain->setText(STR_LABEL_CHAIN);
+
+    comboChain_ = new ComboBoxEx(this);
+    comboChain_->setItems(QStringList() << "Bitcoin" << "Solana");
+
     QPushButton* buttonClipboard = new QPushButton(this);
     buttonClipboard->setObjectName("ButtonClipboard");
     buttonClipboard->setText(STR_BUTTON_CLIPBOARD);
@@ -56,6 +62,8 @@ NewWalletForm::NewWalletForm(
 
     layoutOptioins->addWidget(labelName);
     layoutOptioins->addWidget(editName_);
+    layoutOptioins->addWidget(labelChain);
+    layoutOptioins->addWidget(comboChain_);
     layoutOptioins->addStretch(1);
     layoutOptioins->addWidget(buttonClipboard);
     ui->groupBox->setLayout(layoutOptioins);

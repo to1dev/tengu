@@ -36,12 +36,12 @@ public:
     static QString encryptText(
         const QString& plainText, const QString& password = defaultKey);
     static std::string encryptText(const std::string& plainText,
-        const std::string& password = defaultKey.toStdString());
+        const std::string& password = defaultKey);
 
     static QString decryptText(
         const QString& encodedText, const QString& password = defaultKey);
     static std::string decryptText(const std::string& encodedText,
-        const std::string& password = defaultKey.toStdString());
+        const std::string& password = defaultKey);
 };
 
 }

@@ -6,7 +6,7 @@
 namespace Daitengu::Security {
 
 inline constexpr char X_CUSTOM_TOKEN[] = "random string for headers token";
-inline const QString defaultKey = "default key for encryption and decryption";
+inline constexpr char defaultKey[] = "default key for encryption and decryption";
 
 }
 

@@ -13,6 +13,7 @@
 #include "UI/Frameless.h"
 
 #include "Forms/NewWalletForm.h"
+#include "Forms/UpdateWalletForm.h"
 
 using namespace Daitengu::Components;
 using namespace Daitengu::Core;
@@ -37,6 +38,7 @@ private Q_SLOTS:
 
 private:
     void newWallet();
+    void editWallet();
     void delWallet();
 
 private:

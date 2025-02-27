@@ -45,6 +45,8 @@ WalletForm::WalletForm(
     connect(ui->ButtonOK, &QPushButton::clicked, this, &WalletForm::ok);
     connect(ui->ButtonNewWallet, &QPushButton::clicked, this,
         &WalletForm::newWallet);
+    connect(ui->ButtonEditWallet, &QPushButton::clicked, this,
+        &WalletForm::editWallet);
     connect(ui->ButtonDeleteWallet, &QPushButton::clicked, this,
         &WalletForm::delWallet);
 
@@ -70,6 +72,20 @@ void WalletForm::newWallet()
     if (ret) {
         walletList_->add(*nwf.walletRecord());
     } else {
+    }
+}
+
+void WalletForm::editWallet()
+{
+    if (auto* item = walletList_->currentItem(); item && item->isSelected()) {
+        const auto id
+            = item->data(static_cast<int>(WalletListWidget::ItemData::id))
+                  .toInt();
+        UpdateWalletForm uwf(this, globalManager_);
+        int ret = uwf.exec();
+        if (ret) {
+        } else {
+        }
     }
 }
 

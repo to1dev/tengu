@@ -2,6 +2,11 @@
 
 namespace Daitengu::Components {
 
+BadgeItemDelegate::BadgeItemDelegate(QObject* parent)
+    : QStyledItemDelegate(parent)
+{
+}
+
 void BadgeItemDelegate::paint(QPainter* painter,
     const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
@@ -24,6 +29,42 @@ void BadgeItemDelegate::paint(QPainter* painter,
     }
 }
 
+ChainTypeBadgeDelegate::ChainTypeBadgeDelegate(QObject* parent)
+    : QStyledItemDelegate(parent)
+{
+}
+
+void ChainTypeBadgeDelegate::paint(QPainter* painter,
+    const QStyleOptionViewItem& option, const QModelIndex& index) const
+{
+    QStyledItemDelegate::paint(painter, option, index);
+
+    QString chainType
+        = index.data(static_cast<int>(WalletListWidget::ItemData::chainType))
+              .toString();
+
+    if (!chainType.isEmpty()) {
+        QString badgeText = chainType.left(1).toLower();
+
+        painter->setRenderHint(QPainter::Antialiasing);
+
+        int badgeSize = qMin(option.rect.width() / 3, 20);
+        int badgeX = option.rect.right() - badgeSize;
+        int badgeY = option.rect.top();
+        QRect badgeRect(badgeX, badgeY, badgeSize, badgeSize);
+
+        painter->setPen(Qt::NoPen);
+        painter->setBrush(QBrush(QColor(255, 0, 0)));
+        painter->drawEllipse(badgeRect);
+
+        painter->setPen(QPen(QColor(255, 255, 255)));
+        QFont font = painter->font();
+        font.setBold(true);
+        painter->setFont(font);
+        painter->drawText(badgeRect, Qt::AlignCenter, badgeText);
+    }
+}
+
 WalletListWidget::WalletListWidget(QWidget* parent)
     : QListWidget(parent)
 {
@@ -37,7 +78,7 @@ WalletListWidget::WalletListWidget(QWidget* parent)
     setDragEnabled(false);
     setContextMenuPolicy(Qt::CustomContextMenu);
 
-    setItemDelegate(new BadgeItemDelegate(this));
+    setItemDelegate(new ChainTypeBadgeDelegate(this));
 }
 
 bool WalletListWidget::focusChanged()
@@ -58,6 +99,9 @@ void WalletListWidget::add(const Wallet& wallet, int index)
     item->setData(static_cast<int>(ItemData::id), wallet.id);
     item->setData(static_cast<int>(ItemData::index), index);
     item->setData(static_cast<int>(ItemData::type), wallet.type);
+    item->setData(static_cast<int>(ItemData::groupId), wallet.groupId);
+    item->setData(static_cast<int>(ItemData::chainType), wallet.chainType);
+    item->setData(static_cast<int>(ItemData::networkType), wallet.networkType);
     item->setData(
         static_cast<int>(ItemData::hash), QString::fromStdString(wallet.hash));
     item->setData(static_cast<int>(ItemData::name), name);

@@ -39,7 +39,15 @@ inline constexpr std::array<std::pair<int, std::string_view>, 5> WalletListIcons
 
 class BadgeItemDelegate : public QStyledItemDelegate {
 public:
-    using QStyledItemDelegate::QStyledItemDelegate;
+    explicit BadgeItemDelegate(QObject* parent = nullptr);
+    void paint(QPainter* painter, const QStyleOptionViewItem& option,
+        const QModelIndex& index) const override;
+};
+
+class ChainTypeBadgeDelegate : public QStyledItemDelegate {
+public:
+    explicit ChainTypeBadgeDelegate(QObject* parent = nullptr);
+
     void paint(QPainter* painter, const QStyleOptionViewItem& option,
         const QModelIndex& index) const override;
 };
@@ -48,8 +56,11 @@ class WalletListWidget : public QListWidget {
 public:
     enum class ItemData {
         selected = Qt::UserRole + 100,
-        type,
         id,
+        type,
+        groupId,
+        chainType,
+        networkType,
         index,
         hash,
         name,

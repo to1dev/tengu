@@ -3,6 +3,60 @@
     border: 3px solid #32414b;
 }
 
+#popupList QScrollBar:vertical {
+    background: #2A3A4A;
+    width: 12px;
+    margin: 0px;
+}
+
+#popupList QScrollBar::handle:vertical {
+    background: #455364;
+    min-height: 20px;
+    border-radius: 0;
+    margin: 3px;
+}
+
+#popupList QScrollBar::handle:vertical:hover {
+    background: #346792;
+}
+
+#popupList QScrollBar::add-line:vertical,
+#popupList QScrollBar::sub-line:vertical {
+    height: 0px;
+}
+
+#popupList QScrollBar::add-page:vertical,
+#popupList QScrollBar::sub-page:vertical {
+    background: none;
+}
+
+#popupList QScrollBar:horizontal {
+    background: #2A3A4A;
+    height: 12px;
+    margin: 0px;
+}
+
+#popupList QScrollBar::handle:horizontal {
+    background: #455364;
+    min-width: 20px;
+    border-radius: 0;
+    margin: 3px;
+}
+
+#popupList QScrollBar::handle:horizontal:hover {
+    background: #346792;
+}
+
+#popupList QScrollBar::add-line:horizontal,
+#popupList QScrollBar::sub-line:horizontal {
+    width: 0px;
+}
+
+#popupList QScrollBar::add-page:horizontal,
+#popupList QScrollBar::sub-page:horizontal {
+    background: none;
+}
+
 QMenuBar {
     border: 0;
     padding: 3px 6px 3px 3px;

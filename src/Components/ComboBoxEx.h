@@ -1,9 +1,11 @@
 #pragma once
 
+#include <QAbstractItemView>
 #include <QKeyEvent>
 #include <QLineEdit>
 #include <QListWidget>
 #include <QMouseEvent>
+#include <QScrollBar>
 #include <QVBoxLayout>
 
 class PopupListWidget : public QListWidget {

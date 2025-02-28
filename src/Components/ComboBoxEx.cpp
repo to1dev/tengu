@@ -4,6 +4,9 @@ PopupListWidget::PopupListWidget(QWidget* parent)
     : QListWidget(parent)
 {
     setObjectName("popupList");
+    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+    verticalScrollBar()->setContextMenuPolicy(Qt::NoContextMenu);
 }
 
 void PopupListWidget::keyPressEvent(QKeyEvent* event)

@@ -31,6 +31,7 @@
         <file alias="bitcoin.svg">Images/List/bitcoin.svg</file>
         <file alias="ethereum.svg">Images/List/ethereum.svg</file>
         <file alias="solana.svg">Images/List/solana.svg</file>
+        <file alias="tron.svg">Images/List/tron.svg</file>
         <file alias="bnb.svg">Images/List/bnb.svg</file>
     </qresource>
     <qresource prefix="/Badges">

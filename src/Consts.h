@@ -97,11 +97,12 @@ inline constexpr std::array<std::pair<std::string_view, AvatarRange>, 1>
         { "Logo1", { 1, 50 } },
     } };
 
-inline constexpr std::array<std::pair<ChainType, std::string_view>, 4> Chains
+inline constexpr std::array<std::pair<ChainType, std::string_view>, 5> Chains
     = { {
         { ChainType::BITCOIN, "Bitcoin" },
         { ChainType::ETHEREUM, "Ethereum" },
         { ChainType::SOLANA, "Solana" },
+        { ChainType::TRON, "Tron" },
         { ChainType::BNBCHAIN, "BNB Chain" },
     } };
 

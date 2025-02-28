@@ -12,6 +12,7 @@ enum class ChainType {
     BITCOIN,
     ETHEREUM,
     SOLANA,
+    TRON,
     BNBCHAIN,
 };
 

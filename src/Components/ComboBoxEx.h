@@ -34,11 +34,6 @@ public:
         return currentIndex_;
     }
 
-    [[nodiscard]] QString currentText() const
-    {
-        return text();
-    }
-
     void setCurrentIndex(int index);
 
 Q_SIGNALS:

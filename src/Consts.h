@@ -98,14 +98,33 @@ inline constexpr std::array<std::pair<std::string_view, AvatarRange>, 1>
         { "Logo1", { 1, 50 } },
     } };
 
-inline constexpr std::array<std::pair<ChainType, std::string_view>, 5> Chains
-    = { {
-        { ChainType::BITCOIN, "Bitcoin" },
-        { ChainType::ETHEREUM, "Ethereum" },
-        { ChainType::SOLANA, "Solana" },
-        { ChainType::TRON, "Tron" },
-        { ChainType::BNBCHAIN, "BNB Chain" },
-    } };
+struct ChainItem {
+    std::string_view name;
+    bool enabled;
+};
+
+inline constexpr std::array<std::pair<ChainType, ChainItem>, 5> Chains = { {
+    {
+        ChainType::BITCOIN,
+        { "Bitcoin", true },
+    },
+    {
+        ChainType::ETHEREUM,
+        { "Ethereum", false },
+    },
+    {
+        ChainType::SOLANA,
+        { "Solana", true },
+    },
+    {
+        ChainType::TRON,
+        { "Tron", false },
+    },
+    {
+        ChainType::BNBCHAIN,
+        { "BNB Chain", false },
+    },
+} };
 
 }
 

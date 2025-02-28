@@ -50,8 +50,14 @@ NewWalletForm::NewWalletForm(
     labelChain->setText(STR_LABEL_CHAIN);
 
     comboChain_ = new ComboBoxEx(this);
+    int index = 0;
     for (const auto& chain : Chains) {
-        comboChain_->addItem(QString::fromUtf8(chain.second.data()));
+        comboChain_->addItem(QString::fromUtf8(chain.second.name.data()));
+        bool enabled = chain.second.enabled;
+        if (!enabled) {
+            comboChain_->setItemEnabled(index, false);
+        }
+        index++;
     }
     comboChain_->setCurrentIndex(0);
 

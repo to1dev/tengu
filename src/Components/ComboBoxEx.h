@@ -1,6 +1,5 @@
 #pragma once
 
-#include <QFocusEvent>
 #include <QKeyEvent>
 #include <QLineEdit>
 #include <QListWidget>

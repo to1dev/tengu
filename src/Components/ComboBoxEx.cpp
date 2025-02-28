@@ -8,18 +8,23 @@ PopupListWidget::PopupListWidget(QWidget* parent)
 
 void PopupListWidget::keyPressEvent(QKeyEvent* event)
 {
-    if (event->key() == Qt::Key_Escape) {
+    switch (event->key()) {
+    case Qt::Key_Escape:
         hide();
         event->accept();
         return;
-    }
 
-    if (event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter) {
+    case Qt::Key_Return:
+    case Qt::Key_Enter:
         if (currentItem()) {
             Q_EMIT enterKeyPressed(currentItem());
             event->accept();
             return;
         }
+        break;
+
+    default:
+        break;
     }
 
     QListWidget::keyPressEvent(event);
@@ -40,7 +45,6 @@ ComboBoxEx::ComboBoxEx(QWidget* parent)
         &ComboBoxEx::itemSelected);
     connect(listWidget_, &PopupListWidget::enterKeyPressed, this,
         &ComboBoxEx::handleEnterKeyPressed);
-    connect(this, &QLineEdit::textEdited, this, &ComboBoxEx::filterList);
 
     setupEventFilter();
 }
@@ -74,7 +78,7 @@ void ComboBoxEx::setCurrentIndex(int index)
 
     if (index == -1) {
         currentIndex_ = -1;
-        setText("");
+        setText(QString());
     } else {
         currentIndex_ = index;
         setText(items_[index]);
@@ -123,7 +127,7 @@ bool ComboBoxEx::eventFilter(QObject* watched, QEvent* event)
 {
     if (event->type() == QEvent::MouseButtonPress) {
         if (listWidget_->isVisible()) {
-            QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
+            auto* mouseEvent = static_cast<QMouseEvent*>(event);
 
             QPoint globalPos;
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
@@ -132,9 +136,11 @@ bool ComboBoxEx::eventFilter(QObject* watched, QEvent* event)
             globalPos = mouseEvent->globalPos();
 #endif
 
-            if (!listWidget_->geometry().contains(globalPos)
-                && !QRect(mapToGlobal(QPoint(0, 0)), size())
-                    .contains(globalPos)) {
+            const QRect popupRect = listWidget_->geometry();
+            const QRect lineEditRect = QRect(mapToGlobal(QPoint(0, 0)), size());
+
+            if (!popupRect.contains(globalPos)
+                && !lineEditRect.contains(globalPos)) {
                 hidePopup();
                 return true;
             }
@@ -189,7 +195,7 @@ void ComboBoxEx::showPopup()
         listWidget_->setCurrentRow(0);
     }
 
-    if (currentIndex_ >= 0 && currentIndex_ < listWidget_->count()) {
+    if (currentIndex_ >= 0 && currentIndex_ < items_.size()) {
         for (int i = 0; i < listWidget_->count(); ++i) {
             if (listWidget_->item(i)->text() == items_[currentIndex_]) {
                 listWidget_->setCurrentRow(i);

@@ -28,6 +28,10 @@
         <file alias="key.svg">Images/List/key.svg</file>
         <file alias="mnemonic.svg">Images/List/mnemonic.svg</file>
         <file alias="token.svg">Images/List/token.svg</file>
+        <file alias="bitcoin.svg">Images/List/bitcoin.svg</file>
+        <file alias="ethereum.svg">Images/List/ethereum.svg</file>
+        <file alias="solana.svg">Images/List/solana.svg</file>
+        <file alias="bnb.svg">Images/List/bnb.svg</file>
     </qresource>
     <qresource prefix="/Badges">
         <file alias="check.svg">Images/Badges/check.svg</file>

@@ -45,8 +45,9 @@ inline const QString STR_LINEEDIT_ADDRESS_NAME_PLACEHOLDER
     = QObject::tr("输入地址名称");
 inline const QString STR_BUTTON_CLIPBOARD = QObject::tr("复制助记词到剪贴板");
 
-inline const QString CONFIRM_WALLET_DELETE
-    = QObject::tr("是否确定删除这个钱包！<p>本操作不可逆！请务必谨慎！</p>");
+inline const QString CONFIRM_WALLET_DELETE = QObject::tr(
+    "是否确定删除<font "
+    "color='orange'>[%1]</font>这个钱包！<p>本操作不可逆！请务必谨慎！</p>");
 inline const QString CONFIRM_WALLET_DELETE_TITLE
     = QObject::tr("Confirm Deletion");
 inline const QString NO_VALID_WALLET_NAME

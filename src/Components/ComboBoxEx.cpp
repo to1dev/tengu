@@ -63,6 +63,12 @@ ComboBoxEx::~ComboBoxEx()
 void ComboBoxEx::setItems(const QStringList& items)
 {
     items_ = items;
+    itemEnabled_.clear();
+
+    for (int i = 0; i < items_.size(); ++i) {
+        itemEnabled_[i] = true;
+    }
+
     listWidget_->clear();
     listWidget_->addItems(items_);
 }
@@ -70,12 +76,17 @@ void ComboBoxEx::setItems(const QStringList& items)
 void ComboBoxEx::addItem(const QString& item)
 {
     items_.append(item);
+    itemEnabled_[items_.size() - 1] = true;
     filterList(text());
 }
 
 void ComboBoxEx::setCurrentIndex(int index)
 {
     if (index < -1 || index >= items_.size()) {
+        return;
+    }
+
+    if (index != -1 && !itemEnabled_.value(index, true)) {
         return;
     }
 
@@ -88,6 +99,19 @@ void ComboBoxEx::setCurrentIndex(int index)
     }
 
     Q_EMIT currentIndexChanged(currentIndex_);
+}
+
+void ComboBoxEx::setItemEnabled(int index, bool enabled)
+{
+    if (index < 0 || index >= items_.size()) {
+        return;
+    }
+
+    itemEnabled_[index] = enabled;
+
+    if (listWidget_->isVisible()) {
+        filterList(text());
+    }
 }
 
 void ComboBoxEx::mousePressEvent(QMouseEvent* event)
@@ -155,10 +179,11 @@ bool ComboBoxEx::eventFilter(QObject* watched, QEvent* event)
 
 void ComboBoxEx::itemSelected(QListWidgetItem* item)
 {
-    if (!item)
+    if (!item || !(item->flags() & Qt::ItemIsEnabled))
         return;
 
-    currentIndex_ = listWidget_->row(item);
+    int originalIndex = item->data(Qt::UserRole).toInt();
+    currentIndex_ = originalIndex;
     setText(item->text());
     Q_EMIT currentIndexChanged(currentIndex_);
     hidePopup();
@@ -167,11 +192,24 @@ void ComboBoxEx::itemSelected(QListWidgetItem* item)
 void ComboBoxEx::filterList(const QString& text)
 {
     listWidget_->clear();
-    for (const QString& item : items_) {
+
+    for (int i = 0; i < items_.size(); ++i) {
+        const QString& item = items_[i];
+        if (item.contains(text, Qt::CaseInsensitive)) {
+            QListWidgetItem* listItem = new QListWidgetItem(item, listWidget_);
+            if (!itemEnabled_.value(i, true)) {
+                listItem->setFlags(listItem->flags() & ~Qt::ItemIsEnabled);
+                listItem->setForeground(Qt::gray);
+            }
+            listItem->setData(Qt::UserRole, i);
+        }
+    }
+
+    /*for (const QString& item : items_) {
         if (item.contains(text, Qt::CaseInsensitive)) {
             listWidget_->addItem(item);
         }
-    }
+    }*/
 
     if (listWidget_->count() > 0) {
         showPopup();

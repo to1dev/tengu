@@ -37,6 +37,7 @@ public:
     }
 
     void setCurrentIndex(int index);
+    void setItemEnabled(int index, bool enabled);
 
 Q_SIGNALS:
     void currentIndexChanged(int index);
@@ -59,4 +60,6 @@ private:
     PopupListWidget* listWidget_;
     QStringList items_;
     int currentIndex_;
+
+    QMap<int, bool> itemEnabled_;
 };

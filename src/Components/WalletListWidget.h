@@ -23,18 +23,22 @@ inline constexpr char WALLET_ICON_GOLD[] = ":/List/gold.svg";
 inline constexpr char WALLET_ICON_COINS[] = ":/List/coins.svg";
 inline constexpr char BADGE_ICON[] = ":/Badges/check.svg";
 
+inline constexpr char WALLET_ICON_BITCOIN[] = ":/List/bitcoin.svg";
+inline constexpr char WALLET_ICON_ETHEREUM[] = ":/List/ethereum.svg";
+inline constexpr char WALLET_ICON_SOLANA[] = ":/List/solana.svg";
+inline constexpr char WALLET_ICON_BNB[] = ":/List/bnb.svg";
+
 inline constexpr char WALLET_OBJECT_NAME[] = "listWidgetWallet";
 
 inline constexpr int WALLET_ICON_SIZE = 64;
 inline constexpr int WALLET_SPACING_SIZE = 12;
 
-inline constexpr std::array<std::pair<int, std::string_view>, 5> WalletListIcons
+inline constexpr std::array<std::pair<int, std::string_view>, 4> WalletListIcons
     = { {
-        { 0, WALLET_ICON_DEFAULT },
-        { 1, WALLET_ICON_MNEMONIC },
-        { 2, WALLET_ICON_KEY },
-        { 3, WALLET_ICON_KEY },
-        { 4, WALLET_ICON_SEARCH },
+        { 0, WALLET_ICON_BITCOIN },
+        { 1, WALLET_ICON_ETHEREUM },
+        { 2, WALLET_ICON_SOLANA },
+        { 3, WALLET_ICON_BNB },
     } };
 
 class BadgeItemDelegate : public QStyledItemDelegate {

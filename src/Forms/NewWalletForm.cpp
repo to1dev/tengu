@@ -138,7 +138,7 @@ void NewWalletForm::ok()
         wallet.fromMnemonic(mnemonic.toStdString());
         std::string encrypted = Encryption::encryptText(wallet.mnemonic());
         {
-            walletRecord_->chainType = static_cast<int>(ChainType::SOLANA),
+            walletRecord_->chainType = comboChain_->currentIndex(),
             walletRecord_->hash = Encryption::genRandomHash();
             walletRecord_->name = name.toStdString();
             walletRecord_->mnemonic = encrypted;

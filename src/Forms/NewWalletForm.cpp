@@ -50,7 +50,10 @@ NewWalletForm::NewWalletForm(
     labelChain->setText(STR_LABEL_CHAIN);
 
     comboChain_ = new ComboBoxEx(this);
-    comboChain_->setItems(QStringList() << "Bitcoin" << "Solana");
+    for (const auto& chain : Chains) {
+        comboChain_->addItem(QString::fromUtf8(chain.second.data()));
+    }
+    comboChain_->setCurrentIndex(0);
 
     QPushButton* buttonClipboard = new QPushButton(this);
     buttonClipboard->setObjectName("ButtonClipboard");

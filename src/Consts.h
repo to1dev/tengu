@@ -7,6 +7,10 @@
 #include <QObject>
 #include <QVector>
 
+#include "Wallets/Core/Types.h"
+
+using namespace Daitengu::Wallets;
+
 namespace Daitengu::Core {
 
 inline constexpr int EXIT_CODE_REBOOT = -6987913;
@@ -91,6 +95,13 @@ inline constexpr int AVATAR_SIZE = 64;
 inline constexpr std::array<std::pair<std::string_view, AvatarRange>, 1>
     RandomLogos = { {
         { "Logo1", { 1, 50 } },
+    } };
+
+inline constexpr std::array<std::pair<ChainType, std::string_view>, 3> Chains
+    = { {
+        { ChainType::BITCOIN, "Bitcoin" },
+        { ChainType::ETHEREUM, "Ethereum" },
+        { ChainType::SOLANA, "Solana" },
     } };
 
 }

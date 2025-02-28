@@ -75,6 +75,8 @@ WalletListWidget::WalletListWidget(QWidget* parent)
     setIconSize(QSize(WALLET_ICON_SIZE, WALLET_ICON_SIZE));
     setResizeMode(QListView::Adjust);
     setSpacing(WALLET_SPACING_SIZE);
+    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
     verticalScrollBar()->setContextMenuPolicy(Qt::NoContextMenu);
     horizontalScrollBar()->setContextMenuPolicy(Qt::NoContextMenu);
     setDragEnabled(false);

@@ -105,8 +105,12 @@ void WalletForm::delWallet()
         const auto id
             = item->data(static_cast<int>(WalletListWidget::ItemData::id))
                   .toInt();
-        MessageForm mf(this, CONFIRM_WALLET_DELETE, CONFIRM_WALLET_DELETE_TITLE,
-            MessageButton::Ok | MessageButton::Cancel);
+        const auto name
+            = item->data(static_cast<int>(WalletListWidget::ItemData::name))
+                  .toString();
+        MessageForm mf(this, CONFIRM_WALLET_DELETE.arg(name),
+            CONFIRM_WALLET_DELETE_TITLE,
+            MessageButton::Ok | MessageButton::Cancel, 14);
         if (mf.exec()) {
             std::unique_ptr<QListWidgetItem> removedItem {
                 walletList_->takeItem(walletList_->row(item))

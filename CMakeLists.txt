@@ -47,6 +47,7 @@ set(SOURCE_FILES
     src/Components/SVGWidget.cpp
     src/Components/Splash.cpp
     src/Components/TitleBar.cpp
+    src/Components/Toast/Toast.cpp
     src/Components/TxListWidget.cpp
     src/Components/WalletListWidget.cpp
     src/Components/WalletPanel.cpp
@@ -98,6 +99,7 @@ set(HEADER_FILES
     src/Components/SVGWidget.h
     src/Components/Splash.h
     src/Components/TitleBar.h
+    src/Components/Toast/Toast.h
     src/Components/TxListWidget.h
     src/Components/WalletListWidget.h
     src/Components/WalletPanel.h

@@ -95,10 +95,9 @@ void WalletForm::delWallet()
     if (item && item->isSelected()) {
         int id = item->data(static_cast<int>(WalletListWidget::ItemData::id))
                      .toInt();
-        MessageForm mf(this, CONFIRM_WALLET_DELETE, CONFIRM_WALLET_DELETE_TITLE,
-            MessageButton::Ok | MessageButton::Cancel);
-        int ret = mf.exec();
-        if (ret) { }
+        MessageForm mf(this, -1, CONFIRM_WALLET_DELETE,
+    CONFIRM_WALLET_DELETE_TITLE, MessageButton::Ok | MessageButton::Cancel); int
+    ret = mf.exec(); if (ret) { }
     }*/
 
     if (auto* item = walletList_->currentItem(); item && item->isSelected()) {
@@ -108,9 +107,9 @@ void WalletForm::delWallet()
         const auto name
             = item->data(static_cast<int>(WalletListWidget::ItemData::name))
                   .toString();
-        MessageForm mf(this, CONFIRM_WALLET_DELETE.arg(name),
+        MessageForm mf(this, 14, CONFIRM_WALLET_DELETE.arg(name),
             CONFIRM_WALLET_DELETE_TITLE,
-            MessageButton::Ok | MessageButton::Cancel, 14);
+            MessageButton::Ok | MessageButton::Cancel);
         if (mf.exec()) {
             std::unique_ptr<QListWidgetItem> removedItem {
                 walletList_->takeItem(walletList_->row(item))

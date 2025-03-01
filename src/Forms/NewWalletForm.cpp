@@ -122,7 +122,7 @@ void NewWalletForm::refresh()
 void NewWalletForm::ok()
 {
     if (editName_->text().isEmpty()) {
-        MessageForm mf(this, NO_VALID_WALLET_NAME);
+        MessageForm mf(this, 5, NO_VALID_WALLET_NAME);
         mf.exec();
         return;
     }
@@ -181,13 +181,13 @@ void NewWalletForm::ok()
     } else {
         switch (error) {
         case DBErrorType::haveName: {
-            MessageForm mf(this, SAME_WALLET_NAME);
+            MessageForm mf(this, -1, SAME_WALLET_NAME);
             mf.exec();
             break;
         }
 
         case DBErrorType::haveMnemonic: {
-            MessageForm mf(this, SAME_MNEMONIC);
+            MessageForm mf(this, -1, SAME_MNEMONIC);
             mf.exec();
             break;
         }

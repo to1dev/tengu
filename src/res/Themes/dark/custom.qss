@@ -477,11 +477,11 @@ QComboBox::down-arrow:on, QComboBox::down-arrow:hover, QComboBox::down-arrow:foc
 }
 
 #labelMnemonic {
-    background-color: #346792;
+    background-color: transparent;
     color: #DFE1E2;
-    border: 1px solid #455364;
-    border-radius: 4px;
-    padding: 6px 12px;
+    border: 2px solid #455364;
+    border-radius: 18px;
+    padding: 9px 12px;
     font-size: 24px;
 }
 

@@ -111,12 +111,19 @@ void WalletForm::delWallet()
             CONFIRM_WALLET_DELETE_TITLE,
             MessageButton::Ok | MessageButton::Cancel);
         if (mf.exec()) {
-            std::unique_ptr<QListWidgetItem> removedItem {
-                walletList_->takeItem(walletList_->row(item))
-            };
-            walletList_->clearSelection();
-            globalManager_->settingManager()->database()->walletRepo()->remove(
-                id);
+            try {
+                globalManager_->settingManager()
+                    ->database()
+                    ->walletRepo()
+                    ->remove(id);
+                std::unique_ptr<QListWidgetItem> removedItem {
+                    walletList_->takeItem(walletList_->row(item))
+                };
+                walletList_->clearSelection();
+            } catch (const DatabaseException& e) {
+                std::cerr << "Failed to remove wallet: " << e.what()
+                          << std::endl;
+            }
         }
     }
 }

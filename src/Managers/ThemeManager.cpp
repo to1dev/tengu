@@ -20,7 +20,9 @@ ThemeManager::ThemeManager()
     initFonts();
     initThemes();
 
-    // app_->font().setHintingPreference(QFont::PreferDefaultHinting);
+    /*QFont font = QApplication::font();
+    font.setHintingPreference(QFont::PreferFullHinting);
+    QApplication::setFont(font);*/
 }
 
 ThemeManager::~ThemeManager()

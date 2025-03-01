@@ -181,13 +181,13 @@ void NewWalletForm::ok()
     } else {
         switch (error) {
         case DBErrorType::haveName: {
-            MessageForm mf(this, -1, SAME_WALLET_NAME);
+            MessageForm mf(this, 16, SAME_WALLET_NAME);
             mf.exec();
             break;
         }
 
         case DBErrorType::haveMnemonic: {
-            MessageForm mf(this, -1, SAME_MNEMONIC);
+            MessageForm mf(this, 16, SAME_MNEMONIC);
             mf.exec();
             break;
         }

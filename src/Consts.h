@@ -79,12 +79,11 @@ struct AvatarRange {
     int end;
 };
 
-inline constexpr std::array<std::pair<std::string_view, AvatarRange>, 5>
+inline constexpr std::array<std::pair<std::string_view, AvatarRange>, 4>
     RandomAvatars = { {
         { "Avatar1", { 1, 25 } },
         { "Avatar3", { 1, 50 } },
         { "Avatar5", { 1, 43 } },
-        { "Avatar6", { 1, 50 } },
         { "Avatar9", { 1, 40 } },
     } };
 

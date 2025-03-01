@@ -59,5 +59,6 @@
         <file alias="18">Images/Emoji/blind.svg</file>
         <file alias="19">Images/Emoji/happy.svg</file>
         <file alias="20">Images/Emoji/sleep.svg</file>
+        <file alias="100">Images/Logos/tengu.svg</file>
     </qresource>
 </RCC>

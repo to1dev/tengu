@@ -37,10 +37,10 @@ class MessageForm : public QDialog {
     Q_OBJECT
 
 public:
-    explicit MessageForm(QWidget* parent = nullptr,
+    explicit MessageForm(QWidget* parent = nullptr, int emoji = -1,
         const QString& text = QString(),
         const QString& title = QObject::tr("Tips"),
-        int buttons = MessageButton::Ok, int emoji = -1);
+        int buttons = MessageButton::Ok);
     ~MessageForm();
 
 private:

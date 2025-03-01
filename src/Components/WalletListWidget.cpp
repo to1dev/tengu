@@ -145,10 +145,15 @@ void WalletListWidget::update(const Wallet& wallet)
 
 void WalletListWidget::purge()
 {
+    setUpdatesEnabled(false);
+
     QList<QListWidgetItem*> items = selectedItems();
     if (!items.isEmpty()) {
         qDeleteAll(items);
+        clearSelection();
     }
+
+    setUpdatesEnabled(true);
 }
 
 void WalletListWidget::setSelectedId(int newSelectedId)

@@ -17,7 +17,7 @@ MessageForm::MessageForm(QWidget* parent, int emoji, const QString& text,
     frameless_->init();
 
     SVGWidget* icon = nullptr;
-    if (emoji > 0 && emoji < 21) {
+    if (emoji > 0) {
         icon = new SVGWidget(QString(":/Emoji/%1").arg(emoji), ui->labelIcon);
     } else {
         icon = new SVGWidget(

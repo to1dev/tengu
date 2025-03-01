@@ -480,7 +480,7 @@ QComboBox::down-arrow:on, QComboBox::down-arrow:hover, QComboBox::down-arrow:foc
     background-color: transparent;
     color: #DFE1E2;
     border: 2px solid #455364;
-    border-radius: 18px;
+    border-radius: 20px;
     padding: 9px 12px;
     font-size: 24px;
 }

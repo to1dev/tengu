@@ -55,6 +55,7 @@ set(SOURCE_FILES
     src/Forms/MessageForm.cpp
     src/Forms/NewWalletForm.cpp
     src/Forms/UpdateWalletForm.cpp
+    src/Forms/WalletDock.cpp
     src/Forms/WalletForm.cpp
     src/Layouts/AnimationController.cpp
     src/Layouts/GridLayoutEngine.cpp
@@ -108,6 +109,7 @@ set(HEADER_FILES
     src/Forms/MessageForm.h
     src/Forms/NewWalletForm.h
     src/Forms/UpdateWalletForm.h
+    src/Forms/WalletDock.h
     src/Forms/WalletForm.h
     src/Globals.h
     src/Layouts/AnimationController.h

@@ -40,7 +40,7 @@ AlignConsecutiveShortCaseStatements:
 AlignEscapedNewlines: Right
 AlignOperands:   DontAlign
 AlignTrailingComments:
-  Kind:           Always 
+  Kind:           Always
   OverEmptyLines:  2
 AllowAllArgumentsOnNextLine: true
 AllowAllParametersOfDeclarationOnNextLine: true
@@ -183,7 +183,7 @@ RemoveParentheses: Leave
 RemoveSemicolon: false
 RequiresClausePosition: OwnLine
 RequiresExpressionIndentation: OuterScope
-SeparateDefinitionBlocks: Leave
+SeparateDefinitionBlocks: Always
 ShortNamespaceLines: 1
 SkipMacroDefinitionBody: false
 SortIncludes:    CaseSensitive

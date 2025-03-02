@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 /*
  * Copyright (C) 2024 Niklas Henning <https://github.com/niklashenning/qt-toast>
- * Copyright (C) 2024 to1dev <https://arc20.me/to1dev>
+ * Copyright (C) 2025 to1dev <https://arc20.me/to1dev>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -22,6 +22,7 @@
 #include <algorithm>
 #include <cmath>
 #include <deque>
+#include <execution>
 #include <memory>
 #include <mutex>
 #include <optional>
@@ -138,7 +139,7 @@ public:
     static void setOffsetY(int offsetY);
     static void setAlwaysOnMainScreen(bool enabled);
     static void setFixedScreen(QScreen* screen);
-    static void setPosition(ToastPosition position);
+    static void setPosition(const ToastPosition& position);
     static void reset();
 
     static void addToast(Toast* toast);
@@ -215,67 +216,67 @@ public:
 
     Toast& setDuration(int duration);
     Toast& setShowDurationBar(bool enabled);
-    Toast& setTitle(QString title);
-    Toast& setText(QString text);
-    Toast& setIcon(QPixmap icon);
-    Toast& setIcon(ToastIcon icon);
+    Toast& setTitle(const QString& title);
+    Toast& setText(const QString& text);
+    Toast& setIcon(const QPixmap& icon);
+    Toast& setIcon(const ToastIcon& icon);
     Toast& setShowIcon(bool enabled);
-    Toast& setIconSize(QSize size);
+    Toast& setIconSize(const QSize& size);
     Toast& setShowIconSeparator(bool enabled);
     Toast& setIconSeparatorWidth(int width);
-    Toast& setCloseButtonIcon(QPixmap icon);
-    Toast& setCloseButtonIcon(ToastIcon icon);
+    Toast& setCloseButtonIcon(const QPixmap& icon);
+    Toast& setCloseButtonIcon(const ToastIcon& icon);
     Toast& setShowCloseButton(bool enabled);
-    Toast& setCloseButtonIconSize(QSize size);
-    Toast& setCloseButtonSize(QSize size);
+    Toast& setCloseButtonIconSize(const QSize& size);
+    Toast& setCloseButtonSize(const QSize& size);
     Toast& setCloseButtonWidth(int width);
     Toast& setCloseButtonHeight(int height);
-    Toast& setCloseButtonAlignment(ToastButtonAlignment alignment);
+    Toast& setCloseButtonAlignment(const ToastButtonAlignment& alignment);
     Toast& setFadeInDuration(int duration);
     Toast& setFadeOutDuration(int duration);
     Toast& setResetDurationOnHover(bool enabled);
     Toast& setStayOnTop(bool enabled);
     Toast& setBorderRadius(int borderRadius);
-    Toast& setBackgroundColor(QColor color);
-    Toast& setTitleColor(QColor color);
-    Toast& setTextColor(QColor color);
-    Toast& setIconColor(QColor color);
-    Toast& setIconSeparatorColor(QColor color);
-    Toast& setCloseButtonIconColor(QColor color);
-    Toast& setDurationBarColor(QColor color);
-    Toast& setTitleFont(QFont font);
-    Toast& setTextFont(QFont font);
-    Toast& setMargins(QMargins margins);
+    Toast& setBackgroundColor(const QColor& color);
+    Toast& setTitleColor(const QColor& color);
+    Toast& setTextColor(const QColor& color);
+    Toast& setIconColor(const QColor& color);
+    Toast& setIconSeparatorColor(const QColor& color);
+    Toast& setCloseButtonIconColor(const QColor& color);
+    Toast& setDurationBarColor(const QColor& color);
+    Toast& setTitleFont(const QFont& font);
+    Toast& setTextFont(const QFont& font);
+    Toast& setMargins(const QMargins& margins);
     Toast& setMarginLeft(int margin);
     Toast& setMarginTop(int margin);
     Toast& setMarginRight(int margin);
     Toast& setMarginBottom(int margin);
-    Toast& setIconMargins(QMargins margins);
+    Toast& setIconMargins(const QMargins& margins);
     Toast& setIconMarginLeft(int margin);
     Toast& setIconMarginTop(int margin);
     Toast& setIconMarginRight(int margin);
     Toast& setIconMarginBottom(int margin);
-    Toast& setIconSectionMargins(QMargins margins);
+    Toast& setIconSectionMargins(const QMargins& margins);
     Toast& setIconSectionMarginLeft(int margin);
     Toast& setIconSectionMarginTop(int margin);
     Toast& setIconSectionMarginRight(int margin);
     Toast& setIconSectionMarginBottom(int margin);
-    Toast& setTextSectionMargins(QMargins margins);
+    Toast& setTextSectionMargins(const QMargins& margins);
     Toast& setTextSectionMarginLeft(int margin);
     Toast& setTextSectionMarginTop(int margin);
     Toast& setTextSectionMarginRight(int margin);
     Toast& setTextSectionMarginBottom(int margin);
-    Toast& setCloseButtonMargins(QMargins margins);
+    Toast& setCloseButtonMargins(const QMargins& margins);
     Toast& setCloseButtonMarginLeft(int margin);
     Toast& setCloseButtonMarginTop(int margin);
     Toast& setCloseButtonMarginRight(int margin);
     Toast& setCloseButtonMarginBottom(int margin);
     Toast& setTextSectionSpacing(int spacing);
-    Toast& setFixedSize(QSize size);
+    Toast& setFixedSize(const QSize& size);
     Toast& setFixedSize(int width, int height);
     Toast& setFixedWidth(int width);
     Toast& setFixedHeight(int height);
-    Toast& applyPreset(ToastPreset preset);
+    Toast& applyPreset(const ToastPreset& preset);
 
 public Q_SLOTS:
     void show();
@@ -384,7 +385,8 @@ private:
     [[nodiscard]] Toast* getPredecessorToast() const;
 
     [[nodiscard]] static QString getCurrentDirectory();
-    [[nodiscard]] static QImage recolorImage(QImage image, QColor color);
+    [[nodiscard]] static QImage recolorImage(
+        const QImage& image, const QColor& color);
     [[nodiscard]] static QPixmap getIconFromEnum(ToastIcon enumIcon);
 
     friend class ToastManager;

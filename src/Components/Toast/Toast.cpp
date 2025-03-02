@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 /*
  * Copyright (C) 2024 Niklas Henning <https://github.com/niklashenning/qt-toast>
- * Copyright (C) 2024 to1dev <https://arc20.me/to1dev>
+ * Copyright (C) 2025 to1dev <https://arc20.me/to1dev>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -173,7 +173,7 @@ void ToastManager::setFixedScreen(QScreen* screen)
     updateCurrentlyShowingPositionXY();
 }
 
-void ToastManager::setPosition(ToastPosition position)
+void ToastManager::setPosition(const ToastPosition& position)
 {
     std::lock_guard<std::mutex> lock(mutex_);
     position_ = position;
@@ -642,7 +642,7 @@ Toast& Toast::setShowDurationBar(bool enabled)
     return *this;
 }
 
-Toast& Toast::setTitle(QString title)
+Toast& Toast::setTitle(const QString& title)
 {
     if (!used_) {
         title_ = title;
@@ -651,7 +651,7 @@ Toast& Toast::setTitle(QString title)
     return *this;
 }
 
-Toast& Toast::setText(QString text)
+Toast& Toast::setText(const QString& text)
 {
     if (!used_) {
         text_ = text;
@@ -660,7 +660,7 @@ Toast& Toast::setText(QString text)
     return *this;
 }
 
-Toast& Toast::setIcon(QPixmap icon)
+Toast& Toast::setIcon(const QPixmap& icon)
 {
     if (!used_) {
         icon_ = icon;
@@ -670,7 +670,7 @@ Toast& Toast::setIcon(QPixmap icon)
     return *this;
 }
 
-Toast& Toast::setIcon(ToastIcon icon)
+Toast& Toast::setIcon(const ToastIcon& icon)
 {
     if (!used_) {
         icon_ = getIconFromEnum(icon);
@@ -687,7 +687,7 @@ Toast& Toast::setShowIcon(bool enabled)
     return *this;
 }
 
-Toast& Toast::setIconSize(QSize size)
+Toast& Toast::setIconSize(const QSize& size)
 {
     if (!used_) {
         iconSize_ = size;
@@ -722,7 +722,7 @@ Toast& Toast::setIconSeparatorWidth(int width)
     return *this;
 }
 
-Toast& Toast::setCloseButtonIcon(QPixmap icon)
+Toast& Toast::setCloseButtonIcon(const QPixmap& icon)
 {
     if (!used_) {
         closeButtonIcon_ = icon;
@@ -732,7 +732,7 @@ Toast& Toast::setCloseButtonIcon(QPixmap icon)
     return *this;
 }
 
-Toast& Toast::setCloseButtonIcon(ToastIcon icon)
+Toast& Toast::setCloseButtonIcon(const ToastIcon& icon)
 {
     if (!used_) {
         closeButtonIcon_ = getIconFromEnum(icon);
@@ -749,7 +749,7 @@ Toast& Toast::setShowCloseButton(bool enabled)
     return *this;
 }
 
-Toast& Toast::setCloseButtonIconSize(QSize size)
+Toast& Toast::setCloseButtonIconSize(const QSize& size)
 {
     if (!used_) {
         closeButtonIconSize_ = size;
@@ -759,7 +759,7 @@ Toast& Toast::setCloseButtonIconSize(QSize size)
     return *this;
 }
 
-Toast& Toast::setCloseButtonSize(QSize size)
+Toast& Toast::setCloseButtonSize(const QSize& size)
 {
     if (!used_) {
         closeButtonSize_ = size;
@@ -786,7 +786,7 @@ Toast& Toast::setCloseButtonHeight(int height)
     return *this;
 }
 
-Toast& Toast::setCloseButtonAlignment(ToastButtonAlignment alignment)
+Toast& Toast::setCloseButtonAlignment(const ToastButtonAlignment& alignment)
 {
     if (!used_)
         closeButtonAlignment_ = alignment;
@@ -840,28 +840,28 @@ Toast& Toast::setBorderRadius(int borderRadius)
     return *this;
 }
 
-Toast& Toast::setBackgroundColor(QColor color)
+Toast& Toast::setBackgroundColor(const QColor& color)
 {
     if (!used_)
         backgroundColor_ = color;
     return *this;
 }
 
-Toast& Toast::setTitleColor(QColor color)
+Toast& Toast::setTitleColor(const QColor& color)
 {
     if (!used_)
         titleColor_ = color;
     return *this;
 }
 
-Toast& Toast::setTextColor(QColor color)
+Toast& Toast::setTextColor(const QColor& color)
 {
     if (!used_)
         textColor_ = color;
     return *this;
 }
 
-Toast& Toast::setIconColor(QColor color)
+Toast& Toast::setIconColor(const QColor& color)
 {
     if (!used_) {
         iconColor_ = color;
@@ -873,14 +873,14 @@ Toast& Toast::setIconColor(QColor color)
     return *this;
 }
 
-Toast& Toast::setIconSeparatorColor(QColor color)
+Toast& Toast::setIconSeparatorColor(const QColor& color)
 {
     if (!used_)
         iconSeparatorColor_ = color;
     return *this;
 }
 
-Toast& Toast::setCloseButtonIconColor(QColor color)
+Toast& Toast::setCloseButtonIconColor(const QColor& color)
 {
     if (!used_) {
         closeButtonIconColor_ = color;
@@ -892,14 +892,14 @@ Toast& Toast::setCloseButtonIconColor(QColor color)
     return *this;
 }
 
-Toast& Toast::setDurationBarColor(QColor color)
+Toast& Toast::setDurationBarColor(const QColor& color)
 {
     if (!used_)
         durationBarColor_ = color;
     return *this;
 }
 
-Toast& Toast::setTitleFont(QFont font)
+Toast& Toast::setTitleFont(const QFont& font)
 {
     if (!used_) {
         titleFont_ = font;
@@ -908,7 +908,7 @@ Toast& Toast::setTitleFont(QFont font)
     return *this;
 }
 
-Toast& Toast::setTextFont(QFont font)
+Toast& Toast::setTextFont(const QFont& font)
 {
     if (!used_) {
         textFont_ = font;
@@ -917,7 +917,7 @@ Toast& Toast::setTextFont(QFont font)
     return *this;
 }
 
-Toast& Toast::setMargins(QMargins margins)
+Toast& Toast::setMargins(const QMargins& margins)
 {
     if (!used_)
         margins_ = margins;
@@ -952,7 +952,7 @@ Toast& Toast::setMarginBottom(int margin)
     return *this;
 }
 
-Toast& Toast::setIconMargins(QMargins margins)
+Toast& Toast::setIconMargins(const QMargins& margins)
 {
     if (!used_)
         iconMargins_ = margins;
@@ -987,7 +987,7 @@ Toast& Toast::setIconMarginBottom(int margin)
     return *this;
 }
 
-Toast& Toast::setIconSectionMargins(QMargins margins)
+Toast& Toast::setIconSectionMargins(const QMargins& margins)
 {
     if (!used_)
         iconSectionMargins_ = margins;
@@ -1022,7 +1022,7 @@ Toast& Toast::setIconSectionMarginBottom(int margin)
     return *this;
 }
 
-Toast& Toast::setTextSectionMargins(QMargins margins)
+Toast& Toast::setTextSectionMargins(const QMargins& margins)
 {
     if (!used_)
         textSectionMargins_ = margins;
@@ -1057,7 +1057,7 @@ Toast& Toast::setTextSectionMarginBottom(int margin)
     return *this;
 }
 
-Toast& Toast::setCloseButtonMargins(QMargins margins)
+Toast& Toast::setCloseButtonMargins(const QMargins& margins)
 {
     if (!used_)
         closeButtonMargins_ = margins;
@@ -1099,7 +1099,7 @@ Toast& Toast::setTextSectionSpacing(int spacing)
     return *this;
 }
 
-Toast& Toast::setFixedSize(QSize size)
+Toast& Toast::setFixedSize(const QSize& size)
 {
     if (!used_) {
         QDialog::setMinimumSize(size);
@@ -1131,7 +1131,7 @@ Toast& Toast::setFixedHeight(int height)
     return *this;
 }
 
-Toast& Toast::applyPreset(ToastPreset preset)
+Toast& Toast::applyPreset(const ToastPreset& preset)
 {
     if (used_)
         return *this;
@@ -1869,18 +1869,33 @@ QString Toast::getCurrentDirectory()
     return QFileInfo(__FILE__).absolutePath();
 }
 
-QImage Toast::recolorImage(QImage image, QColor color)
+QImage Toast::recolorImage(const QImage& image, const QColor& color)
 {
-    for (int x = 0; x < image.width(); x++) {
-        for (int y = 0; y < image.height(); y++) {
-            QColor currentColor = image.pixelColor(x, y);
-
-            QColor newColor = QColor::fromRgba(qRgba(color.red(), color.green(),
-                color.blue(), currentColor.alpha()));
-            image.setPixelColor(x, y, newColor);
-        }
+    if (image.isNull()) {
+        return QImage();
     }
-    return image;
+
+    QImage result = image.copy();
+
+    const QRgb newColorValue
+        = qRgba(color.red(), color.green(), color.blue(), 255);
+
+    const int height = result.height();
+    const int width = result.width();
+
+    std::for_each(std::execution::par,
+        std::ranges::iota_view { 0, height }.begin(),
+        std::ranges::iota_view { 0, height }.end(),
+        [&result, width, newColorValue](int y) {
+            QRgb* scanLine = reinterpret_cast<QRgb*>(result.scanLine(y));
+            for (int x = 0; x < width; ++x) {
+                const int alpha = qAlpha(scanLine[x]);
+                scanLine[x] = qRgba(qRed(newColorValue), qGreen(newColorValue),
+                    qBlue(newColorValue), alpha);
+            }
+        });
+
+    return result;
 }
 
 QPixmap Toast::getIconFromEnum(ToastIcon enumIcon)

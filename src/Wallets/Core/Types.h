@@ -14,6 +14,8 @@ enum class ChainType {
     SOLANA,
     TRON,
     BNBCHAIN,
+    SUI,
+    APTOS,
 };
 
 struct Network {

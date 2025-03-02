@@ -392,7 +392,7 @@ QComboBox::down-arrow:on, QComboBox::down-arrow:hover, QComboBox::down-arrow:foc
 
 #listWidgetWallet::item {
     border-radius: 6px;
-    width: 100;
+    width: 120;
     height: 120;
     margin: 4px;
     padding: 8px;
@@ -492,9 +492,9 @@ QComboBox::down-arrow:on, QComboBox::down-arrow:hover, QComboBox::down-arrow:foc
 #ButtonSocial,
 #ButtonIssue,
 #ButtonWallet {
-    border-radius: 0;
-    border: 1 solid #32414b;
+    border-radius: 8px;
     background: transparent;
+    color: #DFE1E2;
     width: 60px;
     height: 60px;
     padding: 8px;
@@ -508,6 +508,7 @@ QComboBox::down-arrow:on, QComboBox::down-arrow:hover, QComboBox::down-arrow:foc
 #ButtonIssue:pressed,
 #ButtonWallet:pressed {
     padding: 9px;
+    background-color: #1A72BB;
 }
 
 #ButtonMint:hover,
@@ -517,7 +518,28 @@ QComboBox::down-arrow:on, QComboBox::down-arrow:hover, QComboBox::down-arrow:foc
 #ButtonSocial:hover,
 #ButtonIssue:hover,
 #ButtonWallet:hover {
-    border-color: palette(highlight);
+    background-color: #2D3E50;
+}
+
+#ButtonMint:disabled,
+#ButtonTrade:disabled,
+#ButtonBuild:disabled,
+#ButtonData:disabled,
+#ButtonSocial:disabled,
+#ButtonIssue:disabled,
+#ButtonWallet:disabled {
+    color: #788D9C;
+}
+
+#ButtonMint:checked,
+#ButtonTrade:checked,
+#ButtonBuild:checked,
+#ButtonData:checked,
+#ButtonSocial:checked,
+#ButtonIssue:checked,
+#ButtonWallet:checked {
+    background-color: #1A72BB;
+    color: #FFFFFF;
 }
 
 #ButtonLeftTop, #ButtonLeftBottom, #ButtonRightTop, #ButtonRightBottom {

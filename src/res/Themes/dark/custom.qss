@@ -391,7 +391,7 @@ QComboBox::down-arrow:on, QComboBox::down-arrow:hover, QComboBox::down-arrow:foc
 }
 
 #listWidgetWallet::item {
-    border-radius: 6px;
+    border-radius: 8px;
     width: 120;
     height: 120;
     margin: 4px;

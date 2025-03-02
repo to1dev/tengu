@@ -14,7 +14,7 @@ MessageForm::MessageForm(QWidget* parent, int emoji, const QString& text,
     frameless_->setMainFrame(ui->frameMain);
     frameless_->setContentFrame(ui->frameContent);
     frameless_->setFixed(true);
-    frameless_->init();
+    frameless_->init(Frameless::Mode::DIALOG);
 
     SVGWidget* icon = nullptr;
     if (emoji > 0) {

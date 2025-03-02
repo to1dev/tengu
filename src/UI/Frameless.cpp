@@ -7,12 +7,14 @@ Frameless::Frameless(QWidget* window)
 {
 }
 
-void Frameless::init(const bool isMain)
+void Frameless::init(const Mode& mode)
 {
     if (!window_ || !mainFrame_ || !contentFrame_)
         return;
 
     int index = 0;
+    mode_ = mode;
+    bool isMain = (mode == Mode::MAIN);
     Qt::WindowFlags flags = isMain
         ? Qt::FramelessWindowHint | Qt::Window | Qt::WindowMinMaxButtonsHint
         : Qt::FramelessWindowHint | Qt::Dialog;

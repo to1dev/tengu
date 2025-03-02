@@ -13,7 +13,7 @@ UpdateWalletForm::UpdateWalletForm(
     frameless_ = std::make_unique<Frameless>(this);
     frameless_->setMainFrame(ui->frameMain);
     frameless_->setContentFrame(ui->frameContent);
-    frameless_->init();
+    frameless_->init(Frameless::Mode::DIALOG);
 
     windowManager_->setWindow(this);
     windowManager_->reset(0.6);

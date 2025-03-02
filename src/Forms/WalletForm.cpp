@@ -14,7 +14,7 @@ WalletForm::WalletForm(
     frameless_ = std::make_unique<Frameless>(this);
     frameless_->setMainFrame(ui->frameMain);
     frameless_->setContentFrame(ui->frameContent);
-    frameless_->init();
+    frameless_->init(Frameless::Mode::DIALOG);
 
     QHBoxLayout* layoutPanel = new QHBoxLayout(ui->groupBoxWallets);
     layoutPanel->setContentsMargins(DEFAULT_GROUP_MARGINS);

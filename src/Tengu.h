@@ -17,6 +17,7 @@
 #include "Components/WalletPanel.h"
 
 #include "Forms/MessageForm.h"
+#include "Forms/WalletDock.h"
 #include "Forms/WalletForm.h"
 
 using namespace Daitengu::Components;
@@ -24,9 +25,11 @@ using namespace Daitengu::Core;
 using namespace Daitengu::UI;
 
 QT_BEGIN_NAMESPACE
+
 namespace Ui {
 class Tengu;
 }
+
 QT_END_NAMESPACE
 
 class Tengu : public QMainWindow {
@@ -40,6 +43,8 @@ public:
     ~Tengu();
 
 private Q_SLOTS:
+    void onShowToolWindow();
+
     void onPopup();
     void reboot();
     void about();
@@ -50,6 +55,8 @@ private:
 
 private:
     Ui::Tengu* ui;
+
+    std::unique_ptr<WalletDock> toolWindow;
 
     std::shared_ptr<const GlobalManager> globalManager_;
     std::unique_ptr<WindowManager> windowManager_ {

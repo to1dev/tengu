@@ -49,10 +49,16 @@ inline const QString STR_FORM_TOOLTIP_FIXED = QObject::tr("锁定窗体移动范
 class Frameless : public QObject {
     Q_OBJECT
 public:
+    enum class Mode {
+        MAIN,
+        DIALOG,
+        PANEL,
+    };
+
     Frameless(QWidget* window = nullptr);
     virtual ~Frameless() = default;
 
-    void init(const bool isMain = false);
+    void init(const Mode& mode = Mode::MAIN);
 
     void setMainFrame(QWidget* newMainFrame);
     void setTopFrame(QWidget* newTopFrame);
@@ -77,6 +83,7 @@ private:
     QString title_;
 
     bool fixed_ { false };
+    Mode mode_ { Mode::MAIN };
 
     QWidget* mainFrame_ { nullptr };
     QWidget* topFrame_ { nullptr };

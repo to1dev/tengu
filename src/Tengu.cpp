@@ -18,7 +18,7 @@ Tengu::Tengu(
     frameless_->setButtonMin(ui->ButtonMin);
     frameless_->setButtonMax(ui->ButtonMax);
     frameless_->setButtonClose(ui->ButtonClose);
-    frameless_->init(true);
+    frameless_->init();
 
     windowManager_->setWindow(this);
     windowManager_->reset(0.9);
@@ -42,11 +42,21 @@ Tengu::Tengu(
     ui->tabFirst->setLayout(layout);
 
     connect(ui->ButtonWallet, &QToolButton::clicked, this, &Tengu::wallet);
+
+    connect(ui->action1, &QAction::triggered, this, &Tengu::onShowToolWindow);
 }
 
 Tengu::~Tengu()
 {
     delete ui;
+}
+
+void Tengu::onShowToolWindow()
+{
+    if (!toolWindow) {
+        toolWindow = std::make_unique<WalletDock>();
+    }
+    toolWindow->show();
 }
 
 void Tengu::onPopup()

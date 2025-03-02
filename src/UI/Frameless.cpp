@@ -15,9 +15,27 @@ void Frameless::init(const Mode& mode)
     int index = 0;
     mode_ = mode;
     bool isMain = (mode == Mode::MAIN);
-    Qt::WindowFlags flags = isMain
-        ? Qt::FramelessWindowHint | Qt::Window | Qt::WindowMinMaxButtonsHint
-        : Qt::FramelessWindowHint | Qt::Dialog;
+    Qt::WindowFlags flags;
+    switch (mode) {
+    case Mode::MAIN: {
+        flags = Qt::FramelessWindowHint | Qt::Window
+            | Qt::WindowMinMaxButtonsHint;
+        break;
+    }
+
+    case Mode::DIALOG: {
+        flags = Qt::FramelessWindowHint | Qt::Dialog;
+        break;
+    }
+
+    case Mode::PANEL: {
+        flags = Qt::FramelessWindowHint | Qt::Tool;
+        break;
+    }
+
+    default:
+        break;
+    }
 
     window_->setWindowFlags(flags);
     window_->setAttribute(Qt::WA_TranslucentBackground);

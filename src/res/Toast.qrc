@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/Toast">
+        <file alias="close">Images/Toast/close.png</file>
+        <file alias="error">Images/Toast/error.png</file>
+        <file alias="information">Images/Toast/information.png</file>
+        <file alias="success">Images/Toast/success.png</file>
+        <file alias="warning">Images/Toast/warning.png</file>
+    </qresource>
+</RCC>

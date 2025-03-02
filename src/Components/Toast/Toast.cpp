@@ -285,75 +285,6 @@ const QString Toast::TOAST_STYLE = R"(
 }
 )";
 
-void Toast::enterEvent(QEvent* event)
-{
-}
-
-void Toast::leaveEvent(QEvent* event)
-{
-}
-
-void Toast::hide_()
-{
-}
-
-void Toast::fadeOut()
-{
-}
-
-void Toast::updateDurationBar()
-{
-}
-
-void Toast::deleteAndShowNextInQueue()
-{
-}
-
-void Toast::setupUI()
-{
-}
-
-void Toast::updatePositionXY()
-{
-}
-
-void Toast::updatePositionX()
-{
-}
-
-void Toast::updatePositionY()
-{
-}
-
-void Toast::updateStylesheet()
-{
-}
-
-QPoint Toast::calculatePosition() const
-{
-    return QPoint();
-}
-
-Toast* Toast::getPredecessorToast() const
-{
-    return nullptr;
-}
-
-QString Toast::getCurrentDirectory()
-{
-    return QString();
-}
-
-QImage Toast::recolorImage(QImage image, QColor color)
-{
-    return QImage();
-}
-
-QPixmap Toast::getIconFromEnum(ToastIcon enumIcon)
-{
-    return QPixmap();
-}
-
 Toast::Toast(QWidget* parent)
     : QDialog(parent)
     , parent_(parent)
@@ -525,14 +456,6 @@ Toast::~Toast()
     if (queueIt != ToastManager::queue_.end()) {
         ToastManager::queue_.erase(queueIt);
     }
-}
-
-void Toast::show()
-{
-}
-
-void Toast::hide()
-{
 }
 
 int Toast::getDuration() const
@@ -1052,116 +975,932 @@ Toast& Toast::setIconMarginTop(int margin)
 
 Toast& Toast::setIconMarginRight(int margin)
 {
-    // TODO: 在此处插入 return 语句
+    if (!used_)
+        iconMargins_.setRight(margin);
+    return *this;
 }
 
 Toast& Toast::setIconMarginBottom(int margin)
 {
-    // TODO: 在此处插入 return 语句
+    if (!used_)
+        iconMargins_.setBottom(margin);
+    return *this;
 }
 
 Toast& Toast::setIconSectionMargins(QMargins margins)
 {
-    // TODO: 在此处插入 return 语句
+    if (!used_)
+        iconSectionMargins_ = margins;
+    return *this;
 }
 
 Toast& Toast::setIconSectionMarginLeft(int margin)
 {
-    // TODO: 在此处插入 return 语句
+    if (!used_)
+        iconSectionMargins_.setLeft(margin);
+    return *this;
 }
 
 Toast& Toast::setIconSectionMarginTop(int margin)
 {
-    // TODO: 在此处插入 return 语句
+    if (!used_)
+        iconSectionMargins_.setTop(margin);
+    return *this;
 }
 
 Toast& Toast::setIconSectionMarginRight(int margin)
 {
-    // TODO: 在此处插入 return 语句
+    if (!used_)
+        iconSectionMargins_.setRight(margin);
+    return *this;
 }
 
 Toast& Toast::setIconSectionMarginBottom(int margin)
 {
-    // TODO: 在此处插入 return 语句
+    if (!used_)
+        iconSectionMargins_.setBottom(margin);
+    return *this;
 }
 
 Toast& Toast::setTextSectionMargins(QMargins margins)
 {
-    // TODO: 在此处插入 return 语句
+    if (!used_)
+        textSectionMargins_ = margins;
+    return *this;
 }
 
 Toast& Toast::setTextSectionMarginLeft(int margin)
 {
-    // TODO: 在此处插入 return 语句
+    if (!used_)
+        textSectionMargins_.setLeft(margin);
+    return *this;
 }
 
 Toast& Toast::setTextSectionMarginTop(int margin)
 {
-    // TODO: 在此处插入 return 语句
+    if (!used_)
+        textSectionMargins_.setTop(margin);
+    return *this;
 }
 
 Toast& Toast::setTextSectionMarginRight(int margin)
 {
-    // TODO: 在此处插入 return 语句
+    if (!used_)
+        textSectionMargins_.setRight(margin);
+    return *this;
 }
 
 Toast& Toast::setTextSectionMarginBottom(int margin)
 {
-    // TODO: 在此处插入 return 语句
+    if (!used_)
+        textSectionMargins_.setBottom(margin);
+    return *this;
 }
 
 Toast& Toast::setCloseButtonMargins(QMargins margins)
 {
-    // TODO: 在此处插入 return 语句
+    if (!used_)
+        closeButtonMargins_ = margins;
+    return *this;
 }
 
 Toast& Toast::setCloseButtonMarginLeft(int margin)
 {
-    // TODO: 在此处插入 return 语句
+    if (!used_)
+        closeButtonMargins_.setLeft(margin);
+    return *this;
 }
 
 Toast& Toast::setCloseButtonMarginTop(int margin)
 {
-    // TODO: 在此处插入 return 语句
+    if (!used_)
+        closeButtonMargins_.setTop(margin);
+    return *this;
 }
 
 Toast& Toast::setCloseButtonMarginRight(int margin)
 {
-    // TODO: 在此处插入 return 语句
+    if (!used_)
+        closeButtonMargins_.setRight(margin);
+    return *this;
 }
 
 Toast& Toast::setCloseButtonMarginBottom(int margin)
 {
-    // TODO: 在此处插入 return 语句
+    if (!used_)
+        closeButtonMargins_.setBottom(margin);
+    return *this;
 }
 
 Toast& Toast::setTextSectionSpacing(int spacing)
 {
-    // TODO: 在此处插入 return 语句
+    if (!used_)
+        textSectionSpacing_ = spacing;
+    return *this;
 }
 
 Toast& Toast::setFixedSize(QSize size)
 {
-    // TODO: 在此处插入 return 语句
+    if (!used_) {
+        QDialog::setMinimumSize(size);
+        QDialog::setMaximumSize(size);
+    }
+    return *this;
 }
 
 Toast& Toast::setFixedSize(int width, int height)
 {
-    // TODO: 在此处插入 return 语句
+    return setFixedSize(QSize(width, height));
 }
 
 Toast& Toast::setFixedWidth(int width)
 {
-    // TODO: 在此处插入 return 语句
+    if (!used_) {
+        QDialog::setMinimumWidth(width);
+        QDialog::setMaximumWidth(width);
+    }
+    return *this;
 }
 
 Toast& Toast::setFixedHeight(int height)
 {
-    // TODO: 在此处插入 return 语句
+    if (!used_) {
+        QDialog::setMinimumHeight(height);
+        QDialog::setMaximumHeight(height);
+    }
+    return *this;
 }
 
 Toast& Toast::applyPreset(ToastPreset preset)
 {
-    // TODO: 在此处插入 return 语句
+    if (used_)
+        return *this;
+
+    switch (preset) {
+    case ToastPreset::SUCCESS:
+    case ToastPreset::SUCCESS_DARK:
+        setIcon(ToastIcon::SUCCESS);
+        setIconColor(successAccentColor_);
+        setDurationBarColor(successAccentColor_);
+        break;
+
+    case ToastPreset::WARNING:
+    case ToastPreset::WARNING_DARK:
+        setIcon(ToastIcon::WARNING);
+        setIconColor(warningAccentColor_);
+        setDurationBarColor(warningAccentColor_);
+        break;
+
+    case ToastPreset::TOAST_ERROR:
+    case ToastPreset::ERROR_DARK:
+        setIcon(ToastIcon::TOAST_ERROR);
+        setIconColor(errorAccentColor_);
+        setDurationBarColor(errorAccentColor_);
+        break;
+
+    case ToastPreset::INFORMATION:
+    case ToastPreset::INFORMATION_DARK:
+        setIcon(ToastIcon::INFORMATION);
+        setIconColor(informationAccentColor_);
+        setDurationBarColor(informationAccentColor_);
+        break;
+    }
+
+    switch (preset) {
+    case ToastPreset::SUCCESS:
+    case ToastPreset::WARNING:
+    case ToastPreset::TOAST_ERROR:
+    case ToastPreset::INFORMATION:
+        setBackgroundColor(defaultBackgroundColor_);
+        setCloseButtonIconColor(defaultCloseButtonIconColor_);
+        setIconSeparatorColor(defaultIconSeparatorColor_);
+        setTitleColor(defaultTitleColor_);
+        setTextColor(defaultTextColor_);
+        break;
+
+    case ToastPreset::SUCCESS_DARK:
+    case ToastPreset::WARNING_DARK:
+    case ToastPreset::ERROR_DARK:
+    case ToastPreset::INFORMATION_DARK:
+        setBackgroundColor(defaultBackgroundColorDark_);
+        setCloseButtonIconColor(defaultCloseButtonIconColorDark_);
+        setIconSeparatorColor(defaultIconSeparatorColorDark_);
+        setTitleColor(defaultTitleColorDark_);
+        setTextColor(defaultTextColorDark_);
+        break;
+    }
+
+    return setShowDurationBar(true)
+        .setShowIcon(true)
+        .setShowIconSeparator(true)
+        .setIconSeparatorWidth(2);
 }
+
+void Toast::show()
+{
+    if (used_)
+        return;
+
+    std::lock_guard<std::mutex> lock(ToastManager::mutex_);
+
+    if (ToastManager::maximumOnScreen_ > ToastManager::currentlyShown_.size()) {
+        used_ = true;
+        ToastManager::currentlyShown_.push_back(this);
+
+        setupUI();
+
+        if (duration_ != 0) {
+            durationTimer_->start(duration_);
+
+            if (showDurationBar_) {
+                durationBarTimer_->start(durationBarUpdateInterval_);
+            }
+        }
+
+        QPoint position = calculatePosition();
+
+        if (ToastManager::currentlyShown_.size() > 1) {
+            Toast* predecessorToast = getPredecessorToast();
+            QPoint predecessorTarget = predecessorToast->calculatePosition();
+            int predecessorTargetDifferenceY
+                = abs(predecessorToast->y() - predecessorTarget.y());
+
+            if (ToastManager::position_ == ToastPosition::BOTTOM_RIGHT
+                || ToastManager::position_ == ToastPosition::BOTTOM_LEFT
+                || ToastManager::position_ == ToastPosition::BOTTOM_MIDDLE) {
+                move(position.x(),
+                    position.y() - (int)(height() / 1.5)
+                        - predecessorTargetDifferenceY);
+            } else {
+                move(position.x(),
+                    position.y() + (int)(height() / 1.5)
+                        + predecessorTargetDifferenceY);
+            }
+
+            auto posAnimation
+                = std::make_unique<QPropertyAnimation>(this, "pos");
+            posAnimation->setEndValue(QPoint(position.x(), position.y()));
+            posAnimation->setDuration(fadeInDuration_);
+            posAnimation->start(QAbstractAnimation::DeleteWhenStopped);
+        } else {
+            move(position);
+        }
+
+        QDialog::show();
+        auto fadeInAnimation = std::make_unique<QPropertyAnimation>(
+            opacityEffect_.get(), "opacity");
+        fadeInAnimation->setDuration(fadeInDuration_);
+        fadeInAnimation->setStartValue(0);
+        fadeInAnimation->setEndValue(1);
+        fadeInAnimation->start(QAbstractAnimation::DeleteWhenStopped);
+
+        if (parent_) {
+            parent_->activateWindow();
+        }
+
+        for (auto toast : ToastManager::currentlyShown_) {
+            if (toast != this) {
+                toast->updatePositionXY();
+            }
+        }
+    } else {
+        ToastManager::queue_.push_back(this);
+    }
+}
+
+void Toast::hide()
+{
+    if (!fadingOut_) {
+        if (duration_ != 0) {
+            durationTimer_->stop();
+        }
+        fadeOut();
+    }
+}
+
+void Toast::hide_()
+{
+    close();
+
+    {
+        std::lock_guard<std::mutex> lock(ToastManager::mutex_);
+        auto it = std::find(ToastManager::currentlyShown_.begin(),
+            ToastManager::currentlyShown_.end(), this);
+        if (it != ToastManager::currentlyShown_.end()) {
+            ToastManager::currentlyShown_.erase(it);
+            elapsedTime_ = 0;
+            fadingOut_ = false;
+
+            Q_EMIT closed();
+
+            for (auto toast : ToastManager::currentlyShown_) {
+                toast->updatePositionY();
+            }
+
+            QTimer::singleShot(
+                fadeInDuration_, this, &Toast::deleteAndShowNextInQueue);
+        }
+    }
+}
+
+void Toast::fadeOut()
+{
+    fadingOut_ = true;
+    auto fadeOutAnimation
+        = std::make_unique<QPropertyAnimation>(opacityEffect_.get(), "opacity");
+    fadeOutAnimation->setDuration(fadeOutDuration_);
+    fadeOutAnimation->setStartValue(1);
+    fadeOutAnimation->setEndValue(0);
+
+    connect(fadeOutAnimation.get(), &QPropertyAnimation::finished, this,
+        &Toast::hide_);
+
+    fadeOutAnimation->start(QAbstractAnimation::DeleteWhenStopped);
+}
+
+void Toast::updateDurationBar()
+{
+    elapsedTime_ += durationBarUpdateInterval_;
+
+    if (elapsedTime_ >= duration_) {
+        durationBarTimer_->stop();
+        return;
+    }
+
+    double newChunkWidth = floor(durationBarContainer_->width()
+        - (double)elapsedTime_ / (double)duration_
+            * durationBarContainer_->width());
+    durationBarChunk_->setFixedWidth(newChunkWidth);
+}
+
+void Toast::deleteAndShowNextInQueue()
+{
+    ToastManager::showNextInQueue();
+    deleteLater();
+}
+
+void Toast::enterEvent(QEvent* event)
+{
+    if (duration_ != 0 && durationTimer_->isActive() && resetDurationOnHover_) {
+        durationTimer_->stop();
+
+        if (showDurationBar_) {
+            durationBarTimer_->stop();
+            durationBarChunk_->setFixedWidth(notification_->width());
+            elapsedTime_ = 0;
+        }
+    }
+}
+
+void Toast::leaveEvent(QEvent* event)
+{
+    if (duration_ != 0 && !durationTimer_->isActive()
+        && resetDurationOnHover_) {
+        durationTimer_->start(duration_);
+
+        if (showDurationBar_) {
+            durationBarTimer_->start(durationBarUpdateInterval_);
+        }
+    }
+}
+
+void Toast::setupUI()
+{
+    updateStylesheet();
+
+    QFontMetrics titleFontMetrics(titleFont_);
+    int titleWidth = titleFontMetrics.boundingRect(title_).width() + 1;
+    int titleHeight = titleFontMetrics.boundingRect(title_).height();
+
+    QFontMetrics textFontMetrics(textFont_);
+    int textWidth = textFontMetrics.boundingRect(text_).width() + 1;
+    int textHeight = textFontMetrics.boundingRect(text_).height();
+
+    int textSectionSpacing
+        = (title_.isEmpty() || text_.isEmpty()) ? 0 : textSectionSpacing_;
+
+    int textSectionHeight = textSectionMargins_.top() + titleHeight
+        + textSectionSpacing + textHeight + textSectionMargins_.bottom();
+
+    int durationBarHeight
+        = showDurationBar_ ? durationBarContainer_->height() : 0;
+
+    int iconSectionWidth = 0;
+    int iconSectionHeight = 0;
+
+    if (showIcon_) {
+        iconSectionWidth = iconSectionMargins_.left() + iconMargins_.left()
+            + iconWidget_->width() + iconMargins_.right()
+            + iconSeparator_->width() + iconSectionMargins_.right();
+
+        iconSectionHeight = iconSectionMargins_.top() + iconMargins_.top()
+            + iconWidget_->height() + iconMargins_.bottom()
+            + iconSectionMargins_.bottom();
+    }
+
+    int closeButtonWidth = showCloseButton_ ? closeButton_->width() : 0;
+    int closeButtonHeight = showCloseButton_ ? closeButton_->height() : 0;
+    QMargins closeButtonMargins
+        = showCloseButton_ ? closeButtonMargins_ : QMargins(0, 0, 0, 0);
+
+    int closeButtonSectionHeight = closeButtonMargins.top() + closeButtonHeight
+        + closeButtonMargins.bottom();
+
+    int width = margins_.left() + iconSectionWidth + textSectionMargins_.left()
+        + std::max(titleWidth, textWidth) + textSectionMargins_.right()
+        + closeButtonMargins.left() + closeButtonWidth
+        + closeButtonMargins.right() + margins_.right();
+
+    int height = margins_.top()
+        + std::max(
+            { iconSectionHeight, textSectionHeight, closeButtonSectionHeight })
+        + margins_.bottom() + durationBarHeight;
+
+    int forcedAdditionalHeight = 0;
+    int forcedReducedHeight = 0;
+
+    if (width > maximumWidth()) {
+        int newTitleWidth
+            = std::max(titleWidth, textWidth) - (width - maximumWidth());
+        if (newTitleWidth > 0) {
+            titleWidth = newTitleWidth;
+        }
+
+        int newTextWidth
+            = std::max(titleWidth, textWidth) - (width - maximumWidth());
+        if (newTextWidth > 0) {
+            textWidth = newTextWidth;
+        }
+
+        titleLabel_->setMinimumWidth(titleWidth);
+        titleLabel_->setWordWrap(true);
+        if (!title_.isEmpty()) {
+            titleHeight = titleLabel_->sizeHint().height();
+        }
+        titleLabel_->setFixedSize(titleWidth, titleHeight);
+
+        textLabel_->setMinimumWidth(textWidth);
+        textLabel_->setWordWrap(true);
+        if (!text_.isEmpty()) {
+            textHeight = textLabel_->sizeHint().height();
+        }
+        textLabel_->setFixedSize(textWidth, textHeight);
+
+        width = maximumWidth();
+
+        textSectionHeight = textSectionMargins_.top() + titleHeight
+            + textSectionSpacing + textHeight + textSectionMargins_.bottom();
+
+        height = margins_.top()
+            + std::max({ iconSectionHeight, textSectionHeight,
+                closeButtonSectionHeight })
+            + margins_.bottom() + durationBarHeight;
+    }
+
+    if (height < minimumHeight()) {
+        titleLabel_->setWordWrap(true);
+        textLabel_->setWordWrap(true);
+
+        titleWidth = titleLabel_->fontMetrics()
+                         .boundingRect(QRect(0, 0, 0, 0),
+                             Qt::TextFlag::TextWordWrap, title_)
+                         .width();
+
+        textWidth = textLabel_->fontMetrics()
+                        .boundingRect(QRect(0, 0, 0, 0),
+                            Qt::TextFlag::TextWordWrap, text_)
+                        .width();
+
+        int tempWidth = std::max(titleWidth, textWidth);
+
+        titleWidth = titleLabel_->fontMetrics()
+                         .boundingRect(QRect(0, 0, tempWidth, 0),
+                             Qt::TextFlag::TextWordWrap, title_)
+                         .width();
+        if (!title_.isEmpty()) {
+            titleHeight = titleLabel_->fontMetrics()
+                              .boundingRect(QRect(0, 0, tempWidth, 0),
+                                  Qt::TextFlag::TextWordWrap, title_)
+                              .height();
+        }
+
+        textWidth = textLabel_->fontMetrics()
+                        .boundingRect(QRect(0, 0, tempWidth, 0),
+                            Qt::TextFlag::TextWordWrap, text_)
+                        .width();
+        if (!text_.isEmpty()) {
+            textHeight = textLabel_->fontMetrics()
+                             .boundingRect(QRect(0, 0, tempWidth, 0),
+                                 Qt::TextFlag::TextWordWrap, text_)
+                             .height();
+        }
+
+        textSectionHeight = textSectionMargins_.top() + titleHeight
+            + textSectionSpacing + textHeight + textSectionMargins_.bottom();
+
+        height = margins_.top()
+            + std::max({ iconSectionHeight, textSectionHeight,
+                closeButtonSectionHeight })
+            + margins_.bottom() + durationBarHeight;
+
+        while (tempWidth <= width) {
+            int tempTitleWidth = titleLabel_->fontMetrics()
+                                     .boundingRect(QRect(0, 0, tempWidth, 0),
+                                         Qt::TextFlag::TextWordWrap, title_)
+                                     .width();
+
+            int tempTitleHeight = titleLabel_->fontMetrics()
+                                      .boundingRect(QRect(0, 0, tempWidth, 0),
+                                          Qt::TextFlag::TextWordWrap, title_)
+                                      .height();
+
+            int tempTextWidth = textLabel_->fontMetrics()
+                                    .boundingRect(QRect(0, 0, tempWidth, 0),
+                                        Qt::TextFlag::TextWordWrap, text_)
+                                    .width();
+
+            int tempTextHeight = textLabel_->fontMetrics()
+                                     .boundingRect(QRect(0, 0, tempWidth, 0),
+                                         Qt::TextFlag::TextWordWrap, text_)
+                                     .height();
+
+            if (title_.isEmpty()) {
+                tempTitleHeight = 0;
+            }
+
+            if (text_.isEmpty()) {
+                tempTextHeight = 0;
+            }
+
+            int tempTextSectionHeight = textSectionMargins_.top()
+                + tempTitleHeight + textSectionSpacing + tempTextHeight
+                + textSectionMargins_.bottom();
+
+            int tempHeight = margins_.top()
+                + std::max({ iconSectionHeight, tempTextSectionHeight,
+                    closeButtonSectionHeight })
+                + margins_.bottom() + durationBarHeight;
+
+            if (tempHeight >= minimumHeight()) {
+                titleWidth = tempTitleWidth;
+                titleHeight = tempTitleHeight;
+                textWidth = tempTextWidth;
+                textHeight = tempTextHeight;
+                textSectionHeight = tempTextSectionHeight;
+                height = tempHeight;
+                tempWidth += 1;
+            } else {
+                break;
+            }
+        }
+
+        width = margins_.left() + iconSectionWidth + textSectionMargins_.left()
+            + std::max(titleWidth, textWidth) + textSectionMargins_.right()
+            + closeButtonMargins.left() + closeButtonWidth
+            + closeButtonMargins.right() + margins_.right();
+
+        if (height < minimumHeight()) {
+            forcedAdditionalHeight = minimumHeight() - height;
+            height = minimumHeight();
+        }
+    }
+
+    if (width < minimumWidth()) {
+        width = minimumWidth();
+    }
+
+    if (height > maximumHeight()) {
+        forcedReducedHeight = height - maximumHeight();
+        height = maximumHeight();
+    }
+
+    int totalWidth = width + dropShadowSize_ * 2;
+    int totalHeight = height + dropShadowSize_ * 2;
+
+    dropShadowLayer1_->resize(totalWidth, totalHeight);
+    dropShadowLayer1_->move(0, 0);
+    dropShadowLayer2_->resize(totalWidth - 2, totalHeight - 2);
+    dropShadowLayer2_->move(1, 1);
+    dropShadowLayer3_->resize(totalWidth - 4, totalHeight - 4);
+    dropShadowLayer3_->move(2, 2);
+    dropShadowLayer4_->resize(totalWidth - 6, totalHeight - 6);
+    dropShadowLayer4_->move(3, 3);
+    dropShadowLayer5_->resize(totalWidth - 8, totalHeight - 8);
+    dropShadowLayer5_->move(4, 4);
+
+    QDialog::setFixedSize(totalWidth, totalHeight);
+    notification_->setFixedSize(width, height);
+    notification_->move(dropShadowSize_, dropShadowSize_);
+    notification_->raise();
+
+    int heightIconSectionHeightDifference
+        = std::max({ iconSectionHeight, textSectionHeight,
+              closeButtonSectionHeight })
+        - iconSectionHeight;
+
+    if (showIcon_) {
+        iconWidget_->move(
+            margins_.left() + iconSectionMargins_.left() + iconMargins_.left(),
+            margins_.top() + iconSectionMargins_.top() + iconMargins_.top()
+                + ceil(heightIconSectionHeightDifference / 2)
+                - floor(forcedReducedHeight / 2));
+
+        iconSeparator_->setFixedHeight(textSectionHeight);
+        iconSeparator_->move(margins_.left() + iconSectionMargins_.left()
+                + iconMargins_.left() + iconWidget_->width()
+                + iconMargins_.right(),
+            margins_.top() + iconSectionMargins_.top()
+                + ceil(forcedAdditionalHeight / 2)
+                - floor(forcedReducedHeight / 2));
+    } else {
+        iconWidget_->setVisible(false);
+        iconSeparator_->setVisible(false);
+    }
+
+    int heightTextSectionHeightDifference
+        = std::max({ iconSectionHeight, textSectionHeight,
+              closeButtonSectionHeight })
+        - textSectionHeight;
+
+    titleLabel_->setFixedSize(std::max(titleWidth, textWidth), titleHeight);
+    textLabel_->setFixedSize(std::max(titleWidth, textWidth), textHeight);
+
+    if (showIcon_) {
+        titleLabel_->move(margins_.left() + iconSectionMargins_.left()
+                + iconMargins_.left() + iconWidget_->width()
+                + iconMargins_.right() + iconSeparator_->width()
+                + iconSectionMargins_.right() + textSectionMargins_.left(),
+            margins_.top() + textSectionMargins_.top()
+                + ceil(heightTextSectionHeightDifference / 2)
+                + ceil(forcedAdditionalHeight / 2)
+                - floor(forcedReducedHeight / 2));
+
+        textLabel_->move(margins_.left() + iconSectionMargins_.left()
+                + iconMargins_.left() + iconWidget_->width()
+                + iconMargins_.right() + iconSeparator_->width()
+                + iconSectionMargins_.right() + textSectionMargins_.left(),
+            margins_.top() + textSectionMargins_.top() + titleHeight
+                + textSectionSpacing
+                + ceil(heightTextSectionHeightDifference / 2)
+                + ceil(forcedAdditionalHeight / 2)
+                - floor(forcedReducedHeight / 2));
+    } else {
+        titleLabel_->move(margins_.left() + textSectionMargins_.left(),
+            margins_.top() + textSectionMargins_.top()
+                + ceil(heightTextSectionHeightDifference / 2)
+                + ceil(forcedAdditionalHeight / 2)
+                - floor(forcedReducedHeight / 2));
+
+        textLabel_->move(margins_.left() + textSectionMargins_.left(),
+            margins_.top() + textSectionMargins_.top() + titleHeight
+                + textSectionSpacing
+                + ceil(heightTextSectionHeightDifference / 2)
+                + ceil(forcedAdditionalHeight / 2)
+                - floor(forcedReducedHeight / 2));
+    }
+
+    if (title_.isEmpty() && !text_.isEmpty()) {
+        textLabel_->move(textLabel_->x(),
+            (int)((height - textHeight - durationBarHeight) / 2));
+    } else if (!title_.isEmpty() && text_.isEmpty()) {
+        titleLabel_->move(titleLabel_->x(),
+            (int)((height - titleHeight - durationBarHeight) / 2));
+    }
+
+    if (closeButtonAlignment_ == ToastButtonAlignment::TOP) {
+        closeButton_->move(width - closeButtonWidth - closeButtonMargins.right()
+                - margins_.right(),
+            margins_.top() + closeButtonMargins.top());
+    } else if (closeButtonAlignment_ == ToastButtonAlignment::MIDDLE) {
+        closeButton_->move(width - closeButtonWidth - closeButtonMargins.right()
+                - margins_.right(),
+            ceil((height - closeButtonHeight - durationBarHeight) / 2));
+    } else if (closeButtonAlignment_ == ToastButtonAlignment::BOTTOM) {
+        closeButton_->move(width - closeButtonWidth - closeButtonMargins.right()
+                - margins_.right(),
+            height - closeButtonHeight - margins_.bottom()
+                - closeButtonMargins.bottom() - durationBarHeight);
+    }
+
+    if (!showCloseButton_) {
+        closeButton_->setVisible(false);
+    }
+
+    if (showDurationBar_) {
+        durationBarContainer_->setFixedWidth(width);
+        durationBarContainer_->move(0, height - durationBarHeight);
+        durationBar_->setFixedWidth(width);
+        durationBarChunk_->setFixedWidth(width);
+    } else {
+        durationBarContainer_->setVisible(false);
+    }
+}
+
+void Toast::updateStylesheet()
+{
+    notification_->setStyleSheet(QString("background: %1; border-radius: %2px;")
+            .arg(backgroundColor_.name())
+            .arg(borderRadius_));
+
+    durationBar_->setStyleSheet(
+        QString("background: rgba(%1, %2, %3, 100); border-radius: %4px;")
+            .arg(durationBarColor_.red())
+            .arg(durationBarColor_.green())
+            .arg(durationBarColor_.blue())
+            .arg(borderRadius_));
+
+    durationBarChunk_->setStyleSheet(QString(
+        "background: rgba(%1, %2, %3, 255); "
+        "border-bottom-left-radius: %4px; border-bottom-right-radius: %5px;")
+            .arg(durationBarColor_.red())
+            .arg(durationBarColor_.green())
+            .arg(durationBarColor_.blue())
+            .arg(borderRadius_)
+            .arg(duration_ == 0 ? borderRadius_ : 0));
+
+    iconSeparator_->setStyleSheet(
+        QString("background: %1;").arg(iconSeparatorColor_.name()));
+
+    titleLabel_->setStyleSheet(QString("color: %1;").arg(titleColor_.name()));
+    textLabel_->setStyleSheet(QString("color: %1;").arg(textColor_.name()));
+}
+
+void Toast::updatePositionXY()
+{
+    QPoint position = calculatePosition();
+
+    auto posAnimation = std::make_unique<QPropertyAnimation>(this, "pos");
+    posAnimation->setEndValue(position);
+    posAnimation->setDuration(updatePositionDuration_);
+    posAnimation->start(QAbstractAnimation::DeleteWhenStopped);
+}
+
+void Toast::updatePositionX()
+{
+    QPoint position = calculatePosition();
+
+    auto posAnimation = std::make_unique<QPropertyAnimation>(this, "pos");
+    posAnimation->setEndValue(QPoint(position.x(), y()));
+    posAnimation->setDuration(updatePositionDuration_);
+    posAnimation->start(QAbstractAnimation::DeleteWhenStopped);
+}
+
+void Toast::updatePositionY()
+{
+    QPoint position = calculatePosition();
+
+    auto posAnimation = std::make_unique<QPropertyAnimation>(this, "pos");
+    posAnimation->setEndValue(QPoint(x(), position.y()));
+    posAnimation->setDuration(updatePositionDuration_);
+    posAnimation->start(QAbstractAnimation::DeleteWhenStopped);
+}
+
+QPoint Toast::calculatePosition() const
+{
+    std::lock_guard<std::mutex> lock(ToastManager::mutex_);
+
+    int offsetY = 0;
+
+    for (Toast* toast : ToastManager::currentlyShown_) {
+        if (toast == this) {
+            break;
+        }
+        offsetY += toast->notification_->height() + ToastManager::spacing_;
+    }
+
+    QScreen* primaryScreen = QGuiApplication::primaryScreen();
+    QScreen* currentScreen = nullptr;
+
+    if (ToastManager::fixedScreen_.has_value()) {
+        currentScreen = ToastManager::fixedScreen_.value();
+    } else if (ToastManager::alwaysOnMainScreen_ || !parent_) {
+        currentScreen = primaryScreen;
+    } else {
+        QList<QScreen*> screens = QGuiApplication::screens();
+
+        for (QScreen* screen : screens) {
+            if (parent_->geometry().intersects(screen->geometry())) {
+                if (!currentScreen) {
+                    currentScreen = screen;
+                } else {
+                    currentScreen = primaryScreen;
+                    break;
+                }
+            }
+        }
+    }
+
+    int x = 0;
+    int y = 0;
+
+    switch (ToastManager::position_) {
+    case ToastPosition::BOTTOM_RIGHT:
+        x = currentScreen->geometry().width() - notification_->width()
+            - ToastManager::offsetX_ + currentScreen->geometry().x();
+        y = currentScreen->geometry().height() - notification_->height()
+            - ToastManager::offsetY_ + currentScreen->geometry().y() - offsetY;
+        break;
+
+    case ToastPosition::BOTTOM_LEFT:
+        x = currentScreen->geometry().x() + ToastManager::offsetX_;
+        y = currentScreen->geometry().height() - notification_->height()
+            - ToastManager::offsetY_ + currentScreen->geometry().y() - offsetY;
+        break;
+
+    case ToastPosition::BOTTOM_MIDDLE:
+        x = (int)(currentScreen->geometry().x()
+            + currentScreen->geometry().width() / 2
+            - notification_->width() / 2);
+        y = currentScreen->geometry().height() - notification_->height()
+            - ToastManager::offsetY_ + currentScreen->geometry().y() - offsetY;
+        break;
+
+    case ToastPosition::TOP_RIGHT:
+        x = currentScreen->geometry().width() - notification_->width()
+            - ToastManager::offsetX_ + currentScreen->geometry().x();
+        y = currentScreen->geometry().y() + ToastManager::offsetY_ + offsetY;
+        break;
+
+    case ToastPosition::TOP_LEFT:
+        x = currentScreen->geometry().x() + ToastManager::offsetX_;
+        y = currentScreen->geometry().y() + ToastManager::offsetY_ + offsetY;
+        break;
+
+    case ToastPosition::TOP_MIDDLE:
+        x = (int)(currentScreen->geometry().x()
+            + currentScreen->geometry().width() / 2
+            - notification_->width() / 2);
+        y = currentScreen->geometry().y() + ToastManager::offsetY_ + offsetY;
+        break;
+
+    case ToastPosition::CENTER:
+        x = (int)(currentScreen->geometry().x()
+            + currentScreen->geometry().width() / 2
+            - notification_->width() / 2);
+        y = (int)(currentScreen->geometry().y()
+            + currentScreen->geometry().height() / 2
+            - notification_->height() / 2 + offsetY);
+        break;
+    }
+
+    x -= dropShadowSize_;
+    y -= dropShadowSize_;
+
+    return QPoint(x, y);
+}
+
+Toast* Toast::getPredecessorToast() const
+{
+    std::lock_guard<std::mutex> lock(ToastManager::mutex_);
+    Toast* predecessorToast = nullptr;
+
+    for (Toast* toast : ToastManager::currentlyShown_) {
+        if (toast == this) {
+            return predecessorToast;
+        }
+        predecessorToast = toast;
+    }
+
+    return predecessorToast;
+}
+
+QString Toast::getCurrentDirectory()
+{
+    return QFileInfo(__FILE__).absolutePath();
+}
+
+QImage Toast::recolorImage(QImage image, QColor color)
+{
+    for (int x = 0; x < image.width(); x++) {
+        for (int y = 0; y < image.height(); y++) {
+            QColor currentColor = image.pixelColor(x, y);
+
+            QColor newColor = QColor::fromRgba(qRgba(color.red(), color.green(),
+                color.blue(), currentColor.alpha()));
+            image.setPixelColor(x, y, newColor);
+        }
+    }
+    return image;
+}
+
+QPixmap Toast::getIconFromEnum(ToastIcon enumIcon)
+{
+    QString currentDirectory = getCurrentDirectory();
+
+    switch (enumIcon) {
+    case ToastIcon::SUCCESS:
+        return QPixmap(currentDirectory + ":/Toast/success");
+    case ToastIcon::WARNING:
+        return QPixmap(currentDirectory + ":/Toast/warning");
+    case ToastIcon::TOAST_ERROR:
+        return QPixmap(currentDirectory + ":/Toast/error");
+    case ToastIcon::INFORMATION:
+        return QPixmap(currentDirectory + ":/Toast/information");
+    case ToastIcon::CLOSE:
+        return QPixmap(currentDirectory + ":/Toast/close");
+    default:
+        return QPixmap();
+    }
+}
+
 }

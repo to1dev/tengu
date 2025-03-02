@@ -156,6 +156,7 @@ set(RESOURCE_FILES
     src/res/Fonts.qrc
     src/res/Images.qrc
     src/res/Logos.qrc
+    src/res/Toast.qrc
     src/res/Themes/dark/dark.qrc
     src/res/Themes/light/light.qrc
 )

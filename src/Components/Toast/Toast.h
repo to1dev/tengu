@@ -20,6 +20,7 @@
 #pragma once
 
 #include <algorithm>
+#include <cmath>
 #include <deque>
 #include <memory>
 #include <mutex>
@@ -44,18 +45,18 @@ namespace Daitengu::Components {
 enum class ToastPreset {
     SUCCESS,
     WARNING,
-    ERROR,
+    TOAST_ERROR,
     INFORMATION,
     SUCCESS_DARK,
     WARNING_DARK,
     ERROR_DARK,
-    INFORMATION_DARK
+    INFORMATION_DARK,
 };
 
 enum class ToastIcon {
     SUCCESS,
     WARNING,
-    ERROR,
+    TOAST_ERROR,
     INFORMATION,
     CLOSE,
 };

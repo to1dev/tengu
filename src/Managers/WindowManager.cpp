@@ -3,7 +3,6 @@
 namespace Daitengu::Core {
 
 WindowManager::WindowManager()
-    : app_(qApp)
 {
 }
 
@@ -13,7 +12,7 @@ WindowManager::~WindowManager()
 
 void WindowManager::center()
 {
-    QSize ss = app_->primaryScreen()->availableSize();
+    QSize ss = QGuiApplication::primaryScreen()->availableSize();
     window_->move((ss.width() - window_->frameSize().width()) / 2,
         (ss.height() - window_->frameSize().height()) / 2);
 }
@@ -26,7 +25,7 @@ void WindowManager::reset(double percent, WindowShape shape)
         percent = 0.8;
     }
 
-    QSize screenSize = app_->primaryScreen()->availableSize();
+    QSize screenSize = QGuiApplication::primaryScreen()->availableSize();
 
     int targetWidth = DEFAULT_WINDOW_WIDTH;
     int targetHeight = DEFAULT_WINDOW_HEIGHT;

@@ -79,8 +79,7 @@ NewWalletForm::NewWalletForm(
 
     ui->ButtonOK->setDefault(true);
 
-    windowManager_->setWindow(this);
-    windowManager_->reset(0.6);
+    globalManager_->windowManager()->reset(this, 0.7);
 
     connect(ui->ButtonOK, &QPushButton::clicked, this, &NewWalletForm::ok);
     connect(

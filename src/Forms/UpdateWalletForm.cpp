@@ -5,6 +5,7 @@ UpdateWalletForm::UpdateWalletForm(
     QWidget* parent, const std::shared_ptr<const GlobalManager>& globalManager)
     : QDialog(parent)
     , ui(new Ui::UpdateWalletForm)
+    , globalManager_(globalManager)
 {
     ui->setupUi(this);
 
@@ -15,8 +16,7 @@ UpdateWalletForm::UpdateWalletForm(
     frameless_->setContentFrame(ui->frameContent);
     frameless_->init(Frameless::Mode::DIALOG);
 
-    windowManager_->setWindow(this);
-    windowManager_->reset(0.6);
+    globalManager_->windowManager()->reset(this, 0.7);
 }
 
 UpdateWalletForm::~UpdateWalletForm()

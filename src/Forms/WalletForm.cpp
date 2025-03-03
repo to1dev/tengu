@@ -39,8 +39,7 @@ WalletForm::WalletForm(
     layoutPanel->addWidget(panelButtons);
     ui->groupBoxWallets->setLayout(layoutPanel);
 
-    windowManager_->setWindow(this);
-    windowManager_->reset(0.7);
+    globalManager_->windowManager()->reset(this, 0.8);
 
     connect(ui->ButtonOK, &QPushButton::clicked, this, &WalletForm::ok);
     connect(ui->ButtonNewWallet, &QPushButton::clicked, this,

@@ -28,8 +28,5 @@ private:
     Ui::UpdateWalletForm* ui;
 
     std::shared_ptr<const GlobalManager> globalManager_;
-    std::unique_ptr<WindowManager> windowManager_ {
-        std::make_unique<WindowManager>()
-    };
     std::unique_ptr<Frameless> frameless_;
 };

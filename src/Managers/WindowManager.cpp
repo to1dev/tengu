@@ -8,17 +8,24 @@ WindowManager::WindowManager()
 
 WindowManager::~WindowManager()
 {
+    windows_.clear();
 }
 
-void WindowManager::center()
+void WindowManager::center(QWidget* window)
 {
+    if (!window)
+        return;
+
     QSize ss = QGuiApplication::primaryScreen()->availableSize();
-    window_->move((ss.width() - window_->frameSize().width()) / 2,
-        (ss.height() - window_->frameSize().height()) / 2);
+    window->move((ss.width() - window->frameSize().width()) / 2,
+        (ss.height() - window->frameSize().height()) / 2);
 }
 
-void WindowManager::reset(double percent, WindowShape shape)
+void WindowManager::reset(QWidget* window, double percent, WindowShape shape)
 {
+    if (!window)
+        return;
+
     if (percent <= 0.0 || percent > 1.0) {
         qWarning() << "Invalid percent value: " << percent
                    << ". Resetting to default.";
@@ -69,18 +76,20 @@ void WindowManager::reset(double percent, WindowShape shape)
     targetWidth = std::max(targetWidth, DEFAULT_WINDOW_WIDTH);
     targetHeight = std::max(targetHeight, DEFAULT_WINDOW_HEIGHT);
 
-    window_->resize(targetWidth, targetHeight);
-    center();
+    window->resize(targetWidth, targetHeight);
+    center(window);
 }
 
-QWidget* WindowManager::window() const
+void WindowManager::addWindow(QWidget* window)
 {
-    return window_;
-}
-
-void WindowManager::setWindow(QWidget* newWindow)
-{
-    window_ = newWindow;
+    if (window) {
+        QString name = window->objectName();
+        if (name.isEmpty()) {
+            qWarning() << "Window has no name, consider setting objectName";
+            return;
+        }
+        windows_[name] = window;
+    }
 }
 
 }

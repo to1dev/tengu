@@ -42,8 +42,10 @@ public:
         QWidget* parent = nullptr);
     ~Tengu();
 
+    void setWalletDock(const std::shared_ptr<WalletDock>& walletDock);
+
 private Q_SLOTS:
-    void onShowToolWindow();
+    void showWalletDock();
 
     void onPopup();
     void reboot();
@@ -56,7 +58,7 @@ private:
 private:
     Ui::Tengu* ui;
 
-    std::unique_ptr<WalletDock> toolWindow;
+    std::shared_ptr<WalletDock> walletDock_;
 
     std::shared_ptr<const GlobalManager> globalManager_;
     std::unique_ptr<WindowManager> windowManager_ {

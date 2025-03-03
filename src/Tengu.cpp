@@ -19,15 +19,20 @@ Tengu::Tengu(
     frameless_->setButtonClose(ui->ButtonClose);
     frameless_->init();
 
-    // windowManager_->setWindow(this);
-    // windowManager_->reset(0.9);
-
     // ui->tabWidget->tabBar()->hide();
 
     initPopupMenu();
 
+    globalManager_->windowManager()->addWindow(
+        WindowManager::WindowShape::TOPBAR, this);
     globalManager_->windowManager()->reset(
         this, 1, WindowManager::WindowShape::TOPBAR);
+
+    connect(frameless_.get(), &Frameless::onMin, this, &Tengu::showMinimized);
+    connect(frameless_.get(), &Frameless::onMax, this, [this]() {
+        globalManager_->windowManager()->reset(
+            this, 1, WindowManager::WindowShape::TOPBAR);
+    });
 
     /*QHBoxLayout* layout = new QHBoxLayout();
     layout->setContentsMargins(QMargins(16, 16, 16, 16));
@@ -44,7 +49,7 @@ Tengu::Tengu(
     ui->tabFirst->setLayout(layout);*/
 
     connect(ui->ButtonWallet, &QToolButton::clicked, this, &Tengu::wallet);
-    connect(ui->action1, &QAction::triggered, this, &Tengu::onShowToolWindow);
+    connect(ui->action1, &QAction::triggered, this, &Tengu::showWalletDock);
 }
 
 Tengu::~Tengu()
@@ -52,12 +57,14 @@ Tengu::~Tengu()
     delete ui;
 }
 
-void Tengu::onShowToolWindow()
+void Tengu::setWalletDock(const std::shared_ptr<WalletDock>& walletDock)
 {
-    if (!toolWindow) {
-        toolWindow = std::make_unique<WalletDock>(this, globalManager_);
-    }
-    toolWindow->show();
+    walletDock_ = walletDock;
+}
+
+void Tengu::showWalletDock()
+{
+    walletDock_->show();
 }
 
 void Tengu::onPopup()

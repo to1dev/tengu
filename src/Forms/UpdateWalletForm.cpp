@@ -17,6 +17,8 @@ UpdateWalletForm::UpdateWalletForm(
     frameless_->init(Frameless::Mode::DIALOG);
 
     globalManager_->windowManager()->reset(this, 0.7);
+    connect(frameless_.get(), &Frameless::onMax, this,
+        [this]() { globalManager_->windowManager()->reset(this, 0.7); });
 }
 
 UpdateWalletForm::~UpdateWalletForm()

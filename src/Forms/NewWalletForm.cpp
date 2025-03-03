@@ -80,6 +80,8 @@ NewWalletForm::NewWalletForm(
     ui->ButtonOK->setDefault(true);
 
     globalManager_->windowManager()->reset(this, 0.7);
+    connect(frameless_.get(), &Frameless::onMax, this,
+        [this]() { globalManager_->windowManager()->reset(this, 0.7); });
 
     connect(ui->ButtonOK, &QPushButton::clicked, this, &NewWalletForm::ok);
     connect(

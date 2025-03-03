@@ -149,6 +149,7 @@ set(UI_FILES
     src/Forms/MessageForm.ui
     src/Forms/NewWalletForm.ui
     src/Forms/UpdateWalletForm.ui
+    src/Forms/WalletDock.ui
     src/Forms/WalletForm.ui
     src/Tengu.ui
 )

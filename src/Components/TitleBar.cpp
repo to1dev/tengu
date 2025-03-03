@@ -66,11 +66,13 @@ void TitleBar::mouseMoveEvent(QMouseEvent* event)
                 newPos.setY(dy);
         }
 
-        QSize windowSize = window_->frameSize();
-        QRect windowRect(newPos, windowSize);
+        if (snapped_) {
+            QSize windowSize = window_->frameSize();
+            QRect windowRect(newPos, windowSize);
 
-        QRect screenRect = desktopRect();
-        newPos = snapToScreenEdges(newPos, windowRect, screenRect);
+            QRect screenRect = desktopRect();
+            newPos = snapToScreenEdges(newPos, windowRect, screenRect);
+        }
 
         window_->move(newPos);
     }

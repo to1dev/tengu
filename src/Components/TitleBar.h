@@ -35,6 +35,7 @@ private:
     QWidget* window_ { nullptr };
     bool pressed_ { false };
     bool fixed_ { false };
+    bool snapped_ { false };
     QPoint pos_;
     QPoint oldPos_;
 };

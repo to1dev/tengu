@@ -64,45 +64,6 @@
         </item>
        </layout>
       </widget>
-      <widget class="QToolButton" name="ButtonClose">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>150</y>
-         <width>31</width>
-         <height>22</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>✖️</string>
-       </property>
-      </widget>
-      <widget class="QToolButton" name="ButtonMin">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>122</y>
-         <width>36</width>
-         <height>22</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>➖</string>
-       </property>
-      </widget>
-      <widget class="QToolButton" name="ButtonMax">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>94</y>
-         <width>36</width>
-         <height>22</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>➕</string>
-       </property>
-      </widget>
      </widget>
     </item>
    </layout>

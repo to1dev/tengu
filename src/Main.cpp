@@ -15,6 +15,9 @@
 #include "Managers/GlobalManager.h"
 #include "Managers/SettingManager.h"
 #include "Managers/ThemeManager.h"
+#include "Managers/WindowManager.h"
+
+#include "Forms/WalletDock.h"
 
 #include "Utils/Helpers.hpp"
 #include "Utils/RunGuard.h"
@@ -79,10 +82,19 @@ int main(int argc, char* argv[])
 
         Tengu w(globalManager);
 
+        std::shared_ptr<WalletDock> walletDock
+            = std::make_shared<WalletDock>(&w, globalManager);
+        w.setWalletDock(walletDock);
+
         SplashThread::sleep(SLEEP_TIME);
         splash.hide();
 
         w.show();
+
+        globalManager->windowManager()->reset(
+            walletDock.get(), 1, WindowManager::WindowShape::RIGHT_PANEL);
+
+        walletDock->show();
 
         splash.finish(&w);
         splash.close();

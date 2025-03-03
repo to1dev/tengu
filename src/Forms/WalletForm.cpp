@@ -40,6 +40,8 @@ WalletForm::WalletForm(
     ui->groupBoxWallets->setLayout(layoutPanel);
 
     globalManager_->windowManager()->reset(this, 0.8);
+    connect(frameless_.get(), &Frameless::onMax, this,
+        [this]() { globalManager_->windowManager()->reset(this, 0.8); });
 
     connect(ui->ButtonOK, &QPushButton::clicked, this, &WalletForm::ok);
     connect(ui->ButtonNewWallet, &QPushButton::clicked, this,

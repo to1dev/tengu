@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>808</width>
+    <height>218</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>Tengu</string>
@@ -20,73 +26,13 @@
       <property name="frameShape">
        <enum>QFrame::StyledPanel</enum>
       </property>
-      <widget class="QFrame" name="frameContent">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>120</y>
-         <width>671</width>
-         <height>351</height>
-        </rect>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
-       </property>
-       <layout class="QVBoxLayout" name="verticalLayout_2">
-        <item>
-         <widget class="QTabWidget" name="tabWidget">
-          <widget class="QWidget" name="tabFirst">
-           <attribute name="title">
-            <string>Tab 1</string>
-           </attribute>
-          </widget>
-          <widget class="QWidget" name="tabSecond">
-           <attribute name="title">
-            <string>Tab 2</string>
-           </attribute>
-          </widget>
-         </widget>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_4">
-          <item>
-           <widget class="QLabel" name="labelStatus"/>
-          </item>
-          <item>
-           <widget class="QToolButton" name="ButtonFees">
-            <property name="icon">
-             <iconset resource="res/Images.qrc">
-              <normaloff>:/Icons/gas.svg</normaloff>:/Icons/gas.svg</iconset>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QToolButton" name="ButtonReset">
-            <property name="icon">
-             <iconset resource="res/Images.qrc">
-              <normaloff>:/Icons/layer.svg</normaloff>:/Icons/layer.svg</iconset>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QToolButton" name="ButtonPopup">
-            <property name="icon">
-             <iconset resource="res/Images.qrc">
-              <normaloff>:/Icons/menu.svg</normaloff>:/Icons/menu.svg</iconset>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-       </layout>
-      </widget>
       <widget class="QFrame" name="topFrame">
        <property name="geometry">
         <rect>
          <x>10</x>
          <y>10</y>
-         <width>671</width>
-         <height>101</height>
+         <width>63</width>
+         <height>74</height>
         </rect>
        </property>
        <property name="frameShape">
@@ -121,10 +67,10 @@
       <widget class="QToolButton" name="ButtonClose">
        <property name="geometry">
         <rect>
-         <x>700</x>
-         <y>120</y>
-         <width>20</width>
-         <height>19</height>
+         <x>10</x>
+         <y>150</y>
+         <width>31</width>
+         <height>22</height>
         </rect>
        </property>
        <property name="text">
@@ -134,10 +80,10 @@
       <widget class="QToolButton" name="ButtonMin">
        <property name="geometry">
         <rect>
-         <x>700</x>
-         <y>97</y>
-         <width>20</width>
-         <height>19</height>
+         <x>10</x>
+         <y>122</y>
+         <width>36</width>
+         <height>22</height>
         </rect>
        </property>
        <property name="text">
@@ -147,10 +93,10 @@
       <widget class="QToolButton" name="ButtonMax">
        <property name="geometry">
         <rect>
-         <x>700</x>
-         <y>70</y>
-         <width>20</width>
-         <height>19</height>
+         <x>10</x>
+         <y>94</y>
+         <width>36</width>
+         <height>22</height>
         </rect>
        </property>
        <property name="text">
@@ -166,8 +112,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
-     <height>17</height>
+     <width>808</width>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">

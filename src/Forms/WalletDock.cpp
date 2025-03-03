@@ -18,6 +18,11 @@ WalletDock::WalletDock(
 
     globalManager_->windowManager()->addWindow(
         WindowManager::WindowShape::RIGHT_PANEL, this);
+
+    connect(frameless_.get(), &Frameless::onMax, this, [this]() {
+        globalManager_->windowManager()->reset(
+            this, 1, WindowManager::WindowShape::RIGHT_PANEL);
+    });
 }
 
 WalletDock::~WalletDock()

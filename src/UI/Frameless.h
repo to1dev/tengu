@@ -1,6 +1,7 @@
 #ifndef FRAMELESS_H
 #define FRAMELESS_H
 
+#include <QApplication>
 #include <QGraphicsDropShadowEffect>
 #include <QHBoxLayout>
 #include <QLabel>

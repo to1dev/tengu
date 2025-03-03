@@ -9,7 +9,7 @@ Frameless::Frameless(QWidget* window)
 
 void Frameless::init(const Mode& mode)
 {
-    if (!window_ || !mainFrame_ || !contentFrame_)
+    if (!window_ || !mainFrame_)
         return;
 
     int index = 0;
@@ -52,14 +52,16 @@ void Frameless::init(const Mode& mode)
             QMargins(MAIN_MARGIN, MAIN_MARGIN, MAIN_MARGIN, MAIN_MARGIN));
     }
 
-    contentFrame_->setContentsMargins(QMargins(
-        CONTENT_MARGIN, CONTENT_MARGIN, CONTENT_MARGIN, CONTENT_MARGIN));
+    if (contentFrame_) {
+        contentFrame_->setContentsMargins(QMargins(
+            CONTENT_MARGIN, CONTENT_MARGIN, CONTENT_MARGIN, CONTENT_MARGIN));
 
-    contentFrame_->setSizePolicy(
-        QSizePolicy::Preferred, QSizePolicy::Expanding);
+        contentFrame_->setSizePolicy(
+            QSizePolicy::Preferred, QSizePolicy::Expanding);
 
-    if (contentFrame_->layout()) {
-        contentFrame_->layout()->setSpacing(20);
+        if (contentFrame_->layout()) {
+            contentFrame_->layout()->setSpacing(20);
+        }
     }
 
     QGraphicsDropShadowEffect* windowShadow = new QGraphicsDropShadowEffect;
@@ -188,11 +190,14 @@ void Frameless::init(const Mode& mode)
     layout->addStretch(1);
 #endif
 
-    index = 0;
-    QHBoxLayout* layoutMiddle = new QHBoxLayout;
-    layoutMiddle->setContentsMargins(QMargins(20, 20, 20, 20));
-    layoutMiddle->setSpacing(9);
-    layoutMiddle->insertWidget(index++, contentFrame_);
+    QHBoxLayout* layoutMiddle = nullptr;
+    if (contentFrame_) {
+        index = 0;
+        layoutMiddle = new QHBoxLayout;
+        layoutMiddle->setContentsMargins(QMargins(20, 20, 20, 20));
+        layoutMiddle->setSpacing(9);
+        layoutMiddle->insertWidget(index++, contentFrame_);
+    }
 
     index = 0;
     layoutMain->insertLayout(index++, layoutTop);
@@ -230,10 +235,14 @@ void Frameless::init(const Mode& mode)
             topLayout->addWidget(svgLogo);
         }
 
-        layoutMain->insertWidget(index++, topFrame_);
-        layoutMain->insertLayout(index++, layoutMiddle);
-    } else
-        layoutMain->insertLayout(index++, layoutMiddle);
+        layoutMain->insertWidget(index++, topFrame_, 1);
+    }
+
+    if (layoutMiddle)
+        layoutMain->insertLayout(index++, layoutMiddle, 1);
+
+    if (isMain)
+        max();
 }
 
 void Frameless::setMainFrame(QWidget* newMainFrame)
@@ -283,17 +292,38 @@ void Frameless::min()
 
 void Frameless::max()
 {
-    if (window_->isMaximized()) {
-        buttonMax_->setToolTip(STR_FORM_TOOLTIP_MAX);
-        window_->setContentsMargins(
-            QMargins(MAIN_MARGIN, MAIN_MARGIN, MAIN_MARGIN, MAIN_MARGIN));
-        mainFrame_->setStyleSheet("#frameMain {border-radius: 6;}");
-        window_->showNormal();
-    } else {
-        buttonMax_->setToolTip(STR_FORM_TOOLTIP_NORMAL);
-        window_->setContentsMargins(0, 0, 0, 0);
-        mainFrame_->setStyleSheet("#frameMain {border-radius: 0;}");
-        window_->showMaximized();
+    switch (mode_) {
+    case Mode::MAIN: {
+        int currentHeight = window_->height();
+
+        QRect screenGeometry
+            = QGuiApplication::primaryScreen()->availableGeometry();
+
+        window_->setGeometry(screenGeometry.x(), screenGeometry.y(),
+            screenGeometry.width(), currentHeight);
+
+        break;
+    }
+
+    case Mode::DIALOG: {
+        if (window_->isMaximized()) {
+            buttonMax_->setToolTip(STR_FORM_TOOLTIP_MAX);
+            window_->setContentsMargins(
+                QMargins(MAIN_MARGIN, MAIN_MARGIN, MAIN_MARGIN, MAIN_MARGIN));
+            mainFrame_->setStyleSheet("#frameMain {border-radius: 6;}");
+            window_->showNormal();
+        } else {
+            buttonMax_->setToolTip(STR_FORM_TOOLTIP_NORMAL);
+            window_->setContentsMargins(0, 0, 0, 0);
+            mainFrame_->setStyleSheet("#frameMain {border-radius: 0;}");
+            window_->showMaximized();
+        }
+
+        break;
+    }
+
+    default:
+        break;
     }
 }
 

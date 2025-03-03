@@ -16,8 +16,8 @@ WalletDock::WalletDock(
     frameless_->setContentFrame(ui->frameContent);
     frameless_->init(Frameless::Mode::PANEL);
 
-    globalManager_->windowManager()->addWindow(this);
-    globalManager_->windowManager()->center(this);
+    globalManager_->windowManager()->addWindow(
+        WindowManager::WindowShape::RIGHT_PANEL, this);
 }
 
 WalletDock::~WalletDock()

@@ -26,6 +26,9 @@ Tengu::Tengu(
 
     initPopupMenu();
 
+    globalManager_->windowManager()->reset(
+        this, 1, WindowManager::WindowShape::TOPBAR);
+
     /*QHBoxLayout* layout = new QHBoxLayout();
     layout->setContentsMargins(QMargins(16, 16, 16, 16));
     layout->setSpacing(19);
@@ -41,7 +44,6 @@ Tengu::Tengu(
     ui->tabFirst->setLayout(layout);*/
 
     connect(ui->ButtonWallet, &QToolButton::clicked, this, &Tengu::wallet);
-
     connect(ui->action1, &QAction::triggered, this, &Tengu::onShowToolWindow);
 }
 

@@ -13,8 +13,7 @@ MessageForm::MessageForm(QWidget* parent, int emoji, const QString& text,
     frameless_ = std::make_unique<Frameless>(this);
     frameless_->setMainFrame(ui->frameMain);
     frameless_->setContentFrame(ui->frameContent);
-    frameless_->setFixed(true);
-    frameless_->init(Frameless::Mode::DIALOG);
+    frameless_->init(Frameless::Mode::DIALOG, true);
 
     SVGWidget* icon = nullptr;
     if (emoji > 0) {

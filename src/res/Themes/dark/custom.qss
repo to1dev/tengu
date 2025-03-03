@@ -439,6 +439,7 @@ QComboBox::down-arrow:on, QComboBox::down-arrow:hover, QComboBox::down-arrow:foc
 }
 
 #WalletForm #titleBar,
+#WalletDock #titleBar,
 #WalletSelectorForm #titleBar,
 #AddressInfoForm #titleBar,
 #MessageForm #titleBar {
@@ -455,11 +456,13 @@ QComboBox::down-arrow:on, QComboBox::down-arrow:hover, QComboBox::down-arrow:foc
 }
 
 #topFrame {
-    border-top: 0;
+    border-bottom-left-radius: 6;
+    border-bottom-right-radius: 6;
+    border: 0;
+    /*border-top: 0;
     border-left: 0;
     border-right: 0;
-    border-radius: 0;
-    border-bottom: 3 solid #32414B;
+    border-bottom: 3 solid #32414B;*/
 }
 
 #line {

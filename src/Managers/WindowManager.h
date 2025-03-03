@@ -16,17 +16,17 @@ inline constexpr int WM_MARGIN = 5;
 inline constexpr double GOLDEN_RATIO = 1.618;
 inline constexpr double HORIZONTAL_RATIO = 0.8;
 
-enum class WindowShape {
-    HORIZONTAL = 0,
-    VERTICAL,
-    SQUARE,
-    TOPBAR,
-    LEFT_PANEL,
-    RIGHT_PANEL,
-};
-
 class WindowManager {
 public:
+    enum class WindowShape {
+        HORIZONTAL = 0,
+        VERTICAL,
+        SQUARE,
+        TOPBAR,
+        LEFT_PANEL,
+        RIGHT_PANEL,
+    };
+
     WindowManager();
     ~WindowManager();
 
@@ -34,12 +34,12 @@ public:
     void reset(QWidget* window = nullptr, double percent = HORIZONTAL_RATIO,
         WindowShape shape = WindowShape::HORIZONTAL);
 
-    void addWindow(QWidget* window = nullptr);
+    void addWindow(const WindowShape& shape, QWidget* window);
 
 private:
     double ratio_ { 1.0 };
 
-    std::unordered_map<QString, QWidget*> windows_;
+    std::unordered_map<WindowShape, QWidget*> windows_;
 };
 
 }

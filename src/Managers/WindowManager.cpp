@@ -32,23 +32,41 @@ void WindowManager::reset(QWidget* window, double percent, WindowShape shape)
         percent = 0.8;
     }
 
-    QSize screenSize = QGuiApplication::primaryScreen()->availableSize();
+    QRect screenGeometry
+        = QGuiApplication::primaryScreen()->availableGeometry();
 
     int targetWidth = DEFAULT_WINDOW_WIDTH;
     int targetHeight = DEFAULT_WINDOW_HEIGHT;
 
     switch (shape) {
-    case WindowShape::HORIZONTAL: {
-        if (screenSize.width() > screenSize.height()) {
-            targetHeight = screenSize.height() * percent;
+    case WindowShape::TOPBAR: {
+        int currentHeight = window->height();
 
-            double aspectRatio
-                = screenSize.width() / static_cast<double>(screenSize.height());
+        window->setGeometry(screenGeometry.x(), screenGeometry.y(),
+            screenGeometry.width(), currentHeight);
+
+        return;
+    }
+
+    case WindowShape::LEFT_PANEL: {
+        return;
+    }
+
+    case WindowShape::RIGHT_PANEL: {
+        return;
+    }
+
+    case WindowShape::HORIZONTAL: {
+        if (screenGeometry.width() > screenGeometry.height()) {
+            targetHeight = screenGeometry.height() * percent;
+
+            double aspectRatio = screenGeometry.width()
+                / static_cast<double>(screenGeometry.height());
             targetWidth = (aspectRatio > GOLDEN_RATIO)
                 ? targetHeight * GOLDEN_RATIO
                 : targetHeight * aspectRatio;
         } else {
-            targetWidth = screenSize.width() * percent;
+            targetWidth = screenGeometry.width() * percent;
             targetHeight = targetWidth / GOLDEN_RATIO;
         }
 
@@ -57,20 +75,16 @@ void WindowManager::reset(QWidget* window, double percent, WindowShape shape)
 
     case WindowShape::SQUARE: {
         int baseLength
-            = std::min(screenSize.width(), screenSize.height()) * percent;
+            = std::min(screenGeometry.width(), screenGeometry.height())
+            * percent;
         targetWidth = targetHeight = baseLength;
 
         break;
     }
 
-    case WindowShape::VERTICAL: {
-        break;
-    }
-
-    default: {
+    default:
         qWarning() << "Unsupported WindowShape encountered!";
         break;
-    }
     }
 
     targetWidth = std::max(targetWidth, DEFAULT_WINDOW_WIDTH);
@@ -80,15 +94,19 @@ void WindowManager::reset(QWidget* window, double percent, WindowShape shape)
     center(window);
 }
 
-void WindowManager::addWindow(QWidget* window)
+void WindowManager::addWindow(const WindowShape& shape, QWidget* window)
 {
     if (window) {
-        QString name = window->objectName();
-        if (name.isEmpty()) {
-            qWarning() << "Window has no name, consider setting objectName";
-            return;
+        switch (shape) {
+        case WindowShape::TOPBAR:
+        case WindowShape::LEFT_PANEL:
+        case WindowShape::RIGHT_PANEL:
+            windows_[shape] = window;
+            break;
+
+        default:
+            break;
         }
-        windows_[name] = window;
     }
 }
 

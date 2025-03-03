@@ -14,9 +14,6 @@ Tengu::Tengu(
     frameless_->setMainFrame(ui->frameMain);
     frameless_->setTopFrame(ui->topFrame);
     frameless_->setMainMenu(ui->menubar);
-    frameless_->setButtonMin(ui->ButtonMin);
-    frameless_->setButtonMax(ui->ButtonMax);
-    frameless_->setButtonClose(ui->ButtonClose);
     frameless_->init();
 
     // ui->tabWidget->tabBar()->hide();

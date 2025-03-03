@@ -66,6 +66,12 @@ void TitleBar::mouseMoveEvent(QMouseEvent* event)
                 newPos.setY(dy);
         }
 
+        QSize windowSize = window_->frameSize();
+        QRect windowRect(newPos, windowSize);
+
+        QRect screenRect = desktopRect();
+        newPos = snapToScreenEdges(newPos, windowRect, screenRect);
+
         window_->move(newPos);
     }
 }
@@ -83,6 +89,32 @@ void TitleBar::mouseDoubleClickEvent(QMouseEvent* event)
     Q_EMIT doubleClick();
 
     QWidget::mouseDoubleClickEvent(event);
+}
+
+QPoint TitleBar::snapToScreenEdges(
+    const QPoint& pos, const QRect& windowRect, const QRect& screenRect)
+{
+    QPoint newPos = pos;
+
+    if (qAbs(pos.x() - screenRect.left()) < SNAP_DISTANCE) {
+        newPos.setX(screenRect.left());
+    }
+
+    int rightPos = screenRect.right() - windowRect.width();
+    if (qAbs(pos.x() - rightPos) < SNAP_DISTANCE) {
+        newPos.setX(rightPos);
+    }
+
+    if (qAbs(pos.y() - screenRect.top()) < SNAP_DISTANCE) {
+        newPos.setY(screenRect.top());
+    }
+
+    int bottomPos = screenRect.bottom() - windowRect.height();
+    if (qAbs(pos.y() - bottomPos) < SNAP_DISTANCE) {
+        newPos.setY(bottomPos);
+    }
+
+    return newPos;
 }
 
 }

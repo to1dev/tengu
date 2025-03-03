@@ -114,6 +114,20 @@ QPoint TitleBar::snapToScreenEdges(
         newPos.setY(bottomPos);
     }
 
+    int screenCenterX = screenRect.left() + screenRect.width() / 2;
+    int windowCenterX = pos.x() + windowRect.width() / 2;
+
+    if (qAbs(windowCenterX - screenCenterX) < SNAP_DISTANCE) {
+        newPos.setX(screenCenterX - windowRect.width() / 2);
+    }
+
+    int screenCenterY = screenRect.top() + screenRect.height() / 2;
+    int windowCenterY = pos.y() + windowRect.height() / 2;
+
+    if (qAbs(windowCenterY - screenCenterY) < SNAP_DISTANCE) {
+        newPos.setY(screenCenterY - windowRect.height() / 2);
+    }
+
     return newPos;
 }
 

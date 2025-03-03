@@ -40,6 +40,8 @@ inline constexpr char STR_BUTTON_MAX[] = "ButtonMax";
 inline constexpr char STR_BUTTON_CLOSE[] = "ButtonClose";
 inline constexpr char STR_BUTTON_FIXED[] = "ButtonFixed";
 
+inline constexpr char STR_BUTTON_CLOSE_TEXT[] = "✖️";
+
 inline const QString STR_MAIN_TOOLTIP_MINIMIZE = QObject::tr("最小化应用程序");
 inline const QString STR_MAIN_TOOLTIP_CLOSE = QObject::tr("退出应用程序");
 inline const QString STR_FORM_TOOLTIP_CLOSE = QObject::tr("关闭窗体");
@@ -49,6 +51,7 @@ inline const QString STR_FORM_TOOLTIP_FIXED = QObject::tr("锁定窗体移动范
 
 class Frameless : public QObject {
     Q_OBJECT
+
 public:
     enum class Mode {
         MAIN,
@@ -72,8 +75,11 @@ public:
 
     void setMainMenu(QMenuBar* newMainMenu);
 
+Q_SIGNALS:
+    void onMin();
+    void onMax();
+
 private:
-    void min();
     void max();
 
 private:

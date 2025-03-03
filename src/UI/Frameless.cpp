@@ -98,23 +98,21 @@ void Frameless::init(const Mode& mode, bool fixed)
         if (buttonMin_) {
             layoutTitleBar->insertWidget(index++, buttonMin_);
             buttonMin_->setToolTip(STR_MAIN_TOOLTIP_MINIMIZE);
-            QObject::connect(
-                buttonMin_, &QToolButton::clicked, this, &Frameless::min);
+            connect(buttonMin_, &QToolButton::clicked, this, &Frameless::onMin);
         }
         if (buttonMax_) {
             layoutTitleBar->insertWidget(index++, buttonMax_);
             buttonMax_->setToolTip(STR_FORM_TOOLTIP_MAX);
-            QObject::connect(
-                buttonMax_, &QToolButton::clicked, this, &Frameless::max);
+            connect(buttonMax_, &QToolButton::clicked, this, &Frameless::onMax);
 
-            QObject::connect(
+            connect(
                 bar, &TitleBar::doubleClick, buttonMax_, &QToolButton::click);
         }
         if (buttonFixed_) {
             buttonFixed_->setCheckable(true);
             layoutTitleBar->insertWidget(index++, buttonFixed_);
             buttonFixed_->setToolTip(STR_FORM_TOOLTIP_FIXED);
-            QObject::connect(
+            connect(
                 buttonFixed_, &QToolButton::toggled, [this, bar](bool checked) {
                     fixed_ = checked;
                     bar->setFixed(fixed_);
@@ -122,12 +120,12 @@ void Frameless::init(const Mode& mode, bool fixed)
         }
         if (!buttonClose_) {
             buttonClose_ = new QToolButton(bar);
-            buttonClose_->setText("✖️");
+            buttonClose_->setText(STR_BUTTON_CLOSE_TEXT);
             buttonClose_->setObjectName(STR_BUTTON_CLOSE);
         }
         layoutTitleBar->insertWidget(index++, buttonClose_);
         buttonClose_->setToolTip(STR_MAIN_TOOLTIP_CLOSE);
-        QObject::connect(buttonClose_, &QToolButton::clicked,
+        connect(buttonClose_, &QToolButton::clicked,
             [this]() { window_->close(); });
     } else {
         if (buttonFixed_) {
@@ -139,22 +137,23 @@ void Frameless::init(const Mode& mode, bool fixed)
             fixed_ = buttonFixed_->isChecked();
             bar->setFixed(fixed_);
 
-            QObject::connect(
+            connect(
                 buttonFixed_, &QToolButton::toggled, [this, bar](bool checked) {
                     fixed_ = checked;
                     bar->setFixed(fixed_);
                 });
         }
 
+        connect(bar, &TitleBar::doubleClick, this, &Frameless::onMax);
+
         if (!buttonClose_) {
             buttonClose_ = new QToolButton(bar);
-            buttonClose_->setText("✖️");
+            buttonClose_->setText(STR_BUTTON_CLOSE_TEXT);
             buttonClose_->setObjectName(STR_BUTTON_CLOSE);
         }
         layoutTitleBar->insertWidget(index++, buttonClose_);
         buttonClose_->setToolTip(STR_FORM_TOOLTIP_CLOSE);
-        QObject::connect(
-            buttonClose_, &QToolButton::clicked, window_, &QWidget::close);
+        connect(buttonClose_, &QToolButton::clicked, window_, &QWidget::close);
     }
 
     QHBoxLayout* layout = new QHBoxLayout(bar);
@@ -281,11 +280,6 @@ void Frameless::setButtonFixed(QToolButton* newButtonFixed)
 void Frameless::setMainMenu(QMenuBar* newMainMenu)
 {
     mainMenu_ = newMainMenu;
-}
-
-void Frameless::min()
-{
-    window_->showMinimized();
 }
 
 void Frameless::max()

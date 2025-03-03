@@ -24,7 +24,8 @@ void Frameless::init(const Mode& mode, bool fixed)
         break;
     }
 
-    case Mode::DIALOG: {
+    case Mode::DIALOG:
+    case Mode::MESSAGEBOX: {
         flags = Qt::FramelessWindowHint | Qt::Dialog;
         break;
     }
@@ -95,19 +96,30 @@ void Frameless::init(const Mode& mode, bool fixed)
     layoutTitleBar->insertWidget(index++, bar);
 
     if (isMain) {
+        if (!buttonMin_) {
+            buttonMin_ = new QToolButton(bar);
+            buttonMin_->setObjectName(STR_BUTTON_MIN);
+            buttonMin_->setText(STR_BUTTON_MIN_TEXT);
+        }
         if (buttonMin_) {
             layoutTitleBar->insertWidget(index++, buttonMin_);
             buttonMin_->setToolTip(STR_MAIN_TOOLTIP_MINIMIZE);
             connect(buttonMin_, &QToolButton::clicked, this, &Frameless::onMin);
         }
+
+        if (!buttonMax_) {
+            buttonMax_ = new QToolButton(bar);
+            buttonMax_->setObjectName(STR_BUTTON_MAX);
+            buttonMax_->setText(STR_BUTTON_MAX_TEXT);
+        }
         if (buttonMax_) {
             layoutTitleBar->insertWidget(index++, buttonMax_);
             buttonMax_->setToolTip(STR_FORM_TOOLTIP_MAX);
             connect(buttonMax_, &QToolButton::clicked, this, &Frameless::onMax);
-
             connect(
                 bar, &TitleBar::doubleClick, buttonMax_, &QToolButton::click);
         }
+
         if (buttonFixed_) {
             buttonFixed_->setCheckable(true);
             layoutTitleBar->insertWidget(index++, buttonFixed_);
@@ -120,14 +132,29 @@ void Frameless::init(const Mode& mode, bool fixed)
         }
         if (!buttonClose_) {
             buttonClose_ = new QToolButton(bar);
-            buttonClose_->setText(STR_BUTTON_CLOSE_TEXT);
             buttonClose_->setObjectName(STR_BUTTON_CLOSE);
+            buttonClose_->setText(STR_BUTTON_CLOSE_TEXT);
         }
-        layoutTitleBar->insertWidget(index++, buttonClose_);
-        buttonClose_->setToolTip(STR_MAIN_TOOLTIP_CLOSE);
-        connect(buttonClose_, &QToolButton::clicked,
-            [this]() { window_->close(); });
+        if (buttonClose_) {
+            layoutTitleBar->insertWidget(index++, buttonClose_);
+            buttonClose_->setToolTip(STR_MAIN_TOOLTIP_CLOSE);
+            connect(buttonClose_, &QToolButton::clicked,
+                [this]() { window_->close(); });
+        }
     } else {
+        if (mode_ != Mode::MESSAGEBOX && !buttonMax_) {
+            buttonMax_ = new QToolButton(bar);
+            buttonMax_->setObjectName(STR_BUTTON_MAX);
+            buttonMax_->setText(STR_BUTTON_MAX_TEXT);
+        }
+        if (buttonMax_) {
+            layoutTitleBar->insertWidget(index++, buttonMax_);
+            buttonMax_->setToolTip(STR_FORM_TOOLTIP_MAX);
+            connect(buttonMax_, &QToolButton::clicked, this, &Frameless::onMax);
+            connect(
+                bar, &TitleBar::doubleClick, buttonMax_, &QToolButton::click);
+        }
+
         if (buttonFixed_) {
             buttonFixed_->setCheckable(true);
             layoutTitleBar->insertWidget(index++, buttonFixed_);
@@ -151,9 +178,12 @@ void Frameless::init(const Mode& mode, bool fixed)
             buttonClose_->setText(STR_BUTTON_CLOSE_TEXT);
             buttonClose_->setObjectName(STR_BUTTON_CLOSE);
         }
-        layoutTitleBar->insertWidget(index++, buttonClose_);
-        buttonClose_->setToolTip(STR_FORM_TOOLTIP_CLOSE);
-        connect(buttonClose_, &QToolButton::clicked, window_, &QWidget::close);
+        if (buttonClose_) {
+            layoutTitleBar->insertWidget(index++, buttonClose_);
+            buttonClose_->setToolTip(STR_FORM_TOOLTIP_CLOSE);
+            connect(
+                buttonClose_, &QToolButton::clicked, window_, &QWidget::close);
+        }
     }
 
     QHBoxLayout* layout = new QHBoxLayout(bar);

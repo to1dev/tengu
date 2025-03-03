@@ -40,12 +40,14 @@ inline constexpr char STR_BUTTON_MAX[] = "ButtonMax";
 inline constexpr char STR_BUTTON_CLOSE[] = "ButtonClose";
 inline constexpr char STR_BUTTON_FIXED[] = "ButtonFixed";
 
+inline constexpr char STR_BUTTON_MIN_TEXT[] = "✔️";
+inline constexpr char STR_BUTTON_MAX_TEXT[] = "🌀";
 inline constexpr char STR_BUTTON_CLOSE_TEXT[] = "✖️";
 
 inline const QString STR_MAIN_TOOLTIP_MINIMIZE = QObject::tr("最小化应用程序");
 inline const QString STR_MAIN_TOOLTIP_CLOSE = QObject::tr("退出应用程序");
 inline const QString STR_FORM_TOOLTIP_CLOSE = QObject::tr("关闭窗体");
-inline const QString STR_FORM_TOOLTIP_MAX = QObject::tr("最大化窗体");
+inline const QString STR_FORM_TOOLTIP_MAX = QObject::tr("窗体复位");
 inline const QString STR_FORM_TOOLTIP_NORMAL = QObject::tr("恢复窗体");
 inline const QString STR_FORM_TOOLTIP_FIXED = QObject::tr("锁定窗体移动范围");
 
@@ -56,6 +58,7 @@ public:
     enum class Mode {
         MAIN,
         DIALOG,
+        MESSAGEBOX,
         PANEL,
     };
 

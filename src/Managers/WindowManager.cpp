@@ -53,6 +53,18 @@ void WindowManager::reset(QWidget* window, double percent, WindowShape shape)
     }
 
     case WindowShape::RIGHT_PANEL: {
+        if (windows_.contains(WindowShape::TOPBAR)
+            && windows_[WindowShape::TOPBAR]) {
+            int topHeight = windows_[WindowShape::TOPBAR]->height();
+            int panelWidth = window->width();
+
+            QRect panelGeometry(screenGeometry.right() - panelWidth,
+                screenGeometry.top() + topHeight, panelWidth,
+                screenGeometry.height() - topHeight);
+
+            window->setGeometry(panelGeometry);
+        }
+
         return;
     }
 

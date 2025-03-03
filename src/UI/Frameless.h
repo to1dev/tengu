@@ -59,7 +59,7 @@ public:
     Frameless(QWidget* window = nullptr);
     virtual ~Frameless() = default;
 
-    void init(const Mode& mode = Mode::MAIN);
+    void init(const Mode& mode = Mode::MAIN, bool fixed = false);
 
     void setMainFrame(QWidget* newMainFrame);
     void setTopFrame(QWidget* newTopFrame);
@@ -71,9 +71,6 @@ public:
     void setButtonFixed(QToolButton* newButtonFixed);
 
     void setMainMenu(QMenuBar* newMainMenu);
-
-    bool fixed() const;
-    void setFixed(bool newFixed);
 
 private:
     void min();

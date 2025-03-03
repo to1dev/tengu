@@ -7,13 +7,14 @@ Frameless::Frameless(QWidget* window)
 {
 }
 
-void Frameless::init(const Mode& mode)
+void Frameless::init(const Mode& mode, bool fixed)
 {
     if (!window_ || !mainFrame_)
         return;
 
     int index = 0;
     mode_ = mode;
+    fixed_ = fixed;
     bool isMain = (mode == Mode::MAIN);
     Qt::WindowFlags flags;
     switch (mode) {
@@ -240,9 +241,6 @@ void Frameless::init(const Mode& mode)
 
     if (layoutMiddle)
         layoutMain->insertLayout(index++, layoutMiddle, 1);
-
-    if (isMain)
-        max();
 }
 
 void Frameless::setMainFrame(QWidget* newMainFrame)
@@ -325,16 +323,6 @@ void Frameless::max()
     default:
         break;
     }
-}
-
-bool Frameless::fixed() const
-{
-    return fixed_;
-}
-
-void Frameless::setFixed(bool newFixed)
-{
-    fixed_ = newFixed;
 }
 
 }

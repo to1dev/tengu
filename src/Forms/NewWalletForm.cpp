@@ -50,9 +50,9 @@ NewWalletForm::NewWalletForm(
     layoutView->addWidget(view_);
     ui->groupBoxMnemonic->setLayout(layoutView);
 
-    QVBoxLayout* layoutOptioins = new QVBoxLayout(ui->groupBox);
-    layoutOptioins->setContentsMargins(DEFAULT_GROUP_MARGINS);
-    layoutOptioins->setSpacing(DEFAULT_SPACING);
+    QVBoxLayout* layoutOptions = new QVBoxLayout(ui->groupBox);
+    layoutOptions->setContentsMargins(DEFAULT_GROUP_MARGINS);
+    layoutOptions->setSpacing(DEFAULT_SPACING);
 
     QLabel* labelName = new QLabel(this);
     labelName->setText(STR_LABEL_NAME);
@@ -87,13 +87,13 @@ NewWalletForm::NewWalletForm(
     connect(buttonClipboard, &QPushButton::clicked,
         [this]() { QApplication::clipboard()->setText(view_->mnemonic()); });
 
-    layoutOptioins->addWidget(labelName);
-    layoutOptioins->addWidget(editName_);
-    layoutOptioins->addWidget(labelChain);
-    layoutOptioins->addWidget(comboChain_);
-    layoutOptioins->addStretch(1);
-    layoutOptioins->addWidget(buttonClipboard);
-    ui->groupBox->setLayout(layoutOptioins);
+    layoutOptions->addWidget(labelName);
+    layoutOptions->addWidget(editName_);
+    layoutOptions->addWidget(labelChain);
+    layoutOptions->addWidget(comboChain_);
+    layoutOptions->addStretch(1);
+    layoutOptions->addWidget(buttonClipboard);
+    ui->groupBox->setLayout(layoutOptions);
 
     ui->ButtonOK->setDefault(true);
 

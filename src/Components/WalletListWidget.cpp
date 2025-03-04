@@ -144,6 +144,7 @@ void WalletListWidget::load(const std::vector<Wallet>& wallets)
 {
     setUpdatesEnabled(false);
 
+    clear();
     int index = 0;
     for (const Wallet& wallet : wallets) {
         add(wallet, index++);

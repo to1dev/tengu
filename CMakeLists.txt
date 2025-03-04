@@ -38,6 +38,7 @@ set(SOURCE_FILES
     src/Clients/Solana/gRPC/GeyserClientWorker.cpp
     src/Clients/Solana/gRPC/SwapFilter.cpp
     src/Clients/Solana/gRPC/TransactionFilter.cpp
+    src/Components/AddressListWidget.cpp
     src/Components/AnimatedTabWidget.cpp
     src/Components/ClickableLabel.cpp
     src/Components/ComboBoxEx.cpp
@@ -91,6 +92,7 @@ set(HEADER_FILES
     src/Clients/Solana/gRPC/GeyserClientWorker.h
     src/Clients/Solana/gRPC/SwapFilter.h
     src/Clients/Solana/gRPC/TransactionFilter.h
+    src/Components/AddressListWidget.h
     src/Components/AnimatedTabWidget.h
     src/Components/ClickableLabel.h
     src/Components/ComboBoxEx.h

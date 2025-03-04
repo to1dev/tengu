@@ -108,10 +108,6 @@ int main(int argc, char* argv[])
         splash.hide();
 
         w.show();
-
-        globalManager->windowManager()->reset(
-            walletDock.get(), 1, WindowManager::WindowShape::RIGHT_PANEL);
-
         walletDock->show();
 
         splash.finish(&w);

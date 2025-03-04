@@ -85,12 +85,10 @@ class WalletPanel : public QFrame {
     const int MIN_WIDTH = 380;
 
 public:
-    WalletPanel(QWidget* parent = nullptr);
+    explicit WalletPanel(QWidget* parent = nullptr);
 
     UserCard* userCard() const;
-
     ValueCard* valueCard() const;
-
     ObjectsCard* objectsCard() const;
 
 private:

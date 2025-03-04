@@ -19,14 +19,28 @@
 #pragma once
 
 #include <QDialog>
+#include <QVBoxLayout>
+
+#include "Consts.h"
 
 #include "Managers/GlobalManager.h"
 #include "Managers/WindowManager.h"
 
 #include "UI/Frameless.h"
 
+#include "Utils/Encryption.h"
+
+#include "Components/AddressListWidget.h"
+#include "Components/ComboBoxEx.h"
+#include "Components/LineEditEx.h"
+
+#include "Databases/Database.h"
+
+using namespace Daitengu::Components;
 using namespace Daitengu::Core;
+using namespace Daitengu::Databases;
 using namespace Daitengu::UI;
+using namespace Daitengu::Utils;
 
 namespace Ui {
 class UpdateWalletForm;
@@ -42,9 +56,21 @@ public:
         const std::shared_ptr<const GlobalManager>& globalManager = nullptr);
     ~UpdateWalletForm();
 
+    void setWallet(const Wallet& wallet);
+    std::shared_ptr<Wallet> walletRecord() const;
+
+private Q_SLOTS:
+    void ok();
+
 private:
     Ui::UpdateWalletForm* ui;
 
     std::shared_ptr<const GlobalManager> globalManager_;
     std::unique_ptr<Frameless> frameless_;
+
+    AddressListWidget* addressList_;
+    LineEditEx* editName_;
+    ComboBoxEx* comboChain_;
+
+    std::shared_ptr<Wallet> walletRecord_;
 };

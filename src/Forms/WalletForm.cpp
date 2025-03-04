@@ -100,7 +100,23 @@ void WalletForm::editWallet()
         const auto id
             = item->data(static_cast<int>(WalletListWidget::ItemData::id))
                   .toInt();
+        const auto name
+            = item->data(static_cast<int>(WalletListWidget::ItemData::name))
+                  .toString()
+                  .toStdString();
+        const auto chainType
+            = item->data(
+                      static_cast<int>(WalletListWidget::ItemData::chainType))
+                  .toInt();
+        Wallet walletRecord {
+            .id = id,
+            .chainType = chainType,
+            .name = name,
+        };
+
         UpdateWalletForm uwf(this, globalManager_);
+        uwf.setWallet(walletRecord);
+
         int ret = uwf.exec();
         if (ret) {
         } else {

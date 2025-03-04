@@ -34,12 +34,79 @@ UpdateWalletForm::UpdateWalletForm(
     frameless_->setContentFrame(ui->frameContent);
     frameless_->init(Frameless::Mode::DIALOG);
 
+    int index = 0;
+    QVBoxLayout* layoutAddressList = new QVBoxLayout(ui->groupBoxAddress);
+    layoutAddressList->setContentsMargins(DEFAULT_GROUP_MARGINS);
+    layoutAddressList->setSpacing(DEFAULT_SPACING);
+    addressList_ = new AddressListWidget(this);
+    layoutAddressList->insertWidget(index++, addressList_);
+    ui->groupBoxAddress->setLayout(layoutAddressList);
+
+    index = 0;
+    QVBoxLayout* layoutOptions = new QVBoxLayout(ui->groupBox);
+    layoutOptions->setContentsMargins(DEFAULT_GROUP_MARGINS);
+    layoutOptions->setSpacing(DEFAULT_SPACING);
+
+    QLabel* labelName = new QLabel(this);
+    labelName->setText(STR_LABEL_NAME);
+
+    editName_ = new LineEditEx(this);
+    editName_->setText("");
+    editName_->setMaxLength(DEFAULT_MAXLENGTH);
+    editName_->setPlaceholderText(STR_LINEEDIT_WALLET_NAME_PLACEHOLDER);
+    editName_->setCursorPosition(0);
+
+    QLabel* labelChain = new QLabel(this);
+    labelChain->setText(STR_LABEL_CHAIN);
+
+    comboChain_ = new ComboBoxEx(this);
+    index = 0;
+    for (const auto& chain : Chains) {
+        comboChain_->addItem(QString::fromUtf8(chain.second.name.data()));
+        bool enabled = chain.second.enabled;
+        if (!enabled) {
+            comboChain_->setItemEnabled(index, false);
+        }
+        index++;
+    }
+
+    layoutOptions->addWidget(labelName);
+    layoutOptions->addWidget(editName_);
+    layoutOptions->addWidget(labelChain);
+    layoutOptions->addWidget(comboChain_);
+    layoutOptions->addStretch(1);
+    ui->groupBox->setLayout(layoutOptions);
+
+    ui->ButtonOK->setDefault(true);
+
     globalManager_->windowManager()->reset(this, 0.7);
     connect(frameless_.get(), &Frameless::onMax, this,
         [this]() { globalManager_->windowManager()->reset(this, 0.7); });
+
+    connect(ui->ButtonOK, &QPushButton::clicked, this, &UpdateWalletForm::ok);
+    connect(ui->ButtonCancel, &QPushButton::clicked, this,
+        &UpdateWalletForm::reject);
 }
 
 UpdateWalletForm::~UpdateWalletForm()
 {
     delete ui;
+}
+
+void UpdateWalletForm::setWallet(const Wallet& wallet)
+{
+    walletRecord_ = std::make_shared<Wallet>(wallet);
+
+    editName_->setText(QString::fromStdString(walletRecord_->name));
+    comboChain_->setCurrentIndex(walletRecord_->chainType);
+}
+
+std::shared_ptr<Wallet> UpdateWalletForm::walletRecord() const
+{
+    return walletRecord_;
+}
+
+void UpdateWalletForm::ok()
+{
+    accept();
 }

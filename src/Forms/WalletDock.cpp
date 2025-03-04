@@ -34,9 +34,17 @@ WalletDock::WalletDock(
     frameless_->setContentFrame(ui->frameContent);
     frameless_->init(Frameless::Mode::PANEL);
 
+    QVBoxLayout* layout = new QVBoxLayout(ui->frameContent);
+
+    walletPanel_ = new WalletPanel(this);
+    walletPanel_->setObjectName("walletPanel");
+
+    layout->addWidget(walletPanel_);
+
+    ui->frameContent->setLayout(layout);
+
     globalManager_->windowManager()->addWindow(
         WindowManager::WindowShape::RIGHT_PANEL, this);
-
     connect(frameless_.get(), &Frameless::onMax, this, [this]() {
         globalManager_->windowManager()->reset(
             this, 1, WindowManager::WindowShape::RIGHT_PANEL);
@@ -46,4 +54,12 @@ WalletDock::WalletDock(
 WalletDock::~WalletDock()
 {
     delete ui;
+}
+
+void WalletDock::showEvent(QShowEvent* event)
+{
+    QWidget::showEvent(event);
+
+    globalManager_->windowManager()->reset(
+        this, 1, WindowManager::WindowShape::RIGHT_PANEL);
 }

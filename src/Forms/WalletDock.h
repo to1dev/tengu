@@ -18,12 +18,16 @@
 
 #pragma once
 
+#include <QShowEvent>
+#include <QVBoxLayout>
 #include <QWidget>
 
 #include "Managers/GlobalManager.h"
 #include "Managers/WindowManager.h"
 
 #include "UI/Frameless.h"
+
+#include "Components/WalletPanel.h"
 
 using namespace Daitengu::Core;
 using namespace Daitengu::UI;
@@ -42,9 +46,14 @@ public:
         const std::shared_ptr<const GlobalManager>& globalManager = nullptr);
     ~WalletDock();
 
+protected:
+    void showEvent(QShowEvent* event) override;
+
 private:
     Ui::WalletDock* ui;
 
     std::shared_ptr<const GlobalManager> globalManager_;
     std::unique_ptr<Frameless> frameless_;
+
+    WalletPanel* walletPanel_;
 };

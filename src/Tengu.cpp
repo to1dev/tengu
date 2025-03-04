@@ -34,8 +34,6 @@ Tengu::Tengu(
     frameless_->setMainMenu(ui->menubar);
     frameless_->init();
 
-    // ui->tabWidget->tabBar()->hide();
-
     initPopupMenu();
 
     globalManager_->windowManager()->addWindow(

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 /*
- * Copyright (C) 2024 to1dev
+ * Copyright (C) 2025 to1dev <https://arc20.me/to1dev>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as

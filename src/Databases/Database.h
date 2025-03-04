@@ -52,6 +52,14 @@ struct WalletGroup {
     std::string name = "";
 };
 
+enum class WalletType {
+    Original = 0,
+    Mnemonic,
+    Priv,
+    Wif,
+    Address,
+};
+
 struct Wallet {
     int id = 0;
     int type = 0;
@@ -348,10 +356,12 @@ public:
     virtual IWalletGroupRepo* walletGroupRepo() = 0;
     virtual IWalletRepo* walletRepo() = 0;
     virtual IAddressRepo* addressRepo() = 0;
+
     template <typename Func> auto transaction(Func&& func) -> decltype(func())
     {
         return storage()->transaction(std::forward<Func>(func));
     }
+
     virtual Storage* storage() = 0;
 };
 

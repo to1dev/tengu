@@ -118,8 +118,7 @@ void Frameless::init(const Mode& mode, bool fixed)
             buttonMin_ = new QToolButton(bar);
             buttonMin_->setObjectName(STR_BUTTON_MIN);
             buttonMin_->setText(STR_BUTTON_MIN_TEXT);
-        }
-        if (buttonMin_) {
+        } else {
             layoutTitleBar->insertWidget(index++, buttonMin_);
             buttonMin_->setToolTip(STR_MAIN_TOOLTIP_MINIMIZE);
             connect(buttonMin_, &QToolButton::clicked, this, &Frameless::onMin);
@@ -129,8 +128,7 @@ void Frameless::init(const Mode& mode, bool fixed)
             buttonMax_ = new QToolButton(bar);
             buttonMax_->setObjectName(STR_BUTTON_MAX);
             buttonMax_->setText(STR_BUTTON_MAX_TEXT);
-        }
-        if (buttonMax_) {
+        } else {
             layoutTitleBar->insertWidget(index++, buttonMax_);
             buttonMax_->setToolTip(STR_FORM_TOOLTIP_MAX);
             connect(buttonMax_, &QToolButton::clicked, this, &Frameless::onMax);
@@ -152,8 +150,7 @@ void Frameless::init(const Mode& mode, bool fixed)
             buttonClose_ = new QToolButton(bar);
             buttonClose_->setObjectName(STR_BUTTON_CLOSE);
             buttonClose_->setText(STR_BUTTON_CLOSE_TEXT);
-        }
-        if (buttonClose_) {
+        } else {
             layoutTitleBar->insertWidget(index++, buttonClose_);
             buttonClose_->setToolTip(STR_MAIN_TOOLTIP_CLOSE);
             connect(buttonClose_, &QToolButton::clicked,
@@ -195,8 +192,7 @@ void Frameless::init(const Mode& mode, bool fixed)
             buttonClose_ = new QToolButton(bar);
             buttonClose_->setText(STR_BUTTON_CLOSE_TEXT);
             buttonClose_->setObjectName(STR_BUTTON_CLOSE);
-        }
-        if (buttonClose_) {
+        } else {
             layoutTitleBar->insertWidget(index++, buttonClose_);
             buttonClose_->setToolTip(STR_FORM_TOOLTIP_CLOSE);
             connect(

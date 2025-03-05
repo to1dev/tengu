@@ -9,6 +9,7 @@
     </qresource>
     <qresource prefix="/Buttons">
         <file alias="wallet.svg">Images/Buttons/wallet.svg</file>
+        <file alias="bell.svg">Images/Buttons/bell.svg</file>
     </qresource>
     <qresource prefix="/Splash">
         <file alias="1">Images/Splash/1.png</file>

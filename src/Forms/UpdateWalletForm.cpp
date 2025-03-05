@@ -99,6 +99,15 @@ void UpdateWalletForm::setWallet(const Wallet& wallet)
 
     editName_->setText(QString::fromStdString(walletRecord_->name));
     comboChain_->setCurrentIndex(walletRecord_->chainType);
+
+    if (walletRecord_->type > static_cast<int>(WalletType::Mnemonic)) {
+        ui->ButtonNewAddress->setEnabled(false);
+    }
+
+    addressList_->load(globalManager_->settingManager()
+            ->database()
+            ->addressRepo()
+            ->getAllByWallet(static_cast<int>(walletRecord_->id)));
 }
 
 std::shared_ptr<Wallet> UpdateWalletForm::walletRecord() const

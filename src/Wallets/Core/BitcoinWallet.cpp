@@ -188,7 +188,7 @@ std::array<uint8_t, 32> BitcoinWallet::bip86Tweak(
     secp256k1_pubkey pubkey;
     if (!secp256k1_ec_pubkey_parse(
             secp_ctx, &pubkey, pubkey33.data(), pubkey33.size())) {
-        throw std::runtime_error("Invalid secp256k1_pubkey in doBip86Tweak");
+        throw std::runtime_error("Invalid secp256k1_pubkey in bip86Tweak");
     }
 
     std::array<uint8_t, 32> xOnly;

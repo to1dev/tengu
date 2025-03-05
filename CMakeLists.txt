@@ -222,6 +222,7 @@ set(THIRD_PARTY_LIBS
     izanagi
     secp256k1
     catch2
+    fmt
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE ${THIRD_PARTY_LIBS})

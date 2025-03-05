@@ -12,6 +12,7 @@ set(CRYPTO_SOURCES
     src/curves.c
     src/nist256p1.c
     src/secp256k1.c
+    src/segwit_addr.c
     src/groestl.c
 )
 

@@ -20,6 +20,7 @@
 #define SOLANAWALLET_H
 
 #include <cstdint>
+#include <cstring>
 #include <span>
 #include <stdexcept>
 #include <string>

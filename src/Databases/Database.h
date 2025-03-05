@@ -46,18 +46,41 @@ enum class WalletGroupType {
     Vault = 1,
 };
 
-struct WalletGroup {
-    int id = 0;
-    int type = 0;
-    std::string name = "";
-};
-
 enum class WalletType {
     Original = 0,
     Mnemonic,
     Priv,
     Wif,
     Address,
+};
+
+enum class DBErrorType {
+    none = 0,
+    haveName,
+    haveMnemonic,
+};
+
+enum class OrderType {
+    Market = 0,
+    Limit = 1,
+    StopLoss = 2,
+    TakeProfit = 3,
+    TrailingStopLoss = 4,
+    TrailingTakeProfit = 5,
+};
+
+enum class OrderStatus {
+    Pending = 0,
+    PartiallyFilled = 1,
+    Filled = 2,
+    Cancelled = 3,
+    Rejected = 4,
+};
+
+struct WalletGroup {
+    int id = 0;
+    int type = 0;
+    std::string name = "";
 };
 
 struct Network {
@@ -113,23 +136,6 @@ struct addressTag {
     long long timestamp = 0;
 };
 
-enum class OrderType {
-    Market = 0,
-    Limit = 1,
-    StopLoss = 2,
-    TakeProfit = 3,
-    TrailingStopLoss = 4,
-    TrailingTakeProfit = 5,
-};
-
-enum class OrderStatus {
-    Pending = 0,
-    PartiallyFilled = 1,
-    Filled = 2,
-    Cancelled = 3,
-    Rejected = 4,
-};
-
 struct Order {
     int id = 0;
     int walletId = 0;
@@ -161,12 +167,6 @@ struct Subscription {
     long long timestamp = 0;
 };
 
-enum class DBErrorType {
-    none = 0,
-    haveName,
-    haveMnemonic,
-};
-
 inline auto initStorage(const QString& dataPath)
 {
     QString filePath = QDir::toNativeSeparators(
@@ -177,6 +177,13 @@ inline auto initStorage(const QString& dataPath)
             make_column("id", &WalletGroup::id, primary_key().autoincrement()),
             make_column("type", &WalletGroup::type),
             make_column("name", &WalletGroup::name)),
+
+        make_table("networks",
+            make_column("id", &Network::id, primary_key().autoincrement()),
+            make_column("chainType", &Network::chainType),
+            make_column("chainId", &Network::chainId),
+            make_column("name", &Network::name),
+            make_column("ticker", &Network::ticker)),
 
         make_table("wallets",
             make_column("id", &Wallet::id, primary_key().autoincrement()),

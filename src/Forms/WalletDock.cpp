@@ -37,7 +37,6 @@ WalletDock::WalletDock(
     QVBoxLayout* layout = new QVBoxLayout(ui->frameContent);
 
     walletPanel_ = new WalletPanel(this);
-    walletPanel_->setObjectName("walletPanel");
 
     layout->addWidget(walletPanel_);
 

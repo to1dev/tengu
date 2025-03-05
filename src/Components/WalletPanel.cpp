@@ -29,6 +29,8 @@ UserCard::UserCard(QWidget* parent)
     auto* topLayout = new QHBoxLayout();
     auto* bottomLayout = new QHBoxLayout();
 
+    // mainLayout->setContentsMargins(QMargins(0, 0, 0, 0));
+
     int index = randomIndex(0, RandomAvatars.size() - 1);
     int range = randomIndex(
         RandomAvatars[index].second.start, RandomAvatars[index].second.end);
@@ -84,8 +86,11 @@ ValueCard::ValueCard(QWidget* parent)
     : QWidget(parent)
 {
     setObjectName("valueCard");
+
     auto* mainLayout = new QVBoxLayout(this);
     auto* valueLayout = new QVBoxLayout();
+
+    // mainLayout->setContentsMargins(QMargins(0, 9, 0, 9));
 
     valueLabel_ = new QLabel(this);
     valueLabel_->setObjectName(STR_VALUE_LABEL);
@@ -117,17 +122,19 @@ ObjectsCard::ObjectsCard(QWidget* parent)
 WalletPanel::WalletPanel(QWidget* parent)
     : QFrame(parent)
 {
-    setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+    setObjectName("walletPanel");
+
+    setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
     setMinimumWidth(MIN_WIDTH);
 
     QVBoxLayout* layout = new QVBoxLayout(this);
     layout->setContentsMargins(QMargins(0, 0, 0, 0));
-    layout->setSpacing(9);
+    layout->setSpacing(20);
 
     QWidget* frameUser = new QWidget(this);
     frameUser->setObjectName("walletFrame");
 
-    QHBoxLayout* layoutUser = new QHBoxLayout(frameUser);
+    QVBoxLayout* layoutUser = new QVBoxLayout(frameUser);
     userCard_ = new UserCard(frameUser);
     layoutUser->addWidget(userCard_);
     frameUser->setLayout(layoutUser);
@@ -140,25 +147,30 @@ WalletPanel::WalletPanel(QWidget* parent)
     layoutValue->addWidget(valueCard_);
     frameValue->setLayout(layoutValue);
 
-    QWidget* frameObjects = new QWidget(this);
-    frameObjects->setObjectName("objectsFrame");
-
-    QVBoxLayout* layoutObjects = new QVBoxLayout(frameObjects);
-    layoutObjects->setSpacing(9);
-
-    LineEditEx* editFilter = new LineEditEx(frameObjects);
+    LineEditEx* editFilter = new LineEditEx(this);
     editFilter->setObjectName("editFilter");
     editFilter->setMaxLength(64);
 
     objectsCard_ = new ObjectsCard(this);
 
-    layoutObjects->addWidget(editFilter);
-    layoutObjects->addWidget(objectsCard_, 1);
-    frameObjects->setLayout(layoutObjects);
-
     layout->addWidget(frameUser);
     layout->addWidget(frameValue);
-    layout->addWidget(frameObjects, 1);
+    layout->addWidget(editFilter);
+    layout->addWidget(objectsCard_, 1);
+    setLayout(layout);
+
+    /*userCard_ = new UserCard(this);
+    valueCard_ = new ValueCard(this);
+    objectsCard_ = new ObjectsCard(this);
+
+    LineEditEx* editFilter = new LineEditEx(this);
+    editFilter->setObjectName("editFilter");
+    editFilter->setMaxLength(64);
+
+    layout->addWidget(userCard_);
+    layout->addWidget(valueCard_);
+    layout->addWidget(editFilter);
+    layout->addWidget(objectsCard_, 1);*/
     setLayout(layout);
 }
 

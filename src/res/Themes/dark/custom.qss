@@ -429,6 +429,7 @@ QComboBox::down-arrow:on, QComboBox::down-arrow:hover, QComboBox::down-arrow:foc
 #walletPanel {
     /*border: 1px solid #32414B;*/
     border: 0;
+    background: transparent;
 }
 
 #WalletForm #dragBar,
@@ -651,6 +652,11 @@ QComboBox::down-arrow:on, QComboBox::down-arrow:hover, QComboBox::down-arrow:foc
 #frameContent {
     border-radius: 0;
 }
+
+/*#WalletDock QFrame#frameContent {
+    background: transparent;
+    border: 0;
+}*/
 
 #labelStatus {
     padding: 6;

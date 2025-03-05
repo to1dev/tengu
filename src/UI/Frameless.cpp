@@ -138,16 +138,24 @@ void Frameless::init(const Mode& mode, bool fixed)
                 bar, &TitleBar::doubleClick, buttonMax_, &QToolButton::click);
         }
 
+        if (!buttonFixed_) {
+            buttonFixed_ = new QToolButton(bar);
+            buttonFixed_->setObjectName(STR_BUTTON_FIXED);
+            buttonFixed_->setText(STR_BUTTON_FIXED_TEXT);
+        }
         if (buttonFixed_) {
             buttonFixed_->setCheckable(true);
             layoutTitleBar->insertWidget(index++, buttonFixed_);
             buttonFixed_->setToolTip(STR_FORM_TOOLTIP_FIXED);
+            fixed_ = buttonFixed_->isChecked();
+            bar->setFixed(fixed_);
             connect(
                 buttonFixed_, &QToolButton::toggled, [this, bar](bool checked) {
                     fixed_ = checked;
                     bar->setFixed(fixed_);
                 });
         }
+
         if (!buttonClose_) {
             buttonClose_ = new QToolButton(bar);
             buttonClose_->setObjectName(STR_BUTTON_CLOSE);
@@ -173,15 +181,17 @@ void Frameless::init(const Mode& mode, bool fixed)
                 bar, &TitleBar::doubleClick, buttonMax_, &QToolButton::click);
         }
 
+        if (!buttonFixed_) {
+            buttonFixed_ = new QToolButton(bar);
+            buttonFixed_->setObjectName(STR_BUTTON_FIXED);
+            buttonFixed_->setText(STR_BUTTON_FIXED_TEXT);
+        }
         if (buttonFixed_) {
             buttonFixed_->setCheckable(true);
             layoutTitleBar->insertWidget(index++, buttonFixed_);
-
             buttonFixed_->setToolTip(STR_FORM_TOOLTIP_FIXED);
-
             fixed_ = buttonFixed_->isChecked();
             bar->setFixed(fixed_);
-
             connect(
                 buttonFixed_, &QToolButton::toggled, [this, bar](bool checked) {
                     fixed_ = checked;
@@ -189,12 +199,10 @@ void Frameless::init(const Mode& mode, bool fixed)
                 });
         }
 
-        connect(bar, &TitleBar::doubleClick, this, &Frameless::onMax);
-
         if (!buttonClose_) {
             buttonClose_ = new QToolButton(bar);
-            buttonClose_->setText(STR_BUTTON_CLOSE_TEXT);
             buttonClose_->setObjectName(STR_BUTTON_CLOSE);
+            buttonClose_->setText(STR_BUTTON_CLOSE_TEXT);
         }
         if (buttonClose_) {
             layoutTitleBar->insertWidget(index++, buttonClose_);

@@ -60,6 +60,8 @@ inline constexpr char STR_BUTTON_FIXED[] = "ButtonFixed";
 
 inline constexpr char STR_BUTTON_MIN_TEXT[] = "✔️";
 inline constexpr char STR_BUTTON_MAX_TEXT[] = "🌀";
+inline constexpr char STR_BUTTON_PINNED_TEXT[] = "📌";
+inline constexpr char STR_BUTTON_FIXED_TEXT[] = "⚡️";
 inline constexpr char STR_BUTTON_CLOSE_TEXT[] = "✖️";
 
 inline const QString STR_MAIN_TOOLTIP_MINIMIZE = QObject::tr("最小化应用程序");
@@ -118,6 +120,7 @@ private:
     QToolButton* buttonMax_ { nullptr };
     QToolButton* buttonClose_ { nullptr };
     QToolButton* buttonFixed_ { nullptr };
+    QToolButton* buttonPinned_ { nullptr };
 
     QMenuBar* mainMenu_ { nullptr };
 };

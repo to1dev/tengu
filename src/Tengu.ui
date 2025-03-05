@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>200</height>
+    <width>368</width>
+    <height>100</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -30,8 +30,8 @@
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>10</y>
-         <width>63</width>
+         <y>0</y>
+         <width>331</width>
          <height>74</height>
         </rect>
        </property>
@@ -62,6 +62,26 @@
           </property>
          </widget>
         </item>
+        <item>
+         <widget class="QToolButton" name="ButtonBell">
+          <property name="text">
+           <string>监控</string>
+          </property>
+          <property name="icon">
+           <iconset resource="res/Images.qrc">
+            <normaloff>:/Buttons/bell.svg</normaloff>:/Buttons/bell.svg</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>32</width>
+            <height>32</height>
+           </size>
+          </property>
+          <property name="toolButtonStyle">
+           <enum>Qt::ToolButtonTextUnderIcon</enum>
+          </property>
+         </widget>
+        </item>
        </layout>
       </widget>
      </widget>
@@ -73,7 +93,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>400</width>
+     <width>368</width>
      <height>22</height>
     </rect>
    </property>

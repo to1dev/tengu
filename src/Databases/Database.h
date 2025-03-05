@@ -60,6 +60,14 @@ enum class WalletType {
     Address,
 };
 
+struct Network {
+    int id = 0;
+    int chainType = 0;
+    int chainId = 0;
+    std::string name = "";
+    std::string ticker = "";
+};
+
 struct Wallet {
     int id = 0;
     int type = 0;

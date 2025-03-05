@@ -101,16 +101,25 @@
     <property name="title">
      <string>文件(&amp;F)</string>
     </property>
-    <addaction name="action1"/>
+    <addaction name="actionOpen"/>
+    <addaction name="actionReboot"/>
    </widget>
    <addaction name="menu_File"/>
   </widget>
-  <action name="action1">
+  <action name="actionOpen">
    <property name="text">
     <string>打开</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="actionReboot">
+   <property name="text">
+    <string>重启</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
    </property>
   </action>
  </widget>

@@ -62,7 +62,8 @@ Tengu::Tengu(
     ui->tabFirst->setLayout(layout);*/
 
     connect(ui->ButtonWallet, &QToolButton::clicked, this, &Tengu::wallet);
-    connect(ui->action1, &QAction::triggered, this, &Tengu::showWalletDock);
+    connect(ui->actionOpen, &QAction::triggered, this, &Tengu::showWalletDock);
+    connect(ui->actionReboot, &QAction::triggered, this, &Tengu::reboot);
 }
 
 Tengu::~Tengu()

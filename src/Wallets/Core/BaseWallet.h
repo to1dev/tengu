@@ -24,6 +24,8 @@
 #include <stdexcept>
 #include <string>
 
+#include <sodium.h>
+
 #include "BaseMnemonic.h"
 #include "Errors.hpp"
 
@@ -51,7 +53,7 @@ public:
         std::string private_key;
     };
 
-    BaseWallet();
+    explicit BaseWallet();
     virtual ~BaseWallet();
 
     BaseWallet(const BaseWallet&) = delete;

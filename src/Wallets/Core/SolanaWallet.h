@@ -101,7 +101,7 @@ protected:
     void onNetworkChanged() override;
 
 private:
-    void initNode(std::uint32_t index = 0);
+    void initNode(std::uint32_t index = 0) override;
 
 private:
     bool solanaMode_ { false };

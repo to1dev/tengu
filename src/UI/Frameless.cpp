@@ -181,7 +181,7 @@ void Frameless::init(const Mode& mode, bool fixed)
                 bar, &TitleBar::doubleClick, buttonMax_, &QToolButton::click);
         }
 
-        if (!buttonFixed_) {
+        if (mode_ != Mode::MESSAGEBOX && !buttonFixed_) {
             buttonFixed_ = new QToolButton(bar);
             buttonFixed_->setObjectName(STR_BUTTON_FIXED);
             buttonFixed_->setText(STR_BUTTON_FIXED_TEXT);

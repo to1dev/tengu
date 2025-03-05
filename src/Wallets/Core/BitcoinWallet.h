@@ -19,6 +19,31 @@
 #ifndef BITCOINWALLET_H
 #define BITCOINWALLET_H
 
+#include <cstdint>
+#include <cstring>
+#include <span>
+#include <stdexcept>
+#include <string>
+#include <vector>
+
+#include <sodium.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include "izanagi/segwit_addr.h"
+#include "izanagi/sha2.h"
+
+#include "izanagi/secp256k1/secp256k1.h"
+#include "izanagi/secp256k1/secp256k1_extrakeys.h"
+
+#ifdef __cplusplus
+}
+#endif
+
+#include "Utils/Base58.hpp"
+
 #include "ChainWallet.h"
 
 namespace Daitengu::Wallets {
@@ -32,7 +57,15 @@ struct BitcoinNetwork : public Network {
 
 class BitcoinWallet : public ChainWallet {
 public:
-    BitcoinWallet(Network::Type network = Network::Type::MAINNET);
+    static inline constexpr std::string_view DEFAULT_DERIVATION_PATH
+        = "m/86'/0'/0'";
+
+    explicit BitcoinWallet(Network::Type network = Network::Type::MAINNET);
+
+    void fromPrivateKey(const std::string& privateKey) override;
+    [[nodiscard]] std::string getAddress(std::uint32_t index = 0) override;
+    [[nodiscard]] std::string getPrivateKey(std::uint32_t index = 0) override;
+    [[nodiscard]] KeyPair deriveKeyPair(std::uint32_t index = 0) override;
 
 protected:
     const std::map<Network::Type, ChainNetwork> networkConfigs_ = {
@@ -87,6 +120,18 @@ protected:
     };
 
     void onNetworkChanged() override;
+
+private:
+    void initNode(std::uint32_t index = 0) override;
+    [[nodiscard]] std::string generateTaprootAddress() const;
+
+    [[nodiscard]] std::array<uint8_t, 32> bip86Tweak(
+        const std::array<uint8_t, 33>& pubkey33) const;
+
+    static std::array<uint8_t, 32> sha256(const uint8_t* data, size_t len);
+
+    static constexpr std::size_t PUBLIC_KEY_SIZE = 33;
+    static constexpr std::size_t SCHNORR_PUBLIC_KEY_SIZE = 32;
 };
 
 }

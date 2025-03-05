@@ -494,6 +494,7 @@ QComboBox::down-arrow:on, QComboBox::down-arrow:hover, QComboBox::down-arrow:foc
 #ButtonData,
 #ButtonSocial,
 #ButtonIssue,
+#ButtonBell,
 #ButtonWallet {
     border-radius: 8px;
     background: transparent;
@@ -509,6 +510,7 @@ QComboBox::down-arrow:on, QComboBox::down-arrow:hover, QComboBox::down-arrow:foc
 #ButtonData:pressed,
 #ButtonSocial:pressed,
 #ButtonIssue:pressed,
+#ButtonBell:pressed,
 #ButtonWallet:pressed {
     padding: 9px;
     background-color: #1A72BB;
@@ -520,6 +522,7 @@ QComboBox::down-arrow:on, QComboBox::down-arrow:hover, QComboBox::down-arrow:foc
 #ButtonData:hover,
 #ButtonSocial:hover,
 #ButtonIssue:hover,
+#ButtonBell:hover,
 #ButtonWallet:hover {
     background-color: #2D3E50;
 }
@@ -530,6 +533,7 @@ QComboBox::down-arrow:on, QComboBox::down-arrow:hover, QComboBox::down-arrow:foc
 #ButtonData:disabled,
 #ButtonSocial:disabled,
 #ButtonIssue:disabled,
+#ButtonBell:disabled,
 #ButtonWallet:disabled {
     color: #788D9C;
 }
@@ -540,6 +544,7 @@ QComboBox::down-arrow:on, QComboBox::down-arrow:hover, QComboBox::down-arrow:foc
 #ButtonData:checked,
 #ButtonSocial:checked,
 #ButtonIssue:checked,
+#ButtonBell:checked,
 #ButtonWallet:checked {
     background-color: #1A72BB;
     color: #FFFFFF;

@@ -220,6 +220,7 @@ set(THIRD_PARTY_LIBS
     sqlite3
     luajit-5.1
     izanagi
+    secp256k1
     catch2
 )
 
@@ -248,6 +249,7 @@ endif()
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE
     USE_TEST
+    SECP256K1_STATIC
     QT_STATIC
     QT_NO_KEYWORDS
 )

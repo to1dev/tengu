@@ -32,6 +32,7 @@
 extern "C" {
 #endif
 
+#include "izanagi/ripemd160.h"
 #include "izanagi/segwit_addr.h"
 #include "izanagi/sha2.h"
 
@@ -60,7 +61,8 @@ public:
     static inline constexpr std::string_view DEFAULT_DERIVATION_PATH
         = "m/86'/0'/0'";
 
-    explicit BitcoinWallet(Network::Type network = Network::Type::MAINNET);
+    explicit BitcoinWallet(
+        bool useTaproot = true, Network::Type network = Network::Type::MAINNET);
 
     void fromPrivateKey(const std::string& privateKey) override;
     [[nodiscard]] std::string getAddress(std::uint32_t index = 0) override;
@@ -124,6 +126,9 @@ protected:
 private:
     void initNode(std::uint32_t index = 0) override;
     [[nodiscard]] std::string generateTaprootAddress() const;
+    [[nodiscard]] std::string generateP2WPKHAddress() const;
+    [[nodiscard]] std::vector<uint8_t> bip86TweakXOnlyPubkey(
+        const uint8_t pubkey33[33]) const;
 
     [[nodiscard]] std::array<uint8_t, 32> bip86Tweak(
         const std::array<uint8_t, 33>& pubkey33) const;
@@ -132,6 +137,9 @@ private:
 
     static constexpr std::size_t PUBLIC_KEY_SIZE = 33;
     static constexpr std::size_t SCHNORR_PUBLIC_KEY_SIZE = 32;
+
+private:
+    bool useTaproot_ { true };
 };
 
 }

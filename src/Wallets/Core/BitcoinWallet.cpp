@@ -18,26 +18,14 @@
 
 #include "BitcoinWallet.h"
 
-static secp256k1_context* secp_ctx = nullptr;
-
-namespace {
-static void init_secp256k1_context()
-{
-    if (!secp_ctx) {
-        secp_ctx = secp256k1_context_create(SECP256K1_CONTEXT_NONE);
-        if (!secp_ctx) {
-            throw std::runtime_error("Failed to create secp256k1 context");
-        }
-    }
-}
-}
+#include "Context.h"
 
 namespace Daitengu::Wallets {
 
-BitcoinWallet::BitcoinWallet(Network::Type network)
+BitcoinWallet::BitcoinWallet(bool useTaproot, Network::Type network)
     : ChainWallet(ChainType::BITCOIN, network)
+    , useTaproot_(useTaproot)
 {
-    init_secp256k1_context();
 }
 
 void BitcoinWallet::fromPrivateKey(const std::string& privateKey)
@@ -98,7 +86,11 @@ std::string BitcoinWallet::getAddress(std::uint32_t index)
     if (!mnemonic_.empty())
         initNode(index);
 
-    return generateTaprootAddress();
+    if (useTaproot_) {
+        return generateTaprootAddress();
+    } else {
+        return generateP2WPKHAddress();
+    }
 }
 
 std::string BitcoinWallet::getPrivateKey(std::uint32_t index)
@@ -146,12 +138,14 @@ void BitcoinWallet::initNode(std::uint32_t index)
         throw std::runtime_error("Failed to create HD node from seed.");
     }
 
+    uint32_t purpose = useTaproot_ ? 86 : 44;
+
     std::uint32_t path[] = {
-        86 | HARDENED, // purpose: BIP86 (Taproot)
-        0 | HARDENED,  // coin type: Bitcoin
-        0 | HARDENED,  // account
-        0,             // change (external chain)
-        index          // address index
+        purpose | HARDENED, // purpose: BIP86 (Taproot)
+        0 | HARDENED,       // coin type: Bitcoin
+        0 | HARDENED,       // account
+        0,                  // change (external chain)
+        index               // address index
     };
 
     if (hdnode_private_ckd_cached(
@@ -160,7 +154,9 @@ void BitcoinWallet::initNode(std::uint32_t index)
         throw std::runtime_error("Failed to derive key path.");
     }
 
-    hdnode_fill_public_key(&node_);
+    if (hdnode_fill_public_key(&node_) != 0) {
+        throw std::runtime_error("Failed to fill pubkey");
+    }
 }
 
 std::string BitcoinWallet::generateTaprootAddress() const
@@ -182,9 +178,33 @@ std::string BitcoinWallet::generateTaprootAddress() const
     return std::string(out);
 }
 
+std::string BitcoinWallet::generateP2WPKHAddress() const
+{
+    unsigned char h1[32], h2[20];
+    sha256_Raw(node_.public_key, 33, h1);
+
+    ripemd160(h1, 32, h2);
+
+    char addr[128] = { 0 };
+    const char* hrp = "bc";
+    if (!segwit_addr_encode(addr, hrp, 0, h2, 20)) {
+        throw std::runtime_error("segwit_addr_encode fail for p2wpkh");
+    }
+
+    return std::string(addr);
+}
+
+std::vector<uint8_t> BitcoinWallet::bip86TweakXOnlyPubkey(
+    const uint8_t pubkey33[33]) const
+{
+    return std::vector<uint8_t>();
+}
+
 std::array<uint8_t, 32> BitcoinWallet::bip86Tweak(
     const std::array<uint8_t, 33>& pubkey33) const
 {
+    secp256k1_context* secp_ctx = getSecpContext();
+
     secp256k1_pubkey pubkey;
     if (!secp256k1_ec_pubkey_parse(
             secp_ctx, &pubkey, pubkey33.data(), pubkey33.size())) {

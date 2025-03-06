@@ -30,10 +30,6 @@ enum class ChainType {
     BITCOIN,
     ETHEREUM,
     SOLANA,
-    TRON,
-    BNBCHAIN,
-    SUI,
-    APTOS,
 };
 
 struct Network {

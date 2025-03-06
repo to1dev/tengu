@@ -16,6 +16,9 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#ifndef USE_TEST
+#define USE_TEST
+#endif
 #ifdef USE_TEST
 
 #include <format>
@@ -26,6 +29,8 @@
 #include "Utils/Dotenv.hpp"
 #include "Utils/PathUtils.hpp"
 
+#include "Wallets/Core/BitcoinWallet.h"
+#include "Wallets/Core/EthereumWallet.h"
 #include "Wallets/Core/SolanaWallet.h"
 
 using namespace Daitengu::Utils;
@@ -35,21 +40,53 @@ TEST_CASE("Generate bip39 mnemonic")
 {
     SECTION("New wallet")
     {
-        SolanaWallet wallet;
-        std::cout << "Decent mnemonic: " << wallet.generateMnemonic()
-                  << std::endl;
-        std::cout << "Here is the new pubkey: " << wallet.getAddress()
-                  << std::endl;
-        std::cout << "Here is the new privkey: " << wallet.getPrivateKey()
-                  << std::endl;
+        SolanaWallet solWallet1;
+        std::cout << std::format(
+            "Decent mnemonic: {}\n", solWallet1.generateMnemonic());
+        std::cout << std::format(
+            "Here is the new pubkey: {}\n", solWallet1.getAddress());
+        std::cout << std::format(
+            "Here is the new privkey {}\n", solWallet1.getPrivateKey());
 
         auto currentPath = PathUtils::getExecutableDir();
         auto& parser = DotEnv::getInstance();
         parser.load((currentPath / ".env").string());
 
-        wallet.fromMnemonic(*parser.get("MNEMONIC"));
-        std::cout << wallet.getAddress() << std::endl;
-        std::cout << wallet.getPrivateKey() << std::endl;
+        SolanaWallet solWallet2;
+
+        solWallet2.fromMnemonic(*parser.get("SOL_MNEMONIC"));
+        std::cout << solWallet2.getAddress() << std::endl;
+        std::cout << solWallet2.getPrivateKey() << std::endl;
+
+        SolanaWallet solWallet3;
+        solWallet3.fromPrivateKey(*parser.get("SOL_PRIVATE_KEY"));
+        std::cout << solWallet3.getAddress() << std::endl;
+
+        BitcoinWallet btcWallet1;
+        std::cout << std::format(
+            "Decent mnemonic: {}\n", btcWallet1.generateMnemonic());
+        std::cout << std::format(
+            "Here is the new pubkey: {}\n", btcWallet1.getAddress());
+        std::cout << std::format(
+            "Here is the new privkey {}\n", btcWallet1.getPrivateKey());
+
+        BitcoinWallet btcWallet2;
+        btcWallet2.fromMnemonic(*parser.get("BTC_MNEMONIC"));
+        std::cout << btcWallet2.getAddress() << std::endl;
+        std::cout << btcWallet2.getPrivateKey() << std::endl;
+
+        BitcoinWallet btcWallet3;
+        btcWallet3.fromPrivateKey(*parser.get("BTC_PRIVATE_KEY"));
+        std::cout << btcWallet3.getAddress() << std::endl;
+
+        EthereumWallet ethWallet1;
+        ethWallet1.fromMnemonic(*parser.get("ETH_MNEMONIC"));
+        std::cout << ethWallet1.getPrivateKey() << std::endl;
+        std::cout << ethWallet1.getAddress() << std::endl;
+
+        EthereumWallet ethWallet2;
+        ethWallet2.fromPrivateKey(*parser.get("ETH_PRIVATE_KEY"));
+        std::cout << ethWallet2.getAddress() << std::endl;
 
         /*REQUIRE(wallet.deriveAddress(0)
             == "9uvC3PMMzX4DgGrxDmheXNkMRWVfYqLsVpQjAaTD2uAp");

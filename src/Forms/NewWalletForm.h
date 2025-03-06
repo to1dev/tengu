@@ -37,6 +37,8 @@
 #include "Components/MnemonicView.h"
 
 #include "Wallets/Core/BaseMnemonic.h"
+#include "Wallets/Core/BitcoinWallet.h"
+#include "Wallets/Core/EthereumWallet.h"
 #include "Wallets/Core/SolanaWallet.h"
 
 #include "Databases/Database.h"

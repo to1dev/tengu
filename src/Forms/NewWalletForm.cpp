@@ -141,16 +141,15 @@ void NewWalletForm::refresh()
 void NewWalletForm::ok()
 {
     if (editName_->text().isEmpty()) {
-        MessageForm mf(this, 5, NO_VALID_WALLET_NAME);
-        mf.exec();
+        MessageForm { this, 5, NO_VALID_WALLET_NAME }.exec();
         return;
     }
 
-    QString name = editName_->text().simplified();
-    QString mnemonic = view_->mnemonic().simplified();
+    const QString name = editName_->text().simplified();
+    const QString mnemonic = view_->mnemonic().simplified();
 
-    QString nameHash = Encryption::easyHash(name);
-    QString mnemonicHash = Encryption::easyHash(mnemonic);
+    const auto nameHash = Encryption::easyHash(name);
+    const auto mnemonicHash = Encryption::easyHash(mnemonic);
 
     walletRecord_ = std::make_shared<Wallet>();
     walletRecord_->nameHash = nameHash.toStdString();
@@ -158,62 +157,88 @@ void NewWalletForm::ok()
     DBErrorType error
         = globalManager_->settingManager()->database()->walletRepo()->before(
             *walletRecord_);
-    if (DBErrorType::none == error) {
-        SolanaWallet wallet;
-        wallet.fromMnemonic(mnemonic.toStdString());
-        std::string encrypted = Encryption::encryptText(wallet.mnemonic());
-        {
-            walletRecord_->type = static_cast<int>(WalletType::Mnemonic);
-            walletRecord_->chainType = comboChain_->currentIndex(),
-            walletRecord_->hash = Encryption::genRandomHash();
-            walletRecord_->name = name.toStdString();
-            walletRecord_->mnemonic = encrypted;
-        }
 
-        auto walletId = globalManager_->settingManager()
-                            ->database()
-                            ->walletRepo()
-                            ->insert(*walletRecord_);
-
-        walletRecord_->id = walletId;
-        std::string address = wallet.getAddress();
-        std::string addressName = std::string(STR_DEFAULT_ADDRESS_NAME);
-        std::string addressNameHash = Encryption::easyHash(addressName);
-        std::string addressHash = Encryption::easyHash(address);
-
-        Address addressRecord {
-            .walletId = walletId,
-            .hash = Encryption::genRandomHash(),
-            .name = addressName,
-            .nameHash = addressNameHash,
-            .address = address,
-            .addressHash = addressHash,
-            .derivationPath
-            = std::string(SolanaWallet::DEFAULT_DERIVATION_PATH),
-            .privateKey = Encryption::encryptText(wallet.getPrivateKey()),
-            .publicKey = wallet.getAddress(),
-        };
-
-        globalManager_->settingManager()->database()->addressRepo()->insert(
-            addressRecord);
-
-        accept();
-    } else {
+    if (error != DBErrorType::none) {
         switch (error) {
-        case DBErrorType::haveName: {
-            MessageForm mf(this, 16, SAME_WALLET_NAME);
-            mf.exec();
+        case DBErrorType::haveName:
+            MessageForm { this, 16, SAME_WALLET_NAME }.exec();
             break;
-        }
-
-        case DBErrorType::haveMnemonic: {
-            MessageForm mf(this, 16, SAME_MNEMONIC);
-            mf.exec();
+        case DBErrorType::haveMnemonic:
+            MessageForm { this, 16, SAME_MNEMONIC }.exec();
             break;
-        }
-
         default:
             break;
         }
+        return;
     }
+
+    std::unique_ptr<ChainWallet> wallet;
+    switch (comboChain_->currentIndex()) {
+    case 0:
+        wallet = std::make_unique<BitcoinWallet>();
+        break;
+    case 1:
+        wallet = std::make_unique<EthereumWallet>();
+        break;
+    case 2:
+        wallet = std::make_unique<SolanaWallet>();
+        break;
+    default:
+        MessageForm { this, 16, "Unsupported chain type" }.exec();
+        return;
+    }
+
+    wallet->fromMnemonic(mnemonic.toStdString());
+    const auto encrypted = Encryption::encryptText(wallet->mnemonic());
+    {
+        walletRecord_->type = static_cast<int>(WalletType::Mnemonic);
+        walletRecord_->chainType = comboChain_->currentIndex(),
+        walletRecord_->hash = Encryption::genRandomHash();
+        walletRecord_->name = name.toStdString();
+        walletRecord_->mnemonic = encrypted;
+    }
+
+    const auto walletId
+        = globalManager_->settingManager()->database()->walletRepo()->insert(
+            *walletRecord_);
+
+    walletRecord_->id = walletId;
+
+    const auto address = wallet->getAddress();
+    const std::string addressName = STR_DEFAULT_ADDRESS_NAME;
+    const auto addressNameHash = Encryption::easyHash(addressName);
+    const auto addressHash = Encryption::easyHash(address);
+
+    std::string derivationPath;
+    switch (comboChain_->currentIndex()) {
+    case 0:
+        derivationPath = BitcoinWallet::DEFAULT_DERIVATION_PATH;
+        break;
+    case 1:
+        derivationPath = EthereumWallet::DEFAULT_DERIVATION_PATH;
+        break;
+    case 2:
+        derivationPath = SolanaWallet::DEFAULT_DERIVATION_PATH;
+        break;
+    default:
+        derivationPath = "";
+        break;
+    }
+
+    Address addressRecord {
+        .walletId = walletId,
+        .hash = Encryption::genRandomHash(),
+        .name = addressName,
+        .nameHash = addressNameHash,
+        .address = address,
+        .addressHash = addressHash,
+        .derivationPath = derivationPath,
+        .privateKey = Encryption::encryptText(wallet->getPrivateKey()),
+        .publicKey = wallet->getAddress(),
+    };
+
+    globalManager_->settingManager()->database()->addressRepo()->insert(
+        addressRecord);
+
+    accept();
 }

@@ -54,7 +54,7 @@ public:
         = "m/44'/60'/0'/0";
 
     explicit EthereumWallet(
-        bool useEip55 = false, Network::Type network = Network::Type::MAINNET);
+        bool useEip55 = true, Network::Type network = Network::Type::MAINNET);
 
     void fromPrivateKey(const std::string& privateKey) override;
     [[nodiscard]] std::string getAddress(std::uint32_t index = 0) override;
@@ -72,7 +72,7 @@ private:
     [[nodiscard]] std::string toEip55(const std::string& addressLower) const;
 
     unsigned char uncompressedPub_[65] { 0 };
-    bool useEip55_ { false };
+    bool useEip55_ { true };
 };
 
 }

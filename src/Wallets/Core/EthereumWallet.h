@@ -44,6 +44,8 @@ extern "C" {
 
 #include "ChainWallet.h"
 
+#include "../Utils/Hex.hpp"
+
 namespace Daitengu::Wallets {
 
 class EthereumWallet : public ChainWallet {
@@ -52,6 +54,22 @@ public:
         = "m/44'/60'/0'/0";
 
     explicit EthereumWallet(Network::Type network = Network::Type::MAINNET);
+
+    void fromPrivateKey(const std::string& privateKey) override;
+    [[nodiscard]] std::string getAddress(std::uint32_t index = 0) override;
+    [[nodiscard]] std::string getPrivateKey(std::uint32_t index = 0) override;
+    [[nodiscard]] KeyPair deriveKeyPair(std::uint32_t index = 0) override;
+
+protected:
+    void onNetworkChanged() override;
+
+private:
+    void initNode(std::uint32_t index = 0) override;
+
+    [[nodiscard]] std::string generateEthereumAddress() const;
+    void fillUncompressedPublicKey();
+
+    unsigned char uncompressedPub_[65] { 0 };
 };
 
 }

@@ -83,6 +83,7 @@ set(SOURCE_FILES
     src/Wallets/Core/BaseWallet.cpp
     src/Wallets/Core/BitcoinWallet.cpp
     src/Wallets/Core/ChainWallet.cpp
+    src/Wallets/Core/Context.cpp
     src/Wallets/Core/EthereumWallet.cpp
     src/Wallets/Core/SolanaWallet.cpp
     src/Wallets/Utils/SecureBytes.cpp
@@ -142,10 +143,12 @@ set(HEADER_FILES
     src/Wallets/Core/BaseWallet.h
     src/Wallets/Core/BitcoinWallet.h
     src/Wallets/Core/ChainWallet.h
+    src/Wallets/Core/Context.h
     src/Wallets/Core/EthereumWallet.h
     src/Wallets/Core/Errors.hpp
     src/Wallets/Core/SolanaWallet.h
     src/Wallets/Core/Types.h
+    src/Wallets/Utils/Hex.hpp
     src/Wallets/Utils/SecureBytes.h
 )
 

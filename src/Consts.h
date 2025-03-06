@@ -129,28 +129,12 @@ inline constexpr std::array<std::pair<ChainType, ChainItem>, 3> Chains = { {
     },
     {
         ChainType::ETHEREUM,
-        { "Ethereum", false },
+        { "Ethereum", true },
     },
     {
         ChainType::SOLANA,
         { "Solana", true },
     },
-    /*{
-        ChainType::TRON,
-        { "Tron", false },
-    },
-    {
-        ChainType::BNBCHAIN,
-        { "BNB Chain", false },
-    },
-    {
-        ChainType::SUI,
-        { "SUI", false },
-    },
-    {
-        ChainType::APTOS,
-        { "Aptos", false },
-    },*/
 } };
 }
 

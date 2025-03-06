@@ -22,8 +22,9 @@
 
 namespace Daitengu::Wallets {
 
-EthereumWallet::EthereumWallet(Network::Type network)
+EthereumWallet::EthereumWallet(bool useEip55, Network::Type network)
     : ChainWallet(ChainType::ETHEREUM, network)
+    , useEip55_(useEip55)
 {
 }
 
@@ -126,7 +127,13 @@ std::string EthereumWallet::generateEthereumAddress() const
     for (auto& c : hexStr) {
         c = std::tolower(static_cast<unsigned char>(c));
     }
-    return "0x" + hexStr;
+
+    std::string eip55Core = hexStr;
+    if (useEip55_) {
+        eip55Core = toEip55(hexStr);
+    }
+
+    return "0x" + eip55Core;
 }
 
 void EthereumWallet::fillUncompressedPublicKey()
@@ -136,6 +143,42 @@ void EthereumWallet::fillUncompressedPublicKey()
     if (ret != 0) {
         throw std::runtime_error("ecdsa_get_public_key65 failed");
     }
+}
+
+std::string EthereumWallet::toEip55(const std::string& addressLower) const
+{
+    std::vector<unsigned char> lowerBytes(addressLower.size());
+    for (size_t i = 0; i < addressLower.size(); i++) {
+        lowerBytes[i] = static_cast<unsigned char>(addressLower[i]);
+    }
+    unsigned char hash32[32];
+    keccak_256(lowerBytes.data(), lowerBytes.size(), hash32);
+
+    std::string result;
+    result.reserve(40);
+
+    for (size_t i = 0; i < addressLower.size(); i++) {
+        char c = addressLower[i];
+        if (std::isdigit(static_cast<unsigned char>(c))) {
+            result.push_back(c);
+        } else {
+            int nibbleIndex = i / 2;
+            int nibble;
+            if ((i % 2) == 0) {
+                nibble = (hash32[nibbleIndex] >> 4) & 0x0f;
+            } else {
+                nibble = hash32[nibbleIndex] & 0x0f;
+            }
+
+            if (nibble >= 8) {
+                result.push_back(std::toupper(static_cast<unsigned char>(c)));
+            } else {
+                result.push_back(std::tolower(static_cast<unsigned char>(c)));
+            }
+        }
+    }
+
+    return result;
 }
 
 }

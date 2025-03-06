@@ -53,7 +53,8 @@ public:
     static inline constexpr std::string_view DEFAULT_DERIVATION_PATH
         = "m/44'/60'/0'/0";
 
-    explicit EthereumWallet(Network::Type network = Network::Type::MAINNET);
+    explicit EthereumWallet(
+        bool useEip55 = false, Network::Type network = Network::Type::MAINNET);
 
     void fromPrivateKey(const std::string& privateKey) override;
     [[nodiscard]] std::string getAddress(std::uint32_t index = 0) override;
@@ -68,8 +69,10 @@ private:
 
     [[nodiscard]] std::string generateEthereumAddress() const;
     void fillUncompressedPublicKey();
+    [[nodiscard]] std::string toEip55(const std::string& addressLower) const;
 
     unsigned char uncompressedPub_[65] { 0 };
+    bool useEip55_ { false };
 };
 
 }

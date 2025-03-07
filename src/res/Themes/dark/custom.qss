@@ -750,6 +750,15 @@ QScrollBar::handle:vertical:hover {
     border: 0;
 }
 
+#ButtonSmartWallet {
+    border-radius: 16;
+    border: 0;
+    background-color: #9B59B6;
+    color: white;
+    width: 96;
+    height: 32;
+}
+
 #ButtonNewWallet,
 #ButtonDeleteWallet,
 #ButtonEditWallet,
@@ -765,6 +774,11 @@ QScrollBar::handle:vertical:hover {
     height: 32;
 }
 
+#ButtonSmartWallet:hover {
+    border: 0;
+    background-color: #8E44AD;
+}
+
 #ButtonNewWallet:hover,
 #ButtonDeleteWallet:hover,
 #ButtonEditWallet:hover,
@@ -774,6 +788,10 @@ QScrollBar::handle:vertical:hover {
 #ButtonImportWallet:hover {
     border: 0;
     background-color: #12AB8D;
+}
+
+#ButtonSmartWallet:pressed {
+    background-color: #9B59B6;
 }
 
 #ButtonNewWallet:pressed,
@@ -786,6 +804,7 @@ QScrollBar::handle:vertical:hover {
     background-color: #1ABC9C;
 }
 
+#ButtonSmartWallet:disabled,
 #ButtonNewWallet:disabled,
 #ButtonDeleteWallet:disabled,
 #ButtonEditWallet:disabled,
@@ -1139,4 +1158,96 @@ QSpinBox {
 
 #MacroInfoForm #textEditMacroInfo {
     /*font-family: 'FontquanXinYiGuanHeiTi';*/
+}
+
+.button {
+    border-radius: 16px;
+    border: 0;
+    color: white;
+    width: 96px;
+    height: 32px;
+}
+
+.button-green {
+    background-color: #1ABC9C;
+}
+.button-green:hover {
+    background-color: #12AB8D;
+}
+.button-green:pressed {
+    background-color: #1ABC9C;
+}
+.button-green:disabled {
+    color: #787878;
+    background-color: #454545;
+}
+
+.button-blue {
+    background-color: #3498DB;
+}
+.button-blue:hover {
+    background-color: #2980B9;
+}
+.button-blue:pressed {
+    background-color: #3498DB;
+}
+.button-blue:disabled {
+    color: #787878;
+    background-color: #454545;
+}
+
+.button-red {
+    background-color: #E74C3C;
+}
+.button-red:hover {
+    background-color: #C0392B;
+}
+.button-red:pressed {
+    background-color: #E74C3C;
+}
+.button-red:disabled {
+    color: #787878;
+    background-color: #454545;
+}
+
+.button-purple {
+    background-color: #9B59B6;
+}
+.button-purple:hover {
+    background-color: #8E44AD;
+}
+.button-purple:pressed {
+    background-color: #9B59B6;
+}
+.button-purple:disabled {
+    color: #787878;
+    background-color: #454545;
+}
+
+.button-orange {
+    background-color: #E67E22;
+}
+.button-orange:hover {
+    background-color: #D35400;
+}
+.button-orange:pressed {
+    background-color: #E67E22;
+}
+.button-orange:disabled {
+    color: #787878;
+    background-color: #454545;
+}
+
+.button-gray {
+    background-color: #95A5A6;
+}
+.button-gray:hover {
+    background-color: #7F8C8D;
+}
+.button-gray:pressed {
+    background-color: #95A5A6;
+}
+.button-gray:disabled {
+    color: #787878;
+    background-color: #454545;
 }

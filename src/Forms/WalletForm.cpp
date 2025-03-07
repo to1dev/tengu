@@ -50,6 +50,8 @@ WalletForm::WalletForm(
     layoutButtons->addWidget(ui->ButtonImportWallet);
     layoutButtons->addWidget(ui->ButtonEditWallet);
     layoutButtons->addWidget(ui->ButtonDeleteWallet);
+    layoutButtons->addSpacing(16);
+    layoutButtons->addWidget(ui->ButtonSmartWallet);
     layoutButtons->addStretch(1);
     panelButtons->setLayout(layoutButtons);
 
@@ -119,6 +121,7 @@ void WalletForm::editWallet()
 
         int ret = uwf.exec();
         if (ret) {
+            walletList_->update(*uwf.walletRecord());
         } else {
         }
     }

@@ -42,11 +42,11 @@ TEST_CASE("Generate bip39 mnemonic")
     {
         SolanaWallet solWallet1;
         std::cout << std::format(
-            "Decent mnemonic: {}\n", solWallet1.generateMnemonic());
+            "Decent solana mnemonic: {}\n", solWallet1.generateMnemonic());
         std::cout << std::format(
-            "Here is the new pubkey: {}\n", solWallet1.getAddress());
+            "Here is the new solana pubkey: {}\n", solWallet1.getAddress());
         std::cout << std::format(
-            "Here is the new privkey {}\n", solWallet1.getPrivateKey());
+            "Here is the new solana privkey {}\n", solWallet1.getPrivateKey());
 
         auto currentPath = PathUtils::getExecutableDir();
         auto& parser = DotEnv::getInstance();
@@ -55,8 +55,8 @@ TEST_CASE("Generate bip39 mnemonic")
         SolanaWallet solWallet2;
 
         solWallet2.fromMnemonic(*parser.get("SOL_MNEMONIC"));
-        std::cout << solWallet2.getAddress() << std::endl;
-        std::cout << solWallet2.getPrivateKey() << std::endl;
+        std::cout << std::format(
+            "{}\n{}\n", solWallet2.getAddress(), solWallet2.getPrivateKey());
 
         SolanaWallet solWallet3;
         solWallet3.fromPrivateKey(*parser.get("SOL_PRIVATE_KEY"));
@@ -64,11 +64,15 @@ TEST_CASE("Generate bip39 mnemonic")
 
         BitcoinWallet btcWallet1;
         std::cout << std::format(
-            "Decent mnemonic: {}\n", btcWallet1.generateMnemonic());
+            "Decent bitcoin mnemonic: {}\n", btcWallet1.generateMnemonic());
         std::cout << std::format(
-            "Here is the new pubkey: {}\n", btcWallet1.getAddress());
+            "Here is the new bitcoin pubkey: {}\n", btcWallet1.getAddress());
         std::cout << std::format(
-            "Here is the new privkey {}\n", btcWallet1.getPrivateKey());
+            "Here is the new bitcoin privkey {}\n", btcWallet1.getPrivateKey());
+        std::cout << std::format("Here is the new bitcoin scriptPubKey {}\n",
+            btcWallet1.getScriptPubKey());
+        std::cout << std::format("Here is the new bitcoin scriptHash {}\n",
+            btcWallet1.getScriptHash());
 
         BitcoinWallet btcWallet2;
         btcWallet2.fromMnemonic(*parser.get("BTC_MNEMONIC"));

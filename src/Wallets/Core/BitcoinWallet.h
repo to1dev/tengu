@@ -69,6 +69,9 @@ public:
     [[nodiscard]] std::string getPrivateKey(std::uint32_t index = 0) override;
     [[nodiscard]] KeyPair deriveKeyPair(std::uint32_t index = 0) override;
 
+    [[nodiscard]] std::string getScriptPubKey(std::uint32_t index = 0);
+    [[nodiscard]] std::string getScriptHash(std::uint32_t index = 0);
+
 protected:
     const std::map<Network::Type, ChainNetwork> networkConfigs_ = {
         {
@@ -127,8 +130,9 @@ private:
     void initNode(std::uint32_t index = 0) override;
     [[nodiscard]] std::string generateTaprootAddress() const;
     [[nodiscard]] std::string generateP2WPKHAddress() const;
-    [[nodiscard]] std::vector<uint8_t> bip86TweakXOnlyPubkey(
-        const uint8_t pubkey33[33]) const;
+
+    std::vector<unsigned char> createP2WPKHScriptPubKey() const;
+    std::vector<unsigned char> createTaprootScriptPubKey() const;
 
     [[nodiscard]] std::array<uint8_t, 32> bip86Tweak(
         const std::array<uint8_t, 33>& pubkey33) const;

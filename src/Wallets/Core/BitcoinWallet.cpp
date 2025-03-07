@@ -20,6 +20,8 @@
 
 #include "Context.h"
 
+#include "../Utils/Hex.hpp"
+
 namespace Daitengu::Wallets {
 
 BitcoinWallet::BitcoinWallet(bool useTaproot, Network::Type network)
@@ -74,8 +76,7 @@ void BitcoinWallet::fromPrivateKey(const std::string& privateKey)
     }
 
     node_.is_public_key_set = false;
-    int err = hdnode_fill_public_key(&node_);
-    if (err != 0) {
+    if (hdnode_fill_public_key(&node_) != 0) {
         throw std::runtime_error(
             "hdnode_fill_public_key failed (invalid private key?)");
     }
@@ -128,6 +129,52 @@ BaseWallet::KeyPair BitcoinWallet::deriveKeyPair(std::uint32_t index)
     };
 }
 
+std::string BitcoinWallet::getScriptPubKey(std::uint32_t index)
+{
+    if (!mnemonic_.empty()) {
+        initNode(index);
+    }
+
+    std::vector<unsigned char> script;
+    if (useTaproot_) {
+        script = createTaprootScriptPubKey();
+    } else {
+        script = createP2WPKHScriptPubKey();
+    }
+
+    return BytesToHex(script.data(), script.size());
+}
+
+std::string BitcoinWallet::getScriptHash(std::uint32_t index)
+{
+    std::string spkHex = getScriptPubKey(index);
+
+    std::vector<unsigned char> spkBin;
+    spkBin.reserve(spkHex.size() / 2);
+
+    auto hex2bin = [&](char c) -> int {
+        if (c >= '0' && c <= '9')
+            return c - '0';
+        if (c >= 'a' && c <= 'f')
+            return c - 'a' + 10;
+        if (c >= 'A' && c <= 'F')
+            return c - 'A' + 10;
+        return -1;
+    };
+    for (size_t i = 0; i < spkHex.size(); i += 2) {
+        int hi = hex2bin(spkHex[i]);
+        int lo = hex2bin(spkHex[i + 1]);
+        if (hi < 0 || lo < 0) {
+            throw std::runtime_error("Invalid script hex");
+        }
+        spkBin.push_back((hi << 4) | lo);
+    }
+
+    auto hash = sha256(spkBin.data(), spkBin.size());
+
+    return BytesToHex(hash.data(), hash.size());
+}
+
 void BitcoinWallet::onNetworkChanged()
 {
 }
@@ -169,9 +216,8 @@ std::string BitcoinWallet::generateTaprootAddress() const
     std::string hrp = "bc";
 
     char out[128] = { 0 };
-    int ok = segwit_addr_encode(
-        out, hrp.c_str(), 1, tweakedXonly.data(), tweakedXonly.size());
-    if (!ok) {
+    if (!segwit_addr_encode(
+            out, hrp.c_str(), 1, tweakedXonly.data(), tweakedXonly.size())) {
         throw std::runtime_error(
             "Failed to encode taproot address via segwit_addr_encode");
     }
@@ -182,7 +228,6 @@ std::string BitcoinWallet::generateP2WPKHAddress() const
 {
     unsigned char h1[32], h2[20];
     sha256_Raw(node_.public_key, 33, h1);
-
     ripemd160(h1, 32, h2);
 
     char addr[128] = { 0 };
@@ -194,10 +239,41 @@ std::string BitcoinWallet::generateP2WPKHAddress() const
     return std::string(addr);
 }
 
-std::vector<uint8_t> BitcoinWallet::bip86TweakXOnlyPubkey(
-    const uint8_t pubkey33[33]) const
+std::vector<unsigned char> BitcoinWallet::createP2WPKHScriptPubKey() const
 {
-    return std::vector<uint8_t>();
+    unsigned char h1[32], h2[20];
+    sha256_Raw(node_.public_key, 33, h1);
+    ripemd160(h1, 32, h2);
+
+    std::vector<unsigned char> script;
+    script.reserve(2 + 20);
+    // push 0x00
+    script.push_back(0x00); // OP_0
+    // push length=0x14
+    script.push_back(0x14); // 20
+    // push 20 bytes
+    script.insert(script.end(), h2, h2 + 20);
+
+    return script;
+}
+
+std::vector<unsigned char> BitcoinWallet::createTaprootScriptPubKey() const
+{
+    std::array<unsigned char, PUBLIC_KEY_SIZE> pubkey33;
+    std::memcpy(pubkey33.data(), node_.public_key, PUBLIC_KEY_SIZE);
+
+    auto tweaked = bip86Tweak(pubkey33);
+
+    std::vector<unsigned char> script;
+    script.reserve(2 + 32);
+    // OP_1 => 0x51
+    script.push_back(0x51);
+    // push length=0x20=32
+    script.push_back(0x20);
+    // push 32
+    script.insert(script.end(), tweaked.begin(), tweaked.end());
+
+    return script;
 }
 
 std::array<uint8_t, 32> BitcoinWallet::bip86Tweak(

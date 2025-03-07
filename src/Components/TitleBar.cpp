@@ -65,7 +65,7 @@ void TitleBar::mouseMoveEvent(QMouseEvent* event)
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         QPoint newPos = oldPos_ + (event->globalPos() - pos_);
 #else
-        QPoint newPos = mOldPos + (event->globalPosition().toPoint() - mPos);
+        QPoint newPos = oldPos_ + (event->globalPosition().toPoint() - pos_);
 #endif
 
         if (fixed_) {
@@ -99,9 +99,19 @@ void TitleBar::mouseMoveEvent(QMouseEvent* event)
 void TitleBar::mouseReleaseEvent(QMouseEvent* event)
 {
     (void)event;
-    if (Qt::LeftButton == event->buttons()) {
-        pressed_ = false;
+    pressed_ = false;
+
+    QRect virtualRect = desktopRect();
+    QPoint pos = window_->pos();
+    int titleBarHeight = this->height();
+
+    if (pos.y() < virtualRect.top()) {
+        pos.setY(virtualRect.top());
+    } else if (pos.y() > virtualRect.bottom() - titleBarHeight) {
+        pos.setY(virtualRect.bottom() - (titleBarHeight * 2));
     }
+
+    window_->move(pos);
 }
 
 void TitleBar::mouseDoubleClickEvent(QMouseEvent* event)

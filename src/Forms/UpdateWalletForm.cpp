@@ -60,6 +60,8 @@ UpdateWalletForm::UpdateWalletForm(
     labelChain->setText(STR_LABEL_CHAIN);
 
     comboChain_ = new ComboBoxEx(this);
+    comboChain_->setEnabled(false);
+
     index = 0;
     for (const auto& chain : Chains) {
         comboChain_->addItem(QString::fromUtf8(chain.second.name.data()));
@@ -117,5 +119,42 @@ std::shared_ptr<Wallet> UpdateWalletForm::walletRecord() const
 
 void UpdateWalletForm::ok()
 {
-    accept();
+    if (editName_->text().isEmpty()) {
+        MessageForm { this, 5, NO_VALID_WALLET_NAME }.exec();
+        return;
+    }
+
+    const QString name = editName_->text().simplified();
+    const QString oldName
+        = QString::fromStdString(walletRecord_->name).simplified();
+
+    if (name != oldName) {
+        walletRecord_->nameHash = Encryption::easyHash(name.toStdString());
+        DBErrorType error = globalManager_->settingManager()
+                                ->database()
+                                ->walletRepo()
+                                ->before(*walletRecord_, true);
+
+        if (error != DBErrorType::none) {
+            switch (error) {
+            case DBErrorType::haveName:
+                MessageForm { this, 16, SAME_WALLET_NAME }.exec();
+                break;
+            case DBErrorType::haveMnemonic:
+                MessageForm { this, 16, SAME_MNEMONIC }.exec();
+                break;
+            default:
+                break;
+            }
+            return;
+        }
+
+        walletRecord_->name = name.toStdString();
+        globalManager_->settingManager()->database()->walletRepo()->update(
+            *walletRecord_);
+
+        accept();
+    } else {
+        reject();
+    }
 }

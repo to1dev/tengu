@@ -102,6 +102,8 @@ void Tengu::about()
 void Tengu::wallet()
 {
     WalletForm wf(this, globalManager_);
+    /*connect(globalManager_->settingManager()->database()->walletRepo(),
+        WalletRepo::inserted, []() { qInfo() << "inserted"; });*/
     int ret = wf.exec();
     if (ret) {
     } else {

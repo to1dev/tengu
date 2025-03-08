@@ -74,8 +74,7 @@ WalletForm::WalletForm(
         &WalletForm::delWallet);
 
     walletList_->load(
-        globalManager_->settingManager()->database()->walletRepo()->getByGroup(
-            static_cast<int>(WalletGroupType::User)));
+        globalManager_->settingManager()->database()->walletRepo()->getAll());
 }
 
 WalletForm::~WalletForm()

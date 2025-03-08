@@ -47,7 +47,7 @@ TEST_CASE("Generate bip39 mnemonic")
         std::cout << std::format(
             "Here is the new solana pubkey: {}\n", solWallet1.getAddress());
         std::cout << std::format(
-            "Here is the new solana privkey {}\n", solWallet1.getPrivateKey());
+            "Here is the new solana privkey: {}\n", solWallet1.getPrivateKey());
 
         auto currentPath = PathUtils::getExecutableDir();
         auto& parser = DotEnv::getInstance();
@@ -56,47 +56,70 @@ TEST_CASE("Generate bip39 mnemonic")
         SolanaWallet solWallet2;
 
         solWallet2.fromMnemonic(*parser.get("SOL_MNEMONIC"));
-        std::cout << std::format(
-            "{}\n{}\n", solWallet2.getAddress(), solWallet2.getPrivateKey());
+        std::cout << std::format("solana fromMnemonic address: {}\nsolana "
+                                 "fromMnemonic privkey: {}\n",
+            solWallet2.getAddress(), solWallet2.getPrivateKey());
 
         SolanaWallet solWallet3;
         solWallet3.fromPrivateKey(*parser.get("SOL_PRIVATE_KEY"));
-        std::cout << solWallet3.getAddress() << std::endl;
+        std::cout << "solana fromPrivateKey address: "
+                  << solWallet3.getAddress() << std::endl;
 
         BitcoinWallet btcWallet1;
         std::cout << std::format(
             "Decent bitcoin mnemonic: {}\n", btcWallet1.generateMnemonic());
         std::cout << std::format(
             "Here is the new bitcoin pubkey: {}\n", btcWallet1.getAddress());
-        std::cout << std::format(
-            "Here is the new bitcoin privkey {}\n", btcWallet1.getPrivateKey());
-        std::cout << std::format("Here is the new bitcoin scriptPubKey {}\n",
+        std::cout << std::format("Here is the new bitcoin privkey: {}\n",
+            btcWallet1.getPrivateKey());
+        std::cout << std::format("Here is the new bitcoin scriptPubKey: {}\n",
             btcWallet1.getScriptPubKey());
-        std::cout << std::format("Here is the new bitcoin scriptHash {}\n",
+        std::cout << std::format("Here is the new bitcoin scriptHash: {}\n",
             btcWallet1.getScriptHash());
 
         BitcoinWallet btcWallet2;
         btcWallet2.fromMnemonic(*parser.get("BTC_MNEMONIC"));
-        std::cout << btcWallet2.getAddress() << std::endl;
-        std::cout << btcWallet2.getPrivateKey() << std::endl;
+        std::cout << "bitcoin fromMnemonic address: " << btcWallet2.getAddress()
+                  << std::endl;
+        std::cout << "bitcoin fromMnemonic privkey: "
+                  << btcWallet2.getPrivateKey() << std::endl;
 
         BitcoinWallet btcWallet3;
         btcWallet3.fromPrivateKey(*parser.get("BTC_PRIVATE_KEY"));
-        std::cout << btcWallet3.getAddress() << std::endl;
+        std::cout << "bitcoin fromPrivateKey address: "
+                  << btcWallet3.getAddress() << std::endl;
 
         EthereumWallet ethWallet1;
         ethWallet1.fromMnemonic(*parser.get("ETH_MNEMONIC"));
-        std::cout << ethWallet1.getPrivateKey() << std::endl;
-        std::cout << ethWallet1.getAddress() << std::endl;
+        std::cout << "ethereum fromMnemonic address: "
+                  << ethWallet1.getAddress() << std::endl;
+        std::cout << "ethereum fromMnemonic privkey: "
+                  << ethWallet1.getPrivateKey() << std::endl;
 
         EthereumWallet ethWallet2;
         ethWallet2.fromPrivateKey(*parser.get("ETH_PRIVATE_KEY"));
-        std::cout << ethWallet2.getAddress() << std::endl;
+        std::cout << "ethereum fromPrivateKey address: "
+                  << ethWallet2.getAddress() << std::endl;
 
         SuiWallet suiWallet1;
-        suiWallet1.fromMnemonic(*parser.get("SUI_MNEMONIC"));
-        std::cout << suiWallet1.getAddress() << std::endl;
-        std::cout << suiWallet1.getPrivateKey() << std::endl;
+        std::cout << std::format(
+            "Decent sui mnemonic: {}\n", suiWallet1.generateMnemonic());
+        std::cout << std::format(
+            "Here is the new sui pubkey: {}\n", suiWallet1.getAddress());
+        std::cout << std::format(
+            "Here is the new sui privkey {}\n", suiWallet1.getPrivateKey());
+
+        SuiWallet suiWallet2;
+        suiWallet2.fromMnemonic(*parser.get("SUI_MNEMONIC"));
+        std::cout << "sui fromMnemonic address: " << suiWallet2.getAddress()
+                  << std::endl;
+        std::cout << "sui fromMnemonic privkey: " << suiWallet2.getPrivateKey()
+                  << std::endl;
+
+        SuiWallet suiWallet3;
+        suiWallet2.fromPrivateKey(*parser.get("SUI_PRIVATE_KEY"));
+        std::cout << "sui fromPrivateKey address: " << suiWallet3.getAddress()
+                  << std::endl;
 
         /*REQUIRE(wallet.deriveAddress(0)
             == "9uvC3PMMzX4DgGrxDmheXNkMRWVfYqLsVpQjAaTD2uAp");

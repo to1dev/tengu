@@ -95,21 +95,27 @@ UpdateWalletForm::~UpdateWalletForm()
     delete ui;
 }
 
-void UpdateWalletForm::setWallet(const Wallet& wallet)
+void UpdateWalletForm::setId(int id)
 {
-    walletRecord_ = std::make_shared<Wallet>(wallet);
+    auto opt
+        = globalManager_->settingManager()->database()->walletRepo()->get(id);
+    if (opt.has_value()) {
+        walletRecord_ = std::make_shared<Wallet>(*opt);
 
-    editName_->setText(QString::fromStdString(walletRecord_->name));
-    comboChain_->setCurrentIndex(walletRecord_->chainType);
+        editName_->setText(QString::fromStdString(walletRecord_->name));
+        comboChain_->setCurrentIndex(walletRecord_->chainType);
 
-    if (walletRecord_->type > static_cast<int>(WalletType::Mnemonic)) {
-        ui->ButtonNewAddress->setEnabled(false);
+        if (walletRecord_->type > static_cast<int>(WalletType::Mnemonic)) {
+            ui->ButtonNewAddress->setEnabled(false);
+        }
+
+        addressList_->load(globalManager_->settingManager()
+                ->database()
+                ->addressRepo()
+                ->getAllByWallet(static_cast<int>(walletRecord_->id)));
+    } else {
+        std::cerr << "No wallet found." << std::endl;
     }
-
-    addressList_->load(globalManager_->settingManager()
-            ->database()
-            ->addressRepo()
-            ->getAllByWallet(static_cast<int>(walletRecord_->id)));
 }
 
 std::shared_ptr<Wallet> UpdateWalletForm::walletRecord() const

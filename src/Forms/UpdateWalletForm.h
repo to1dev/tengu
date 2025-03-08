@@ -58,7 +58,7 @@ public:
         const std::shared_ptr<const GlobalManager>& globalManager = nullptr);
     ~UpdateWalletForm();
 
-    void setWallet(const Wallet& wallet);
+    void setId(int id);
     std::shared_ptr<Wallet> walletRecord() const;
 
 private Q_SLOTS:

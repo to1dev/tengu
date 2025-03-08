@@ -54,6 +54,7 @@ set(SOURCE_FILES
     src/Components/WalletPanel.cpp
     src/Databases/Database.cpp
     src/Forms/MessageForm.cpp
+    src/Forms/NewAddressForm.cpp
     src/Forms/NewWalletForm.cpp
     src/Forms/UpdateWalletForm.cpp
     src/Forms/WalletDock.cpp
@@ -112,6 +113,7 @@ set(HEADER_FILES
     src/Consts.h
     src/Databases/Database.h
     src/Forms/MessageForm.h
+    src/Forms/NewAddressForm.h
     src/Forms/NewWalletForm.h
     src/Forms/UpdateWalletForm.h
     src/Forms/WalletDock.h

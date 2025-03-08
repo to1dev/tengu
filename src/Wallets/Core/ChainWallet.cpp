@@ -49,6 +49,10 @@ const ChainNetwork& ChainWallet::getCurrentNetworkConfig() const
 void ChainWallet::initChainConfig()
 {
     static const std::map<ChainType, ChainConfig> configs = {
+        { ChainType::SUI,
+            { 501, "ed25519", true,
+                { 44 | HARDENED, 501 | HARDENED, 0 | HARDENED,
+                    0 | HARDENED } } },
         { ChainType::SOLANA,
             { 501, "ed25519", true,
                 { 44 | HARDENED, 501 | HARDENED, 0 | HARDENED,

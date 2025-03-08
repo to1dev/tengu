@@ -156,6 +156,7 @@ set(HEADER_FILES
 
 set(UI_FILES
     src/Forms/MessageForm.ui
+    src/Forms/NewAddressForm.ui
     src/Forms/NewWalletForm.ui
     src/Forms/UpdateWalletForm.ui
     src/Forms/WalletDock.ui

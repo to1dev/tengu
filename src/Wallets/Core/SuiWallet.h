@@ -18,16 +18,46 @@
 
 #pragma once
 
+#include <cstring>
 #include <stdexcept>
 #include <string>
 #include <vector>
+
+#include <sodium.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include "izanagi/sha3.h"
+
+#ifdef __cplusplus
+}
+#endif
 
 #include "ChainWallet.h"
 
 namespace Daitengu::Wallets {
 
 class SuiWallet : public ChainWallet {
+public:
     explicit SuiWallet(Network::Type network = Network::Type::MAINNET);
+
+    void fromPrivateKey(const std::string& privateKey) override;
+    [[nodiscard]] std::string getAddress(std::uint32_t index = 0) override;
+    [[nodiscard]] std::string getPrivateKey(std::uint32_t index = 0) override;
+    [[nodiscard]] KeyPair deriveKeyPair(std::uint32_t index = 0) override;
+
+protected:
+    void onNetworkChanged() override;
+
+private:
+    void initNode(std::uint32_t index = 0) override;
+
+    [[nodiscard]] std::string generateSuiAddress() const;
+
+private:
+    static constexpr unsigned char SCHEME_ED25519 = 0x00;
 };
 
 }

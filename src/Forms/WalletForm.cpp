@@ -68,6 +68,8 @@ WalletForm::WalletForm(
         &WalletForm::newWallet);
     connect(ui->ButtonEditWallet, &QPushButton::clicked, this,
         &WalletForm::editWallet);
+    connect(walletList_, &WalletListWidget::itemDoubleClicked, this,
+        &WalletForm::editWallet);
     connect(ui->ButtonDeleteWallet, &QPushButton::clicked, this,
         &WalletForm::delWallet);
 

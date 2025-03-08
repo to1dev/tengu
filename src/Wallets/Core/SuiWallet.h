@@ -29,7 +29,7 @@
 extern "C" {
 #endif
 
-#include "izanagi/sha3.h"
+#include "izanagi/segwit_addr.h"
 
 #ifdef __cplusplus
 }

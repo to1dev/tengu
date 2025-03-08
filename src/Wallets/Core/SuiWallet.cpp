@@ -6,6 +6,42 @@
 
 namespace Daitengu::Wallets {
 
+struct IntIdentity {
+    int operator()(int x) const
+    {
+        return x;
+    }
+};
+
+template <int frombits, int tobits, bool pad, typename O, typename It,
+    typename I = IntIdentity>
+static inline bool ConvertBits(O outfn, It it, It end, I infn = {})
+{
+    size_t acc = 0;
+    size_t bits = 0;
+    constexpr size_t maxv = (1 << tobits) - 1;
+    constexpr size_t max_acc = (1 << (frombits + tobits - 1)) - 1;
+    while (it != end) {
+        int v = infn(*it);
+        if (v < 0)
+            return false;
+        acc = ((acc << frombits) | v) & max_acc;
+        bits += frombits;
+        while (bits >= tobits) {
+            bits -= tobits;
+            outfn((acc >> bits) & maxv);
+        }
+        ++it;
+    }
+    if (pad) {
+        if (bits)
+            outfn((acc << (tobits - bits)) & maxv);
+    } else if (bits >= frombits || ((acc << (tobits - bits)) & maxv)) {
+        return false;
+    }
+    return true;
+}
+
 SuiWallet::SuiWallet(Network::Type network)
     : ChainWallet(ChainType::SUI, network)
 {
@@ -47,7 +83,23 @@ std::string SuiWallet::getPrivateKey(std::uint32_t index)
     if (!mnemonic_.empty())
         initNode(index);
 
-    return std::string();
+    const uint8_t* privateKeyBytes = node_.private_key;
+
+    std::vector<uint8_t> flaggedPrivateKey(33);
+    flaggedPrivateKey[0] = SCHEME_ED25519;
+    std::copy(
+        privateKeyBytes, privateKeyBytes + 32, flaggedPrivateKey.begin() + 1);
+
+    std::vector<uint8_t> words;
+    ConvertBits<8, 5, true>([&words](uint8_t v) { words.push_back(v); },
+        flaggedPrivateKey.begin(), flaggedPrivateKey.end());
+
+    const char* SUI_PRIVATE_KEY_PREFIX = "suiprivkey";
+    char output[128];
+    bech32_encode(output, SUI_PRIVATE_KEY_PREFIX, words.data(), words.size(),
+        BECH32_ENCODING_BECH32);
+
+    return std::string(output);
 }
 
 BaseWallet::KeyPair SuiWallet::deriveKeyPair(std::uint32_t index)

@@ -32,6 +32,7 @@
 #include "Wallets/Core/BitcoinWallet.h"
 #include "Wallets/Core/EthereumWallet.h"
 #include "Wallets/Core/SolanaWallet.h"
+#include "Wallets/Core/SuiWallet.h"
 
 using namespace Daitengu::Utils;
 using namespace Daitengu::Wallets;
@@ -91,6 +92,11 @@ TEST_CASE("Generate bip39 mnemonic")
         EthereumWallet ethWallet2;
         ethWallet2.fromPrivateKey(*parser.get("ETH_PRIVATE_KEY"));
         std::cout << ethWallet2.getAddress() << std::endl;
+
+        SuiWallet suiWallet1;
+        suiWallet1.fromMnemonic(*parser.get("SUI_MNEMONIC"));
+        std::cout << suiWallet1.getAddress() << std::endl;
+        std::cout << suiWallet1.getPrivateKey() << std::endl;
 
         /*REQUIRE(wallet.deriveAddress(0)
             == "9uvC3PMMzX4DgGrxDmheXNkMRWVfYqLsVpQjAaTD2uAp");

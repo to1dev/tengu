@@ -58,6 +58,8 @@ private:
 
 private:
     static constexpr unsigned char SCHEME_ED25519 = 0x00;
+    static constexpr const char* SUI_PRIVATE_KEY_PREFIX = "suiprivkey";
+    static constexpr const char* SUI_PRIVATE_KEY_BECH32_PREFIX = "suiprivkey1";
 };
 
 }

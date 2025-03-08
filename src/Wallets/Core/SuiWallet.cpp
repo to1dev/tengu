@@ -1,7 +1,5 @@
 #include "SuiWallet.h"
 
-#include "Utils/Base58.hpp"
-
 #include "../Utils/Hex.hpp"
 
 namespace Daitengu::Wallets {
@@ -49,21 +47,56 @@ SuiWallet::SuiWallet(Network::Type network)
 
 void SuiWallet::fromPrivateKey(const std::string& privateKey)
 {
-    std::vector<unsigned char> raw;
-    if (!HexToBytes(privateKey, raw) || raw.size() != 32) {
-        throw std::invalid_argument(
-            "Invalid Sui private key, must be 64 hex chars => 32 bytes");
-    }
-
     std::memset(&node_, 0, sizeof(HDNode));
 
-    std::memcpy(node_.private_key, raw.data(), 32);
+    if (privateKey.substr(0, strlen(SUI_PRIVATE_KEY_BECH32_PREFIX))
+        == SUI_PRIVATE_KEY_BECH32_PREFIX) {
+        size_t max_len = privateKey.size();
+        char hrp[84] = { 0 };
+        std::vector<uint8_t> data(max_len);
+        size_t data_len;
 
-    std::uint8_t expected_public_key[32];
-    ed25519_publickey(node_.private_key, expected_public_key);
+        int result
+            = bech32_decode(hrp, data.data(), &data_len, privateKey.c_str());
+        if (result != 1) {
+            throw std::invalid_argument("Invalid bech32 encoded private key");
+        }
 
-    if (std::memcmp(expected_public_key, raw.data() + 32, 32) != 0) {
-        throw std::invalid_argument("Invalid private key: public key mismatch");
+        data.resize(data_len);
+
+        if (std::string(hrp) != SUI_PRIVATE_KEY_PREFIX) {
+            throw std::invalid_argument("Invalid private key prefix, expected '"
+                + std::string(SUI_PRIVATE_KEY_PREFIX) + "'");
+        }
+
+        std::vector<uint8_t> bytes;
+        bool success = ConvertBits<5, 8, false>(
+            [&bytes](uint8_t v) { bytes.push_back(v); }, data.begin(),
+            data.end());
+
+        if (!success) {
+            throw std::invalid_argument(
+                "Invalid private key: conversion failed");
+        }
+
+        if (bytes.size() != 33) {
+            throw std::invalid_argument("Invalid private key length");
+        }
+
+        if (bytes[0] != SCHEME_ED25519) {
+            throw std::invalid_argument("Unsupported signature scheme");
+        }
+
+        std::memcpy(node_.private_key, bytes.data() + 1, 32);
+    } else {
+        std::vector<unsigned char> raw;
+        if (!HexToBytes(privateKey, raw) || raw.size() != 32) {
+            throw std::invalid_argument(
+                "Invalid Sui private key, must be 64 hex chars => 32 bytes");
+        }
+
+        std::memset(&node_, 0, sizeof(HDNode));
+        std::memcpy(node_.private_key, raw.data(), 32);
     }
 
     seed_.clear();
@@ -94,7 +127,6 @@ std::string SuiWallet::getPrivateKey(std::uint32_t index)
     ConvertBits<8, 5, true>([&words](uint8_t v) { words.push_back(v); },
         flaggedPrivateKey.begin(), flaggedPrivateKey.end());
 
-    const char* SUI_PRIVATE_KEY_PREFIX = "suiprivkey";
     char output[128];
     bech32_encode(output, SUI_PRIVATE_KEY_PREFIX, words.data(), words.size(),
         BECH32_ENCODING_BECH32);

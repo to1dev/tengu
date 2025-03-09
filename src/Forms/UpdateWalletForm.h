@@ -55,11 +55,14 @@ class UpdateWalletForm : public QDialog {
     const QString DEFAULT_TITLE = QObject::tr("Edit Wallet");
 
 public:
-    explicit UpdateWalletForm(QWidget* parent = nullptr,
+    struct _Wallet {
+        int id = 0;
+    };
+
+    explicit UpdateWalletForm(const _Wallet& wallet, QWidget* parent = nullptr,
         const std::shared_ptr<const GlobalManager>& globalManager = nullptr);
     ~UpdateWalletForm();
 
-    void setId(int id);
     std::shared_ptr<Wallet> walletRecord() const;
 
 private Q_SLOTS:
@@ -76,6 +79,8 @@ private:
     AddressListWidget* addressList_;
     LineEditEx* editName_;
     ComboBoxEx* comboChain_;
+
+    _Wallet wallet_ {};
 
     std::shared_ptr<Wallet> walletRecord_;
 };

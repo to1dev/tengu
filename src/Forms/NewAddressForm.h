@@ -52,17 +52,24 @@ class NewAddressForm : public QDialog {
     const QString DEFAULT_TITLE_EDIT = QObject::tr("Edit Address");
 
 public:
-    enum class AddressOp {
+    enum class Op {
         NEW,
         EDIT,
     };
 
-    explicit NewAddressForm(QWidget* parent = nullptr,
-        const std::shared_ptr<const GlobalManager>& globalManager = nullptr,
-        const AddressOp& op = AddressOp::NEW);
+    struct _Address {
+        Op op = Op::NEW;
+        int id = 0;
+        int walletId = 0;
+        int count = 0;
+        std::string mnemonic = "";
+    };
+
+    explicit NewAddressForm(const _Address& address, QWidget* parent = nullptr,
+        const std::shared_ptr<const GlobalManager>& globalManager = nullptr);
+
     ~NewAddressForm();
 
-    void setId(int id);
     std::shared_ptr<Address> addressRecord() const;
 
 private Q_SLOTS:
@@ -76,7 +83,7 @@ private:
 
     LineEditEx* editName_;
 
-    AddressOp op_ { AddressOp::NEW };
+    _Address address_ {};
 
     std::shared_ptr<Address> addressRecord_;
 };

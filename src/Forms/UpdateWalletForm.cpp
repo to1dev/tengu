@@ -19,10 +19,11 @@
 #include "UpdateWalletForm.h"
 #include "ui_UpdateWalletForm.h"
 
-UpdateWalletForm::UpdateWalletForm(
-    QWidget* parent, const std::shared_ptr<const GlobalManager>& globalManager)
+UpdateWalletForm::UpdateWalletForm(const _Wallet& wallet, QWidget* parent,
+    const std::shared_ptr<const GlobalManager>& globalManager)
     : QDialog(parent)
     , ui(new Ui::UpdateWalletForm)
+    , wallet_(wallet)
     , globalManager_(globalManager)
 {
     ui->setupUi(this);
@@ -94,17 +95,9 @@ UpdateWalletForm::UpdateWalletForm(
         &UpdateWalletForm::editAddress);
     connect(addressList_, &AddressListWidget::itemDoubleClicked, this,
         &UpdateWalletForm::editAddress);
-}
 
-UpdateWalletForm::~UpdateWalletForm()
-{
-    delete ui;
-}
-
-void UpdateWalletForm::setId(int id)
-{
-    auto opt
-        = globalManager_->settingManager()->database()->walletRepo()->get(id);
+    auto opt = globalManager_->settingManager()->database()->walletRepo()->get(
+        wallet_.id);
     if (opt.has_value()) {
         walletRecord_ = std::make_shared<Wallet>(*opt);
 
@@ -124,6 +117,11 @@ void UpdateWalletForm::setId(int id)
     }
 }
 
+UpdateWalletForm::~UpdateWalletForm()
+{
+    delete ui;
+}
+
 std::shared_ptr<Wallet> UpdateWalletForm::walletRecord() const
 {
     return walletRecord_;
@@ -131,7 +129,12 @@ std::shared_ptr<Wallet> UpdateWalletForm::walletRecord() const
 
 void UpdateWalletForm::newAddress()
 {
-    NewAddressForm naf(this, globalManager_);
+    NewAddressForm::_Address address {
+        .walletId = walletRecord_->id,
+        .count = addressList_->count(),
+        .mnemonic = walletRecord_->mnemonic,
+    };
+    NewAddressForm naf(address, this, globalManager_);
     int ret = naf.exec();
     if (ret) {
     } else {
@@ -145,12 +148,15 @@ void UpdateWalletForm::editAddress()
             = item->data(static_cast<int>(AddressListWidget::ItemData::id))
                   .toInt();
 
-        NewAddressForm naf(
-            this, globalManager_, NewAddressForm::AddressOp::EDIT);
-        naf.setId(id);
+        NewAddressForm::_Address address {
+            .op = NewAddressForm::Op::EDIT,
+            .id = id,
+        };
+        NewAddressForm naf(address, this, globalManager_);
 
         int ret = naf.exec();
         if (ret) {
+            addressList_->update(*naf.addressRecord());
         } else {
         }
     }

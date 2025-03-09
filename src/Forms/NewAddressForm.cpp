@@ -1,28 +1,14 @@
 #include "NewAddressForm.h"
 #include "ui_NewAddressForm.h"
 
-NewAddressForm::NewAddressForm(QWidget* parent,
-    const std::shared_ptr<const GlobalManager>& globalManager,
-    const AddressOp& op)
+NewAddressForm::NewAddressForm(const _Address& address, QWidget* parent,
+    const std::shared_ptr<const GlobalManager>& globalManager)
     : QDialog(parent)
     , ui(new Ui::NewAddressForm)
+    , address_(address)
     , globalManager_(globalManager)
-    , op_(op)
 {
     ui->setupUi(this);
-
-    switch (op_) {
-    case AddressOp::NEW:
-        setWindowTitle(DEFAULT_TITLE_NEW);
-        break;
-
-    case AddressOp::EDIT:
-        setWindowTitle(DEFAULT_TITLE_EDIT);
-        break;
-
-    default:
-        break;
-    }
 
     frameless_ = std::make_unique<Frameless>(this);
     frameless_->setMainFrame(ui->frameMain);
@@ -56,23 +42,20 @@ NewAddressForm::NewAddressForm(QWidget* parent,
     connect(ui->ButtonOK, &QPushButton::clicked, this, &NewAddressForm::ok);
     connect(
         ui->ButtonCancel, &QPushButton::clicked, this, &NewAddressForm::reject);
-}
 
-NewAddressForm::~NewAddressForm()
-{
-    delete ui;
-}
+    switch (address_.op) {
+    case Op::NEW:
+        setWindowTitle(DEFAULT_TITLE_NEW);
+        editName_->setText(QString(STR_ADDRESS_NAME).arg(address_.count + 1));
 
-void NewAddressForm::setId(int id)
-{
-    switch (op_) {
-    case AddressOp::NEW:
         break;
 
-    case AddressOp::EDIT: {
+    case Op::EDIT: {
+        setWindowTitle(DEFAULT_TITLE_EDIT);
+
         auto opt
             = globalManager_->settingManager()->database()->addressRepo()->get(
-                id);
+                address_.id);
         if (opt.has_value()) {
             addressRecord_ = std::make_shared<Address>(*opt);
 
@@ -88,12 +71,35 @@ void NewAddressForm::setId(int id)
     }
 }
 
+NewAddressForm::~NewAddressForm()
+{
+    delete ui;
+}
+
 std::shared_ptr<Address> NewAddressForm::addressRecord() const
 {
-    return std::shared_ptr<Address>();
+    return addressRecord_;
 }
 
 void NewAddressForm::ok()
 {
-    accept();
+    if (editName_->text().isEmpty()) {
+        MessageForm { this, 5, NO_VALID_ADDRESS_NAME }.exec();
+        return;
+    }
+
+    const QString name = editName_->text().simplified();
+    const QString oldName
+        = QString::fromStdString(addressRecord_->name).simplified();
+
+    if (name != oldName) {
+        addressRecord_->nameHash = Encryption::easyHash(name.toStdString());
+        addressRecord_->name = name.toStdString();
+        globalManager_->settingManager()->database()->addressRepo()->update(
+            *addressRecord_);
+
+        accept();
+    } else {
+        reject();
+    }
 }

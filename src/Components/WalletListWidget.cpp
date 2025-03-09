@@ -121,7 +121,7 @@ void WalletListWidget::add(const Wallet& wallet, int index)
     item->setData(static_cast<int>(ItemData::id), wallet.id);
     item->setData(static_cast<int>(ItemData::index), index);
     item->setData(static_cast<int>(ItemData::type), wallet.type);
-    item->setData(static_cast<int>(ItemData::groupId), wallet.groupId);
+    item->setData(static_cast<int>(ItemData::groupType), wallet.groupType);
     item->setData(static_cast<int>(ItemData::chainType), wallet.chainType);
     item->setData(static_cast<int>(ItemData::networkType), wallet.networkType);
     item->setData(

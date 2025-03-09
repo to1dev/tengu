@@ -82,7 +82,7 @@ public:
         selected = Qt::UserRole + 100,
         id,
         type,
-        groupId,
+        groupType,
         chainType,
         networkType,
         index,

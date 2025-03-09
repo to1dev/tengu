@@ -94,7 +94,7 @@ struct Network {
 struct Wallet {
     int id = 0;
     int type = 0;
-    int groupId = 0;
+    int groupType = 0;
     int chainType = 0;
     int networkType = 0;
     std::string hash = "";
@@ -188,7 +188,7 @@ inline auto initStorage(const QString& dataPath)
         make_table("wallets",
             make_column("id", &Wallet::id, primary_key().autoincrement()),
             make_column("type", &Wallet::type),
-            make_column("groupId", &Wallet::groupId),
+            make_column("groupType", &Wallet::groupType),
             make_column("chainType", &Wallet::chainType),
             make_column("networkType", &Wallet::networkType),
             make_column("hash", &Wallet::hash),
@@ -310,7 +310,7 @@ public:
     virtual void remove(int id) = 0;
     virtual std::optional<Wallet> get(int id) = 0;
     virtual std::vector<Wallet> getAll() = 0;
-    virtual std::vector<Wallet> getByGroup(int groupId) = 0;
+    virtual std::vector<Wallet> getByGroup(int groupType) = 0;
 
 Q_SIGNALS:
     void inserted();
@@ -327,7 +327,7 @@ public:
     void remove(int id) override;
     std::optional<Wallet> get(int id) override;
     std::vector<Wallet> getAll() override;
-    std::vector<Wallet> getByGroup(int groupId) override;
+    std::vector<Wallet> getByGroup(int groupType) override;
 
 private:
     Storage* storage_;

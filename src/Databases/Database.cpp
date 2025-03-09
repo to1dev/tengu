@@ -123,9 +123,9 @@ std::vector<Wallet> WalletRepo::getAll()
     return storage_->get_all<Wallet>();
 }
 
-std::vector<Wallet> WalletRepo::getByGroup(int groupId)
+std::vector<Wallet> WalletRepo::getByGroup(int groupType)
 {
-    return storage_->get_all<Wallet>(where(c(&Wallet::groupId) == groupId));
+    return storage_->get_all<Wallet>(where(c(&Wallet::groupType) == groupType));
 }
 
 AddressRepo::AddressRepo(Storage* storage)

@@ -104,7 +104,8 @@ UpdateWalletForm::UpdateWalletForm(const _Wallet& wallet, QWidget* parent,
         editName_->setText(QString::fromStdString(walletRecord_->name));
         comboChain_->setCurrentIndex(walletRecord_->chainType);
 
-        if (walletRecord_->type > static_cast<int>(WalletType::Mnemonic)) {
+        if (walletRecord_->groupId > static_cast<int>(WalletGroupType::User)
+            || walletRecord_->type > static_cast<int>(WalletType::Mnemonic)) {
             ui->ButtonNewAddress->setEnabled(false);
         }
 

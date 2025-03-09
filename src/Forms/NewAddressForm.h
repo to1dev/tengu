@@ -31,6 +31,11 @@
 
 #include "Components/LineEditEx.h"
 
+#include "Wallets/Core/BaseMnemonic.h"
+#include "Wallets/Core/BitcoinWallet.h"
+#include "Wallets/Core/EthereumWallet.h"
+#include "Wallets/Core/SolanaWallet.h"
+
 #include "Databases/Database.h"
 
 #include "Forms/MessageForm.h"
@@ -40,6 +45,7 @@ using namespace Daitengu::Core;
 using namespace Daitengu::Databases;
 using namespace Daitengu::UI;
 using namespace Daitengu::Utils;
+using namespace Daitengu::Wallets;
 
 namespace Ui {
 class NewAddressForm;

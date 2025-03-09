@@ -48,6 +48,12 @@ NewAddressForm::NewAddressForm(const _Address& address, QWidget* parent,
         setWindowTitle(DEFAULT_TITLE_NEW);
         editName_->setText(QString(STR_ADDRESS_NAME).arg(address_.count + 1));
 
+        {
+            addressRecord_ = std::make_shared<Address>();
+            addressRecord_->id = address_.id;
+            addressRecord_->walletId = address_.walletId;
+        }
+
         break;
 
     case Op::EDIT: {
@@ -89,17 +95,65 @@ void NewAddressForm::ok()
     }
 
     const QString name = editName_->text().simplified();
-    const QString oldName
-        = QString::fromStdString(addressRecord_->name).simplified();
+    const QString oldName = addressRecord_
+        ? QString::fromStdString(addressRecord_->name).simplified()
+        : "";
 
-    if (name != oldName) {
+    switch (address_.op) {
+    case Op::NEW: {
         addressRecord_->nameHash = Encryption::easyHash(name.toStdString());
-        addressRecord_->name = name.toStdString();
-        globalManager_->settingManager()->database()->addressRepo()->update(
-            *addressRecord_);
+        DBErrorType error = globalManager_->settingManager()
+                                ->database()
+                                ->addressRepo()
+                                ->before(*addressRecord_, true);
 
-        accept();
-    } else {
-        reject();
+        if (error != DBErrorType::none) {
+            switch (error) {
+            case DBErrorType::haveName:
+                MessageForm { this, 16, SAME_ADDRESS_NAME }.exec();
+                break;
+            default:
+                break;
+            }
+            return;
+        }
+
+        break;
+    }
+
+    case Op::EDIT: {
+        if (name != oldName) {
+            addressRecord_->nameHash = Encryption::easyHash(name.toStdString());
+
+            DBErrorType error = globalManager_->settingManager()
+                                    ->database()
+                                    ->addressRepo()
+                                    ->before(*addressRecord_, true);
+
+            if (error != DBErrorType::none) {
+                switch (error) {
+                case DBErrorType::haveName:
+                    MessageForm { this, 16, SAME_WALLET_NAME }.exec();
+                    break;
+                default:
+                    break;
+                }
+                return;
+            }
+
+            addressRecord_->name = name.toStdString();
+            globalManager_->settingManager()->database()->addressRepo()->update(
+                *addressRecord_);
+
+            accept();
+        } else {
+            reject();
+        }
+
+        break;
+    }
+
+    default:
+        break;
     }
 }

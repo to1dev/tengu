@@ -52,7 +52,9 @@ void BoldFirstLineDelegate::paint(QPainter* painter,
     painter->save();
 
     QFont boldFont = options.font;
-    boldFont.setBold(true);
+    //  boldFont.setBold(true);
+
+    QPen oldPen = painter->pen();
 
     QFont regularFont = options.font;
     regularFont.setUnderline(true);
@@ -74,11 +76,13 @@ void BoldFirstLineDelegate::paint(QPainter* painter,
     const QString elidedAddress
         = regularMetrics.elidedText(address, Qt::ElideRight, availableWidth);
 
-    painter->setFont(boldFont);
+    // painter->setFont(boldFont);
+    painter->setPen(QColor("#FFA500"));
     painter->drawText(xOffset, yOffset, availableWidth,
         boldMetrics.height() + 8, Qt::AlignLeft | Qt::AlignTop, elidedName);
     yOffset += boldMetrics.height() + 8;
 
+    painter->setPen(oldPen);
     painter->setFont(regularFont);
     painter->drawText(xOffset, yOffset, availableWidth, regularMetrics.height(),
         Qt::AlignLeft | Qt::AlignTop, elidedAddress);
@@ -148,8 +152,8 @@ AddressListWidget::AddressListWidget(QWidget* parent)
     setItemDelegate(delegate);
     viewport()->installEventFilter(delegate);
 
-    connect(this, &QListWidget::itemDoubleClicked, this,
-        &AddressListWidget::copyItemTextToClipboard);
+    /*connect(this, &QListWidget::itemDoubleClicked, this,
+        &AddressListWidget::copyItemTextToClipboard);*/
 }
 
 void AddressListWidget::add(const Address& address, int index)

@@ -10,6 +10,19 @@ NewAddressForm::NewAddressForm(const _Address& address, QWidget* parent,
 {
     ui->setupUi(this);
 
+    switch (address_.op) {
+    case Op::NEW: {
+        setWindowTitle(DEFAULT_TITLE_NEW);
+        break;
+    }
+    case Op::EDIT: {
+        setWindowTitle(DEFAULT_TITLE_EDIT);
+        break;
+    }
+    default:
+        break;
+    }
+
     frameless_ = std::make_unique<Frameless>(this);
     frameless_->setMainFrame(ui->frameMain);
     frameless_->setContentFrame(ui->frameContent);
@@ -45,7 +58,6 @@ NewAddressForm::NewAddressForm(const _Address& address, QWidget* parent,
 
     switch (address_.op) {
     case Op::NEW:
-        setWindowTitle(DEFAULT_TITLE_NEW);
         editName_->setText(QString(STR_ADDRESS_NAME).arg(address_.count + 1));
 
         {
@@ -57,8 +69,6 @@ NewAddressForm::NewAddressForm(const _Address& address, QWidget* parent,
         break;
 
     case Op::EDIT: {
-        setWindowTitle(DEFAULT_TITLE_EDIT);
-
         auto opt
             = globalManager_->settingManager()->database()->addressRepo()->get(
                 address_.id);

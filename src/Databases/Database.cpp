@@ -135,6 +135,13 @@ AddressRepo::AddressRepo(Storage* storage)
 
 DBErrorType AddressRepo::before(const Address& address, bool update)
 {
+    int countName = storage_->count<Address>(
+        where(c(&Address::nameHash) == address.nameHash)
+        && c(&Address::walletId) == address.walletId);
+    if (countName > 0) {
+        return DBErrorType::haveName;
+    }
+
     return DBErrorType::none;
 }
 

@@ -88,6 +88,12 @@ UpdateWalletForm::UpdateWalletForm(
     connect(ui->ButtonOK, &QPushButton::clicked, this, &UpdateWalletForm::ok);
     connect(ui->ButtonCancel, &QPushButton::clicked, this,
         &UpdateWalletForm::reject);
+    connect(ui->ButtonNewAddress, &QPushButton::clicked, this,
+        &UpdateWalletForm::newAddress);
+    connect(ui->ButtonEditAddress, &QPushButton::clicked, this,
+        &UpdateWalletForm::editAddress);
+    connect(addressList_, &AddressListWidget::itemDoubleClicked, this,
+        &UpdateWalletForm::editAddress);
 }
 
 UpdateWalletForm::~UpdateWalletForm()
@@ -121,6 +127,33 @@ void UpdateWalletForm::setId(int id)
 std::shared_ptr<Wallet> UpdateWalletForm::walletRecord() const
 {
     return walletRecord_;
+}
+
+void UpdateWalletForm::newAddress()
+{
+    NewAddressForm naf(this, globalManager_);
+    int ret = naf.exec();
+    if (ret) {
+    } else {
+    }
+}
+
+void UpdateWalletForm::editAddress()
+{
+    if (auto* item = addressList_->currentItem(); item && item->isSelected()) {
+        const auto id
+            = item->data(static_cast<int>(AddressListWidget::ItemData::id))
+                  .toInt();
+
+        NewAddressForm naf(
+            this, globalManager_, NewAddressForm::AddressOp::EDIT);
+        naf.setId(id);
+
+        int ret = naf.exec();
+        if (ret) {
+        } else {
+        }
+    }
 }
 
 void UpdateWalletForm::ok()

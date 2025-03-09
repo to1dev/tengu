@@ -19,14 +19,27 @@
 #pragma once
 
 #include <QDialog>
+#include <QLabel>
+#include <QVBoxLayout>
 
 #include "Managers/GlobalManager.h"
 #include "Managers/WindowManager.h"
 
 #include "UI/Frameless.h"
 
+#include "Utils/Encryption.h"
+
+#include "Components/LineEditEx.h"
+
+#include "Databases/Database.h"
+
+#include "Forms/MessageForm.h"
+
+using namespace Daitengu::Components;
 using namespace Daitengu::Core;
+using namespace Daitengu::Databases;
 using namespace Daitengu::UI;
+using namespace Daitengu::Utils;
 
 namespace Ui {
 class NewAddressForm;
@@ -35,15 +48,35 @@ class NewAddressForm;
 class NewAddressForm : public QDialog {
     Q_OBJECT
 
-    const QString DEFAULT_TITLE = QObject::tr("New Address");
+    const QString DEFAULT_TITLE_NEW = QObject::tr("New Address");
+    const QString DEFAULT_TITLE_EDIT = QObject::tr("Edit Address");
 
 public:
+    enum class AddressOp {
+        NEW,
+        EDIT,
+    };
+
     explicit NewAddressForm(QWidget* parent = nullptr,
-        const std::shared_ptr<const GlobalManager>& globalManager = nullptr);
+        const std::shared_ptr<const GlobalManager>& globalManager = nullptr,
+        const AddressOp& op = AddressOp::NEW);
+    ~NewAddressForm();
+
+    void setId(int id);
+    std::shared_ptr<Address> addressRecord() const;
+
+private Q_SLOTS:
+    void ok();
 
 private:
     Ui::NewAddressForm* ui;
 
     std::shared_ptr<const GlobalManager> globalManager_;
     std::unique_ptr<Frameless> frameless_;
+
+    LineEditEx* editName_;
+
+    AddressOp op_ { AddressOp::NEW };
+
+    std::shared_ptr<Address> addressRecord_;
 };

@@ -37,6 +37,7 @@
 #include "Databases/Database.h"
 
 #include "Forms/MessageForm.h"
+#include "Forms/NewAddressForm.h"
 
 using namespace Daitengu::Components;
 using namespace Daitengu::Core;
@@ -63,6 +64,8 @@ public:
 
 private Q_SLOTS:
     void ok();
+    void newAddress();
+    void editAddress();
 
 private:
     Ui::UpdateWalletForm* ui;

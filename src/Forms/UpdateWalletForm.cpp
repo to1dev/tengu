@@ -131,6 +131,8 @@ void UpdateWalletForm::newAddress()
 {
     NewAddressForm::_Address address {
         .walletId = walletRecord_->id,
+        .groupType = walletRecord_->groupType,
+        .chainType = walletRecord_->chainType,
         .count = addressList_->count(),
         .mnemonic = walletRecord_->mnemonic,
     };

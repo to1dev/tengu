@@ -65,8 +65,10 @@ public:
 
     struct _Address {
         Op op = Op::NEW;
-        int id = 0;
-        int walletId = 0;
+        int id = -1;
+        int walletId = -1;
+        int groupType = -1;
+        int chainType = -1;
         int count = 0;
         std::string mnemonic = "";
     };

@@ -40,6 +40,10 @@ NewAddressForm::NewAddressForm(const _Address& address, QWidget* parent,
     editName_->setPlaceholderText(STR_LINEEDIT_ADDRESS_NAME_PLACEHOLDER);
     editName_->setCursorPosition(0);
 
+    if (address_.groupType == static_cast<int>(WalletGroupType::Vault)) {
+        // TODO
+    }
+
     layoutOptions->addWidget(labelName);
     layoutOptions->addWidget(editName_);
     layoutOptions->addStretch(1);
@@ -126,6 +130,26 @@ void NewAddressForm::ok()
             }
             return;
         }
+
+        if (address_.groupType == static_cast<int>(WalletGroupType::User)) {
+            std::unique_ptr<ChainWallet> wallet;
+            switch (address_.chainType) {
+            case 0:
+                wallet = std::make_unique<BitcoinWallet>();
+                break;
+            case 1:
+                wallet = std::make_unique<EthereumWallet>();
+                break;
+            case 2:
+                wallet = std::make_unique<SolanaWallet>();
+                break;
+            default:
+                MessageForm { this, 16, "Unsupported chain type" }.exec();
+                return;
+            }
+            std::cout << address_.chainType << std::endl;
+        }
+
         break;
     }
     case Op::EDIT: {

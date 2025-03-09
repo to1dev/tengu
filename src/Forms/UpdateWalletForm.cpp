@@ -170,8 +170,9 @@ void UpdateWalletForm::ok()
     }
 
     const QString name = editName_->text().simplified();
-    const QString oldName
-        = QString::fromStdString(walletRecord_->name).simplified();
+    const QString oldName = walletRecord_
+        ? QString::fromStdString(walletRecord_->name).simplified()
+        : "";
 
     if (name != oldName) {
         walletRecord_->nameHash = Encryption::easyHash(name.toStdString());

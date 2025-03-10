@@ -197,9 +197,18 @@ AddressListWidget::AddressListWidget(QWidget* parent)
     setIconSize(QSize(ADDRESS_ICON_SIZE, ADDRESS_ICON_SIZE));
     setSpacing(ADDRESS_SPACING_SIZE);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
     verticalScrollBar()->setContextMenuPolicy(Qt::NoContextMenu);
     horizontalScrollBar()->setContextMenuPolicy(Qt::NoContextMenu);
     setContextMenuPolicy(Qt::CustomContextMenu);
+
+    auto verScrollBar = verticalScrollBar();
+    verScrollBar->setStyleSheet(R"(
+    QScrollBar::handle:vertical {
+        border: 10px solid transparent;
+        border-radius: 15px;
+    }
+    )");
 
     auto* delegate = new BoldFirstLineDelegate(this);
     setItemDelegate(delegate);

@@ -86,7 +86,7 @@ public:
     explicit AddressListWidget(QWidget* parent = nullptr);
     ~AddressListWidget() override = default;
 
-    void add(const Address& address, int index = 0);
+    void add(const Address& address);
     void load(const std::vector<Address>& addresses);
     void update(const Address& address);
     void purge();

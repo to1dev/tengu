@@ -209,7 +209,7 @@ AddressListWidget::AddressListWidget(QWidget* parent)
         &AddressListWidget::itemDeleted);
 }
 
-void AddressListWidget::add(const Address& address, int index)
+void AddressListWidget::add(const Address& address)
 {
     auto* item = new QListWidgetItem();
 
@@ -243,9 +243,8 @@ void AddressListWidget::load(const std::vector<Address>& addresses)
     setUpdatesEnabled(false);
 
     clear();
-    int index = 0;
     for (const auto& address : addresses) {
-        add(address, index++);
+        add(address);
     }
 
     setUpdatesEnabled(true);

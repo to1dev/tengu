@@ -95,6 +95,8 @@ UpdateWalletForm::UpdateWalletForm(const UpdateWallet& wallet, QWidget* parent,
         &UpdateWalletForm::editAddress);
     connect(addressList_, &AddressListWidget::itemDoubleClicked, this,
         &UpdateWalletForm::editAddress);
+    connect(addressList_, &AddressListWidget::itemDeleted, this,
+        &UpdateWalletForm::delAddress);
 
     auto opt = globalManager_->settingManager()->database()->walletRepo()->get(
         wallet_.id);
@@ -139,6 +141,7 @@ void UpdateWalletForm::newAddress()
     NewAddressForm naf(address, this, globalManager_);
     int ret = naf.exec();
     if (ret) {
+        addressList_->add(*naf.addressRecord());
     } else {
     }
 }
@@ -162,6 +165,10 @@ void UpdateWalletForm::editAddress()
         } else {
         }
     }
+}
+
+void UpdateWalletForm::delAddress(int id)
+{
 }
 
 void UpdateWalletForm::ok()

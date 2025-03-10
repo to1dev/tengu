@@ -104,7 +104,7 @@ void WalletForm::editWallet()
             = item->data(static_cast<int>(WalletListWidget::ItemData::id))
                   .toInt();
 
-        UpdateWalletForm::_Wallet wallet {
+        UpdateWalletForm::UpdateWallet wallet {
             .id = id,
         };
         UpdateWalletForm uwf(wallet, this, globalManager_);

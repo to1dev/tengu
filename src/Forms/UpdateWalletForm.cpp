@@ -19,7 +19,7 @@
 #include "UpdateWalletForm.h"
 #include "ui_UpdateWalletForm.h"
 
-UpdateWalletForm::UpdateWalletForm(const _Wallet& wallet, QWidget* parent,
+UpdateWalletForm::UpdateWalletForm(const UpdateWallet& wallet, QWidget* parent,
     const std::shared_ptr<const GlobalManager>& globalManager)
     : QDialog(parent)
     , ui(new Ui::UpdateWalletForm)

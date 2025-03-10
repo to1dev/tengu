@@ -167,8 +167,40 @@ void UpdateWalletForm::editAddress()
     }
 }
 
-void UpdateWalletForm::delAddress(int id)
+void UpdateWalletForm::delAddress(const QModelIndex& index)
 {
+    if (index.isValid()) {
+        if (index.row() == 0) {
+            MessageForm mf(this, 14, CONFIRM_FIRST_WALLET_DELETE,
+                CONFIRM_WALLET_DELETE_TITLE, MessageButton::Ok);
+            mf.exec();
+            return;
+        }
+
+        const int id
+            = index.data(static_cast<int>(AddressListWidget::ItemData::id))
+                  .toInt();
+        const auto name
+            = index.data(static_cast<int>(AddressListWidget::ItemData::name))
+                  .toString();
+        MessageForm mf(this, 14, CONFIRM_ADDRESS_DELETE.arg(name),
+            CONFIRM_WALLET_DELETE_TITLE,
+            MessageButton::Ok | MessageButton::Cancel);
+        if (mf.exec()) {
+            try {
+                globalManager_->settingManager()
+                    ->database()
+                    ->addressRepo()
+                    ->remove(id);
+                std::unique_ptr<QListWidgetItem> removedItem {
+                    addressList_->takeItem(index.row())
+                };
+            } catch (const DatabaseException& e) {
+                std::cerr << "Failed to remove address: " << e.what()
+                          << std::endl;
+            }
+        }
+    }
 }
 
 void UpdateWalletForm::ok()

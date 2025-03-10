@@ -213,13 +213,7 @@ AddressListWidget::AddressListWidget(QWidget* parent)
     viewport()->installEventFilter(delegate);
 
     connect(delegate, &BoldFirstLineDelegate::deleteRequested, this,
-        [this](const QModelIndex& index) {
-            if (index.isValid()) {
-                const int id
-                    = index.data(static_cast<int>(ItemData::id)).toInt();
-                Q_EMIT itemDeleted(id);
-            }
-        });
+        &AddressListWidget::itemDeleted);
 }
 
 void AddressListWidget::add(const Address& address, int index)

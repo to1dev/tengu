@@ -96,7 +96,7 @@ public:
     void setSelectedId(int newSelectedId);
 
 Q_SIGNALS:
-    void itemDeleted(int id);
+    void itemDeleted(const QModelIndex& index);
 
 private:
     int selectedId_ { -1 };

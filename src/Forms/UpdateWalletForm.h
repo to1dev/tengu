@@ -70,7 +70,7 @@ private Q_SLOTS:
     void ok();
     void newAddress();
     void editAddress();
-    void delAddress(int id);
+    void delAddress(const QModelIndex& index);
 
 private:
     Ui::UpdateWalletForm* ui;

@@ -63,7 +63,7 @@ public:
         EDIT,
     };
 
-    struct _Address {
+    struct NewAddress {
         Op op = Op::NEW;
         int id = -1;
         int walletId = -1;
@@ -73,7 +73,8 @@ public:
         std::string mnemonic = "";
     };
 
-    explicit NewAddressForm(const _Address& address, QWidget* parent = nullptr,
+    explicit NewAddressForm(const NewAddress& address,
+        QWidget* parent = nullptr,
         const std::shared_ptr<const GlobalManager>& globalManager = nullptr);
 
     ~NewAddressForm();
@@ -91,7 +92,7 @@ private:
 
     LineEditEx* editName_;
 
-    _Address address_ {};
+    NewAddress address_ {};
 
     std::shared_ptr<Address> addressRecord_;
 };

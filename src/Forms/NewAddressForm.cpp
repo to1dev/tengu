@@ -1,7 +1,7 @@
 #include "NewAddressForm.h"
 #include "ui_NewAddressForm.h"
 
-NewAddressForm::NewAddressForm(const _Address& address, QWidget* parent,
+NewAddressForm::NewAddressForm(const NewAddress& address, QWidget* parent,
     const std::shared_ptr<const GlobalManager>& globalManager)
     : QDialog(parent)
     , ui(new Ui::NewAddressForm)

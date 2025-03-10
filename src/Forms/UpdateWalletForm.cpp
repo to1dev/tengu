@@ -129,7 +129,7 @@ std::shared_ptr<Wallet> UpdateWalletForm::walletRecord() const
 
 void UpdateWalletForm::newAddress()
 {
-    NewAddressForm::_Address address {
+    NewAddressForm::NewAddress address {
         .walletId = walletRecord_->id,
         .groupType = walletRecord_->groupType,
         .chainType = walletRecord_->chainType,
@@ -150,7 +150,7 @@ void UpdateWalletForm::editAddress()
             = item->data(static_cast<int>(AddressListWidget::ItemData::id))
                   .toInt();
 
-        NewAddressForm::_Address address {
+        NewAddressForm::NewAddress address {
             .op = NewAddressForm::Op::EDIT,
             .id = id,
         };

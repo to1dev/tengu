@@ -124,7 +124,7 @@ struct ChainItem {
     bool enabled;
 };
 
-inline constexpr std::array<std::pair<ChainType, ChainItem>, 3> Chains = { {
+inline constexpr std::array<std::pair<ChainType, ChainItem>, 4> Chains = { {
     {
         ChainType::BITCOIN,
         { "Bitcoin", true },
@@ -136,6 +136,10 @@ inline constexpr std::array<std::pair<ChainType, ChainItem>, 3> Chains = { {
     {
         ChainType::SOLANA,
         { "Solana", true },
+    },
+    {
+        ChainType::SUI,
+        { "Sui", false },
     },
 } };
 }

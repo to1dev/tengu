@@ -54,6 +54,7 @@ protected:
     bool eventFilter(QObject* object, QEvent* event) override;
 
 private:
+    mutable QRect addressRect_;
     mutable bool hoverOverAddress { false };
 };
 

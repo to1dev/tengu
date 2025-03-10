@@ -82,6 +82,15 @@ void BoldFirstLineDelegate::paint(QPainter* painter,
         boldMetrics.height() + 8, Qt::AlignLeft | Qt::AlignTop, elidedName);
     yOffset += boldMetrics.height() + 8;
 
+    {
+        // Calc address rect
+        const int addressWidth = regularMetrics.horizontalAdvance(address);
+        const int actualWidth = qMin(addressWidth, availableWidth);
+        const QRect addressRect(
+            xOffset, yOffset, actualWidth, regularMetrics.height());
+        addressRect_ = addressRect;
+    }
+
     painter->setPen(oldPen);
     painter->setFont(regularFont);
     painter->drawText(xOffset, yOffset, availableWidth, regularMetrics.height(),
@@ -99,11 +108,13 @@ bool BoldFirstLineDelegate::eventFilter(QObject* object, QEvent* event)
                 const QModelIndex index = listView->indexAt(mouseEvent->pos());
                 const QRect rect = listView->visualRect(index);
                 const QFontMetrics metrics(listView->font());
+#ifdef original
                 const QRect addressRect(rect.left() + 8,
                     rect.top() + metrics.height() + 16, rect.width() - 16,
                     metrics.height());
+#endif
 
-                hoverOverAddress = addressRect.contains(mouseEvent->pos());
+                hoverOverAddress = addressRect_.contains(mouseEvent->pos());
                 listView->viewport()->setCursor(hoverOverAddress
                         ? Qt::PointingHandCursor
                         : Qt::ArrowCursor);

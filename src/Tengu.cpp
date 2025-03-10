@@ -34,6 +34,11 @@ Tengu::Tengu(
     frameless_->setMainMenu(ui->menubar);
     frameless_->init();
 
+    // For round corner
+    /*ui->menu_File->setWindowFlags(
+        ui->menu_File->windowFlags() | Qt::FramelessWindowHint);
+    ui->menu_File->setAttribute(Qt::WA_TranslucentBackground);*/
+
     initPopupMenu();
 
     globalManager_->windowManager()->addWindow(

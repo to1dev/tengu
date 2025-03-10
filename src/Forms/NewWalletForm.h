@@ -62,7 +62,16 @@ class NewWalletForm : public QDialog {
     const QString DEFAULT_TITLE = QObject::tr("New Wallet");
 
 public:
-    explicit NewWalletForm(QWidget* parent = nullptr,
+    enum class Type {
+        USER,
+        SMART,
+    };
+
+    struct NewWallet {
+        Type type = Type::USER;
+    };
+
+    explicit NewWalletForm(const NewWallet& wallet, QWidget* parent = nullptr,
         const std::shared_ptr<const GlobalManager>& globalManager = nullptr);
     ~NewWalletForm();
 
@@ -83,6 +92,8 @@ private:
     MnemonicView* view_;
     LineEditEx* editName_;
     ComboBoxEx* comboChain_;
+
+    NewWallet wallet_;
 
     std::shared_ptr<Wallet> walletRecord_;
 };

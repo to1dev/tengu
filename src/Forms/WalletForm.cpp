@@ -89,7 +89,8 @@ void WalletForm::ok()
 
 void WalletForm::newWallet()
 {
-    NewWalletForm nwf(this, globalManager_);
+    NewWalletForm::NewWallet wallet;
+    NewWalletForm nwf(wallet, this, globalManager_);
     int ret = nwf.exec();
     if (ret) {
         walletList_->add(*nwf.walletRecord());

@@ -19,10 +19,11 @@
 #include "NewWalletForm.h"
 #include "ui_NewWalletForm.h"
 
-NewWalletForm::NewWalletForm(
-    QWidget* parent, const std::shared_ptr<const GlobalManager>& globalManager)
+NewWalletForm::NewWalletForm(const NewWallet& wallet, QWidget* parent,
+    const std::shared_ptr<const GlobalManager>& globalManager)
     : QDialog(parent)
     , ui(new Ui::NewWalletForm)
+    , wallet_(wallet)
     , globalManager_(globalManager)
 {
     ui->setupUi(this);

@@ -202,14 +202,6 @@ AddressListWidget::AddressListWidget(QWidget* parent)
     horizontalScrollBar()->setContextMenuPolicy(Qt::NoContextMenu);
     setContextMenuPolicy(Qt::CustomContextMenu);
 
-    auto verScrollBar = verticalScrollBar();
-    verScrollBar->setStyleSheet(R"(
-    QScrollBar::handle:vertical {
-        border: 10px solid transparent;
-        border-radius: 15px;
-    }
-    )");
-
     auto* delegate = new BoldFirstLineDelegate(this);
     setItemDelegate(delegate);
     viewport()->installEventFilter(delegate);

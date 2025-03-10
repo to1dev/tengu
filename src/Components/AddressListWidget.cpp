@@ -38,16 +38,9 @@ void BoldFirstLineDelegate::paint(QPainter* painter,
     const QString name
         = index.data(static_cast<int>(AddressListWidget::ItemData::name))
               .toString();
-    const int i
-        = index.data(static_cast<int>(AddressListWidget::ItemData::index))
-              .toInt()
-        + 1;
     const QString address = hideAddress(
         index.data(static_cast<int>(AddressListWidget::ItemData::address))
             .toString());
-
-    const QString displayName
-        = name.isEmpty() ? QString(STR_ADDRESS_NAME).arg(i) : name;
 
     painter->save();
 
@@ -75,7 +68,7 @@ void BoldFirstLineDelegate::paint(QPainter* painter,
     const int availableWidth = textRect.width() - 16;
 
     const QString elidedName
-        = boldMetrics.elidedText(displayName, Qt::ElideRight, availableWidth);
+        = boldMetrics.elidedText(name, Qt::ElideRight, availableWidth);
     const QString elidedAddress
         = regularMetrics.elidedText(address, Qt::ElideRight, availableWidth);
 
@@ -226,7 +219,7 @@ void AddressListWidget::add(const Address& address, int index)
     item->setData(static_cast<int>(ItemData::id), address.id);
     item->setData(static_cast<int>(ItemData::type), address.type);
     item->setData(static_cast<int>(ItemData::walletId), address.walletId);
-    item->setData(static_cast<int>(ItemData::index), index);
+    item->setData(static_cast<int>(ItemData::index), address.index);
     item->setData(
         static_cast<int>(ItemData::hash), QString::fromStdString(address.hash));
     item->setData(

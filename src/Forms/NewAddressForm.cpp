@@ -66,7 +66,6 @@ NewAddressForm::NewAddressForm(const NewAddress& address, QWidget* parent,
 
         {
             addressRecord_ = std::make_shared<Address>();
-            addressRecord_->id = address_.id;
             addressRecord_->walletId = address_.walletId;
         }
 
@@ -108,16 +107,18 @@ void NewAddressForm::ok()
         return;
     }
 
-    const QString name = editName_->text().simplified();
-    const QString oldName = addressRecord_
-        ? QString::fromStdString(addressRecord_->name).simplified()
+    const std::string name = editName_->text().simplified().toStdString();
+    const std::string oldName = addressRecord_
+        ? QString::fromStdString(addressRecord_->name)
+              .simplified()
+              .toStdString()
         : "";
 
     auto addressRepo
         = globalManager_->settingManager()->database()->addressRepo();
 
     auto checkNameAndReturnError = [&]() -> DBErrorType {
-        addressRecord_->nameHash = Encryption::easyHash(name.toStdString());
+        addressRecord_->nameHash = Encryption::easyHash(name);
         return addressRepo->before(*addressRecord_, true);
     };
 
@@ -147,11 +148,58 @@ void NewAddressForm::ok()
                 MessageForm { this, 16, "Unsupported chain type" }.exec();
                 return;
             }
-            std::cout << address_.chainType << std::endl;
+
+            try {
+                const std::string decrypted
+                    = Encryption::decryptText(address_.mnemonic);
+                wallet->fromMnemonic(decrypted);
+                const auto address = wallet->getAddress(address_.count);
+                const std::string addressHash = Encryption::easyHash(address);
+
+                std::string derivationPath;
+                switch (address_.chainType) {
+                case 0:
+                    derivationPath = BitcoinWallet::DEFAULT_DERIVATION_PATH;
+                    break;
+                case 1:
+                    derivationPath = EthereumWallet::DEFAULT_DERIVATION_PATH;
+                    break;
+                case 2:
+                    derivationPath = SolanaWallet::DEFAULT_DERIVATION_PATH;
+                    break;
+                default:
+                    derivationPath = "";
+                    break;
+                }
+
+                {
+                    addressRecord_->walletId = address_.walletId;
+                    addressRecord_->hash = Encryption::genRandomHash();
+                    addressRecord_->name = name;
+                    addressRecord_->address = address;
+                    addressRecord_->addressHash = addressHash;
+                    addressRecord_->derivationPath = derivationPath;
+                    addressRecord_->privateKey = Encryption::encryptText(
+                        wallet->getPrivateKey(address_.count));
+                    addressRecord_->publicKey
+                        = wallet->getAddress(address_.count);
+                }
+
+                const auto addressId = globalManager_->settingManager()
+                                           ->database()
+                                           ->addressRepo()
+                                           ->insert(*addressRecord_);
+                addressRecord_->id = addressId;
+                accept();
+            } catch (const std::exception& e) {
+                std::cerr << "Failed to import menmonic: " << e.what()
+                          << std::endl;
+            }
         }
 
         break;
     }
+
     case Op::EDIT: {
         if (name == oldName) {
             reject();
@@ -164,7 +212,7 @@ void NewAddressForm::ok()
             }
             return;
         }
-        addressRecord_->name = name.toStdString();
+        addressRecord_->name = name;
         addressRepo->update(*addressRecord_);
         accept();
         break;

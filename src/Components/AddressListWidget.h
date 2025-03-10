@@ -25,6 +25,7 @@
 #include <QPainter>
 #include <QScrollBar>
 #include <QStyledItemDelegate>
+#include <QSvgRenderer>
 
 #include "Consts.h"
 
@@ -43,6 +44,8 @@ inline constexpr int ADDRESS_ICON_SIZE = 64;
 inline constexpr int ADDRESS_SPACING_SIZE = 3;
 
 class BoldFirstLineDelegate : public QStyledItemDelegate {
+    Q_OBJECT
+
 public:
     explicit BoldFirstLineDelegate(QObject* parent = nullptr);
     ~BoldFirstLineDelegate() override = default;
@@ -53,12 +56,20 @@ public:
 protected:
     bool eventFilter(QObject* object, QEvent* event) override;
 
+Q_SIGNALS:
+    void deleteRequested(const QModelIndex& index) const;
+
 private:
-    mutable QRect addressRect_;
     mutable bool hoverOverAddress { false };
+    mutable bool hoverOverDeleteButton { false };
+    std::unique_ptr<QSvgRenderer> deleteButtonSvg_ {
+        std::make_unique<QSvgRenderer>(QString(":/Media/Xmark"))
+    };
 };
 
 class AddressListWidget : public QListWidget {
+    Q_OBJECT
+
 public:
     enum class ItemData {
         selected = Qt::UserRole + 200,
@@ -84,8 +95,8 @@ public:
 
     void setSelectedId(int newSelectedId);
 
-private Q_SLOTS:
-    void copyItemTextToClipboard(QListWidgetItem* item);
+Q_SIGNALS:
+    void itemDeleted(int id);
 
 private:
     int selectedId_ { -1 };

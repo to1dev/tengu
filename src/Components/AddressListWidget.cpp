@@ -51,6 +51,9 @@ void BoldFirstLineDelegate::paint(QPainter* painter,
 
     painter->save();
 
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
+
     QFont boldFont = options.font;
     //  boldFont.setBold(true);
 
@@ -82,19 +85,30 @@ void BoldFirstLineDelegate::paint(QPainter* painter,
         boldMetrics.height() + 8, Qt::AlignLeft | Qt::AlignTop, elidedName);
     yOffset += boldMetrics.height() + 8;
 
+#ifdef onpaint
     {
-        // Calc address rect
         const int addressWidth = regularMetrics.horizontalAdvance(address);
         const int actualWidth = qMin(addressWidth, availableWidth);
-        const QRect addressRect(
-            xOffset, yOffset, actualWidth, regularMetrics.height());
-        addressRect_ = addressRect;
+        addressRect_
+            = QRect(xOffset, yOffset, actualWidth, regularMetrics.height());
     }
+#endif
 
     painter->setPen(oldPen);
     painter->setFont(regularFont);
     painter->drawText(xOffset, yOffset, availableWidth, regularMetrics.height(),
         Qt::AlignLeft | Qt::AlignTop, elidedAddress);
+
+    const int buttonSize = 16;
+    const int buttonMargin = 8;
+
+    const QRect buttonRect(textRect.right() - buttonSize - buttonMargin,
+        textRect.top() + (textRect.height() - buttonSize) / 2, buttonSize,
+        buttonSize);
+
+    if (option.state & QStyle::State_MouseOver) {
+        deleteButtonSvg_->render(painter, buttonRect);
+    }
 
     painter->restore();
 }
@@ -106,39 +120,74 @@ bool BoldFirstLineDelegate::eventFilter(QObject* object, QEvent* event)
             auto* listView = qobject_cast<QListView*>(parent());
             if (listView) {
                 const QModelIndex index = listView->indexAt(mouseEvent->pos());
-                const QRect rect = listView->visualRect(index);
-                const QFontMetrics metrics(listView->font());
-#ifdef original
-                const QRect addressRect(rect.left() + 8,
-                    rect.top() + metrics.height() + 16, rect.width() - 16,
-                    metrics.height());
-#endif
+                if (index.isValid()) {
+                    const QRect rect = listView->visualRect(index);
 
-                hoverOverAddress = addressRect_.contains(mouseEvent->pos());
-                listView->viewport()->setCursor(hoverOverAddress
-                        ? Qt::PointingHandCursor
-                        : Qt::ArrowCursor);
-                return true;
+                    const QFontMetrics metrics(listView->font());
+                    const QString address = hideAddress(index
+                            .data(static_cast<int>(
+                                AddressListWidget::ItemData::address))
+                            .toString());
+                    const int availableWidth = rect.width() - 16;
+                    const int addressWidth = metrics.horizontalAdvance(address);
+                    const int actualWidth = qMin(addressWidth, availableWidth);
+
+                    const QRect addressRect(rect.left() + 8,
+                        rect.top() + metrics.height() + 16, actualWidth,
+                        metrics.height());
+
+                    const int buttonSize = 16;
+                    const int buttonMargin = 8;
+                    const QRect deleteButtonRect(
+                        rect.right() - buttonSize - buttonMargin,
+                        rect.top() + (rect.height() - buttonSize) / 2,
+                        buttonSize, buttonSize);
+
+                    hoverOverAddress = addressRect.contains(mouseEvent->pos());
+                    hoverOverDeleteButton
+                        = deleteButtonRect.contains(mouseEvent->pos());
+
+                    listView->viewport()->setCursor(
+                        (hoverOverAddress || hoverOverDeleteButton)
+                            ? Qt::PointingHandCursor
+                            : Qt::ArrowCursor);
+                    return true;
+                }
             }
         }
-    } else if (event->type() == QEvent::MouseButtonPress && hoverOverAddress) {
+    } else if (event->type() == QEvent::MouseButtonPress) {
         if (auto* mouseEvent = dynamic_cast<QMouseEvent*>(event)) {
             if (mouseEvent->button() == Qt::LeftButton) {
                 auto* listView = qobject_cast<QListView*>(parent());
                 if (listView) {
                     const QModelIndex index
                         = listView->indexAt(mouseEvent->pos());
-                    const QRect rect = listView->visualRect(index);
-                    const QFontMetrics metrics(listView->font());
-                    const QRect addressRect(rect.left() + 8,
-                        rect.top() + metrics.height() + 16, rect.width() - 16,
-                        metrics.height());
-
-                    if (addressRect.contains(mouseEvent->pos())) {
-                        QApplication::clipboard()->setText(index
-                                .data(static_cast<int>(
-                                    AddressListWidget::ItemData::address))
-                                .toString());
+                    if (index.isValid()) {
+                        if (hoverOverAddress) {
+                            QApplication::clipboard()->setText(index
+                                    .data(static_cast<int>(
+                                        AddressListWidget::ItemData::address))
+                                    .toString());
+                            return true;
+                        } else if (hoverOverDeleteButton) {
+                            Q_EMIT deleteRequested(index);
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+    } else if (event->type() == QEvent::MouseButtonDblClick) {
+        if (auto* mouseEvent = dynamic_cast<QMouseEvent*>(event)) {
+            if (mouseEvent->button() == Qt::LeftButton) {
+                auto* listView = qobject_cast<QListView*>(parent());
+                if (listView) {
+                    const QModelIndex index
+                        = listView->indexAt(mouseEvent->pos());
+                    if (index.isValid()) {
+                        if (hoverOverAddress || hoverOverDeleteButton) {
+                            return true;
+                        }
                     }
                 }
             }
@@ -163,8 +212,14 @@ AddressListWidget::AddressListWidget(QWidget* parent)
     setItemDelegate(delegate);
     viewport()->installEventFilter(delegate);
 
-    /*connect(this, &QListWidget::itemDoubleClicked, this,
-        &AddressListWidget::copyItemTextToClipboard);*/
+    connect(delegate, &BoldFirstLineDelegate::deleteRequested, this,
+        [this](const QModelIndex& index) {
+            if (index.isValid()) {
+                const int id
+                    = index.data(static_cast<int>(ItemData::id)).toInt();
+                Q_EMIT itemDeleted(id);
+            }
+        });
 }
 
 void AddressListWidget::add(const Address& address, int index)
@@ -236,16 +291,6 @@ bool AddressListWidget::focusChanged()
 void AddressListWidget::setSelectedId(int newSelectedId)
 {
     selectedId_ = newSelectedId;
-}
-
-void AddressListWidget::copyItemTextToClipboard(QListWidgetItem* item)
-{
-    if (item) {
-        const QString address
-            = item->data(static_cast<int>(AddressListWidget::ItemData::address))
-                  .toString();
-        QApplication::clipboard()->setText(address);
-    }
 }
 
 }

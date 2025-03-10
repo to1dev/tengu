@@ -208,7 +208,7 @@ void NewWalletForm::ok()
     const auto address = wallet->getAddress();
     const std::string addressName = STR_DEFAULT_ADDRESS_NAME;
     const auto addressNameHash = Encryption::easyHash(addressName);
-    const auto addressHash = Encryption::easyHash(address);
+    const auto addressHash = Encryption::genRandomHash();
 
     std::string derivationPath;
     switch (comboChain_->currentIndex()) {

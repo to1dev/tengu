@@ -92,7 +92,7 @@ private:
 
     LineEditEx* editName_;
 
-    NewAddress address_ {};
+    NewAddress address_;
 
     std::shared_ptr<Address> addressRecord_;
 };

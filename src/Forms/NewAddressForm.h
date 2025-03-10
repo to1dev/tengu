@@ -69,7 +69,7 @@ public:
         int walletId = -1;
         int groupType = -1;
         int chainType = -1;
-        int count = 0;
+        int index = 0;
         std::string mnemonic = "";
     };
 
@@ -92,7 +92,7 @@ private:
 
     LineEditEx* editName_;
 
-    NewAddress address_;
+    NewAddress address_ {};
 
     std::shared_ptr<Address> addressRecord_;
 };

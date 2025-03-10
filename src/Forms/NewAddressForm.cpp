@@ -62,11 +62,12 @@ NewAddressForm::NewAddressForm(const NewAddress& address, QWidget* parent,
 
     switch (address_.op) {
     case Op::NEW:
-        editName_->setText(QString(STR_ADDRESS_NAME).arg(address_.count + 1));
+        editName_->setText(QString(STR_ADDRESS_NAME).arg(address_.index + 1));
 
         {
             addressRecord_ = std::make_shared<Address>();
             addressRecord_->walletId = address_.walletId;
+            addressRecord_->index = address_.index;
         }
 
         break;
@@ -153,7 +154,7 @@ void NewAddressForm::ok()
                 const std::string decrypted
                     = Encryption::decryptText(address_.mnemonic);
                 wallet->fromMnemonic(decrypted);
-                const auto address = wallet->getAddress(address_.count);
+                const auto address = wallet->getAddress(address_.index);
                 const std::string addressHash = Encryption::easyHash(address);
 
                 std::string derivationPath;
@@ -180,9 +181,9 @@ void NewAddressForm::ok()
                     addressRecord_->addressHash = addressHash;
                     addressRecord_->derivationPath = derivationPath;
                     addressRecord_->privateKey = Encryption::encryptText(
-                        wallet->getPrivateKey(address_.count));
+                        wallet->getPrivateKey(address_.index));
                     addressRecord_->publicKey
-                        = wallet->getAddress(address_.count);
+                        = wallet->getAddress(address_.index);
                 }
 
                 const auto addressId = globalManager_->settingManager()

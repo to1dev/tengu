@@ -93,7 +93,7 @@ private:
     LineEditEx* editName_;
     ComboBoxEx* comboChain_;
 
-    NewWallet wallet_;
+    NewWallet wallet_ {};
 
     std::shared_ptr<Wallet> walletRecord_;
 };

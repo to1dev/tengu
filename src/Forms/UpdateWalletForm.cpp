@@ -110,10 +110,16 @@ UpdateWalletForm::UpdateWalletForm(const UpdateWallet& wallet, QWidget* parent,
             ui->ButtonNewAddress->setEnabled(false);
         }
 
-        addressList_->load(globalManager_->settingManager()
-                ->database()
-                ->addressRepo()
-                ->getAllByWallet(static_cast<int>(walletRecord_->id)));
+        auto addresses
+            = globalManager_->settingManager()
+                  ->database()
+                  ->addressRepo()
+                  ->getAllByWallet(static_cast<int>(walletRecord_->id));
+
+        for (const auto& addr : addresses) {
+            addressManager_.addAddress(addr);
+            addressList_->add(addr);
+        }
     } else {
         std::cerr << "No wallet found." << std::endl;
     }
@@ -131,17 +137,21 @@ std::shared_ptr<Wallet> UpdateWalletForm::walletRecord() const
 
 void UpdateWalletForm::newAddress()
 {
+    int freeIndex = addressManager_.nextAvailableIndex();
+
     NewAddressForm::NewAddress address {
         .walletId = walletRecord_->id,
         .groupType = walletRecord_->groupType,
         .chainType = walletRecord_->chainType,
-        .count = addressList_->count(),
+        .index = freeIndex,
         .mnemonic = walletRecord_->mnemonic,
     };
     NewAddressForm naf(address, this, globalManager_);
     int ret = naf.exec();
     if (ret) {
-        addressList_->add(*naf.addressRecord());
+        auto newAddr = *naf.addressRecord();
+        addressManager_.addAddress(newAddr);
+        addressList_->add(newAddr);
     } else {
     }
 }
@@ -188,6 +198,11 @@ void UpdateWalletForm::delAddress(const QModelIndex& index)
             MessageButton::Ok | MessageButton::Cancel);
         if (mf.exec()) {
             try {
+                int addrIndex = index
+                                    .data(static_cast<int>(
+                                        AddressListWidget::ItemData::index))
+                                    .toInt();
+                addressManager_.removeAddress(addrIndex);
                 globalManager_->settingManager()
                     ->database()
                     ->addressRepo()

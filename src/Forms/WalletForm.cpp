@@ -66,6 +66,8 @@ WalletForm::WalletForm(
     connect(ui->ButtonOK, &QPushButton::clicked, this, &WalletForm::ok);
     connect(ui->ButtonNewWallet, &QPushButton::clicked, this,
         &WalletForm::newWallet);
+    connect(ui->ButtonImportWallet, &QPushButton::clicked, this,
+        &WalletForm::importWallet);
     connect(ui->ButtonEditWallet, &QPushButton::clicked, this,
         &WalletForm::editWallet);
     connect(walletList_, &WalletListWidget::itemDoubleClicked, this,
@@ -94,6 +96,15 @@ void WalletForm::newWallet()
     int ret = nwf.exec();
     if (ret) {
         walletList_->add(*nwf.walletRecord());
+    } else {
+    }
+}
+
+void WalletForm::importWallet()
+{
+    ImportWalletForm iwf(this, globalManager_);
+    int ret = iwf.exec();
+    if (ret) {
     } else {
     }
 }

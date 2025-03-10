@@ -30,6 +30,7 @@
 
 #include "UI/Frameless.h"
 
+#include "Forms/ImportWalletForm.h"
 #include "Forms/NewWalletForm.h"
 #include "Forms/UpdateWalletForm.h"
 
@@ -56,6 +57,7 @@ private Q_SLOTS:
 
 private:
     void newWallet();
+    void importWallet();
     void editWallet();
     void delWallet();
 

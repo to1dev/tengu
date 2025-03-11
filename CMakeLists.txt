@@ -22,22 +22,43 @@ find_package(Qt5 REQUIRED COMPONENTS
     WebSockets
 )
 
-find_package(gRPC CONFIG REQUIRED)
-find_package(Protobuf CONFIG REQUIRED)
-find_package(absl CONFIG REQUIRED)
+option(ENABLE_GRPC "Enable gRPC support" OFF)
 
-set(PKG_FILES
-    pkg/geyser/src/geyser.grpc.pb.cc
-    pkg/geyser/src/geyser.pb.cc
-    pkg/geyser/src/solana-storage.grpc.pb.cc
-    pkg/geyser/src/solana-storage.pb.cc
-)
+if (ENABLE_GRPC)
+    message(STATUS "gRPC is ENABLED")
+    find_package(gRPC CONFIG REQUIRED)
+    find_package(Protobuf CONFIG REQUIRED)
+    find_package(absl CONFIG REQUIRED)
+
+    set(GRPC_PKG_FILES
+        pkg/geyser/src/geyser.grpc.pb.cc
+        pkg/geyser/src/geyser.pb.cc
+        pkg/geyser/src/solana-storage.grpc.pb.cc
+        pkg/geyser/src/solana-storage.pb.cc
+    )
+
+    set(GRPC_SOURCE_FILES
+        src/Clients/Solana/gRPC/GeyserClientManager.cpp
+        src/Clients/Solana/gRPC/GeyserClientWorker.cpp
+        src/Clients/Solana/gRPC/SwapFilter.cpp
+        src/Clients/Solana/gRPC/TransactionFilter.cpp
+    )
+
+    set(GRPC_HEADER_FILES
+        src/Clients/Solana/gRPC/GeyserClientManager.h
+        src/Clients/Solana/gRPC/GeyserClientWorker.h
+        src/Clients/Solana/gRPC/SwapFilter.h
+        src/Clients/Solana/gRPC/TransactionFilter.h
+    )
+else()
+    message(STATUS "gRPC is DISABLED")
+    set(GRPC_PKG_FILES "")
+    set(GRPC_SOURCE_FILES "")
+    set(GRPC_HEADER_FILES "")
+endif()
 
 set(SOURCE_FILES
-    src/Clients/Solana/gRPC/GeyserClientManager.cpp
-    src/Clients/Solana/gRPC/GeyserClientWorker.cpp
-    src/Clients/Solana/gRPC/SwapFilter.cpp
-    src/Clients/Solana/gRPC/TransactionFilter.cpp
+    ${GRPC_SOURCE_FILES}
     src/Components/AddressListWidget.cpp
     src/Components/AnimatedTabWidget.cpp
     src/Components/ClickableLabel.cpp
@@ -93,10 +114,7 @@ set(SOURCE_FILES
 )
 
 set(HEADER_FILES
-    src/Clients/Solana/gRPC/GeyserClientManager.h
-    src/Clients/Solana/gRPC/GeyserClientWorker.h
-    src/Clients/Solana/gRPC/SwapFilter.h
-    src/Clients/Solana/gRPC/TransactionFilter.h
+    ${GRPC_HEADER_FILES}
     src/Components/AddressListWidget.h
     src/Components/AnimatedTabWidget.h
     src/Components/ClickableLabel.h
@@ -184,7 +202,7 @@ if(WIN32)
 endif()
 
 add_executable(${PROJECT_NAME} WIN32
-    ${PKG_FILES}
+    ${GRPC_PKG_FILES}
     ${SOURCE_FILES}
     ${HEADER_FILES}
     ${UI_FILES}
@@ -238,6 +256,14 @@ set(THIRD_PARTY_LIBS
     fmt
 )
 
+if (ENABLE_GRPC)
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+        gRPC::grpc++
+        protobuf::libprotobuf
+        absl::log
+    )
+endif()
+
 target_link_libraries(${PROJECT_NAME} PRIVATE ${THIRD_PARTY_LIBS})
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
@@ -248,9 +274,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt5::Svg
     Qt5::Charts
     Qt5::WebSockets
-    gRPC::grpc++
-    protobuf::libprotobuf
-    absl::log
 )
 
 if (WIN32)

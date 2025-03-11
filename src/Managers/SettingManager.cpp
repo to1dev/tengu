@@ -98,7 +98,13 @@ bool SettingManager::writeSettings()
     sysOptTable.insert_or_assign("deviceRatio", options_.sysOpt.deviceRatio);
     sysOptTable.insert_or_assign(
         "dpiSuffix", options_.sysOpt.dpiSuffix.toStdString());
-    tbl.insert_or_assign("sysOpt", sysOptTable);
+    tbl.insert_or_assign(STR_SYSTEM_OPTIONS, sysOptTable);
+
+    toml::table addressOptTable;
+    addressOptTable.insert_or_assign("id", options_.addressOpt.id);
+    addressOptTable.insert_or_assign("type", options_.addressOpt.type);
+    addressOptTable.insert_or_assign("walletId", options_.addressOpt.walletId);
+    tbl.insert_or_assign(STR_ADDRESS_OPTIONS, addressOptTable);
 
     std::ofstream ofs(configPath.toStdString());
     if (!ofs) {

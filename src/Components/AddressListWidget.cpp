@@ -148,7 +148,7 @@ bool BoldFirstLineDelegate::eventFilter(QObject* object, QEvent* event)
                 }
             }
         }
-    } else if (event->type() == QEvent::MouseButtonPress) {
+    } else if (event->type() == QEvent::MouseButtonRelease) {
         if (auto* mouseEvent = dynamic_cast<QMouseEvent*>(event)) {
             if (mouseEvent->button() == Qt::LeftButton) {
                 auto* listView = qobject_cast<QListView*>(parent());

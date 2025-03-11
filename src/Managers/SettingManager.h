@@ -22,9 +22,7 @@
 #include <QDir>
 #include <QStandardPaths>
 
-#include "nlohmann/json.hpp"
-
-using json = nlohmann::json;
+#include "toml.hpp"
 
 #include "Consts.h"
 #include "Globals.h"
@@ -53,13 +51,15 @@ struct SystemOptions {
     double deviceRatio;
     QString dpiSuffix;
 };
+
 struct Options {
     SystemOptions sysOpt;
+    Address addressOpt;
 };
 
 class SettingManager {
 public:
-    SettingManager();
+    explicit SettingManager();
     ~SettingManager();
 
     Database* database() const;

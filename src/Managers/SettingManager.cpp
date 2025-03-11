@@ -64,16 +64,50 @@ QString SettingManager::appPath() const
 
 bool SettingManager::readSettings()
 {
-    bool ret = false;
+    auto configPath = QDir(dataPath_).filePath("config.toml");
+    std::ifstream ifs(configPath.toStdString());
+    if (!ifs) {
+        std::cerr << "Failed to open config" << std::endl;
+        return false;
+    }
 
-    return ret;
+    try {
+        auto tbl = toml::parse(ifs);
+
+        if (auto machineId = tbl["sysOpt"]["machineId"].value<std::string>())
+            options_.sysOpt.machineId = QString::fromStdString(*machineId);
+    } catch (const toml::parse_error& err) {
+        std::cerr << "Failed to parse config: " << err.description()
+                  << std::endl;
+        return false;
+    }
+
+    return true;
 }
 
 bool SettingManager::writeSettings()
 {
-    bool ret = false;
+    auto configPath = QDir(dataPath_).filePath("config.toml");
+    toml::table tbl;
 
-    return ret;
+    toml::table sysOptTable;
+    sysOptTable.insert_or_assign(
+        "machineId", options_.sysOpt.machineId.toStdString());
+    sysOptTable.insert_or_assign(
+        "appPath", options_.sysOpt.appPath.toStdString());
+    sysOptTable.insert_or_assign("deviceRatio", options_.sysOpt.deviceRatio);
+    sysOptTable.insert_or_assign(
+        "dpiSuffix", options_.sysOpt.dpiSuffix.toStdString());
+    tbl.insert_or_assign("sysOpt", sysOptTable);
+
+    std::ofstream ofs(configPath.toStdString());
+    if (!ofs) {
+        std::cerr << "Failed to write config" << std::endl;
+        return false;
+    }
+    ofs << tbl;
+
+    return true;
 }
 
 Options& SettingManager::options()

@@ -37,9 +37,23 @@ ImportWalletForm::ImportWalletForm(
     globalManager_->windowManager()->reset(this, 0.7);
     connect(frameless_.get(), &Frameless::onMax, this,
         [this]() { globalManager_->windowManager()->reset(this, 0.7); });
+
+    connect(ui->ButtonOK, &QPushButton::clicked, this, &ImportWalletForm::ok);
+    connect(ui->ButtonCancel, &QPushButton::clicked, this,
+        &ImportWalletForm::reject);
 }
 
 ImportWalletForm::~ImportWalletForm()
 {
     delete ui;
+}
+
+std::shared_ptr<Wallet> ImportWalletForm::walletRecord() const
+{
+    return walletRecord_;
+}
+
+void ImportWalletForm::ok()
+{
+    accept();
 }

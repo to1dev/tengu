@@ -27,8 +27,26 @@
 
 #include "UI/Frameless.h"
 
+#include "Utils/Encryption.h"
+
+#include "Components/ComboBoxEx.h"
+#include "Components/LineEditEx.h"
+
+#include "Wallets/Core/BaseMnemonic.h"
+#include "Wallets/Core/BitcoinWallet.h"
+#include "Wallets/Core/EthereumWallet.h"
+#include "Wallets/Core/SolanaWallet.h"
+
+#include "Databases/Database.h"
+
+#include "Forms/MessageForm.h"
+
+using namespace Daitengu::Components;
 using namespace Daitengu::Core;
+using namespace Daitengu::Databases;
 using namespace Daitengu::UI;
+using namespace Daitengu::Utils;
+using namespace Daitengu::Wallets;
 
 namespace Ui {
 class ImportWalletForm;
@@ -44,9 +62,19 @@ public:
         const std::shared_ptr<const GlobalManager>& globalManager = nullptr);
     ~ImportWalletForm();
 
+    std::shared_ptr<Wallet> walletRecord() const;
+
+private Q_SLOTS:
+    void ok();
+
 private:
     Ui::ImportWalletForm* ui;
 
     std::shared_ptr<const GlobalManager> globalManager_;
     std::unique_ptr<Frameless> frameless_;
+
+    LineEditEx* editName_;
+    ComboBoxEx* comboChain_;
+
+    std::shared_ptr<Wallet> walletRecord_;
 };

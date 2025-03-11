@@ -74,7 +74,8 @@ bool SettingManager::readSettings()
     try {
         auto tbl = toml::parse(ifs);
 
-        if (auto machineId = tbl["sysOpt"]["machineId"].value<std::string>())
+        if (auto machineId
+            = tbl[STR_SYSTEM_OPTIONS]["machineId"].value<std::string>())
             options_.sysOpt.machineId = QString::fromStdString(*machineId);
     } catch (const toml::parse_error& err) {
         std::cerr << "Failed to parse config: " << err.description()

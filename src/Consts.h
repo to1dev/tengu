@@ -53,7 +53,7 @@ inline constexpr char STR_DEFAULT_ADDRESS_NAME[] = "Address 1";
 
 inline constexpr QMargins DEFAULT_GROUP_MARGINS = QMargins(20, 24, 20, 20);
 inline constexpr int DEFAULT_SPACING = 9;
-inline constexpr int DEFAULT_MAXLENGTH = 32;
+inline constexpr int DEFAULT_MAXLENGTH = 42;
 
 inline const QString STR_LABEL_NAME = QObject::tr("名称");
 inline const QString STR_LABEL_PATH = QObject::tr("路径");

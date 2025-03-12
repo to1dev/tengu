@@ -95,9 +95,6 @@ set(SOURCE_FILES
     src/Managers/ThemeManager.cpp
     src/Managers/WindowManager.cpp
     src/Tengu.cpp
-    src/Tests/Test_BIP39.cpp
-    src/Tests/Test_DotEnv.cpp
-    src/Tests/Test_Encryption.cpp
     src/UI/Frameless.cpp
     src/Utils/Encryption.cpp
     src/Utils/NameGenerator.cpp
@@ -201,6 +198,12 @@ if(WIN32)
     set(WIN32_RC_FILE src/res/Tengu.rc)
 endif()
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+
+foreach(OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG} "${CMAKE_BINARY_DIR}/bin")
+endforeach()
+
 add_executable(${PROJECT_NAME} WIN32
     ${GRPC_PKG_FILES}
     ${SOURCE_FILES}
@@ -252,7 +255,6 @@ set(THIRD_PARTY_LIBS
     luajit-5.1
     izanagi
     secp256k1
-    catch2
     fmt
 )
 
@@ -285,10 +287,15 @@ if (WIN32)
 endif()
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE
-    USE_TEST
     SECP256K1_STATIC
     QT_STATIC
     QT_NO_KEYWORDS
 )
+
+option(ENABLE_TESTS "Enable tests" ON)
+
+if (ENABLE_TESTS)
+    add_subdirectory(src/tests)
+endif()
 
 install(TARGETS ${PROJECT_NAME} DESTINATION bin)

@@ -24,6 +24,7 @@ DatabaseContext::DatabaseContext(const QString& dataPath)
     : storage_(std::make_unique<Storage>(initStorage(dataPath)))
 {
     storage_->sync_schema();
+    storage_->pragma.journal_mode(journal_mode::WAL);
 }
 
 Storage* DatabaseContext::storage()

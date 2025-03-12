@@ -251,6 +251,7 @@ target_link_directories(${PROJECT_NAME}
 
 set(THIRD_PARTY_LIBS
     xxhash
+    pugixml
     sodium
     sqlite3
     luajit-5.1

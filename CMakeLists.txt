@@ -158,6 +158,7 @@ set(HEADER_FILES
     src/Utils/Helpers.hpp
     src/Utils/NameGenerator.h
     src/Utils/PathUtils.hpp
+    src/Utils/RSS.hpp
     src/Utils/RunGuard.h
     src/Wallets/Core/BaseMnemonic.h
     src/Wallets/Core/BaseWallet.h

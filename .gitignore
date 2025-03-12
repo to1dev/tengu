@@ -35,6 +35,7 @@
 .env
 /build
 /tmp
+/tests
 /.vscode
 /Security/Security.h
 *.pro.user

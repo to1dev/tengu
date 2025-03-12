@@ -16,8 +16,6 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifdef USE_TEST
-
 #include "catch_amalgamated.hpp"
 
 #include "Utils/Dotenv.hpp"
@@ -43,5 +41,3 @@ TEST_CASE("Test DotEnv")
         }
     }
 }
-
-#endif

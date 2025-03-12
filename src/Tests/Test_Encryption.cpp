@@ -16,8 +16,6 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifdef USE_TEST
-
 #include <iostream>
 
 #include <QDebug>
@@ -49,5 +47,3 @@ TEST_CASE("Encryption functions")
         REQUIRE(decoded == plain);
     }
 }
-
-#endif

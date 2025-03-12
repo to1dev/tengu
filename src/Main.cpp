@@ -46,10 +46,6 @@ using namespace Daitengu::Core;
 using namespace Daitengu::Components;
 using namespace Daitengu::Utils;
 
-#ifdef USE_TEST
-#include "catch_amalgamated.hpp"
-#endif
-
 int main(int argc, char* argv[])
 {
 #ifdef WIN32
@@ -78,12 +74,6 @@ int main(int argc, char* argv[])
 #endif
     QCoreApplication::setAttribute(Qt::AA_Use96Dpi);
     QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
-#endif
-
-#ifdef USE_TEST
-    std::cout << std::unitbuf;
-    Catch::Session().run(argc, argv);
-    std::cout << std::nounitbuf;
 #endif
 
     do {

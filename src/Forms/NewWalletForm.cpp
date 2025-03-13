@@ -199,6 +199,65 @@ void NewWalletForm::ok()
         walletRecord_->mnemonic = encrypted;
     }
 
+    auto database = globalManager_->settingManager()->database();
+
+    bool success = database->storage()->transaction([&]() {
+        const int walletId = database->walletRepo()->insert(*walletRecord_);
+
+        if (walletId <= 0) {
+            return false;
+        }
+
+        walletRecord_->id = walletId;
+
+        const auto address = wallet->getAddress();
+        const std::string addressName = STR_DEFAULT_ADDRESS_NAME;
+        const auto addressNameHash = Encryption::easyHash(addressName);
+        const auto addressHash = Encryption::genRandomHash();
+
+        std::string derivationPath;
+        switch (comboChain_->currentIndex()) {
+        case 0:
+            derivationPath = BitcoinWallet::DEFAULT_DERIVATION_PATH;
+            break;
+        case 1:
+            derivationPath = EthereumWallet::DEFAULT_DERIVATION_PATH;
+            break;
+        case 2:
+            derivationPath = SolanaWallet::DEFAULT_DERIVATION_PATH;
+            break;
+        default:
+            derivationPath = "";
+            break;
+        }
+
+        Address addressRecord {
+            .walletId = walletId,
+            .hash = Encryption::genRandomHash(),
+            .name = addressName,
+            .nameHash = addressNameHash,
+            .address = address,
+            .addressHash = addressHash,
+            .derivationPath = derivationPath,
+            .privateKey = Encryption::encryptText(wallet->getPrivateKey()),
+            .publicKey = wallet->getAddress(),
+        };
+
+        if (database->addressRepo()->insert(addressRecord) <= 0) {
+            return false;
+        }
+
+        return true;
+    });
+
+    if (!success) {
+        MessageForm { this, 16, "Failed to create wallet and address" }.exec();
+        return;
+    }
+
+    accept();
+
+#ifdef original
     const auto walletId
         = globalManager_->settingManager()->database()->walletRepo()->insert(
             *walletRecord_);
@@ -242,4 +301,5 @@ void NewWalletForm::ok()
         addressRecord);
 
     accept();
+#endif
 }

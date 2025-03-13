@@ -520,12 +520,7 @@ QComboBox::down-arrow:on, QComboBox::down-arrow:hover, QComboBox::down-arrow:foc
     font-size: 24px;
 }
 
-#ButtonMint,
-#ButtonTrade,
-#ButtonBuild,
-#ButtonData,
-#ButtonSocial,
-#ButtonIssue,
+#ButtonChart,
 #ButtonBell,
 #ButtonWallet {
     border-radius: 8px;
@@ -536,46 +531,26 @@ QComboBox::down-arrow:on, QComboBox::down-arrow:hover, QComboBox::down-arrow:foc
     padding: 8px;
 }
 
-#ButtonMint:pressed,
-#ButtonTrade:pressed,
-#ButtonBuild:pressed,
-#ButtonData:pressed,
-#ButtonSocial:pressed,
-#ButtonIssue:pressed,
+#ButtonChart:pressed,
 #ButtonBell:pressed,
 #ButtonWallet:pressed {
     padding: 9px;
     background-color: #1A72BB;
 }
 
-#ButtonMint:hover,
-#ButtonTrade:hover,
-#ButtonBuild:hover,
-#ButtonData:hover,
-#ButtonSocial:hover,
-#ButtonIssue:hover,
+#ButtonChart:hover,
 #ButtonBell:hover,
 #ButtonWallet:hover {
     background-color: #2D3E50;
 }
 
-#ButtonMint:disabled,
-#ButtonTrade:disabled,
-#ButtonBuild:disabled,
-#ButtonData:disabled,
-#ButtonSocial:disabled,
-#ButtonIssue:disabled,
+#ButtonChart:disabled,
 #ButtonBell:disabled,
 #ButtonWallet:disabled {
     color: #788D9C;
 }
 
-#ButtonMint:checked,
-#ButtonTrade:checked,
-#ButtonBuild:checked,
-#ButtonData:checked,
-#ButtonSocial:checked,
-#ButtonIssue:checked,
+#ButtonChart:checked,
 #ButtonBell:checked,
 #ButtonWallet:checked {
     background-color: #1A72BB;

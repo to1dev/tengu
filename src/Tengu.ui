@@ -82,6 +82,26 @@
           </property>
          </widget>
         </item>
+        <item>
+         <widget class="QToolButton" name="ButtonChart">
+          <property name="text">
+           <string>图表</string>
+          </property>
+          <property name="icon">
+           <iconset resource="res/Images.qrc">
+            <normaloff>:/Buttons/chart.svg</normaloff>:/Buttons/chart.svg</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>32</width>
+            <height>32</height>
+           </size>
+          </property>
+          <property name="toolButtonStyle">
+           <enum>Qt::ToolButtonTextUnderIcon</enum>
+          </property>
+         </widget>
+        </item>
        </layout>
       </widget>
      </widget>

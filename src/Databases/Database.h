@@ -105,6 +105,7 @@ struct Wallet {
     std::string passphrase = "";
     std::string masterPrivateKey = "";
     std::string extendedPublicKey = "";
+    std::string description = "";
 };
 
 struct Address {
@@ -120,6 +121,7 @@ struct Address {
     std::string derivationPath = "";
     std::string privateKey = "";
     std::string publicKey = "";
+    std::string description = "";
 };
 
 struct Tag {
@@ -199,7 +201,8 @@ inline auto initStorage(const QString& dataPath)
             make_column("mnemonicHash", &Wallet::mnemonicHash),
             make_column("passphrase", &Wallet::passphrase),
             make_column("masterPrivateKey", &Wallet::masterPrivateKey),
-            make_column("extendedPublicKey", &Wallet::extendedPublicKey)),
+            make_column("extendedPublicKey", &Wallet::extendedPublicKey),
+            make_column("description", &Wallet::description)),
 
         make_table("addresses",
             make_column("id", &Address::id, primary_key().autoincrement()),
@@ -213,7 +216,8 @@ inline auto initStorage(const QString& dataPath)
             make_column("addressHash", &Address::addressHash),
             make_column("derivationPath", &Address::derivationPath),
             make_column("privateKey", &Address::privateKey),
-            make_column("publicKey", &Address::publicKey)),
+            make_column("publicKey", &Address::publicKey),
+            make_column("description", &Address::description)),
 
         make_table("tags",
             make_column("id", &Tag::id, primary_key().autoincrement()),

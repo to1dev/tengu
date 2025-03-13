@@ -57,8 +57,14 @@ else()
     set(GRPC_HEADER_FILES "")
 endif()
 
+set(SOLANA_WEBSOCKET_FILES
+    src/Clients/Solana/WebSocket/SmartMoneyTracker.cpp
+    src/Clients/Solana/WebSocket/SolanaConnectionManager.cpp
+)
+
 set(SOURCE_FILES
     ${GRPC_SOURCE_FILES}
+    ${SOLANA_WEBSOCKET_FILES}
     src/Components/AddressListWidget.cpp
     src/Components/AnimatedTabWidget.cpp
     src/Components/ClickableLabel.cpp

@@ -44,6 +44,19 @@ TEST_CASE("Encryption functions")
         QString encoded = Encryption::encryptText(plain);
         QString decoded = Encryption::decryptText(encoded);
 
+        std::string plain2 = Encryption::genRandomHash()
+            + Encryption::generateStrongPassword(32);
+        std::string encoded2 = Encryption::encryptText(plain2);
+        std::string decoded2 = Encryption::decryptText(encoded2);
+
         REQUIRE(decoded == plain);
+        REQUIRE(decoded2 == plain2);
     }
+}
+
+int main(int argc, char* argv[])
+{
+    int result = Catch::Session().run(argc, argv);
+
+    return result;
 }

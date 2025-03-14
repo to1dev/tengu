@@ -16,11 +16,6 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef USE_TEST
-#define USE_TEST
-#endif
-#ifdef USE_TEST
-
 #include <format>
 #include <iostream>
 
@@ -134,4 +129,9 @@ TEST_CASE("Generate bip39 mnemonic")
     }
 }
 
-#endif
+int main(int argc, char* argv[])
+{
+    int result = Catch::Session().run(argc, argv);
+
+    return result;
+}

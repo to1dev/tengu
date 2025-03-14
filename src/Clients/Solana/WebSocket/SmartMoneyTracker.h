@@ -49,7 +49,7 @@ public:
     ~SmartMoneyTracker();
 
     bool startTracking();
-    bool stopTracking();
+    void stopTracking();
 
     void setSmartMoneyCriteria(const SmartMoneyCriteria& criteria);
 

@@ -55,34 +55,78 @@ bool SmartMoneyTracker::startTracking()
     return true;
 }
 
-bool SmartMoneyTracker::stopTracking()
+void SmartMoneyTracker::stopTracking()
 {
-    return false;
+    if (!isTracking_) {
+        return;
+    }
+
+    auto* manager = SolanaConnectionManager::instance();
+
+    if (transactionListenerId_ != -1) {
+        manager->unregisterListener(transactionListenerId_);
+        transactionListenerId_ = -1;
+    }
+
+    for (auto it = accountListenerIds_.begin(); it != accountListenerIds_.end();
+        ++it) {
+        manager->unregisterListener(it.value());
+    }
+    accountListenerIds_.clear();
+
+    isTracking_ = false;
+    Q_EMIT trackingStatusChanged(false);
+
+    qDebug() << name_ << " stopped tracking";
 }
 
 void SmartMoneyTracker::setSmartMoneyCriteria(
     const SmartMoneyCriteria& criteria)
 {
+    criteria_ = criteria;
+
+    if (isTracking_) {
+        reregisterListeners();
+    }
 }
 
 void SmartMoneyTracker::addSmartMoneyAddress(const QString& address)
 {
+    criteria_.smartAddresses.insert(address);
+
+    if (isTracking_ && !accountListenerIds_.contains(address)) {
+        auto* manager = SolanaConnectionManager::instance();
+        int listenerId = manager->registerAccountListener(
+            address, [this](const json& data) { processAccountUpdate(data); });
+
+        accountListenerIds_[address] = listenerId;
+    }
 }
 
 void SmartMoneyTracker::removeSmartMoneyAddress(const QString& address)
 {
+    criteria_.smartAddresses.remove(address);
+
+    if (isTracking_ && accountListenerIds_.contains(address)) {
+        auto* manager = SolanaConnectionManager::instance();
+        manager->unregisterListener(accountListenerIds_[address]);
+        accountListenerIds_.remove(address);
+    }
 }
 
 void SmartMoneyTracker::addTrackedProgramId(const QString& programId)
 {
+    criteria_.trackedProgramIds.insert(programId);
 }
 
 void SmartMoneyTracker::removeTrackedProgramId(const QString& programId)
 {
+    criteria_.trackedProgramIds.remove(programId);
 }
 
 void SmartMoneyTracker::setMinTransactionAmount(uint64_t amount)
 {
+    criteria_.minTransactionAmount = amount;
 }
 
 const SmartMoneyTracker::SmartMoneyCriteria&
@@ -108,10 +152,14 @@ QString SmartMoneyTracker::getName() const
 
 void SmartMoneyTracker::processTransaction(const json& transaction)
 {
+    if (isSmartMoneyTransaction(transaction)) {
+        Q_EMIT smartMoneyTransactionDetected(transaction);
+    }
 }
 
 void SmartMoneyTracker::processAccountUpdate(const json& accountData)
 {
+    qDebug() << name_ << " Account update received for smart money wallet";
 }
 
 bool SmartMoneyTracker::isSmartMoneyTransaction(const json& transaction)
@@ -121,9 +169,20 @@ bool SmartMoneyTracker::isSmartMoneyTransaction(const json& transaction)
 
 void SmartMoneyTracker::reregisterListeners()
 {
+    stopTracking();
+    startTracking();
 }
 
 void SmartMoneyTracker::registerAccountListeners()
 {
+    auto* manager = SolanaConnectionManager::instance();
+
+    for (const QString& address : criteria_.smartAddresses) {
+        if (!accountListenerIds_.contains(address)) {
+            int listenerId = manager->registerAccountListener(address,
+                [this](const json& data) { processAccountUpdate(data); });
+            accountListenerIds_[address] = listenerId;
+        }
+    }
 }
 }

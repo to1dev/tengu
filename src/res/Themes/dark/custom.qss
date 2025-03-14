@@ -66,8 +66,22 @@ QMenuBar:focus {
     border: 0;
 }
 
+QMenu {
+    background-color: white;
+    background-clip: border;
+    border: 1px solid #60798B;
+    padding: 5px;
+}
+
+QMenu::separator {
+    margin: 3px;
+}
+
 QMenu::item {
-    padding: 6px 24px 6px 28px;
+    background-color: transparent;
+    padding: 8px 20px;
+    border-radius: 5px;
+    margin: 2px;
 }
 
 QToolTip {

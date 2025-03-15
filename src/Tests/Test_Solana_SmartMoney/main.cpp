@@ -18,9 +18,14 @@
 
 #include <iostream>
 
+#include <QApplication>
+#include <QDebug>
+
 #include "TrackerWidget.h"
 
 int main(int argc, char* argv[])
 {
-    std::cout << "Hello world!" << std::endl;
+    QApplication app(argc, argv);
+
+    return app.exec();
 }

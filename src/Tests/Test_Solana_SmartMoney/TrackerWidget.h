@@ -18,10 +18,16 @@
 
 #pragma once
 
+#include <fstream>
+
 #include <QComboBox>
+#include <QDateTime>
+#include <QFileDialog>
 #include <QGroupBox>
+#include <QHeaderView>
 #include <QLabel>
 #include <QLineEdit>
+#include <QMessageBox>
 #include <QPushButton>
 #include <QSpinBox>
 #include <QTableWidget>
@@ -39,4 +45,65 @@ class TrackerWidget : public QWidget {
 public:
     explicit TrackerWidget(QWidget* parent = nullptr);
     ~TrackerWidget();
+
+    void setTrackerName(const QString& name);
+
+    json saveConfigToJson() const;
+
+    void loadConfigFromJson(const json& config);
+
+Q_SIGNALS:
+    void smartMoneyDetected(
+        const QString& trackerName, const json& transaction);
+
+private Q_SLOTS:
+    void onStartStopClicked();
+    void onAddAddressClicked();
+    void onRemoveAddressClicked();
+    void onAddProgramIdClicked();
+    void onRemoveProgramIdClicked();
+    void onMinAmountChanged(int value);
+    void onTransactionDetected(const json& transaction);
+    void onClearTransactionsClicked();
+    void onExportTransactionsClicked();
+
+private:
+    void initUI();
+    void updateUIState();
+    void addTransactionToTable(const json& transaction);
+    void applyConfig();
+
+private:
+    QVBoxLayout* mainLayout_;
+
+    QGroupBox* configGroup_;
+    QVBoxLayout* configLayout_;
+
+    QLabel* addressLabel_;
+    QLineEdit* addressInput_;
+    QPushButton* addAddressBtn_;
+    QTableWidget* addressesTable_;
+    QPushButton* removeAddressBtn_;
+
+    QLabel* programIdLabel_;
+    QLineEdit* programIdInput_;
+    QPushButton* addProgramIdBtn_;
+    QTableWidget* programIdsTable_;
+    QPushButton* removeProgramIdBtn_;
+
+    QLabel* minAmountLabel_;
+    QSpinBox* minAmountSpin_;
+
+    QPushButton* startStopBtn_;
+
+    QLabel* transactionsLabel_;
+    QTableWidget* transactionsTable_;
+    QPushButton* clearTransactionsBtn_;
+    QPushButton* exportTransactionsBtn_;
+
+    QLabel* statusLabel_;
+
+    SmartMoneyTracker tracker_;
+
+    QList<json> detectedTransactions_;
 };

@@ -164,7 +164,90 @@ void SmartMoneyTracker::processAccountUpdate(const json& accountData)
 
 bool SmartMoneyTracker::isSmartMoneyTransaction(const json& transaction)
 {
-    return false;
+    bool involvesSmart = false;
+
+    if (transaction.contains("transaction")) {
+        const json& txDetails = transaction["transaction"];
+
+        if (txDetails.contains("message") && txDetails["message"].is_object()) {
+            const json& message = txDetails["message"];
+
+            if (message.contains("accountKeys")
+                && message["accountKeys"].is_array()) {
+                const json& accounts = message["accountKeys"];
+
+                for (const auto& account : accounts) {
+                    QString accountStr
+                        = QString::fromStdString(account.get<std::string>());
+                    if (criteria_.smartAddresses.contains(accountStr)) {
+                        involvesSmart = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (!criteria_.trackedProgramIds.isEmpty()
+            && txDetails.contains("message")
+            && txDetails["message"].is_object()) {
+            const json& message = txDetails["message"];
+
+            if (message.contains("instructions")
+                && message["instructions"].is_array()) {
+                const json& instructions = message["instructions"];
+
+                bool matchesProgramId = false;
+                for (const auto& instruction : instructions) {
+                    if (!instruction.is_object())
+                        continue;
+
+                    if (instruction.contains("programId")) {
+                        QString programId = QString::fromStdString(
+                            instruction["programId"].get<std::string>());
+                        if (criteria_.trackedProgramIds.contains(programId)) {
+                            matchesProgramId = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (!matchesProgramId) {
+                    return false;
+                }
+            }
+        }
+
+        if (txDetails.contains("meta") && txDetails["meta"].is_object()) {
+            const json& meta = txDetails["meta"];
+
+            if (meta.contains("postBalances") && meta.contains("preBalances")
+                && meta["postBalances"].is_array()
+                && meta["preBalances"].is_array()) {
+                const json& preBalances = meta["preBalances"];
+                const json& postBalances = meta["postBalances"];
+
+                uint64_t maxChange = 0;
+                size_t minSize
+                    = std::min(preBalances.size(), postBalances.size());
+                for (size_t i = 0; i < minSize; i++) {
+                    uint64_t pre = preBalances[i].get<uint64_t>();
+                    uint64_t post = postBalances[i].get<uint64_t>();
+                    uint64_t change = pre > post ? pre - post : post - pre;
+                    maxChange = std::max(maxChange, change);
+                }
+
+                if (maxChange < criteria_.minTransactionAmount) {
+                    return false;
+                }
+            }
+        }
+    }
+
+    if (criteria_.customFilter && !criteria_.customFilter(transaction)) {
+        return false;
+    }
+
+    return involvesSmart;
 }
 
 void SmartMoneyTracker::reregisterListeners()

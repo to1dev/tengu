@@ -80,7 +80,7 @@ QMenu::separator {
 QMenu::item {
     background-color: transparent;
     padding: 8px 20px;
-    border-radius: 5px;
+    border-radius: 3px;
     margin: 2px;
 }
 

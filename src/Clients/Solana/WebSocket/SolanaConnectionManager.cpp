@@ -20,14 +20,15 @@
 
 namespace Daitengu::Clients::Solana {
 
-SolanaConnectionManager* SolanaConnectionManager::instance_ = nullptr;
+std::shared_ptr<SolanaConnectionManager> SolanaConnectionManager::instance_;
 QMutex SolanaConnectionManager::instanceMutex_;
 
-SolanaConnectionManager* SolanaConnectionManager::instance()
+std::shared_ptr<SolanaConnectionManager> SolanaConnectionManager::instance()
 {
     QMutexLocker locker(&instanceMutex_);
     if (!instance_) {
-        instance_ = new SolanaConnectionManager();
+        instance_ = std::shared_ptr<SolanaConnectionManager>(
+            new SolanaConnectionManager(), Deleter());
     }
 
     return instance_;
@@ -42,7 +43,7 @@ bool SolanaConnectionManager::connectToNode(const QUrl& url)
     initialize();
 
     currentUrl_ = url;
-    Q_EMIT doConnect(url);
+    webSocket_.open(url);
 
     return true;
 }
@@ -50,9 +51,8 @@ bool SolanaConnectionManager::connectToNode(const QUrl& url)
 void SolanaConnectionManager::disconnectFromNode()
 {
     cleanup();
-
     reconnectTimer_.stop();
-    Q_EMIT doDisconnect();
+    webSocket_.close();
 }
 
 bool SolanaConnectionManager::isConnected() const
@@ -85,7 +85,7 @@ int SolanaConnectionManager::registerTransactionListener(
 }
 
 int SolanaConnectionManager::registerAccountListener(
-    const QString& address, const std::function<void(const json&)>& callback)
+    std::string_view address, const std::function<void(const json&)>& callback)
 {
     QMutexLocker locker(&listenerMutex_);
 
@@ -94,7 +94,7 @@ int SolanaConnectionManager::registerAccountListener(
     Subscription sub {
         .type = SubscriptionType::Account,
         .callback = callback,
-        .address = address,
+        .address = QString::fromStdString(std::string(address)),
         .rpcId = -1,
         .wsId = -1,
     };
@@ -108,8 +108,8 @@ int SolanaConnectionManager::registerAccountListener(
     return listenerId;
 }
 
-int SolanaConnectionManager::registerProgramListener(
-    const QString& programId, const std::function<void(const json&)>& callback)
+int SolanaConnectionManager::registerProgramListener(std::string_view programId,
+    const std::function<void(const json&)>& callback)
 {
     QMutexLocker locker(&listenerMutex_);
 
@@ -118,7 +118,7 @@ int SolanaConnectionManager::registerProgramListener(
     Subscription sub {
         .type = SubscriptionType::Program,
         .callback = callback,
-        .address = programId,
+        .address = QString::fromStdString(std::string(programId)),
         .rpcId = -1,
         .wsId = -1,
     };
@@ -136,24 +136,40 @@ void SolanaConnectionManager::unregisterListener(int listenerId)
 {
     QMutexLocker locker(&listenerMutex_);
 
-    if (!subscriptions_.contains(listenerId)) {
+    if (!subscriptions_.contains(listenerId) || !connected_) {
         return;
     }
 
     Subscription& sub = subscriptions_[listenerId];
 
-    if (connected_ && sub.wsId > 0) {
-        json unsubRequest;
-        unsubRequest["jsonrpc"] = "2.0";
-        unsubRequest["id"] = nextRpcId_++;
-        unsubRequest["method"] = "unsubscribe";
-
-        json params = json::array();
-        params.push_back(sub.wsId);
-        unsubRequest["params"] = params;
-
-        Q_EMIT doSendMessage(QString::fromStdString(unsubRequest.dump()));
+    if (sub.wsId <= 0) {
+        return;
     }
+
+    std::string_view method;
+
+    switch (sub.type) {
+    case SubscriptionType::Account:
+        method = "accountUnsubscribe";
+        break;
+    case SubscriptionType::Transaction:
+        method = "logsUnsubscribe";
+        break;
+    case SubscriptionType::Program:
+        method = "programUnsubscribe";
+        break;
+    case SubscriptionType::Signature:
+        method = "signatureUnsubscribe";
+        break;
+    default:
+        qWarning() << "Unknown subscription type for unsubscribe";
+        return;
+    }
+
+    json params = json::array();
+    params.push_back(sub.wsId);
+
+    sendJsonRpcRequest(method, params);
 
     subscriptions_.remove(listenerId);
 }
@@ -161,11 +177,7 @@ void SolanaConnectionManager::unregisterListener(int listenerId)
 void SolanaConnectionManager::destroy()
 {
     QMutexLocker locker(&instanceMutex_);
-
-    if (instance_) {
-        delete instance_;
-        instance_ = nullptr;
-    }
+    instance_.reset();
 }
 
 void SolanaConnectionManager::onConnected()
@@ -197,6 +209,8 @@ void SolanaConnectionManager::onTextMessageReceived(const QString& message)
 {
     try {
         json json = json::parse(message.toStdString());
+
+        qInfo() << message;
 
         if (json.contains("method") && json["method"] == "subscription") {
             processSubscriptionMessage(json);
@@ -232,55 +246,34 @@ void SolanaConnectionManager::onError(QAbstractSocket::SocketError error)
     Q_EMIT this->error("WebSocket error: " + webSocket_.errorString());
 }
 
-void SolanaConnectionManager::sendMessage(const QString& message)
-{
-    webSocket_.sendTextMessage(message);
-}
-
 void SolanaConnectionManager::reconnect()
 {
     if (!connected_ && !currentUrl_.isEmpty()) {
         qDebug() << "Attempting to reconnect to Solana node...";
-        Q_EMIT doConnect(currentUrl_);
+        webSocket_.open(currentUrl_);
     }
 }
 
-SolanaConnectionManager::SolanaConnectionManager()
-    : QObject(nullptr)
+SolanaConnectionManager::SolanaConnectionManager(QObject* parent)
+    : QObject(parent)
 {
-    moveToThread(&workerThread_);
-
-    connect(
-        this, &SolanaConnectionManager::doConnect, this,
-        [this](const QUrl& url) { webSocket_.open(url); },
-        Qt::QueuedConnection);
-
-    connect(
-        this, &SolanaConnectionManager::doDisconnect, this,
-        [this]() { webSocket_.close(); }, Qt::QueuedConnection);
-
-    connect(this, &SolanaConnectionManager::doSendMessage, this,
-        &SolanaConnectionManager::sendMessage, Qt::QueuedConnection);
-
     connect(&webSocket_, &QWebSocket::connected, this,
-        &SolanaConnectionManager::onConnected, Qt::DirectConnection);
+        &SolanaConnectionManager::onConnected);
 
     connect(&webSocket_, &QWebSocket::disconnected, this,
-        &SolanaConnectionManager::onDisconnected, Qt::DirectConnection);
+        &SolanaConnectionManager::onDisconnected);
 
     connect(&webSocket_, &QWebSocket::textMessageReceived, this,
-        &SolanaConnectionManager::onTextMessageReceived, Qt::DirectConnection);
+        &SolanaConnectionManager::onTextMessageReceived);
 
     connect(&webSocket_,
         QOverload<QAbstractSocket::SocketError>::of(&QWebSocket::error), this,
-        &SolanaConnectionManager::onError, Qt::DirectConnection);
+        &SolanaConnectionManager::onError);
 
     reconnectTimer_.setInterval(5000);
     reconnectTimer_.setSingleShot(true);
     connect(&reconnectTimer_, &QTimer::timeout, this,
-        &SolanaConnectionManager::reconnect, Qt::DirectConnection);
-
-    workerThread_.start();
+        &SolanaConnectionManager::reconnect);
 
     initialize();
 }
@@ -292,14 +285,6 @@ SolanaConnectionManager::~SolanaConnectionManager()
     if (connected_) {
         disconnectFromNode();
     }
-
-    workerThread_.quit();
-    workerThread_.wait(3000);
-
-    if (workerThread_.isRunning()) {
-        workerThread_.terminate();
-        workerThread_.wait();
-    }
 }
 
 void SolanaConnectionManager::initialize()
@@ -307,10 +292,6 @@ void SolanaConnectionManager::initialize()
     connected_ = false;
     nextListenerId_ = 1;
     nextRpcId_ = 1;
-
-    if (!workerThread_.isRunning()) {
-        workerThread_.start();
-    }
 
     reconnectTimer_.stop();
     reconnectTimer_.setInterval(5000);
@@ -326,40 +307,29 @@ void SolanaConnectionManager::cleanup()
         for (auto it = subscriptions_.begin(); it != subscriptions_.end();
             ++it) {
             if (it.value().wsId > 0) {
-                json unsubRequest;
-                unsubRequest["jsonrpc"] = "2.0";
-                unsubRequest["id"] = nextRpcId_++;
-                unsubRequest["method"] = "unsubscribe";
-
-                json params = json::array();
-                params.push_back(it.value().wsId);
-                unsubRequest["params"] = params;
-
-                Q_EMIT doSendMessage(
-                    QString::fromStdString(unsubRequest.dump()));
+                unregisterListener(it.key());
             }
         }
     }
 
     subscriptions_.clear();
-
     reconnectTimer_.stop();
 
     qDebug() << "ConnectionManager cleaned up";
 }
 
 int SolanaConnectionManager::sendJsonRpcRequest(
-    const QString& method, const json& params)
+    std::string_view method, const json& params)
 {
     int requestId = nextRpcId_++;
 
     json request;
     request["jsonrpc"] = "2.0";
     request["id"] = requestId;
-    request["method"] = method.toStdString();
+    request["method"] = std::string(method);
     request["params"] = params;
 
-    Q_EMIT doSendMessage(QString::fromStdString(request.dump()));
+    webSocket_.sendTextMessage(QString::fromStdString(request.dump()));
 
     return requestId;
 }
@@ -407,7 +377,7 @@ void SolanaConnectionManager::sendSubscriptionRequest(int listenerId)
     Subscription& sub = subscriptions_[listenerId];
 
     json params = json::array();
-    QString method;
+    std::string_view method;
 
     switch (sub.type) {
     case SubscriptionType::Transaction:

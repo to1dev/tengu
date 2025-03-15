@@ -20,11 +20,11 @@
 
 #include <concepts>
 #include <functional>
+#include <string_view>
 
 #include <QObject>
 #include <QSet>
 #include <QString>
-#include <QTimer>
 
 #include "nlohmann/json.hpp"
 
@@ -53,11 +53,11 @@ public:
 
     void setSmartMoneyCriteria(const SmartMoneyCriteria& criteria);
 
-    void addSmartMoneyAddress(const QString& address);
-    void removeSmartMoneyAddress(const QString& address);
+    void addSmartMoneyAddress(std::string_view address);
+    void removeSmartMoneyAddress(std::string_view address);
 
-    void addTrackedProgramId(const QString& programId);
-    void removeTrackedProgramId(const QString& programId);
+    void addTrackedProgramId(std::string_view programId);
+    void removeTrackedProgramId(std::string_view programId);
 
     void setMinTransactionAmount(uint64_t amount);
 
@@ -70,11 +70,9 @@ public:
     }
 
     const SmartMoneyCriteria& getCurrentCriteria() const;
-
     bool isTracking() const;
 
-    void setName(const QString& name);
-
+    void setName(std::string_view name);
     QString getName() const;
 
 Q_SIGNALS:
@@ -85,7 +83,13 @@ Q_SIGNALS:
 private:
     void processTransaction(const json& transaction);
     void processAccountUpdate(const json& accountData);
+
     bool isSmartMoneyTransaction(const json& transaction);
+
+    bool checkSmartAddresses(const json& transaction) const;
+    bool checkProgramIds(const json& transaction) const;
+    bool checkTransactionAmount(const json& transaction) const;
+
     void reregisterListeners();
     void registerAccountListeners();
 

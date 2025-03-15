@@ -36,7 +36,7 @@ bool SmartMoneyTracker::startTracking()
         return true;
     }
 
-    auto* manager = SolanaConnectionManager::instance();
+    auto manager = SolanaConnectionManager::instance();
     if (!manager->isConnected()) {
         Q_EMIT error("Connection manager is not connected");
         return false;
@@ -61,7 +61,7 @@ void SmartMoneyTracker::stopTracking()
         return;
     }
 
-    auto* manager = SolanaConnectionManager::instance();
+    auto manager = SolanaConnectionManager::instance();
 
     if (transactionListenerId_ != -1) {
         manager->unregisterListener(transactionListenerId_);
@@ -90,38 +90,42 @@ void SmartMoneyTracker::setSmartMoneyCriteria(
     }
 }
 
-void SmartMoneyTracker::addSmartMoneyAddress(const QString& address)
+void SmartMoneyTracker::addSmartMoneyAddress(std::string_view address)
 {
-    criteria_.smartAddresses.insert(address);
+    QString _address = QString::fromStdString(std::string(address));
+    criteria_.smartAddresses.insert(_address);
 
-    if (isTracking_ && !accountListenerIds_.contains(address)) {
-        auto* manager = SolanaConnectionManager::instance();
+    if (isTracking_ && !accountListenerIds_.contains(_address)) {
+        auto manager = SolanaConnectionManager::instance();
         int listenerId = manager->registerAccountListener(
             address, [this](const json& data) { processAccountUpdate(data); });
 
-        accountListenerIds_[address] = listenerId;
+        accountListenerIds_[_address] = listenerId;
     }
 }
 
-void SmartMoneyTracker::removeSmartMoneyAddress(const QString& address)
+void SmartMoneyTracker::removeSmartMoneyAddress(std::string_view address)
 {
-    criteria_.smartAddresses.remove(address);
+    QString _address = QString::fromStdString(std::string(address));
+    criteria_.smartAddresses.remove(_address);
 
-    if (isTracking_ && accountListenerIds_.contains(address)) {
-        auto* manager = SolanaConnectionManager::instance();
-        manager->unregisterListener(accountListenerIds_[address]);
-        accountListenerIds_.remove(address);
+    if (isTracking_ && accountListenerIds_.contains(_address)) {
+        auto manager = SolanaConnectionManager::instance();
+        manager->unregisterListener(accountListenerIds_[_address]);
+        accountListenerIds_.remove(_address);
     }
 }
 
-void SmartMoneyTracker::addTrackedProgramId(const QString& programId)
+void SmartMoneyTracker::addTrackedProgramId(std::string_view programId)
 {
-    criteria_.trackedProgramIds.insert(programId);
+    criteria_.trackedProgramIds.insert(
+        QString::fromStdString(std::string(programId)));
 }
 
-void SmartMoneyTracker::removeTrackedProgramId(const QString& programId)
+void SmartMoneyTracker::removeTrackedProgramId(std::string_view programId)
 {
-    criteria_.trackedProgramIds.remove(programId);
+    criteria_.trackedProgramIds.remove(
+        QString::fromStdString(std::string(programId)));
 }
 
 void SmartMoneyTracker::setMinTransactionAmount(uint64_t amount)
@@ -140,9 +144,9 @@ bool SmartMoneyTracker::isTracking() const
     return isTracking_;
 }
 
-void SmartMoneyTracker::setName(const QString& name)
+void SmartMoneyTracker::setName(std::string_view name)
 {
-    name_ = name;
+    name_ = QString::fromStdString(std::string(name));
 }
 
 QString SmartMoneyTracker::getName() const
@@ -164,90 +168,149 @@ void SmartMoneyTracker::processAccountUpdate(const json& accountData)
 
 bool SmartMoneyTracker::isSmartMoneyTransaction(const json& transaction)
 {
-    bool involvesSmart = false;
+    bool involvesSmart = checkSmartAddresses(transaction);
+    if (!involvesSmart) {
+        return false;
+    }
 
-    if (transaction.contains("transaction")) {
-        const json& txDetails = transaction["transaction"];
+    if (!checkTransactionAmount(transaction)) {
+        return false;
+    }
 
-        if (txDetails.contains("message") && txDetails["message"].is_object()) {
-            const json& message = txDetails["message"];
-
-            if (message.contains("accountKeys")
-                && message["accountKeys"].is_array()) {
-                const json& accounts = message["accountKeys"];
-
-                for (const auto& account : accounts) {
-                    QString accountStr
-                        = QString::fromStdString(account.get<std::string>());
-                    if (criteria_.smartAddresses.contains(accountStr)) {
-                        involvesSmart = true;
-                        break;
-                    }
-                }
-            }
-        }
-
-        if (!criteria_.trackedProgramIds.isEmpty()
-            && txDetails.contains("message")
-            && txDetails["message"].is_object()) {
-            const json& message = txDetails["message"];
-
-            if (message.contains("instructions")
-                && message["instructions"].is_array()) {
-                const json& instructions = message["instructions"];
-
-                bool matchesProgramId = false;
-                for (const auto& instruction : instructions) {
-                    if (!instruction.is_object())
-                        continue;
-
-                    if (instruction.contains("programId")) {
-                        QString programId = QString::fromStdString(
-                            instruction["programId"].get<std::string>());
-                        if (criteria_.trackedProgramIds.contains(programId)) {
-                            matchesProgramId = true;
-                            break;
-                        }
-                    }
-                }
-
-                if (!matchesProgramId) {
-                    return false;
-                }
-            }
-        }
-
-        if (txDetails.contains("meta") && txDetails["meta"].is_object()) {
-            const json& meta = txDetails["meta"];
-
-            if (meta.contains("postBalances") && meta.contains("preBalances")
-                && meta["postBalances"].is_array()
-                && meta["preBalances"].is_array()) {
-                const json& preBalances = meta["preBalances"];
-                const json& postBalances = meta["postBalances"];
-
-                uint64_t maxChange = 0;
-                size_t minSize
-                    = std::min(preBalances.size(), postBalances.size());
-                for (size_t i = 0; i < minSize; i++) {
-                    uint64_t pre = preBalances[i].get<uint64_t>();
-                    uint64_t post = postBalances[i].get<uint64_t>();
-                    uint64_t change = pre > post ? pre - post : post - pre;
-                    maxChange = std::max(maxChange, change);
-                }
-
-                if (maxChange < criteria_.minTransactionAmount) {
-                    return false;
-                }
-            }
-        }
+    if (!criteria_.trackedProgramIds.isEmpty()
+        && !checkProgramIds(transaction)) {
+        return false;
     }
 
     if (criteria_.customFilter && !criteria_.customFilter(transaction)) {
         return false;
     }
 
-    return involvesSmart;
+    return true;
+}
+
+bool SmartMoneyTracker::checkSmartAddresses(const json& transaction) const
+{
+    if (criteria_.smartAddresses.isEmpty()) {
+        return false;
+    }
+
+    if (!transaction.contains("transaction")) {
+        return false;
+    }
+
+    const json& txDetails = transaction["transaction"];
+
+    if (!txDetails.contains("message") || !txDetails["message"].is_object()) {
+        return false;
+    }
+
+    const json& message = txDetails["message"];
+
+    if (!message.contains("accountKeys")
+        || !message["accountKeys"].is_array()) {
+        return false;
+    }
+
+    const json& accounts = message["accountKeys"];
+
+    for (const auto& account : accounts) {
+        if (!account.is_string())
+            continue;
+
+        QString accountStr = QString::fromStdString(account.get<std::string>());
+        if (criteria_.smartAddresses.contains(accountStr)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool SmartMoneyTracker::checkProgramIds(const json& transaction) const
+{
+    if (criteria_.trackedProgramIds.isEmpty()) {
+        return true;
+    }
+
+    if (!transaction.contains("transaction")) {
+        return false;
+    }
+
+    const json& txDetails = transaction["transaction"];
+
+    if (!txDetails.contains("message") || !txDetails["message"].is_object()) {
+        return false;
+    }
+
+    const json& message = txDetails["message"];
+
+    if (!message.contains("instructions")
+        || !message["instructions"].is_array()) {
+        return false;
+    }
+
+    const json& instructions = message["instructions"];
+
+    for (const auto& instruction : instructions) {
+        if (!instruction.is_object())
+            continue;
+
+        if (instruction.contains("programId")) {
+            QString programId = QString::fromStdString(
+                instruction["programId"].get<std::string>());
+
+            if (criteria_.trackedProgramIds.contains(programId)) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+bool SmartMoneyTracker::checkTransactionAmount(const json& transaction) const
+{
+    if (criteria_.minTransactionAmount == 0) {
+        return true;
+    }
+
+    if (!transaction.contains("transaction")) {
+        return false;
+    }
+
+    const json& txDetails = transaction["transaction"];
+
+    if (!txDetails.contains("meta") || !txDetails["meta"].is_object()) {
+        return false;
+    }
+
+    const json& meta = txDetails["meta"];
+
+    if (!meta.contains("postBalances") || !meta.contains("preBalances")
+        || !meta["postBalances"].is_array()
+        || !meta["preBalances"].is_array()) {
+        return false;
+    }
+
+    const json& preBalances = meta["preBalances"];
+    const json& postBalances = meta["postBalances"];
+
+    uint64_t maxChange = 0;
+    size_t minSize = std::min(preBalances.size(), postBalances.size());
+
+    for (size_t i = 0; i < minSize; i++) {
+        if (!preBalances[i].is_number() || !postBalances[i].is_number()) {
+            continue;
+        }
+
+        uint64_t pre = preBalances[i].get<uint64_t>();
+        uint64_t post = postBalances[i].get<uint64_t>();
+        uint64_t change = pre > post ? pre - post : post - pre;
+        maxChange = std::max(maxChange, change);
+    }
+
+    return maxChange >= criteria_.minTransactionAmount;
 }
 
 void SmartMoneyTracker::reregisterListeners()
@@ -258,12 +321,13 @@ void SmartMoneyTracker::reregisterListeners()
 
 void SmartMoneyTracker::registerAccountListeners()
 {
-    auto* manager = SolanaConnectionManager::instance();
+    auto manager = SolanaConnectionManager::instance();
 
     for (const QString& address : criteria_.smartAddresses) {
         if (!accountListenerIds_.contains(address)) {
-            int listenerId = manager->registerAccountListener(address,
-                [this](const json& data) { processAccountUpdate(data); });
+            int listenerId
+                = manager->registerAccountListener(address.toStdString(),
+                    [this](const json& data) { processAccountUpdate(data); });
             accountListenerIds_[address] = listenerId;
         }
     }

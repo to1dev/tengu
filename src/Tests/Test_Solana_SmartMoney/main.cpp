@@ -16,16 +16,11 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <iostream>
-
-#include <QApplication>
-#include <QDebug>
-
-#include "TrackerWidget.h"
+#include <QCoreApplication>
 
 int main(int argc, char* argv[])
 {
-    QApplication app(argc, argv);
+    QCoreApplication app(argc, argv);
 
     return app.exec();
 }

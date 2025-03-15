@@ -25,7 +25,6 @@ set(ALL_SOURCES
 )
 
 set(TEST_SOURCES
-    ${CMAKE_SOURCE_DIR}/src/tests/Test_Solana_SmartMoney/TrackerWidget.cpp
     ${CMAKE_SOURCE_DIR}/src/tests/Test_Solana_SmartMoney/main.cpp
 )
 

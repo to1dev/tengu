@@ -19,14 +19,17 @@
 #pragma once
 
 #include <atomic>
+#include <concepts>
 #include <functional>
+#include <memory>
+#include <optional>
+#include <string_view>
 
 #include <QDebug>
 #include <QMap>
 #include <QMutex>
 #include <QObject>
 #include <QSet>
-#include <QThread>
 #include <QTimer>
 #include <QUrl>
 #include <QWebSocket>
@@ -41,12 +44,10 @@ class SolanaConnectionManager : public QObject {
     Q_OBJECT
 
 public:
-    static SolanaConnectionManager* instance();
+    static std::shared_ptr<SolanaConnectionManager> instance();
 
     bool connectToNode(const QUrl& url);
-
     void disconnectFromNode();
-
     bool isConnected() const;
 
     enum class SubscriptionType {
@@ -60,21 +61,16 @@ public:
         const std::function<void(const json&)>& callback,
         const json& filterConfig = nullptr);
 
-    int registerAccountListener(const QString& address,
+    int registerAccountListener(std::string_view address,
         const std::function<void(const json&)>& callback);
 
-    int registerProgramListener(const QString& programId,
+    int registerProgramListener(std::string_view programId,
         const std::function<void(const json&)>& callback);
 
     void unregisterListener(int listenerId);
-
     void destroy();
 
 Q_SIGNALS:
-    void doConnect(const QUrl& url);
-    void doDisconnect();
-    void doSendMessage(const QString& message);
-
     void connectionStatusChanged(bool connected);
     void error(const QString& errorMessage);
 
@@ -83,12 +79,19 @@ private Q_SLOTS:
     void onDisconnected();
     void onTextMessageReceived(const QString& message);
     void onError(QAbstractSocket::SocketError error);
-    void sendMessage(const QString& message);
     void reconnect();
 
 private:
-    explicit SolanaConnectionManager();
+    explicit SolanaConnectionManager(QObject* parent = nullptr);
     ~SolanaConnectionManager();
+
+    struct Deleter {
+        void operator()(SolanaConnectionManager* p)
+        {
+            delete p;
+        }
+    };
+    friend struct Deleter;
 
     SolanaConnectionManager(const SolanaConnectionManager&) = delete;
     SolanaConnectionManager& operator=(const SolanaConnectionManager&) = delete;
@@ -98,31 +101,25 @@ private:
 
     struct Subscription {
         SubscriptionType type;
-        std::function<void(const nlohmann::json&)> callback;
-        nlohmann::json filterConfig;
+        std::function<void(const json&)> callback;
+        json filterConfig;
         QString address;
-        int rpcId;
-        int wsId;
+        int rpcId = -1;
+        int wsId = -1;
     };
 
-    int sendJsonRpcRequest(const QString& method, const json& params);
-
+    int sendJsonRpcRequest(std::string_view method, const json& params);
     void processSubscriptionMessage(const json& notification);
-
     void resubscribeAll();
-
     int generateListenerId();
-
     void sendSubscriptionRequest(int listenerId);
 
 private:
-    static SolanaConnectionManager* instance_;
+    static std::shared_ptr<SolanaConnectionManager> instance_;
     static QMutex instanceMutex_;
 
     QWebSocket webSocket_;
-    QThread workerThread_;
     QTimer reconnectTimer_;
-
     QUrl currentUrl_;
 
     std::atomic<bool> connected_ { false };

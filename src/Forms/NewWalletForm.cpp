@@ -71,7 +71,8 @@ NewWalletForm::NewWalletForm(const NewWallet& wallet, QWidget* parent,
     comboChain_ = new ComboBoxEx(this);
     int index = 0;
     for (const auto& chain : Chains) {
-        comboChain_->addItem(QString::fromUtf8(chain.second.name.data()));
+        comboChain_->addItem(QString::fromUtf8(
+            chain.second.name.data(), chain.second.name.size()));
         bool enabled = chain.second.enabled;
         if (!enabled) {
             comboChain_->setItemEnabled(index, false);

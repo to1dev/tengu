@@ -18,6 +18,8 @@
 
 #pragma once
 
+#include <array>
+
 #include <QDebug>
 #include <QKeyEvent>
 #include <QMimeData>
@@ -26,15 +28,47 @@
 #include <QTimer>
 
 #include "Wallets/Core/BaseMnemonic.h"
+#include "Wallets/Core/BitcoinWallet.h"
+#include "Wallets/Core/EthereumWallet.h"
+#include "Wallets/Core/SolanaWallet.h"
+
 using namespace Daitengu::Wallets;
 
 #include "Utils/Base58.hpp"
 
 #include "ContentTypes.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include "izanagi/sha2.h"
+
+#ifdef __cplusplus
+}
+#endif
+
 namespace Daitengu::Components {
 
+inline constexpr int MAX_WORDS = 24;
 inline constexpr char PLAINTEXTEDIT_NAME[] = "plainTextEdit";
+
+inline constexpr std::array<Qt::Key, 3> DefaultKeys = {
+    Qt::Key_Space,
+    Qt::Key_Return,
+    Qt::Key_Tab,
+};
+
+inline constexpr std::array<const char*, 2> btcPrefixes = {
+    "bc1",
+    "tb1",
+};
+
+inline constexpr std::array<const char*, 3> wifPrefixes = {
+    "5",
+    "K",
+    "L",
+};
 
 class CryptoTextEdit : public QPlainTextEdit {
     Q_OBJECT
@@ -51,13 +85,14 @@ Q_SIGNALS:
 
 protected:
     void insertFromMimeData(const QMimeData* source) override;
-    void keyReleaseEvent(QKeyEvent* e) override;
+    void keyPressEvent(QKeyEvent* e) override;
     void focusOutEvent(QFocusEvent* e) override;
 
 private Q_SLOTS:
     void analyzeCurrentText();
 
 private:
+    QString filterText(const QString& text);
     ContentInfo detectContent(const QString& text);
 
     bool isMnemonic(const QString& text);

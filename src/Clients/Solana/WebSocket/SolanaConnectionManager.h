@@ -19,23 +19,19 @@
 #pragma once
 
 #include <atomic>
-#include <concepts>
 #include <functional>
 #include <memory>
-#include <optional>
 #include <string_view>
 
 #include <QDebug>
 #include <QMap>
 #include <QMutex>
 #include <QObject>
-#include <QSet>
 #include <QTimer>
 #include <QUrl>
 #include <QWebSocket>
 
 #include "nlohmann/json.hpp"
-
 using json = nlohmann::json;
 
 namespace Daitengu::Clients::Solana {
@@ -51,23 +47,24 @@ public:
     bool isConnected() const;
 
     enum class SubscriptionType {
-        Transaction,
+        Logs,
         Account,
         Program,
         Signature,
     };
 
-    int registerTransactionListener(
-        const std::function<void(const json&)>& callback,
+    int registerLogsListener(const std::function<void(const json&)>& callback,
         const json& filterConfig = nullptr);
-
     int registerAccountListener(std::string_view address,
         const std::function<void(const json&)>& callback);
-
     int registerProgramListener(std::string_view programId,
         const std::function<void(const json&)>& callback);
 
     void unregisterListener(int listenerId);
+
+    void requestTransactionDetails(const std::string& signature,
+        std::function<void(const json&)> callback);
+
     void destroy();
 
 Q_SIGNALS:
@@ -108,6 +105,10 @@ private:
         int wsId = -1;
     };
 
+    struct PendingRequest {
+        std::function<void(const json&)> callback;
+    };
+
     int sendJsonRpcRequest(std::string_view method, const json& params);
     void processSubscriptionMessage(const json& notification);
     void resubscribeAll();
@@ -127,8 +128,10 @@ private:
     QMutex listenerMutex_;
     QMap<int, Subscription> subscriptions_;
 
+    QMutex requestMutex_;
+    QMap<int, PendingRequest> pendingRequests_;
+
     std::atomic<int> nextListenerId_ { 1 };
     std::atomic<int> nextRpcId_ { 1 };
 };
-
 }

@@ -18,19 +18,19 @@
 
 #pragma once
 
-#include <concepts>
 #include <functional>
-#include <string_view>
+#include <vector>
 
+#include <QMap>
 #include <QObject>
 #include <QSet>
 #include <QString>
 
 #include "nlohmann/json.hpp"
-
 using json = nlohmann::json;
 
 #include "SolanaConnectionManager.h"
+#include "TransactionFetchManager.h"
 
 namespace Daitengu::Clients::Solana {
 
@@ -40,7 +40,7 @@ class SmartMoneyTracker : public QObject {
 public:
     struct SmartMoneyCriteria {
         QSet<QString> smartAddresses;
-        uint64_t minTransactionAmount = 1000000000;
+        uint64_t minTransactionAmount = 1000000000ULL; // 1 SOL
         QSet<QString> trackedProgramIds;
         std::function<bool(const json&)> customFilter = nullptr;
     };
@@ -48,59 +48,47 @@ public:
     explicit SmartMoneyTracker(QObject* parent = nullptr);
     ~SmartMoneyTracker();
 
-    bool startTracking();
-    void stopTracking();
-
-    void setSmartMoneyCriteria(const SmartMoneyCriteria& criteria);
-
-    void addSmartMoneyAddress(std::string_view address);
-    void removeSmartMoneyAddress(std::string_view address);
-
-    void addTrackedProgramId(std::string_view programId);
-    void removeTrackedProgramId(std::string_view programId);
-
-    void setMinTransactionAmount(uint64_t amount);
-
-    template <typename Func>
-        requires std::invocable<Func, const json&>
-        && std::same_as<std::invoke_result_t<Func, const json&>, bool>
-    void setCustomFilter(Func&& filter)
-    {
-        criteria_.customFilter = std::forward<Func>(filter);
-    }
-
-    const SmartMoneyCriteria& getCurrentCriteria() const;
-    bool isTracking() const;
-
     void setName(std::string_view name);
     QString getName() const;
 
+    void setSmartMoneyCriteria(const SmartMoneyCriteria& criteria);
+    const SmartMoneyCriteria& getCriteria() const;
+
+    bool startTracking();
+    void stopTracking();
+    bool isTracking() const;
+
 Q_SIGNALS:
-    void smartMoneyTransactionDetected(const json& transaction);
-    void trackingStatusChanged(bool isTracking);
-    void error(const QString& errorMessage);
+    void smartMoneyTransactionDetected(const json& fullTx);
+    void trackingStatusChanged(bool tracking);
+    void error(const QString& err);
 
 private:
-    void processTransaction(const json& transaction);
-    void processAccountUpdate(const json& accountData);
+    struct LogsSubscriptionBucket {
+        int subscriptionId = -1;
+        std::vector<QString> addresses;
+    };
 
-    bool isSmartMoneyTransaction(const json& transaction);
+    void registerLogsSubscriptions();
+    void unregisterLogsSubscriptions();
 
-    bool checkSmartAddresses(const json& transaction) const;
-    bool checkProgramIds(const json& transaction) const;
-    bool checkTransactionAmount(const json& transaction) const;
+    void onLogsNotification(const json& notif, int bucketIndex);
 
-    void reregisterListeners();
-    void registerAccountListeners();
+    void onTransactionResult(const json& fullTx, bool success);
+
+    bool isSmartMoneyTransaction(const json& fullTx) const;
+    bool checkSmartAddresses(const json& fullTx) const;
+    bool checkProgramIds(const json& fullTx) const;
+    bool checkTransactionAmount(const json& fullTx) const;
 
 private:
     SmartMoneyCriteria criteria_;
-    bool isTracking_ { false };
-
-    int transactionListenerId_ { -1 };
-    QMap<QString, int> accountListenerIds_;
-
+    bool tracking_ = false;
     QString name_ { "SmartMoneyTracker" };
-};
 
+    std::vector<LogsSubscriptionBucket> buckets_;
+    static const size_t MAX_MENTIONS_PER_BUCKET = 500;
+
+    TransactionFetchManager fetchManager_;
+};
 }

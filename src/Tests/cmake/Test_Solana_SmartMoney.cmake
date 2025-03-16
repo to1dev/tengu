@@ -20,8 +20,7 @@ find_package(Qt5 REQUIRED COMPONENTS
 )
 
 set(ALL_SOURCES
-    ${CMAKE_SOURCE_DIR}/src/Clients/Solana/WebSocket/SolanaConnectionManager.cpp
-    ${CMAKE_SOURCE_DIR}/src/Clients/Solana/WebSocket/SmartMoneyTracker.cpp
+    ${CMAKE_SOURCE_DIR}/src/Clients/Solana/WebSocket/Client.cpp
 )
 
 set(TEST_SOURCES
@@ -55,6 +54,7 @@ target_compile_options(${PROJECT_NAME} PRIVATE
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
+    fmt
     Qt5::Core
     Qt5::Gui
     Qt5::Widgets

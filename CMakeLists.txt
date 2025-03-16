@@ -58,8 +58,7 @@ else()
 endif()
 
 set(SOLANA_WEBSOCKET_FILES
-    src/Clients/Solana/WebSocket/SmartMoneyTracker.cpp
-    src/Clients/Solana/WebSocket/SolanaConnectionManager.cpp
+    src/Clients/Solana/WebSocket/Client.cpp
 )
 
 set(SOURCE_FILES

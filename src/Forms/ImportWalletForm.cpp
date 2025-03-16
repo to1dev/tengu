@@ -34,6 +34,53 @@ ImportWalletForm::ImportWalletForm(
     frameless_->setContentFrame(ui->frameContent);
     frameless_->init(Frameless::Mode::DIALOG);
 
+    QVBoxLayout* layout = new QVBoxLayout(ui->groupBox);
+    layout->setContentsMargins(DEFAULT_GROUP_MARGINS);
+    layout->setSpacing(DEFAULT_SPACING);
+
+    text_ = new CryptoTextEdit(this);
+    text_->setFocus();
+
+    layout->addWidget(text_);
+    ui->groupBox->setLayout(layout);
+
+    QVBoxLayout* layoutOptions = new QVBoxLayout(ui->groupBoxOptions);
+    layoutOptions->setContentsMargins(DEFAULT_GROUP_MARGINS);
+    layoutOptions->setSpacing(DEFAULT_SPACING);
+
+    QLabel* labelName = new QLabel(this);
+    labelName->setText(STR_LABEL_NAME);
+
+    editName_ = new LineEditEx(this);
+    editName_->setText(
+        QString::fromStdString(NameGenerator(NAME_PATTERN).toString()));
+    editName_->setMaxLength(DEFAULT_MAXLENGTH);
+    editName_->setPlaceholderText(STR_LINEEDIT_WALLET_NAME_PLACEHOLDER);
+    editName_->setCursorPosition(0);
+
+    QLabel* labelChain = new QLabel(this);
+    labelChain->setText(STR_LABEL_CHAIN);
+
+    comboChain_ = new ComboBoxEx(this);
+    int index = 0;
+    for (const auto& chain : Chains) {
+        comboChain_->addItem(QString::fromUtf8(
+            chain.second.name.data(), chain.second.name.size()));
+        bool enabled = chain.second.enabled;
+        if (!enabled) {
+            comboChain_->setItemEnabled(index, false);
+        }
+        index++;
+    }
+    comboChain_->setCurrentIndex(0);
+
+    layoutOptions->addWidget(labelName);
+    layoutOptions->addWidget(editName_);
+    layoutOptions->addWidget(labelChain);
+    layoutOptions->addWidget(comboChain_);
+    layoutOptions->addStretch(1);
+    ui->groupBoxOptions->setLayout(layoutOptions);
+
     globalManager_->windowManager()->reset(this, 0.7);
     connect(frameless_.get(), &Frameless::onMax, this,
         [this]() { globalManager_->windowManager()->reset(this, 0.7); });
@@ -41,6 +88,10 @@ ImportWalletForm::ImportWalletForm(
     connect(ui->ButtonOK, &QPushButton::clicked, this, &ImportWalletForm::ok);
     connect(ui->ButtonCancel, &QPushButton::clicked, this,
         &ImportWalletForm::reject);
+    connect(ui->ButtonRefresh, &QPushButton::clicked, [&]() {
+        editName_->setText(
+            QString::fromStdString(NameGenerator(NAME_PATTERN).toString()));
+    });
 }
 
 ImportWalletForm::~ImportWalletForm()

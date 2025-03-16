@@ -28,9 +28,11 @@
 #include "UI/Frameless.h"
 
 #include "Utils/Encryption.h"
+#include "Utils/NameGenerator.h"
 
 #include "Components/ComboBoxEx.h"
 #include "Components/LineEditEx.h"
+#include "Components/WalletImport/CryptoTextEdit.h"
 
 #include "Wallets/Core/BaseMnemonic.h"
 #include "Wallets/Core/BitcoinWallet.h"
@@ -75,6 +77,7 @@ private:
 
     LineEditEx* editName_;
     ComboBoxEx* comboChain_;
+    CryptoTextEdit* text_;
 
     std::shared_ptr<Wallet> walletRecord_;
 };

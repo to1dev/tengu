@@ -27,10 +27,20 @@
 namespace Daitengu::Wallets {
 
 enum class ChainType {
+    UNKNOWN = -1,
     BITCOIN,
     ETHEREUM,
     SOLANA,
     SUI,
+};
+
+enum class WalletType {
+    Unknown = -1,
+    Original = 0,
+    Mnemonic,
+    Priv,
+    Wif,
+    Address,
 };
 
 struct Network {

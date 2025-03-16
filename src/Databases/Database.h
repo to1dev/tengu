@@ -46,14 +46,6 @@ enum class WalletGroupType {
     Vault = 1,
 };
 
-enum class WalletType {
-    Original = 0,
-    Mnemonic,
-    Priv,
-    Wif,
-    Address,
-};
-
 enum class DBErrorType {
     none = 0,
     haveName,

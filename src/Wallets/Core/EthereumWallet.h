@@ -18,13 +18,16 @@
 
 #pragma once
 
+#include <algorithm>
 #include <array>
+#include <cctype>
 #include <cstdint>
 #include <cstring>
 #include <map>
 #include <span>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include <sodium.h>
@@ -55,6 +58,8 @@ public:
 
     explicit EthereumWallet(
         bool useEip55 = true, Network::Type network = Network::Type::MAINNET);
+
+    static bool isValid(std::string_view address);
 
     void fromPrivateKey(const std::string& privateKey) override;
     [[nodiscard]] std::string getAddress(std::uint32_t index = 0) override;

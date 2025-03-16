@@ -21,6 +21,7 @@
 
 #include <cstdint>
 #include <cstring>
+#include <regex>
 #include <span>
 #include <stdexcept>
 #include <string>
@@ -38,6 +39,8 @@ public:
         = "m/44'/501'/0'";
 
     SolanaWallet(Network::Type network = Network::Type::MAINNET);
+
+    static bool isValid(std::string_view address);
 
     bool solanaMode() const;
     void setSolanaMode(bool newSolanaMode);

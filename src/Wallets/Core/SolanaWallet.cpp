@@ -20,9 +20,36 @@
 
 namespace Daitengu::Wallets {
 
+inline bool isValidBase58(std::string_view text)
+{
+    static const std::regex base58Regex { R"(^[1-9A-HJ-NP-Za-km-z]{32,44}$)" };
+    return std::regex_match(text.begin(), text.end(), base58Regex);
+}
+
 SolanaWallet::SolanaWallet(Network::Type network)
     : ChainWallet(ChainType::SOLANA, network)
 {
+}
+
+bool SolanaWallet::isValid(std::string_view address)
+{
+    if (!isValidBase58(address)) {
+        return false;
+    }
+
+    try {
+        std::vector<unsigned char> decoded;
+        if (!DecodeBase58(std::string(address), decoded, address.size())) {
+            return false;
+        }
+
+        return decoded.size() == 32;
+    } catch (const std::exception& e) {
+        std::cerr << "Failed to check Solana address: " << e.what()
+                  << std::endl;
+    }
+
+    return false;
 }
 
 bool SolanaWallet::solanaMode() const

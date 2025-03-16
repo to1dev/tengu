@@ -22,10 +22,93 @@
 
 namespace Daitengu::Wallets {
 
+inline std::string keccak256(std::string_view input)
+{
+    std::vector<unsigned char> buf(input.begin(), input.end());
+
+    unsigned char digest[32] = { 0 };
+    keccak_256(buf.data(), buf.size(), digest);
+
+    static const char* hexChars = "0123456789abcdef";
+    std::string hexDigest;
+    hexDigest.reserve(64);
+
+    for (int i = 0; i < 32; ++i) {
+        unsigned char c = digest[i];
+        hexDigest.push_back(hexChars[(c >> 4) & 0xF]);
+        hexDigest.push_back(hexChars[c & 0xF]);
+    }
+
+    return hexDigest;
+}
+
 EthereumWallet::EthereumWallet(bool useEip55, Network::Type network)
     : ChainWallet(ChainType::ETHEREUM, network)
     , useEip55_(useEip55)
 {
+}
+
+bool EthereumWallet::isValid(std::string_view address)
+{
+    if (address.size() >= 2 && address[0] == '0'
+        && (address[1] == 'x' || address[1] == 'X')) {
+        address.remove_prefix(2);
+    }
+
+    if (address.size() != 40) {
+        return false;
+    }
+
+    for (char c : address) {
+        if (!std::isxdigit(static_cast<unsigned char>(c))) {
+            return false;
+        }
+    }
+
+    bool isAllLower = true, isAllUpper = true;
+    for (char c : address) {
+        if (std::isalpha(static_cast<unsigned char>(c))) {
+            if (std::islower(static_cast<unsigned char>(c))) {
+                isAllUpper = false;
+            } else if (std::isupper(static_cast<unsigned char>(c))) {
+                isAllLower = false;
+            }
+        }
+    }
+    if (isAllLower || isAllUpper) {
+        return true;
+    }
+
+    std::string lowerAddress(address);
+    std::transform(lowerAddress.begin(), lowerAddress.end(),
+        lowerAddress.begin(), ::tolower);
+
+    std::string hash = keccak256(lowerAddress);
+    if (hash.size() != 64) {
+        return false;
+    }
+
+    for (size_t i = 0; i < 40; ++i) {
+        char addrChar = address[i];
+        if (std::isalpha(static_cast<unsigned char>(addrChar))) {
+            char hashChar = hash[i];
+            int hashValue = 0;
+            if (hashChar >= '0' && hashChar <= '9') {
+                hashValue = hashChar - '0';
+            } else {
+                hashValue = std::tolower(hashChar) - 'a' + 10;
+            }
+
+            if ((hashValue >= 8
+                    && !std::isupper(static_cast<unsigned char>(addrChar)))
+                || (hashValue < 8
+                    && !std::islower(static_cast<unsigned char>(addrChar)))) {
+                return false;
+            }
+        }
+    }
+
+    return true;
 }
 
 void EthereumWallet::fromPrivateKey(const std::string& privateKey)

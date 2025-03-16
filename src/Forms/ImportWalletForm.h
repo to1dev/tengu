@@ -54,6 +54,9 @@ namespace Ui {
 class ImportWalletForm;
 }
 
+inline const QString NO_VALID_MNEMONIC_KEY
+    = QObject::tr("请输入有效的助记词、地址或是私钥！");
+
 class ImportWalletForm : public QDialog {
     Q_OBJECT
 
@@ -78,6 +81,8 @@ private:
     LineEditEx* editName_;
     ComboBoxEx* comboChain_;
     CryptoTextEdit* text_;
+
+    ContentInfo currentContent_;
 
     std::shared_ptr<Wallet> walletRecord_;
 };

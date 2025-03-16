@@ -62,6 +62,7 @@ ImportWalletForm::ImportWalletForm(
     labelChain->setText(STR_LABEL_CHAIN);
 
     comboChain_ = new ComboBoxEx(this);
+    comboChain_->setEnabled(false);
     int index = 0;
     for (const auto& chain : Chains) {
         comboChain_->addItem(QString::fromUtf8(
@@ -92,6 +93,16 @@ ImportWalletForm::ImportWalletForm(
         editName_->setText(
             QString::fromStdString(NameGenerator(NAME_PATTERN).toString()));
     });
+
+    connect(text_, &CryptoTextEdit::contentDetected,
+        [this](const ContentInfo& info) {
+            currentContent_ = info;
+            if (info.type == WalletType::Mnemonic) {
+                comboChain_->setEnabled(true);
+            } else {
+                comboChain_->setEnabled(false);
+            }
+        });
 }
 
 ImportWalletForm::~ImportWalletForm()
@@ -106,5 +117,17 @@ std::shared_ptr<Wallet> ImportWalletForm::walletRecord() const
 
 void ImportWalletForm::ok()
 {
-    accept();
+    if (editName_->text().isEmpty()) {
+        MessageForm { this, 5, NO_VALID_WALLET_NAME }.exec();
+        return;
+    }
+
+    switch (currentContent_.type) {
+    case WalletType::Unknown: {
+        MessageForm { this, 5, NO_VALID_MNEMONIC_KEY }.exec();
+        break;
+    }
+    default:
+        break;
+    }
 }

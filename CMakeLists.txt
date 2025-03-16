@@ -76,6 +76,7 @@ set(SOURCE_FILES
     src/Components/TitleBar.cpp
     src/Components/Toast/Toast.cpp
     src/Components/TxListWidget.cpp
+    src/Components/WalletImport/CryptoTextEdit.cpp
     src/Components/WalletListWidget.cpp
     src/Components/WalletPanel.cpp
     src/Databases/Database.cpp

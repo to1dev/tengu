@@ -540,7 +540,7 @@ QComboBox::down-arrow:on, QComboBox::down-arrow:hover, QComboBox::down-arrow:foc
 #ButtonBell,
 #ButtonWallet {
     border-radius: 8px;
-    background: transparent;
+    background: palette(window);
     color: #DFE1E2;
     width: 60px;
     height: 60px;

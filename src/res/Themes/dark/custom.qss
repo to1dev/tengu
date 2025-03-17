@@ -534,6 +534,8 @@ QComboBox::down-arrow:on, QComboBox::down-arrow:hover, QComboBox::down-arrow:foc
     font-size: 24px;
 }
 
+#ButtonSwap,
+#ButtonTrade,
 #ButtonChart,
 #ButtonBell,
 #ButtonWallet {
@@ -545,6 +547,8 @@ QComboBox::down-arrow:on, QComboBox::down-arrow:hover, QComboBox::down-arrow:foc
     padding: 8px;
 }
 
+#ButtonSwap:pressed,
+#ButtonTrade:pressed,
 #ButtonChart:pressed,
 #ButtonBell:pressed,
 #ButtonWallet:pressed {
@@ -552,18 +556,24 @@ QComboBox::down-arrow:on, QComboBox::down-arrow:hover, QComboBox::down-arrow:foc
     background-color: #1A72BB;
 }
 
+#ButtonSwap:hover,
+#ButtonTrade:hover,
 #ButtonChart:hover,
 #ButtonBell:hover,
 #ButtonWallet:hover {
     background-color: #2D3E50;
 }
 
+#ButtonSwap:disabled,
+#ButtonTrade:disabled,
 #ButtonChart:disabled,
 #ButtonBell:disabled,
 #ButtonWallet:disabled {
     color: #788D9C;
 }
 
+#ButtonSwap:checked,
+#ButtonTrade:checked,
 #ButtonChart:checked,
 #ButtonBell:checked,
 #ButtonWallet:checked {

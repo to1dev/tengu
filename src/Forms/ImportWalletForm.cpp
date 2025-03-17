@@ -122,11 +122,28 @@ void ImportWalletForm::ok()
         return;
     }
 
-    switch (currentContent_.type) {
-    case WalletType::Unknown: {
+    if (!currentContent_.isValid()) {
         MessageForm { this, 5, NO_VALID_MNEMONIC_KEY }.exec();
+        return;
+    }
+
+    switch (currentContent_.type) {
+    case (WalletType::Mnemonic): {
         break;
     }
+
+    case (WalletType::Priv): {
+        break;
+    }
+
+    case (WalletType::Wif): {
+        break;
+    }
+
+    case (WalletType::Address): {
+        break;
+    }
+
     default:
         break;
     }

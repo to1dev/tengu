@@ -199,27 +199,24 @@ bool CryptoTextEdit::isBitcoinAddress(const QString& text)
         return false;
     }
 
-    try {
-        const QString hrp = text.left(2);
-        if (hrp != "bc" && hrp != "tb") {
-            return false;
-        }
-
-        return true;
-    } catch (const std::exception& e) {
-        qDebug() << "Failed to check Bitcoin address: " << e.what();
-    }
-
-    return false;
+    return BitcoinWallet::isValid(text.toStdString());
 }
 
 bool CryptoTextEdit::isEthereumAddress(const QString& text)
 {
+    if (!ethRegex_.match(text).hasMatch()) {
+        return false;
+    }
+
     return EthereumWallet::isValid(text.toStdString());
 }
 
 bool CryptoTextEdit::isSolanaAddress(const QString& text)
 {
+    if (!base58Regex_.match(text).hasMatch()) {
+        return false;
+    }
+
     return SolanaWallet::isValid(text.toStdString());
 }
 

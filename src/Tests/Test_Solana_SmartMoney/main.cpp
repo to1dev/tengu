@@ -31,6 +31,8 @@
 #include <QUrl>
 #include <QWebSocket>
 
+#include <sodium.h>
+
 #include "nlohmann/json.hpp"
 using json = nlohmann::json;
 
@@ -39,6 +41,7 @@ using json = nlohmann::json;
 
 #include "ankerl/unordered_dense.h"
 
+#include "Utils/Base58.hpp"
 #include "Utils/Dotenv.hpp"
 #include "Utils/PathUtils.hpp"
 using namespace Daitengu::Utils;
@@ -95,6 +98,82 @@ static const ankerl::unordered_dense::map<std::string_view, std::string_view>
         { "Orca V1", "DjVE6JNiYqPL2QXyCUUh8rNjHrbz9hXHNYt99MQ59qw1" },
         { "Aldrin", "AMM55ShdkoGRB5jVYPjWziwk8m5MpwyDgsMWHaMSQWH6" },
     };
+
+inline std::string base64Decode(const std::string& input)
+{
+    size_t decodedLength = input.size();
+    std::vector<unsigned char> decoded(decodedLength);
+
+    if (sodium_base642bin(decoded.data(), decoded.size(), input.data(),
+            input.size(), nullptr, &decodedLength, nullptr,
+            sodium_base64_VARIANT_ORIGINAL)
+        != 0) {
+        throw std::runtime_error("Base64 decoding failed");
+    }
+
+    return std::string(reinterpret_cast<char*>(decoded.data()), decodedLength);
+}
+
+json parse_create_instruction(const std::string& data)
+{
+    if (data.size() < 8) {
+        return json();
+    }
+
+    size_t offset = 8;
+    nlohmann::json parsed_data;
+
+    std::vector<std::pair<std::string, std::string>> fields = {
+        { "name", "string" },
+        { "symbol", "string" },
+        { "uri", "string" },
+        { "mint", "publicKey" },
+        { "bondingCurve", "publicKey" },
+        { "user", "publicKey" },
+    };
+
+    try {
+        for (const auto& [field_name, field_type] : fields) {
+            if (field_type == "string") {
+                if (offset + 4 > data.size()) {
+                    return json();
+                }
+
+                uint32_t length = 0;
+                memcpy(&length, data.data() + offset, sizeof(length));
+                offset += 4;
+
+                if (offset + length > data.size()) {
+                    return json();
+                }
+
+                std::string value(
+                    data.data() + offset, data.data() + offset + length);
+                offset += length;
+
+                parsed_data[field_name] = value;
+            } else if (field_type == "publicKey") {
+                if (offset + 32 > data.size()) {
+                    return json();
+                }
+
+                std::vector<unsigned char> key_bytes(
+                    reinterpret_cast<const unsigned char*>(
+                        data.data() + offset),
+                    reinterpret_cast<const unsigned char*>(
+                        data.data() + offset + 32));
+                offset += 32;
+
+                std::string value = EncodeBase58(key_bytes);
+
+                parsed_data[field_name] = value;
+            }
+        }
+        return parsed_data;
+    } catch (const std::exception&) {
+        return json();
+    }
+}
 
 class SolanaClient : public QObject {
     Q_OBJECT
@@ -156,9 +235,9 @@ private Q_SLOTS:
     void onTextMessageReceived(const QString& message)
     {
         try {
-            auto json = json::parse(message.toStdString());
-            if (json.contains("params")) {
-                auto params = json["params"];
+            auto data = json::parse(message.toStdString());
+            if (data.contains("params")) {
+                auto params = data["params"];
                 if (params.contains("result")) {
                     auto result = params["result"];
                     if (result.contains("value")) {
@@ -166,6 +245,7 @@ private Q_SLOTS:
                         if (value.contains("err") && !value["err"].is_null()) {
                             return;
                         }
+
                         if (value.contains("logs")) {
                             auto logs = value["logs"];
 
@@ -186,7 +266,65 @@ private Q_SLOTS:
                                 });
 
                             if (relevant) {
-                                if (value.contains("signature")) {
+                                bool createInstructionFound = std::any_of(
+                                    logs.begin(), logs.end(),
+                                    [](const std::string& log) {
+                                        return log.find("Program log: "
+                                                        "Instruction: Create")
+                                            != std::string::npos;
+                                    });
+
+                                if (createInstructionFound) {
+                                    for (const auto& logEntry : logs) {
+                                        std::string log
+                                            = logEntry
+                                                  .template get<std::string>();
+                                        if (log.find("Program data:")
+                                            != std::string::npos) {
+                                            try {
+                                                std::string encoded
+                                                    = log.substr(
+                                                        log.find(": ") + 2);
+                                                std::string decoded
+                                                    = base64Decode(encoded);
+                                                json parsed
+                                                    = parse_create_instruction(
+                                                        decoded);
+                                                if (!parsed.empty()
+                                                    && parsed.contains(
+                                                        "name")) {
+                                                    fmt::print("{}: {}\n",
+                                                        fmt::styled(
+                                                            foundDexName,
+                                                            fmt::fg(fmt::color::
+                                                                    green)),
+                                                        fmt::styled(
+                                                            value["signature"]
+                                                                .get<std::
+                                                                        string>(),
+                                                            fmt::fg(fmt::color::
+                                                                    blue)));
+                                                    for (const auto& [key,
+                                                             value] :
+                                                        parsed.items()) {
+                                                        std::cout << key << ": "
+                                                                  << value
+                                                                  << std::endl;
+                                                    }
+                                                }
+                                            } catch (const std::exception& e) {
+                                                std::cerr
+                                                    << "Failed to decode: "
+                                                    << log << std::endl;
+                                                std::cerr
+                                                    << "Error: " << e.what()
+                                                    << std::endl;
+                                            }
+                                        }
+                                    }
+                                }
+
+                                /*if (value.contains("signature")) {
                                     std::string signature = value["signature"];
                                     fmt::print("{} transaction found: {}\n",
                                         fmt::styled(foundDexName,
@@ -195,7 +333,7 @@ private Q_SLOTS:
                                             fmt::fg(fmt::color::blue)));
                                 } else {
                                     qDebug() << "No signature";
-                                }
+                                }*/
                             }
                         }
                     } else {

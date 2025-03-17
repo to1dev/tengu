@@ -534,9 +534,13 @@ QComboBox::down-arrow:on, QComboBox::down-arrow:hover, QComboBox::down-arrow:foc
     font-size: 24px;
 }
 
+#ButtonScript,
+#ButtonDefi,
+#ButtonBridge,
 #ButtonSwap,
 #ButtonTrade,
 #ButtonChart,
+#ButtonNews,
 #ButtonBell,
 #ButtonWallet {
     border-radius: 8px;
@@ -547,34 +551,50 @@ QComboBox::down-arrow:on, QComboBox::down-arrow:hover, QComboBox::down-arrow:foc
     padding: 8px;
 }
 
+#ButtonScript:pressed,
+#ButtonDefi:pressed,
+#ButtonBridge:pressed,
 #ButtonSwap:pressed,
 #ButtonTrade:pressed,
 #ButtonChart:pressed,
+#ButtonNews:pressed,
 #ButtonBell:pressed,
 #ButtonWallet:pressed {
     padding: 9px;
     background-color: #1A72BB;
 }
 
+#ButtonScript:hover,
+#ButtonDefi:hover,
+#ButtonBridge:hover,
 #ButtonSwap:hover,
 #ButtonTrade:hover,
 #ButtonChart:hover,
+#ButtonNews:hover,
 #ButtonBell:hover,
 #ButtonWallet:hover {
     background-color: #2D3E50;
 }
 
+#ButtonScript:disabled,
+#ButtonDefi:disabled,
+#ButtonBridge:disabled,
 #ButtonSwap:disabled,
 #ButtonTrade:disabled,
 #ButtonChart:disabled,
+#ButtonNews:disabled,
 #ButtonBell:disabled,
 #ButtonWallet:disabled {
     color: #788D9C;
 }
 
+#ButtonScript:checked,
+#ButtonDefi:checked,
+#ButtonBridge:checked,
 #ButtonSwap:checked,
 #ButtonTrade:checked,
 #ButtonChart:checked,
+#ButtonNews:checked,
 #ButtonBell:checked,
 #ButtonWallet:checked {
     background-color: #1A72BB;

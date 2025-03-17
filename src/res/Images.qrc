@@ -13,6 +13,10 @@
         <file alias="chart.svg">Images/Buttons/chart.svg</file>
         <file alias="trade.svg">Images/Buttons/trade.svg</file>
         <file alias="swap.svg">Images/Buttons/swap.svg</file>
+        <file alias="news.svg">Images/Buttons/news.svg</file>
+        <file alias="script.svg">Images/Buttons/script.svg</file>
+        <file alias="defi.svg">Images/Buttons/defi.svg</file>
+        <file alias="bridge.svg">Images/Buttons/bridge.svg</file>
     </qresource>
     <qresource prefix="/Splash">
         <file alias="1">Images/Splash/1.png</file>

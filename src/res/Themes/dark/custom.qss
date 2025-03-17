@@ -67,7 +67,7 @@ QMenuBar:focus {
 }
 
 QMenu {
-    background-color: white;
+    background-color: palette(window);
     background-clip: border;
     border: 1px solid #60798B;
     padding: 5px;
@@ -78,7 +78,7 @@ QMenu::separator {
 }
 
 QMenu::item {
-    background-color: transparent;
+    background-color: palette(window);
     padding: 8px 20px;
     border-radius: 3px;
     margin: 2px;
@@ -1086,7 +1086,8 @@ QGroupBox {
 }
 
 QLineEdit {
-    background-color: #19232D;
+    /*background-color: #19232D;*/
+    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(20, 20, 20, 150), stop:.03 palette(window));
     padding: 9;
     border-radius: 6;
     border: 3px solid #32414b;
@@ -1099,7 +1100,8 @@ QLineEdit:hover {
 }
 
 QLineEdit:focus {
-    background-color: #232F3A;
+    /*background-color: #232F3A;*/
+    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(20, 20, 20, 150), stop:.03 #232F3A);
     border: 3px solid #32414b;
 }
 

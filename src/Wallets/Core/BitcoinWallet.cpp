@@ -24,10 +24,138 @@
 
 namespace Daitengu::Wallets {
 
+static inline std::vector<unsigned char> doubleSha256(
+    const std::vector<unsigned char>& data)
+{
+    uint8_t digest1[32];
+    sha256_Raw(data.data(), data.size(), digest1);
+
+    uint8_t digest2[32];
+    sha256_Raw(digest1, 32, digest2);
+
+    return std::vector<unsigned char>(digest2, digest2 + 32);
+}
+
+static inline bool isValidBase58Address(std::string_view address)
+{
+    std::string addrStr(address);
+
+    std::vector<unsigned char> decoded;
+    if (!DecodeBase58(addrStr, decoded, 100)) {
+        return false;
+    }
+
+    if (decoded.size() < 5) {
+        return false;
+    }
+
+    size_t checksumPos = decoded.size() - 4;
+    std::vector<unsigned char> payload(
+        decoded.begin(), decoded.begin() + checksumPos);
+    std::vector<unsigned char> givenChecksum(
+        decoded.begin() + checksumPos, decoded.end());
+
+    std::vector<unsigned char> hash = doubleSha256(payload);
+    if (!std::equal(hash.begin(), hash.begin() + 4, givenChecksum.begin())) {
+        return false;
+    }
+
+    uint8_t version = payload[0];
+    std::vector<unsigned char> keyHash(payload.begin() + 1, payload.end());
+
+    if (version == 0x00) {
+        return (keyHash.size() == 20);
+    } else if (version == 0x05) {
+        return (keyHash.size() == 20);
+    } else {
+        return false;
+    }
+}
+
+static inline bool isValidBech32Address(std::string_view address)
+{
+    if (address.empty()) {
+        return false;
+    }
+
+    std::string input(address);
+
+    char hrp[84] = { 0 };
+    uint8_t data[82] = { 0 };
+    size_t data_len = sizeof(data);
+
+    bech32_encoding enc = bech32_decode(hrp, data, &data_len, input.c_str());
+    if (enc == BECH32_ENCODING_NONE) {
+        return false;
+    }
+
+    if (std::strcmp(hrp, "bc") != 0) {
+        return false;
+    }
+
+    if (data_len < 1) {
+        return false;
+    }
+    uint8_t witver = data[0];
+    if (witver > 16) {
+        return false;
+    }
+
+    size_t prog_len = data_len - 1;
+    if (prog_len < 2 || prog_len > 40) {
+        return false;
+    }
+
+    if (witver == 0) {
+        if (enc != BECH32_ENCODING_BECH32) {
+            return false;
+        }
+        if (prog_len == 20 || prog_len == 32) {
+            return true;
+        }
+        return false;
+    } else if (witver == 1) {
+        if (enc != BECH32_ENCODING_BECH32M) {
+            return false;
+        }
+        if (prog_len == 32) {
+            return true;
+        }
+        return false;
+    } else {
+        if (enc != BECH32_ENCODING_BECH32M) {
+            return false;
+        }
+        return true;
+    }
+}
+
 BitcoinWallet::BitcoinWallet(bool useTaproot, Network::Type network)
     : ChainWallet(ChainType::BITCOIN, network)
     , useTaproot_(useTaproot)
 {
+}
+
+bool BitcoinWallet::isValid(std::string_view address)
+{
+    if (address.empty()) {
+        return false;
+    }
+
+    if (address.size() >= 3 && address[0] == 'b' && address[1] == 'c'
+        && address[2] == '1') {
+        if (isValidBech32Address(address)) {
+            return true;
+        }
+        return false;
+    }
+
+    char first = address.front();
+    if (first == '1' || first == '3') {
+        return isValidBase58Address(address);
+    }
+
+    return false;
 }
 
 void BitcoinWallet::fromPrivateKey(const std::string& privateKey)

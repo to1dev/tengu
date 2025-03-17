@@ -64,6 +64,8 @@ public:
     explicit BitcoinWallet(
         bool useTaproot = true, Network::Type network = Network::Type::MAINNET);
 
+    static bool isValid(std::string_view address);
+
     void fromPrivateKey(const std::string& privateKey) override;
     [[nodiscard]] std::string getAddress(std::uint32_t index = 0) override;
     [[nodiscard]] std::string getPrivateKey(std::uint32_t index = 0) override;

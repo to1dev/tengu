@@ -43,7 +43,9 @@ inline constexpr char DB_NAME[] = "tengu";
 
 enum class WalletGroupType {
     User = 0,
-    Vault = 1,
+    Import,
+    Smart,
+    Vault,
 };
 
 enum class DBErrorType {

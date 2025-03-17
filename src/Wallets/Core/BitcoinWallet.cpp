@@ -24,6 +24,54 @@
 
 namespace Daitengu::Wallets {
 
+#include <cstdint>
+#include <stdexcept>
+#include <vector>
+
+static inline std::vector<uint8_t> convertbits(
+    const std::vector<uint8_t>& in, int fromBits, int toBits, bool pad)
+{
+    if (fromBits < 1 || fromBits > 8)
+        throw std::invalid_argument("invalid fromBits");
+    if (toBits < 1 || toBits > 8)
+        throw std::invalid_argument("invalid toBits");
+
+    std::vector<uint8_t> out;
+    out.reserve((in.size() * fromBits + toBits - 1) / toBits);
+
+    uint32_t value = 0;
+    int bits = 0;
+
+    const uint32_t maxv = (1 << toBits) - 1;
+
+    for (auto c : in) {
+        if (c >> fromBits) {
+            throw std::invalid_argument("convertbits: invalid input data");
+        }
+        value = (value << fromBits) | c;
+        bits += fromBits;
+        while (bits >= toBits) {
+            bits -= toBits;
+            out.push_back((value >> bits) & maxv);
+        }
+    }
+
+    if (pad) {
+        if (bits > 0) {
+            out.push_back((value << (toBits - bits)) & maxv);
+        }
+    } else {
+        if (bits > 0) {
+            if ((value << (toBits - bits)) & maxv) {
+                throw std::invalid_argument(
+                    "convertbits: non-zero padding in decode");
+            }
+        }
+    }
+
+    return out;
+}
+
 static inline std::vector<unsigned char> doubleSha256(
     const std::vector<unsigned char>& data)
 {
@@ -96,12 +144,22 @@ static inline bool isValidBech32Address(std::string_view address)
     if (data_len < 1) {
         return false;
     }
+
     uint8_t witver = data[0];
     if (witver > 16) {
         return false;
     }
 
-    size_t prog_len = data_len - 1;
+    std::vector<uint8_t> program_5bit(data + 1, data + data_len);
+
+    std::vector<uint8_t> program_8bit;
+    try {
+        program_8bit = convertbits(program_5bit, 5, 8, false);
+    } catch (...) {
+        return false;
+    }
+
+    size_t prog_len = program_8bit.size();
     if (prog_len < 2 || prog_len > 40) {
         return false;
     }

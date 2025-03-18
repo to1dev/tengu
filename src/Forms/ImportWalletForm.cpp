@@ -24,6 +24,7 @@ ImportWalletForm::ImportWalletForm(
     : QDialog(parent)
     , ui(new Ui::ImportWalletForm)
     , globalManager_(globalManager)
+    , walletRecord_(std::make_shared<Wallet>())
 {
     ui->setupUi(this);
 
@@ -130,16 +131,16 @@ void ImportWalletForm::ok()
     const QString name = editName_->text().simplified();
     const auto nameHash = Encryption::easyHash(name);
 
-    walletRecord_ = std::make_shared<Wallet>();
     walletRecord_->nameHash = nameHash.toStdString();
 
     if (currentContent_.type == WalletType::Mnemonic) {
         currentContent_.chain
             = static_cast<ChainType>(comboChain_->currentIndex());
-        const QString mnemonic = currentContent_.content;
-        const auto mnemonicHash = Encryption::easyHash(mnemonic);
-        walletRecord_->mnemonicHash = mnemonicHash.toStdString();
     }
+
+    const QString mnemonic = currentContent_.content;
+    const auto mnemonicHash = Encryption::easyHash(mnemonic);
+    walletRecord_->mnemonicHash = mnemonicHash.toStdString();
 
     std::unique_ptr<ChainWallet> wallet;
     switch (currentContent_.chain) {
@@ -166,7 +167,18 @@ void ImportWalletForm::ok()
             MessageForm { this, 16, SAME_WALLET_NAME }.exec();
             break;
         case DBErrorType::haveMnemonic:
-            MessageForm { this, 16, SAME_MNEMONIC }.exec();
+            switch (currentContent_.type) {
+            case WalletType::Priv:
+            case WalletType::Wif:
+                MessageForm { this, 16, SAME_PRIV }.exec();
+                break;
+
+            case WalletType::Mnemonic:
+            default:
+                MessageForm { this, 16, SAME_MNEMONIC }.exec();
+                break;
+            }
+
             break;
         default:
             break;
@@ -174,17 +186,133 @@ void ImportWalletForm::ok()
         return;
     }
 
+    walletRecord_->type = static_cast<int>(currentContent_.type);
+    walletRecord_->groupType = static_cast<int>(WalletGroupType::Import);
+    walletRecord_->hash = Encryption::genRandomHash();
+    walletRecord_->name = name.toStdString();
+
     switch (currentContent_.type) {
     case (WalletType::Mnemonic): {
+        try {
+            wallet->fromMnemonic(currentContent_.content.toStdString());
+            const auto encrypted = Encryption::encryptText(wallet->mnemonic());
+            {
+                walletRecord_->chainType = comboChain_->currentIndex();
+                walletRecord_->mnemonic = encrypted;
+            }
+
+            auto database = globalManager_->settingManager()->database();
+            bool success = database->storage()->transaction([&]() {
+                const int walletId
+                    = database->walletRepo()->insert(*walletRecord_);
+
+                if (walletId <= 0) {
+                    return false;
+                }
+
+                walletRecord_->id = walletId;
+
+                const auto address = wallet->getAddress();
+                const std::string addressName = STR_DEFAULT_ADDRESS_NAME;
+                const auto addressNameHash = Encryption::easyHash(addressName);
+                const auto addressHash = Encryption::genRandomHash();
+
+                Address addressRecord {
+                    .walletId = walletId,
+                    .hash = Encryption::genRandomHash(),
+                    .name = addressName,
+                    .nameHash = addressNameHash,
+                    .address = address,
+                    .addressHash = addressHash,
+                    .derivationPath = std::string(wallet->getDerivationPath()),
+                    .privateKey
+                    = Encryption::encryptText(wallet->getPrivateKey()),
+                    .publicKey = wallet->getAddress(),
+                };
+
+                if (database->addressRepo()->insert(addressRecord) <= 0) {
+                    return false;
+                }
+
+                return true;
+            });
+
+            if (!success) {
+                MessageForm { this, 16, "Failed to create wallet and address" }
+                    .exec();
+                return;
+            }
+
+            accept();
+        } catch (const std::exception& e) {
+            std::cerr << "Failed to import Mnemonic: " << e.what() << std::endl;
+            MessageForm { this, 5, NO_VALID_MNEMONIC_KEY }.exec();
+            return;
+        }
 
         break;
     }
 
-    case (WalletType::Priv): {
-        break;
-    }
+    case WalletType::Priv:
+    case WalletType::Wif: {
+        try {
+            wallet->fromPrivateKey(currentContent_.content.toStdString());
+            const auto encrypted
+                = Encryption::encryptText(currentContent_.content);
+            {
+                walletRecord_->chainType
+                    = static_cast<int>(currentContent_.chain);
+            }
 
-    case (WalletType::Wif): {
+            auto database = globalManager_->settingManager()->database();
+            bool success = database->storage()->transaction([&]() {
+                const int walletId
+                    = database->walletRepo()->insert(*walletRecord_);
+
+                if (walletId <= 0) {
+                    return false;
+                }
+
+                walletRecord_->id = walletId;
+
+                const auto address = wallet->getAddress();
+                const std::string addressName = STR_DEFAULT_ADDRESS_NAME;
+                const auto addressNameHash = Encryption::easyHash(addressName);
+                const auto addressHash = Encryption::genRandomHash();
+
+                Address addressRecord {
+                    .walletId = walletId,
+                    .hash = Encryption::genRandomHash(),
+                    .name = addressName,
+                    .nameHash = addressNameHash,
+                    .address = address,
+                    .addressHash = addressHash,
+                    .derivationPath = std::string(wallet->getDerivationPath()),
+                    .privateKey = encrypted.toStdString(),
+                    .publicKey = wallet->getAddress(),
+                };
+
+                if (database->addressRepo()->insert(addressRecord) <= 0) {
+                    return false;
+                }
+
+                return true;
+            });
+
+            if (!success) {
+                MessageForm { this, 16, "Failed to create wallet and address" }
+                    .exec();
+                return;
+            }
+
+            accept();
+        } catch (const std::exception& e) {
+            std::cerr << "Failed to import private key: " << e.what()
+                      << std::endl;
+            MessageForm { this, 5, NO_VALID_MNEMONIC_KEY }.exec();
+            return;
+        }
+
         break;
     }
 

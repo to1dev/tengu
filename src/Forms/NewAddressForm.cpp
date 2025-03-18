@@ -40,7 +40,7 @@ NewAddressForm::NewAddressForm(const NewAddress& address, QWidget* parent,
     editName_->setPlaceholderText(STR_LINEEDIT_ADDRESS_NAME_PLACEHOLDER);
     editName_->setCursorPosition(0);
 
-    if (address_.groupType == static_cast<int>(WalletGroupType::Vault)) {
+    if (address_.groupType == static_cast<int>(WalletGroupType::Import)) {
         // TODO
     }
 
@@ -133,7 +133,9 @@ void NewAddressForm::ok()
             return;
         }
 
-        if (address_.groupType == static_cast<int>(WalletGroupType::User)) {
+        switch (static_cast<WalletGroupType>(address_.groupType)) {
+        case WalletGroupType::User:
+        case WalletGroupType::Import: {
             std::unique_ptr<ChainWallet> wallet;
             switch (address_.chainType) {
             case 0:
@@ -157,29 +159,14 @@ void NewAddressForm::ok()
                 const auto address = wallet->getAddress(address_.index);
                 const std::string addressHash = Encryption::easyHash(address);
 
-                std::string derivationPath;
-                switch (address_.chainType) {
-                case 0:
-                    derivationPath = BitcoinWallet::DEFAULT_DERIVATION_PATH;
-                    break;
-                case 1:
-                    derivationPath = EthereumWallet::DEFAULT_DERIVATION_PATH;
-                    break;
-                case 2:
-                    derivationPath = SolanaWallet::DEFAULT_DERIVATION_PATH;
-                    break;
-                default:
-                    derivationPath = "";
-                    break;
-                }
-
                 {
                     addressRecord_->walletId = address_.walletId;
                     addressRecord_->hash = Encryption::genRandomHash();
                     addressRecord_->name = name;
                     addressRecord_->address = address;
                     addressRecord_->addressHash = addressHash;
-                    addressRecord_->derivationPath = derivationPath;
+                    addressRecord_->derivationPath
+                        = std::string(wallet->getDerivationPath());
                     addressRecord_->privateKey = Encryption::encryptText(
                         wallet->getPrivateKey(address_.index));
                     addressRecord_->publicKey
@@ -196,6 +183,12 @@ void NewAddressForm::ok()
                 std::cerr << "Failed to import menmonic: " << e.what()
                           << std::endl;
             }
+
+            break;
+        }
+
+        default:
+            break;
         }
 
         break;

@@ -17,6 +17,7 @@
         <file alias="script.svg">Images/Buttons/script.svg</file>
         <file alias="defi.svg">Images/Buttons/defi.svg</file>
         <file alias="bridge.svg">Images/Buttons/bridge.svg</file>
+        <file alias="ai.svg">Images/Buttons/ai.svg</file>
     </qresource>
     <qresource prefix="/Splash">
         <file alias="1">Images/Splash/1.png</file>

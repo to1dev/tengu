@@ -534,6 +534,7 @@ QComboBox::down-arrow:on, QComboBox::down-arrow:hover, QComboBox::down-arrow:foc
     font-size: 24px;
 }
 
+#ButtonAI,
 #ButtonScript,
 #ButtonDefi,
 #ButtonBridge,
@@ -551,6 +552,7 @@ QComboBox::down-arrow:on, QComboBox::down-arrow:hover, QComboBox::down-arrow:foc
     padding: 8px;
 }
 
+#ButtonAI:pressed,
 #ButtonScript:pressed,
 #ButtonDefi:pressed,
 #ButtonBridge:pressed,
@@ -564,6 +566,7 @@ QComboBox::down-arrow:on, QComboBox::down-arrow:hover, QComboBox::down-arrow:foc
     background-color: #1A72BB;
 }
 
+#ButtonAI:hover,
 #ButtonScript:hover,
 #ButtonDefi:hover,
 #ButtonBridge:hover,
@@ -576,6 +579,7 @@ QComboBox::down-arrow:on, QComboBox::down-arrow:hover, QComboBox::down-arrow:foc
     background-color: #2D3E50;
 }
 
+#ButtonAI:disabled,
 #ButtonScript:disabled,
 #ButtonDefi:disabled,
 #ButtonBridge:disabled,
@@ -588,6 +592,7 @@ QComboBox::down-arrow:on, QComboBox::down-arrow:hover, QComboBox::down-arrow:foc
     color: #788D9C;
 }
 
+#ButtonAI:checked,
 #ButtonScript:checked,
 #ButtonDefi:checked,
 #ButtonBridge:checked,

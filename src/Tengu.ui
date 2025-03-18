@@ -222,6 +222,26 @@
           </property>
          </widget>
         </item>
+        <item>
+         <widget class="QToolButton" name="ButtonAI">
+          <property name="text">
+           <string>智能</string>
+          </property>
+          <property name="icon">
+           <iconset resource="res/Images.qrc">
+            <normaloff>:/Buttons/ai.svg</normaloff>:/Buttons/ai.svg</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>32</width>
+            <height>32</height>
+           </size>
+          </property>
+          <property name="toolButtonStyle">
+           <enum>Qt::ToolButtonTextUnderIcon</enum>
+          </property>
+         </widget>
+        </item>
        </layout>
       </widget>
      </widget>

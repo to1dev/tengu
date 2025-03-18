@@ -41,6 +41,14 @@ namespace Daitengu::Wallets {
 
 class SuiWallet : public ChainWallet {
 public:
+    static inline constexpr std::string_view DEFAULT_DERIVATION_PATH
+        = "m/86'/0'/0'";
+
+    std::string_view getDerivationPath() const override
+    {
+        return DEFAULT_DERIVATION_PATH;
+    }
+
     explicit SuiWallet(Network::Type network = Network::Type::MAINNET);
 
     void fromPrivateKey(const std::string& privateKey) override;

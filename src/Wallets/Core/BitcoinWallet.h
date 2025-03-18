@@ -61,6 +61,11 @@ public:
     static inline constexpr std::string_view DEFAULT_DERIVATION_PATH
         = "m/86'/0'/0'";
 
+    std::string_view getDerivationPath() const override
+    {
+        return DEFAULT_DERIVATION_PATH;
+    }
+
     explicit BitcoinWallet(
         bool useTaproot = true, Network::Type network = Network::Type::MAINNET);
 

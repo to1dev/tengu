@@ -38,6 +38,11 @@ public:
     static inline constexpr std::string_view DEFAULT_DERIVATION_PATH
         = "m/44'/501'/0'";
 
+    std::string_view getDerivationPath() const override
+    {
+        return DEFAULT_DERIVATION_PATH;
+    }
+
     SolanaWallet(Network::Type network = Network::Type::MAINNET);
 
     static bool isValid(std::string_view address);

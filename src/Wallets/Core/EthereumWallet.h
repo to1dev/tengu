@@ -56,6 +56,11 @@ public:
     static inline constexpr std::string_view DEFAULT_DERIVATION_PATH
         = "m/44'/60'/0'/0";
 
+    std::string_view getDerivationPath() const override
+    {
+        return DEFAULT_DERIVATION_PATH;
+    }
+
     explicit EthereumWallet(
         bool useEip55 = true, Network::Type network = Network::Type::MAINNET);
 

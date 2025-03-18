@@ -32,6 +32,8 @@ public:
     explicit ChainWallet(
         ChainType chainType, Network::Type network = Network::Type::MAINNET);
 
+    virtual std::string_view getDerivationPath() const = 0;
+
     void switchNetwork(Network::Type network);
 
     Network::Type currentNetwork() const;

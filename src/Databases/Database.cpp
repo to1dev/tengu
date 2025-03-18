@@ -207,8 +207,13 @@ Storage* Database::storage()
 
 void Database::reset()
 {
+    storage_->remove_all<Subscription>();
+    storage_->remove_all<Order>();
+    storage_->remove_all<addressTag>();
+    storage_->remove_all<Tag>();
     storage_->remove_all<Address>();
     storage_->remove_all<Wallet>();
+    storage_->remove_all<Network>();
     storage_->remove_all<WalletGroup>();
     storage_->vacuum();
 }

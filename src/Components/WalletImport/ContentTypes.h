@@ -37,6 +37,12 @@ struct ContentInfo {
             && (type == WalletType::Mnemonic || chain != ChainType::UNKNOWN)
             && !content.isEmpty();
     }
+
+    bool equals(const ContentInfo& other) const
+    {
+        return type == other.type && chain == other.chain
+            && content == other.content;
+    }
 };
 
 }

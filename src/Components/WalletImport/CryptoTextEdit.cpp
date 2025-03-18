@@ -36,6 +36,9 @@ void CryptoTextEdit::insertFromMimeData(const QMimeData* source)
     if (source->hasText()) {
         QString newText = filterText(source->text().simplified());
         QPlainTextEdit::insertPlainText(newText);
+        lastDetectedInfo_ = ContentInfo();
+        // analyzeCurrentText();
+        QTimer::singleShot(10, this, &CryptoTextEdit::analyzeCurrentText);
     }
 }
 
@@ -83,8 +86,7 @@ void CryptoTextEdit::analyzeCurrentText()
 
     ContentInfo info = detectContent(text);
 
-    if (info.type != lastDetectedInfo_.type
-        || info.chain != lastDetectedInfo_.chain) {
+    if (!info.equals(lastDetectedInfo_)) {
         lastDetectedInfo_ = info;
         Q_EMIT contentDetected(info);
     }

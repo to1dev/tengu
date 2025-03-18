@@ -156,11 +156,11 @@ ContentInfo CryptoTextEdit::detectContent(const QString& text)
             return info;
         }
 
-        if (isBitcoinPrivateKey(text)) {
+        /*if (isBitcoinPrivateKey(text)) {
             info.type = WalletType::Priv;
             info.chain = ChainType::BITCOIN;
             return info;
-        }
+        }*/
 
         if (isSolanaPrivateKey(text)) {
             info.type = WalletType::Priv;

@@ -127,8 +127,56 @@ void ImportWalletForm::ok()
         return;
     }
 
+    const QString name = editName_->text().simplified();
+    const auto nameHash = Encryption::easyHash(name);
+
+    walletRecord_ = std::make_shared<Wallet>();
+    walletRecord_->nameHash = nameHash.toStdString();
+
+    if (currentContent_.type == WalletType::Mnemonic) {
+        currentContent_.chain
+            = static_cast<ChainType>(comboChain_->currentIndex());
+        const QString mnemonic = currentContent_.content;
+        const auto mnemonicHash = Encryption::easyHash(mnemonic);
+        walletRecord_->mnemonicHash = mnemonicHash.toStdString();
+    }
+
+    std::unique_ptr<ChainWallet> wallet;
+    switch (currentContent_.chain) {
+    case ChainType::BITCOIN:
+        wallet = std::make_unique<BitcoinWallet>();
+        break;
+    case ChainType::ETHEREUM:
+        wallet = std::make_unique<EthereumWallet>();
+        break;
+    case ChainType::SOLANA:
+        wallet = std::make_unique<SolanaWallet>();
+        break;
+    default:
+        MessageForm { this, 16, "Unsupported chain type" }.exec();
+        return;
+    }
+
+    DBErrorType error
+        = globalManager_->settingManager()->database()->walletRepo()->before(
+            *walletRecord_);
+    if (error != DBErrorType::none) {
+        switch (error) {
+        case DBErrorType::haveName:
+            MessageForm { this, 16, SAME_WALLET_NAME }.exec();
+            break;
+        case DBErrorType::haveMnemonic:
+            MessageForm { this, 16, SAME_MNEMONIC }.exec();
+            break;
+        default:
+            break;
+        }
+        return;
+    }
+
     switch (currentContent_.type) {
     case (WalletType::Mnemonic): {
+
         break;
     }
 

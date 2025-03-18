@@ -85,7 +85,8 @@ inline const QString SAME_WALLET_NAME
     = QObject::tr("这个钱包名称已经被占用了！<p>请输入新的钱包名称。</p>");
 inline const QString SAME_ADDRESS_NAME
     = QObject::tr("当前钱包已经有这个地址名称了！<p>请输入新的地址名称。</p>");
-inline const QString SAME_MNEMONIC = QObject::tr("这个助记词已经存在了！");
+inline const QString SAME_MNEMONIC
+    = QObject::tr("这个助记词已经存在了！<p>请输入新的助记词。</p>");
 inline const QString SAME_PRIV = QObject::tr("这个私钥已经存在了！");
 inline const QString SAME_WIF = QObject::tr("这个WIF私钥已经存在了！");
 inline const QString SAME_ADDRESS = QObject::tr("这个地址已经存在了！");

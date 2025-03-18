@@ -216,22 +216,6 @@ void NewWalletForm::ok()
         const auto addressNameHash = Encryption::easyHash(addressName);
         const auto addressHash = Encryption::genRandomHash();
 
-        std::string derivationPath;
-        switch (comboChain_->currentIndex()) {
-        case 0:
-            derivationPath = BitcoinWallet::DEFAULT_DERIVATION_PATH;
-            break;
-        case 1:
-            derivationPath = EthereumWallet::DEFAULT_DERIVATION_PATH;
-            break;
-        case 2:
-            derivationPath = SolanaWallet::DEFAULT_DERIVATION_PATH;
-            break;
-        default:
-            derivationPath = "";
-            break;
-        }
-
         Address addressRecord {
             .walletId = walletId,
             .hash = Encryption::genRandomHash(),
@@ -239,7 +223,7 @@ void NewWalletForm::ok()
             .nameHash = addressNameHash,
             .address = address,
             .addressHash = addressHash,
-            .derivationPath = derivationPath,
+            .derivationPath = std::string(wallet->getDerivationPath()),
             .privateKey = Encryption::encryptText(wallet->getPrivateKey()),
             .publicKey = wallet->getAddress(),
         };

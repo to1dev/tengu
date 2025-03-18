@@ -105,6 +105,7 @@ void WalletForm::importWallet()
     ImportWalletForm iwf(this, globalManager_);
     int ret = iwf.exec();
     if (ret) {
+        walletList_->add(*iwf.walletRecord());
     } else {
     }
 }

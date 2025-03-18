@@ -65,8 +65,8 @@ inline const QString STR_LINEEDIT_ADDRESS_NAME_PLACEHOLDER
     = QObject::tr("输入地址名称");
 inline const QString STR_BUTTON_CLIPBOARD = QObject::tr("复制助记词到剪贴板");
 
-inline const QString CONFIRM_FIRST_WALLET_DELETE = QObject::tr(
-    "无法删除此地址！<p>请注意：保留地址无法删除！</p>");
+inline const QString CONFIRM_FIRST_WALLET_DELETE
+    = QObject::tr("无法删除此地址！<p>请注意：保留地址无法删除！</p>");
 inline const QString CONFIRM_WALLET_DELETE = QObject::tr(
     "是否确定删除<font "
     "color='orange'>[%1]</font>这个钱包！<p>本操作不可逆！请务必谨慎！</p>");
@@ -87,7 +87,8 @@ inline const QString SAME_ADDRESS_NAME
     = QObject::tr("当前钱包已经有这个地址名称了！<p>请输入新的地址名称。</p>");
 inline const QString SAME_MNEMONIC
     = QObject::tr("这个助记词已经存在了！<p>请输入新的助记词。</p>");
-inline const QString SAME_PRIV = QObject::tr("这个私钥已经存在了！");
+inline const QString SAME_PRIV
+    = QObject::tr("这个私钥已经存在了！<p>请输入新的私钥。</p>");
 inline const QString SAME_WIF = QObject::tr("这个WIF私钥已经存在了！");
 inline const QString SAME_ADDRESS = QObject::tr("这个地址已经存在了！");
 inline const QString INVALID_MNEMONIC = QObject::tr("这是一个无效助记词！");

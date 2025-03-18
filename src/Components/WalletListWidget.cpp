@@ -113,9 +113,11 @@ void WalletListWidget::add(const Wallet& wallet, int index)
     QListWidgetItem* item = new QListWidgetItem;
     QString name = QString::fromStdString(wallet.name);
     item->setText(name);
-    item->setIcon(
-        QIcon(QString::fromUtf8(WalletListIcons[wallet.chainType].second.data(),
-            WalletListIcons[wallet.chainType].second.size())));
+    item->setIcon(QIcon(QString::fromUtf8(
+        WalletListIcons[wallet.groupType].items[wallet.chainType].icon.data(),
+        WalletListIcons[wallet.groupType]
+            .items[wallet.chainType]
+            .icon.size())));
     item->setToolTip(name);
 
     item->setData(static_cast<int>(ItemData::selected), false);

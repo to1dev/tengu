@@ -172,7 +172,21 @@ QComboBox::down-arrow:on, QComboBox::down-arrow:hover, QComboBox::down-arrow:foc
 }
 
 #listWidgetAddress::item {
+    background-color: #19232D;
+    border-radius: 3px;
     padding: 12;
+}
+
+#listWidgetAddress::item:hover {
+    background-color: #264a63;
+}
+
+#listWidgetAddress::item:focus {
+    background-color: #2F5D78;
+}
+
+#listWidgetAddress::item:selected {
+    background-color: #1B4F72;
 }
 
 #listWidgetAddress QScrollBar:vertical {
@@ -436,12 +450,25 @@ QComboBox::down-arrow:on, QComboBox::down-arrow:hover, QComboBox::down-arrow:foc
 }
 
 #listWidgetWallet::item {
+    background-color: #19232D;
     border-radius: 8px;
     width: 120;
     height: 120;
     margin: 4px;
     padding: 8px;
     color: #DFE1E2;
+}
+
+#listWidgetWallet::item:hover {
+    background-color: #264a63;
+}
+
+#listWidgetWallet::item:focus {
+    background-color: #2F5D78;
+}
+
+#listWidgetWallet::item:selected {
+    background-color: #1B4F72;
 }
 
 #listWidgetWallet QScrollBar:vertical {

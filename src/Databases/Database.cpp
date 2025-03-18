@@ -82,7 +82,7 @@ DBErrorType WalletRepo::before(const Wallet& wallet, bool update)
         return DBErrorType::haveName;
     }
 
-    if (!update) {
+    if (!update && !wallet.mnemonicHash.empty()) {
         int countMnemonic = storage_->count<Wallet>(
             where(c(&Wallet::mnemonicHash) == wallet.mnemonicHash));
         if (countMnemonic > 0) {

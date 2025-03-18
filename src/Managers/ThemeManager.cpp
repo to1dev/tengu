@@ -18,7 +18,27 @@
 
 #include "ThemeManager.h"
 
+#include <QProxyStyle>
+
 namespace Daitengu::Core {
+
+#ifdef custom_style
+class MyProxyStyle : public QProxyStyle {
+public:
+    using QProxyStyle::QProxyStyle;
+
+    int styleHint(StyleHint hint, const QStyleOption* option = nullptr,
+        const QWidget* widget = nullptr,
+        QStyleHintReturn* returnData = nullptr) const override
+    {
+        if (hint == QStyle::SH_ToolTip_WakeUpDelay) {
+            return 0;
+        }
+
+        return QProxyStyle::styleHint(hint, option, widget, returnData);
+    }
+};
+#endif
 
 ThemeManager::ThemeManager()
     : app_(qApp)
@@ -89,6 +109,10 @@ void ThemeManager::parseTheme()
 
                 app_->setStyle(
                     theme_.style.isEmpty() ? STR_DEFAULT_STYLE : theme_.style);
+
+#ifdef custom_style
+                qApp->setStyle(new MyProxyStyle(qApp->style()));
+#endif
 
                 if (jObj.contains(STR_JSON_CURSORS)
                     && jObj[STR_JSON_CURSORS].is_array()) {

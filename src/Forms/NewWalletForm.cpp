@@ -25,6 +25,7 @@ NewWalletForm::NewWalletForm(const NewWallet& wallet, QWidget* parent,
     , ui(new Ui::NewWalletForm)
     , wallet_(wallet)
     , globalManager_(globalManager)
+    , walletRecord_(std::make_shared<Wallet>())
 {
     ui->setupUi(this);
 
@@ -153,7 +154,6 @@ void NewWalletForm::ok()
     const auto nameHash = Encryption::easyHash(name);
     const auto mnemonicHash = Encryption::easyHash(mnemonic);
 
-    walletRecord_ = std::make_shared<Wallet>();
     walletRecord_->nameHash = nameHash.toStdString();
     walletRecord_->mnemonicHash = mnemonicHash.toStdString();
     DBErrorType error

@@ -87,6 +87,7 @@ set(SOURCE_FILES
     src/Forms/UpdateWalletForm.cpp
     src/Forms/WalletDock.cpp
     src/Forms/WalletForm.cpp
+    src/Forms/WalletSelectorForm.cpp
     src/Layouts/AnimationController.cpp
     src/Layouts/GridLayoutEngine.cpp
     src/Layouts/LayoutEngine.cpp
@@ -142,6 +143,7 @@ set(HEADER_FILES
     src/Forms/UpdateWalletForm.h
     src/Forms/WalletDock.h
     src/Forms/WalletForm.h
+    src/Forms/WalletSelectorForm.h
     src/Globals.h
     src/Layouts/AnimationController.h
     src/Layouts/GridLayoutEngine.h
@@ -190,6 +192,7 @@ set(UI_FILES
     src/Forms/UpdateWalletForm.ui
     src/Forms/WalletDock.ui
     src/Forms/WalletForm.ui
+    src/Forms/WalletSelectorForm.ui
     src/Tengu.ui
 )
 

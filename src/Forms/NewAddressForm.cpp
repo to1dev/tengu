@@ -49,12 +49,9 @@ NewAddressForm::NewAddressForm(const NewAddress& address, QWidget* parent,
     layoutOptions->addStretch(1);
     ui->groupBox->setLayout(layoutOptions);
 
-    globalManager_->windowManager()->reset(
-        this, 0.6, WindowManager::WindowShape::SQUARE);
-    connect(frameless_.get(), &Frameless::onMax, this, [this]() {
-        globalManager_->windowManager()->reset(
-            this, 0.6, WindowManager::WindowShape::SQUARE);
-    });
+    globalManager_->windowManager()->reset(this, 0.6);
+    connect(frameless_.get(), &Frameless::onMax, this,
+        [this]() { globalManager_->windowManager()->reset(this, 0.6); });
 
     connect(ui->ButtonOK, &QPushButton::clicked, this, &NewAddressForm::ok);
     connect(

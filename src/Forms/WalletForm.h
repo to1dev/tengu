@@ -46,7 +46,8 @@ inline const QString CONFIRM_WALLET_DELETE = QObject::tr(
     "<font style='color:orange'>警告！</font><p>你即将永久删除<font "
     "color='orange'>[%1]</font>"
     "这个钱包，此操作无法撤销！</p><p>注意："
-    "一旦删除，如果你未备份助记词或私钥，该钱包将永远消失，无法找回！你确定"
+    "一旦删除，如果你未备份助记词或私钥，该钱包及<font "
+    "color='darkorange'>‼️资金‼️</font>将永远消失，无法找回！你确定"
     "要这"
     "么做吗？</p><p>请在下方输入大写 <strong "
     "style='color:olive'>DELETE</strong> 以确认：</p>");

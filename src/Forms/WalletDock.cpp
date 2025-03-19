@@ -48,6 +48,9 @@ WalletDock::WalletDock(
         globalManager_->windowManager()->reset(
             this, 1, WindowManager::WindowShape::RIGHT_PANEL);
     });
+
+    connect(walletPanel_->userCard(), &UserCard::doSelect, this,
+        &WalletDock::select);
 }
 
 WalletDock::~WalletDock()
@@ -57,8 +60,16 @@ WalletDock::~WalletDock()
 
 void WalletDock::showEvent(QShowEvent* event)
 {
-    QWidget::showEvent(event);
-
     globalManager_->windowManager()->reset(
         this, 1, WindowManager::WindowShape::RIGHT_PANEL);
+
+    QWidget::showEvent(event);
+}
+
+void WalletDock::select()
+{
+    WalletSelectorForm wsf(nullptr, globalManager_);
+    if (wsf.exec()) {
+    } else {
+    }
 }

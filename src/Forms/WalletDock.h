@@ -29,6 +29,8 @@
 
 #include "Components/WalletPanel.h"
 
+#include "Forms/WalletSelectorForm.h"
+
 using namespace Daitengu::Core;
 using namespace Daitengu::UI;
 
@@ -48,6 +50,9 @@ public:
 
 protected:
     void showEvent(QShowEvent* event) override;
+
+private Q_SLOTS:
+    void select();
 
 private:
     Ui::WalletDock* ui;

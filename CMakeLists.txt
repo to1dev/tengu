@@ -113,6 +113,7 @@ set(SOURCE_FILES
     src/Wallets/Core/EthereumWallet.cpp
     src/Wallets/Core/SolanaWallet.cpp
     src/Wallets/Core/SuiWallet.cpp
+    src/Wallets/Monitor/BlockchainMonitor.cpp
     src/Wallets/Utils/SecureBytes.cpp
 )
 
@@ -176,6 +177,7 @@ set(HEADER_FILES
     src/Wallets/Core/SolanaWallet.h
     src/Wallets/Core/SuiWallet.h
     src/Wallets/Core/Types.h
+    src/Wallets/Monitor/BlockchainMonitor.h
     src/Wallets/Utils/Hex.hpp
     src/Wallets/Utils/SecureBytes.h
 )

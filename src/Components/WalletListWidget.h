@@ -20,11 +20,14 @@
 #define WALLETLISTWIDGET_H
 
 #include <array>
+#include <string_view>
+#include <unordered_map>
 
 #include <QListWidget>
 #include <QPainter>
 #include <QScrollBar>
 #include <QStyledItemDelegate>
+#include <QSvgRenderer>
 
 #include "Databases/Database.h"
 
@@ -39,7 +42,7 @@ inline constexpr char WALLET_ICON_TRADE[] = ":/List/trade.svg";
 inline constexpr char WALLET_ICON_SEARCH[] = ":/List/search.svg";
 inline constexpr char WALLET_ICON_GOLD[] = ":/List/gold.svg";
 inline constexpr char WALLET_ICON_COINS[] = ":/List/coins.svg";
-inline constexpr char BADGE_ICON[] = ":/Badges/check.svg";
+inline constexpr char BADGE_ICON[] = ":/Badges/import%1.svg";
 
 inline constexpr char WALLET_ICON_BITCOIN[] = ":/List/bitcoin.svg";
 inline constexpr char WALLET_ICON_BITCOIN_IMPORT[] = ":/List/bitcoini.svg";
@@ -85,6 +88,13 @@ inline constexpr std::array<IconItems, 2> WalletListIcons
             } },
         } } };
 
+inline const auto WalletTypeText = std::unordered_map<int, std::string_view> {
+    { 1, "M" },
+    { 2, "K" },
+    { 3, "W" },
+    { 4, "A" },
+};
+
 class BadgeItemDelegate : public QStyledItemDelegate {
 public:
     explicit BadgeItemDelegate(QObject* parent = nullptr);
@@ -92,9 +102,9 @@ public:
         const QModelIndex& index) const override;
 };
 
-class ChainTypeBadgeDelegate : public QStyledItemDelegate {
+class WalletTypeBadgeDelegate : public QStyledItemDelegate {
 public:
-    explicit ChainTypeBadgeDelegate(QObject* parent = nullptr);
+    explicit WalletTypeBadgeDelegate(QObject* parent = nullptr);
 
     void paint(QPainter* painter, const QStyleOptionViewItem& option,
         const QModelIndex& index) const override;

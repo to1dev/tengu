@@ -30,15 +30,23 @@ void BadgeItemDelegate::paint(QPainter* painter,
 {
     QStyledItemDelegate::paint(painter, option, index);
 
-    QVariant data
-        = index.data(static_cast<int>(WalletListWidget::ItemData::selected));
-    if (data.isValid() && data.toBool()) {
-        QIcon badgeIcon(BADGE_ICON);
+    int group
+        = index.data(static_cast<int>(WalletListWidget::ItemData::groupType))
+              .toInt();
+    int type = index.data(static_cast<int>(WalletListWidget::ItemData::type))
+                   .toInt();
+
+    if (group > 0 && type > 0) {
+        painter->setRenderHint(QPainter::Antialiasing);
+        painter->setRenderHint(QPainter::TextAntialiasing);
+        painter->setRenderHint(QPainter::SmoothPixmapTransform);
+
+        QIcon badgeIcon(QString(BADGE_ICON).arg(type));
         QSize badgeSize(32, 32);
-        // QPoint badgePosition(option.rect.topRight().x() - badgeSize.width(),
-        // option.rect.topRight().y() - 6);
-        QPoint badgePosition(
-            option.rect.topLeft().x(), option.rect.topRight().y() - 6);
+        QPoint badgePosition(option.rect.topRight().x() - badgeSize.width() - 3,
+            option.rect.topRight().y() + 3);
+        /*QPoint badgePosition(
+            option.rect.topLeft().x(), option.rect.topRight().y() - 6);*/
         QRect badgeRect(badgePosition, badgeSize);
 
         painter->save();
@@ -47,39 +55,44 @@ void BadgeItemDelegate::paint(QPainter* painter,
     }
 }
 
-ChainTypeBadgeDelegate::ChainTypeBadgeDelegate(QObject* parent)
+WalletTypeBadgeDelegate::WalletTypeBadgeDelegate(QObject* parent)
     : QStyledItemDelegate(parent)
 {
 }
 
-void ChainTypeBadgeDelegate::paint(QPainter* painter,
+void WalletTypeBadgeDelegate::paint(QPainter* painter,
     const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
     QStyledItemDelegate::paint(painter, option, index);
 
-    QString chainType
-        = index.data(static_cast<int>(WalletListWidget::ItemData::chainType))
-              .toString();
+    int group
+        = index.data(static_cast<int>(WalletListWidget::ItemData::groupType))
+              .toInt();
+    int type = index.data(static_cast<int>(WalletListWidget::ItemData::type))
+                   .toInt();
 
-    if (!chainType.isEmpty()) {
-        QString badgeText = chainType.left(1).toLower();
+    if (group > 0 && type > 0) {
+        //bool isSelected = option.state & QStyle::State_Selected;
+        //int alpha = isSelected ? 200 : 220;
+
+        QString badgeText
+            = QString::fromStdString(std::string(WalletTypeText.at(type)));
 
         painter->setRenderHint(QPainter::Antialiasing);
         painter->setRenderHint(QPainter::TextAntialiasing);
         painter->setRenderHint(QPainter::SmoothPixmapTransform);
 
         int badgeSize = qMin(option.rect.width() / 3, 24);
-        int badgeX = option.rect.right() - badgeSize - 3;
-        int badgeY = option.rect.top() + 3;
+        int badgeX = option.rect.right() - badgeSize - 6;
+        int badgeY = option.rect.top() + 6;
         QRect badgeRect(badgeX, badgeY, badgeSize, badgeSize);
 
         painter->setPen(Qt::NoPen);
-        painter->setBrush(QBrush(QColor(255, 0, 0)));
+        painter->setBrush(QBrush(QColor(255, 0, 0, 200)));
         painter->drawEllipse(badgeRect);
 
-        painter->setPen(QPen(QColor(255, 255, 255)));
+        painter->setPen(QPen(QColor(255, 255, 255, 200)));
         QFont font = painter->font();
-        font.setBold(true);
         painter->setFont(font);
         painter->drawText(badgeRect, Qt::AlignCenter, badgeText);
     }
@@ -100,7 +113,8 @@ WalletListWidget::WalletListWidget(QWidget* parent)
     setDragEnabled(false);
     setContextMenuPolicy(Qt::CustomContextMenu);
 
-    // setItemDelegate(new ChainTypeBadgeDelegate(this));
+    setItemDelegate(new WalletTypeBadgeDelegate(this));
+    // setItemDelegate(new BadgeItemDelegate(this));
 }
 
 bool WalletListWidget::focusChanged()

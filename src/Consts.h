@@ -67,9 +67,6 @@ inline const QString STR_BUTTON_CLIPBOARD = QObject::tr("复制助记词到剪�
 
 inline const QString CONFIRM_FIRST_WALLET_DELETE
     = QObject::tr("无法删除此地址！<p>请注意：保留地址无法删除！</p>");
-inline const QString CONFIRM_WALLET_DELETE = QObject::tr(
-    "是否确定删除<font "
-    "color='orange'>[%1]</font>这个钱包！<p>本操作不可逆！请务必谨慎！</p>");
 inline const QString CONFIRM_ADDRESS_DELETE = QObject::tr(
     "是否确定删除<font "
     "color='orange'>[%1]</font>这个地址！<p>本操作不可逆！请务必谨慎！</p>");

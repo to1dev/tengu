@@ -72,10 +72,6 @@ MessageForm::~MessageForm()
 void MessageForm::ok()
 {
     if (doubleCheck_) {
-        DoubleCheckForm dcf(this);
-        if (dcf.exec()) {
-        } else {
-        }
     } else {
         accept();
     }

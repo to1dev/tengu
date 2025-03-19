@@ -125,12 +125,12 @@ std::shared_ptr<Wallet> ImportWalletForm::walletRecord() const
 void ImportWalletForm::ok()
 {
     if (editName_->text().isEmpty()) {
-        MessageForm { this, 5, NO_VALID_WALLET_NAME }.exec();
+        MessageForm { nullptr, 5, NO_VALID_WALLET_NAME }.exec();
         return;
     }
 
     if (!currentContent_.isValid()) {
-        MessageForm { this, 5, NO_VALID_MNEMONIC_KEY }.exec();
+        MessageForm { nullptr, 5, NO_VALID_MNEMONIC_KEY }.exec();
         return;
     }
 
@@ -160,7 +160,7 @@ void ImportWalletForm::ok()
         wallet = std::make_unique<SolanaWallet>();
         break;
     default:
-        MessageForm { this, 16, "Unsupported chain type" }.exec();
+        MessageForm { nullptr, 16, "Unsupported chain type" }.exec();
         return;
     }
 
@@ -170,18 +170,18 @@ void ImportWalletForm::ok()
     if (error != DBErrorType::none) {
         switch (error) {
         case DBErrorType::haveName:
-            MessageForm { this, 16, SAME_WALLET_NAME }.exec();
+            MessageForm { nullptr, 16, SAME_WALLET_NAME }.exec();
             break;
         case DBErrorType::haveMnemonic:
             switch (currentContent_.type) {
             case WalletType::Priv:
             case WalletType::Wif:
-                MessageForm { this, 16, SAME_PRIV }.exec();
+                MessageForm { nullptr, 16, SAME_PRIV }.exec();
                 break;
 
             case WalletType::Mnemonic:
             default:
-                MessageForm { this, 16, SAME_MNEMONIC }.exec();
+                MessageForm { nullptr, 16, SAME_MNEMONIC }.exec();
                 break;
             }
 
@@ -244,7 +244,8 @@ void ImportWalletForm::ok()
             });
 
             if (!success) {
-                MessageForm { this, 16, "Failed to create wallet and address" }
+                MessageForm { nullptr, 16,
+                    "Failed to create wallet and address" }
                     .exec();
                 return;
             }
@@ -252,7 +253,7 @@ void ImportWalletForm::ok()
             accept();
         } catch (const std::exception& e) {
             std::cerr << "Failed to import Mnemonic: " << e.what() << std::endl;
-            MessageForm { this, 5, NO_VALID_MNEMONIC_KEY }.exec();
+            MessageForm { nullptr, 5, NO_VALID_MNEMONIC_KEY }.exec();
             return;
         }
 
@@ -306,7 +307,8 @@ void ImportWalletForm::ok()
             });
 
             if (!success) {
-                MessageForm { this, 16, "Failed to create wallet and address" }
+                MessageForm { nullptr, 16,
+                    "Failed to create wallet and address" }
                     .exec();
                 return;
             }
@@ -315,7 +317,7 @@ void ImportWalletForm::ok()
         } catch (const std::exception& e) {
             std::cerr << "Failed to import private key: " << e.what()
                       << std::endl;
-            MessageForm { this, 5, NO_VALID_MNEMONIC_KEY }.exec();
+            MessageForm { nullptr, 5, NO_VALID_MNEMONIC_KEY }.exec();
             return;
         }
 

@@ -144,7 +144,7 @@ void NewWalletForm::refresh()
 void NewWalletForm::ok()
 {
     if (editName_->text().isEmpty()) {
-        MessageForm { this, 5, NO_VALID_WALLET_NAME }.exec();
+        MessageForm { nullptr, 5, NO_VALID_WALLET_NAME }.exec();
         return;
     }
 
@@ -163,10 +163,10 @@ void NewWalletForm::ok()
     if (error != DBErrorType::none) {
         switch (error) {
         case DBErrorType::haveName:
-            MessageForm { this, 16, SAME_WALLET_NAME }.exec();
+            MessageForm { nullptr, 16, SAME_WALLET_NAME }.exec();
             break;
         case DBErrorType::haveMnemonic:
-            MessageForm { this, 16, SAME_MNEMONIC }.exec();
+            MessageForm { nullptr, 16, SAME_MNEMONIC }.exec();
             break;
         default:
             break;
@@ -186,7 +186,7 @@ void NewWalletForm::ok()
         wallet = std::make_unique<SolanaWallet>();
         break;
     default:
-        MessageForm { this, 16, "Unsupported chain type" }.exec();
+        MessageForm { nullptr, 16, "Unsupported chain type" }.exec();
         return;
     }
 
@@ -236,7 +236,8 @@ void NewWalletForm::ok()
     });
 
     if (!success) {
-        MessageForm { this, 16, "Failed to create wallet and address" }.exec();
+        MessageForm { nullptr, 16, "Failed to create wallet and address" }
+            .exec();
         return;
     }
 

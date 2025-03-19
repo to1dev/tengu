@@ -136,7 +136,7 @@ void WalletForm::delWallet()
     if (item && item->isSelected()) {
         int id = item->data(static_cast<int>(WalletListWidget::ItemData::id))
                      .toInt();
-        MessageForm mf(this, -1, CONFIRM_WALLET_DELETE,
+        MessageForm mf(nullptr, -1, CONFIRM_WALLET_DELETE,
     CONFIRM_WALLET_DELETE_TITLE, MessageButton::Ok | MessageButton::Cancel); int
     ret = mf.exec(); if (ret) { }
     }*/
@@ -148,7 +148,7 @@ void WalletForm::delWallet()
         const auto name
             = item->data(static_cast<int>(WalletListWidget::ItemData::name))
                   .toString();
-        MessageForm mf(this, 14, CONFIRM_WALLET_DELETE.arg(name),
+        MessageForm mf(nullptr, 14, CONFIRM_WALLET_DELETE.arg(name),
             CONFIRM_WALLET_DELETE_TITLE, true,
             MessageButton::Ok | MessageButton::Cancel);
         if (mf.exec()) {

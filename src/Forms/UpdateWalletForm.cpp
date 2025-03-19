@@ -138,6 +138,10 @@ std::shared_ptr<Wallet> UpdateWalletForm::walletRecord() const
 
 void UpdateWalletForm::newAddress()
 {
+    if (walletRecord_->type > static_cast<int>(WalletType::Mnemonic)) {
+        return;
+    }
+
     int freeIndex = addressManager_.nextAvailableIndex();
 
     NewAddressForm::NewAddress address {

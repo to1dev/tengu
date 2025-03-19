@@ -80,6 +80,7 @@ set(SOURCE_FILES
     src/Components/WalletListWidget.cpp
     src/Components/WalletPanel.cpp
     src/Databases/Database.cpp
+    src/Forms/DoubleCheckForm.cpp
     src/Forms/ImportWalletForm.cpp
     src/Forms/MessageForm.cpp
     src/Forms/NewAddressForm.cpp
@@ -134,6 +135,7 @@ set(HEADER_FILES
     src/Components/WalletPanel.h
     src/Consts.h
     src/Databases/Database.h
+    src/Forms/DoubleCheckForm.h
     src/Forms/ImportWalletForm.h
     src/Forms/MessageForm.h
     src/Forms/NewAddressForm.h
@@ -181,6 +183,7 @@ set(HEADER_FILES
 )
 
 set(UI_FILES
+    src/Forms/DoubleCheckForm.ui
     src/Forms/ImportWalletForm.ui
     src/Forms/MessageForm.ui
     src/Forms/NewAddressForm.ui

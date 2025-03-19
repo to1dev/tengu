@@ -19,6 +19,8 @@
 #include "MessageForm.h"
 #include "ui_MessageForm.h"
 
+#include <QRegularExpressionValidator>
+
 MessageForm::MessageForm(QWidget* parent, int emoji, const QString& text,
     const QString& title, bool doubleCheck, int buttons)
     : QDialog(parent)
@@ -36,19 +38,44 @@ MessageForm::MessageForm(QWidget* parent, int emoji, const QString& text,
 
     SVGWidget* icon = nullptr;
     if (emoji > 0) {
-        icon = new SVGWidget(QString(":/Emoji/%1").arg(emoji), ui->labelIcon);
+        icon = new SVGWidget(QString(":/Emoji/%1").arg(emoji), this);
     } else {
         icon = new SVGWidget(
             // TODO
-            QString(":/Emoji/%1").arg(randomIndex(1, 20)), ui->labelIcon);
-    }
-    if (icon) {
-        icon->setPadding(3);
-        icon->setImageSize(QSize(LOGO_SIZE, LOGO_SIZE));
-        ui->labelIcon->setFixedWidth(72);
+            QString(":/Emoji/%1").arg(randomIndex(1, 20)), this);
     }
 
-    ui->labelText->setText(text);
+    if (icon) {
+        QVBoxLayout* layoutIcon = new QVBoxLayout();
+        layoutIcon->setContentsMargins(QMargins(6, 6, 6, 6));
+        icon->setPadding(3);
+        icon->setImageSize(QSize(LOGO_SIZE, LOGO_SIZE));
+        layoutIcon->addWidget(icon);
+        layoutIcon->addStretch(1);
+        ui->layout->addLayout(layoutIcon);
+    }
+
+    QVBoxLayout* layoutText = new QVBoxLayout();
+    layoutText->setContentsMargins(QMargins(6, 6, 6, 6));
+    layoutText->setSpacing(40);
+
+    QLabel* labelText = new QLabel(this);
+    labelText->setText(text);
+    layoutText->addWidget(labelText);
+
+    if (doubleCheck) {
+        editDelete_ = new LineEditEx(this);
+        editDelete_->setMaxLength(6);
+        QRegularExpressionValidator* validator
+            = new QRegularExpressionValidator(
+                QRegularExpression("^[A-Za-z]{0,6}$"), this);
+        editDelete_->setValidator(validator);
+        editDelete_->setAttribute(Qt::WA_InputMethodEnabled, false);
+        layoutText->addWidget(editDelete_);
+    }
+    layoutText->addStretch(1);
+
+    ui->layout->addLayout(layoutText);
 
     if (buttons & MessageButton::Ok) {
         connect(ui->ButtonOK, &QPushButton::clicked, this, &MessageForm::ok);
@@ -72,6 +99,9 @@ MessageForm::~MessageForm()
 void MessageForm::ok()
 {
     if (doubleCheck_) {
+        if (editDelete_->text() == DOUBLE_DELETE_TEXT) {
+            accept();
+        }
     } else {
         accept();
     }

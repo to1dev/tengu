@@ -21,7 +21,9 @@
 
 #include <QDialog>
 
+#include "Components/LineEditEx.h"
 #include "Components/SVGWidget.h"
+
 #include "Managers/WindowManager.h"
 
 #include "UI/Frameless.h"
@@ -51,6 +53,8 @@ enum MessageButton {
     Reset = 0x04000000,
 };
 
+inline constexpr char DOUBLE_DELETE_TEXT[] = "DELETE";
+
 class MessageForm : public QDialog {
     Q_OBJECT
 
@@ -68,6 +72,8 @@ private:
     Ui::MessageForm* ui;
 
     std::unique_ptr<Frameless> frameless_;
+
+    LineEditEx* editDelete_;
 
     bool doubleCheck_ { false };
 };

@@ -53,6 +53,9 @@ class UserCard : public QWidget {
 public:
     explicit UserCard(QWidget* parent = nullptr);
 
+Q_SIGNALS:
+    void doSelect();
+
 private:
     QLabel* nameLabel_;
     ClickableLabel* addressLabel_;

@@ -73,6 +73,7 @@ UserCard::UserCard(QWidget* parent)
     selectButton->setObjectName(STR_SELECT_BUTTON);
     selectButton->setMinimumHeight(30);
     selectButton->setMaximumHeight(30);
+    connect(selectButton, &QPushButton::clicked, this, &UserCard::doSelect);
 
     bottomLayout->setSpacing(6);
     bottomLayout->addWidget(selectButton);

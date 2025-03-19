@@ -183,7 +183,7 @@ void UpdateWalletForm::delAddress(const QModelIndex& index)
     if (index.isValid()) {
         if (index.row() == 0) {
             MessageForm mf(this, 14, CONFIRM_FIRST_WALLET_DELETE,
-                CONFIRM_WALLET_DELETE_TITLE, MessageButton::Ok);
+                CONFIRM_WALLET_DELETE_TITLE, false, MessageButton::Ok);
             mf.exec();
             return;
         }
@@ -195,7 +195,7 @@ void UpdateWalletForm::delAddress(const QModelIndex& index)
             = index.data(static_cast<int>(AddressListWidget::ItemData::name))
                   .toString();
         MessageForm mf(this, 14, CONFIRM_ADDRESS_DELETE.arg(name),
-            CONFIRM_WALLET_DELETE_TITLE,
+            CONFIRM_WALLET_DELETE_TITLE, false,
             MessageButton::Ok | MessageButton::Cancel);
         if (mf.exec()) {
             try {

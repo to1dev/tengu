@@ -20,9 +20,10 @@
 #include "ui_MessageForm.h"
 
 MessageForm::MessageForm(QWidget* parent, int emoji, const QString& text,
-    const QString& title, int buttons)
+    const QString& title, bool doubleCheck, int buttons)
     : QDialog(parent)
     , ui(new Ui::MessageForm)
+    , doubleCheck_(doubleCheck)
 {
     ui->setupUi(this);
 
@@ -50,8 +51,7 @@ MessageForm::MessageForm(QWidget* parent, int emoji, const QString& text,
     ui->labelText->setText(text);
 
     if (buttons & MessageButton::Ok) {
-        connect(
-            ui->ButtonOK, &QPushButton::clicked, this, &MessageForm::accept);
+        connect(ui->ButtonOK, &QPushButton::clicked, this, &MessageForm::ok);
     } else {
         ui->ButtonOK->setVisible(false);
     }
@@ -67,4 +67,16 @@ MessageForm::MessageForm(QWidget* parent, int emoji, const QString& text,
 MessageForm::~MessageForm()
 {
     delete ui;
+}
+
+void MessageForm::ok()
+{
+    if (doubleCheck_) {
+        DoubleCheckForm dcf(this);
+        if (dcf.exec()) {
+        } else {
+        }
+    } else {
+        accept();
+    }
 }

@@ -149,7 +149,7 @@ void WalletForm::delWallet()
             = item->data(static_cast<int>(WalletListWidget::ItemData::name))
                   .toString();
         MessageForm mf(this, 14, CONFIRM_WALLET_DELETE.arg(name),
-            CONFIRM_WALLET_DELETE_TITLE,
+            CONFIRM_WALLET_DELETE_TITLE, true,
             MessageButton::Ok | MessageButton::Cancel);
         if (mf.exec()) {
             try {

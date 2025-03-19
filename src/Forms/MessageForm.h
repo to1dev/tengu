@@ -26,6 +26,8 @@
 
 #include "UI/Frameless.h"
 
+#include "Forms/DoubleCheckForm.h"
+
 using namespace Daitengu::Components;
 using namespace Daitengu::Core;
 using namespace Daitengu::UI;
@@ -57,14 +59,19 @@ class MessageForm : public QDialog {
 public:
     explicit MessageForm(QWidget* parent = nullptr, int emoji = -1,
         const QString& text = QString(),
-        const QString& title = QObject::tr("Tips"),
+        const QString& title = QObject::tr("Tips"), bool doubleCheck = false,
         int buttons = MessageButton::Ok);
     ~MessageForm();
+
+private Q_SLOTS:
+    void ok();
 
 private:
     Ui::MessageForm* ui;
 
     std::unique_ptr<Frameless> frameless_;
+
+    bool doubleCheck_ { false };
 };
 
 #endif // MESSAGEFORM_H

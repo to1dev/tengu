@@ -83,6 +83,8 @@ ImportWalletForm::ImportWalletForm(
     layoutOptions->addStretch(1);
     ui->groupBoxOptions->setLayout(layoutOptions);
 
+    ui->ButtonOK->setDefault(true);
+
     globalManager_->windowManager()->reset(this, 0.7);
     connect(frameless_.get(), &Frameless::onMax, this,
         [this]() { globalManager_->windowManager()->reset(this, 0.7); });
@@ -102,6 +104,10 @@ ImportWalletForm::ImportWalletForm(
                 comboChain_->setEnabled(true);
             } else {
                 comboChain_->setEnabled(false);
+            }
+            int chain = static_cast<int>(currentContent_.chain);
+            if (chain >= 0) {
+                comboChain_->setCurrentIndex(chain);
             }
         });
 }

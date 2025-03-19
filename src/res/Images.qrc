@@ -51,6 +51,10 @@
     <qresource prefix="/Badges">
         <file alias="check.svg">Images/Badges/check.svg</file>
         <file alias="bookmark.svg">Images/Badges/bookmark.svg</file>
+        <file alias="import1.svg">Images/Badges/seed.svg</file>
+        <file alias="import2.svg">Images/Badges/key.svg</file>
+        <file alias="import3.svg">Images/Badges/key.svg</file>
+        <file alias="import4.svg">Images/Badges/address.svg</file>
     </qresource>
     <qresource prefix="/Emoji">
         <file alias="1">Images/Emoji/wonder.svg</file>

@@ -121,7 +121,7 @@ std::optional<Wallet> WalletRepo::get(int id)
 
 std::vector<Wallet> WalletRepo::getAll()
 {
-    return storage_->get_all<Wallet>();
+    return storage_->get_all<Wallet>(order_by(&Wallet::groupType));
 }
 
 std::vector<Wallet> WalletRepo::getByGroup(int groupType)

@@ -56,7 +56,7 @@ MessageForm::MessageForm(QWidget* parent, int emoji, const QString& text,
     }
 
     QVBoxLayout* layoutText = new QVBoxLayout();
-    layoutText->setContentsMargins(QMargins(6, 6, 6, 6));
+    layoutText->setContentsMargins(QMargins(0, 6, 0, 6));
     layoutText->setSpacing(30);
 
     QLabel* labelText = new QLabel(this);

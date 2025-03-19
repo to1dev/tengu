@@ -39,8 +39,6 @@ Tengu::Tengu(
         ui->menu_File->windowFlags() | Qt::FramelessWindowHint);
     ui->menu_File->setAttribute(Qt::WA_TranslucentBackground);*/
 
-    initPopupMenu();
-
     globalManager_->windowManager()->addWindow(
         WindowManager::WindowShape::TOPBAR, this);
     globalManager_->windowManager()->reset(
@@ -51,20 +49,6 @@ Tengu::Tengu(
         globalManager_->windowManager()->reset(
             this, 1, WindowManager::WindowShape::TOPBAR);
     });
-
-    /*QHBoxLayout* layout = new QHBoxLayout();
-    layout->setContentsMargins(QMargins(16, 16, 16, 16));
-    layout->setSpacing(19);
-
-    txList_ = new TxListWidget(this);
-    txList_->setObjectName("listWidgetTask");
-
-    walletPanel_ = new WalletPanel(this);
-    walletPanel_->setObjectName("walletPanel");
-
-    layout->addWidget(txList_);
-    layout->addWidget(walletPanel_);
-    ui->tabFirst->setLayout(layout);*/
 
     connect(ui->ButtonWallet, &QToolButton::clicked, this, &Tengu::wallet);
     connect(ui->actionOpen, &QAction::triggered, this, &Tengu::showWalletDock);
@@ -84,12 +68,6 @@ void Tengu::setWalletDock(const std::shared_ptr<WalletDock>& walletDock)
 void Tengu::showWalletDock()
 {
     walletDock_->show();
-}
-
-void Tengu::onPopup()
-{
-    // QPoint pt = ui->frameContent->mapToGlobal(ui->ButtonPopup->pos());
-    // popup_->exec(pt);
 }
 
 void Tengu::reboot()
@@ -113,31 +91,4 @@ void Tengu::wallet()
     if (ret) {
     } else {
     }
-}
-
-void Tengu::initPopupMenu()
-{
-    popup_ = new QMenu(this);
-
-    QMenu* appMenu = popup_->addMenu(STR_MENU_APP);
-
-    appMenu->addAction(
-        STR_WINDOW_CENTER, this, [this]() { windowManager_->center(); });
-    // appMenu->addAction(STR_APP_SOCKET, this, &Tengu::socket);
-    appMenu->addSeparator();
-    QAction* resetDbAction = appMenu->addAction(STR_APP_RESET_DB,
-        [this]() { globalManager_->settingManager()->database()->reset(); });
-#ifndef USE_TEST
-    resetDbAction->setEnabled(false);
-#endif
-
-    appMenu->addSeparator();
-    appMenu->addAction(STR_APP_REBOOT, this, &Tengu::reboot);
-
-    popup_->addAction(STR_MENU_ABOUT, this, &Tengu::about);
-    popup_->addSeparator();
-    popup_->addAction(STR_MENU_EXIT, this, &Tengu::close);
-    popup_->addSeparator();
-
-    // connect(ui->ButtonPopup, &QToolButton::released, this, &Tengu::onPopup);
 }

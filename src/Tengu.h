@@ -31,9 +31,6 @@
 
 #include "UI/Frameless.h"
 
-#include "Components/TxListWidget.h"
-#include "Components/WalletPanel.h"
-
 #include "Forms/MessageForm.h"
 #include "Forms/WalletDock.h"
 #include "Forms/WalletForm.h"
@@ -65,13 +62,9 @@ public:
 private Q_SLOTS:
     void showWalletDock();
 
-    void onPopup();
     void reboot();
     void about();
     void wallet();
-
-private:
-    void initPopupMenu();
 
 private:
     Ui::Tengu* ui;
@@ -79,14 +72,6 @@ private:
     std::shared_ptr<WalletDock> walletDock_;
 
     std::shared_ptr<const GlobalManager> globalManager_;
-    std::unique_ptr<WindowManager> windowManager_ {
-        std::make_unique<WindowManager>()
-    };
     std::unique_ptr<Frameless> frameless_;
-
-    QMenu* popup_;
-
-    WalletPanel* walletPanel_;
-    TxListWidget* txList_;
 };
 #endif // TENGU_H

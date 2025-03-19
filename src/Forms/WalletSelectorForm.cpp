@@ -34,6 +34,14 @@ WalletSelectorForm::WalletSelectorForm(
     frameless_->setMainFrame(ui->frameMain);
     frameless_->setContentFrame(ui->frameContent);
     frameless_->init(Frameless::Mode::DIALOG);
+
+    globalManager_->windowManager()->reset(this, 0.6);
+    connect(frameless_.get(), &Frameless::onMax, this,
+        [this]() { globalManager_->windowManager()->reset(this, 0.6); });
+
+    connect(ui->ButtonOK, &QPushButton::clicked, this, &WalletSelectorForm::ok);
+    connect(ui->ButtonCancel, &QPushButton::clicked, this,
+        &WalletSelectorForm::reject);
 }
 
 WalletSelectorForm::~WalletSelectorForm()

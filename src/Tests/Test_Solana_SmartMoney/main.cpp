@@ -266,13 +266,21 @@ private Q_SLOTS:
                                 });
 
                             if (relevant) {
-                                bool createInstructionFound = std::any_of(
+                                /*bool createInstructionFound = std::any_of(
                                     logs.begin(), logs.end(),
                                     [](const std::string& log) {
                                         return log.find("Program log: "
                                                         "Instruction: Create")
                                             != std::string::npos;
-                                    });
+                                    });*/
+
+                                bool createInstructionFound
+                                    = std::any_of(logs.begin(), logs.end(),
+                                        [](const std::string& log) {
+                                            return log.find("Program log: "
+                                                            "Instruction: Swap")
+                                                != std::string::npos;
+                                        });
 
                                 if (createInstructionFound) {
                                     for (const auto& logEntry : logs) {
@@ -287,7 +295,11 @@ private Q_SLOTS:
                                                         log.find(": ") + 2);
                                                 std::string decoded
                                                     = base64Decode(encoded);
-                                                json parsed
+                                                std::cout << decoded
+                                                          << std::endl;
+                                                std::cout << foundDexName
+                                                          << std::endl;
+                                                /*json parsed
                                                     = parse_create_instruction(
                                                         decoded);
                                                 if (!parsed.empty()
@@ -311,7 +323,7 @@ private Q_SLOTS:
                                                                   << value
                                                                   << std::endl;
                                                     }
-                                                }
+                                                }*/
                                             } catch (const std::exception& e) {
                                                 std::cerr
                                                     << "Failed to decode: "

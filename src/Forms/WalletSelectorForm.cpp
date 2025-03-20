@@ -35,6 +35,21 @@ WalletSelectorForm::WalletSelectorForm(
     frameless_->setContentFrame(ui->frameContent);
     frameless_->init(Frameless::Mode::DIALOG);
 
+    QHBoxLayout* layout = new QHBoxLayout(ui->groupBox);
+    layout->setContentsMargins(DEFAULT_GROUP_MARGINS);
+    layout->setSpacing(20);
+
+    walletView_ = new WalletListView(this);
+    walletView_->load(
+        globalManager_->settingManager()->database()->walletRepo()->getByGroup(
+            static_cast<int>(WalletGroupType::User)));
+
+    addressView_ = new AddressListView(this);
+
+    layout->addWidget(walletView_);
+    layout->addWidget(addressView_);
+    ui->groupBox->setLayout(layout);
+
     globalManager_->windowManager()->reset(this, 0.6);
     connect(frameless_.get(), &Frameless::onMax, this,
         [this]() { globalManager_->windowManager()->reset(this, 0.6); });
@@ -42,6 +57,8 @@ WalletSelectorForm::WalletSelectorForm(
     connect(ui->ButtonOK, &QPushButton::clicked, this, &WalletSelectorForm::ok);
     connect(ui->ButtonCancel, &QPushButton::clicked, this,
         &WalletSelectorForm::reject);
+    connect(walletView_->selectionModel(), &QItemSelectionModel::currentChanged,
+        this, &WalletSelectorForm::currentItemChanged);
 }
 
 WalletSelectorForm::~WalletSelectorForm()
@@ -56,4 +73,19 @@ std::shared_ptr<Address> WalletSelectorForm::addressRecord() const
 
 void WalletSelectorForm::ok()
 {
+}
+
+void WalletSelectorForm::currentItemChanged(
+    const QModelIndex& current, const QModelIndex& previous)
+{
+    if (current.isValid()) {
+        int id = walletView_->model()
+                     ->data(current,
+                         static_cast<int>(WalletListModel::ItemData::Id))
+                     .toInt();
+        addressView_->load(globalManager_->settingManager()
+                ->database()
+                ->addressRepo()
+                ->getAllByWallet(id));
+    }
 }

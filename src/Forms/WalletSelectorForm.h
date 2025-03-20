@@ -28,6 +28,7 @@
 
 #include "UI/Frameless.h"
 
+#include "Components/AddressListWidget.h"
 #include "Components/WalletListWidget.h"
 
 #include "Databases/Database.h"
@@ -55,12 +56,17 @@ public:
 
 private Q_SLOTS:
     void ok();
+    void currentItemChanged(
+        const QModelIndex& current, const QModelIndex& previous);
 
 private:
     Ui::WalletSelectorForm* ui;
 
     std::shared_ptr<const GlobalManager> globalManager_;
     std::unique_ptr<Frameless> frameless_;
+
+    WalletListView* walletView_;
+    AddressListView* addressView_;
 
     std::shared_ptr<Address> addressRecord_;
 };

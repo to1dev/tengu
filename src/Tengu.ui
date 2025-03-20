@@ -183,6 +183,26 @@
          </widget>
         </item>
         <item>
+         <widget class="QToolButton" name="ButtonArbitrage">
+          <property name="text">
+           <string>套利</string>
+          </property>
+          <property name="icon">
+           <iconset resource="res/Images.qrc">
+            <normaloff>:/Buttons/arbitrage.svg</normaloff>:/Buttons/arbitrage.svg</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>32</width>
+            <height>32</height>
+           </size>
+          </property>
+          <property name="toolButtonStyle">
+           <enum>Qt::ToolButtonTextUnderIcon</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QToolButton" name="ButtonDefi">
           <property name="text">
            <string>金融</string>

@@ -333,7 +333,9 @@ private:
     Storage* storage_;
 };
 
-class IAddressRepo {
+class IAddressRepo : public QObject {
+    Q_OBJECT
+
 public:
     virtual ~IAddressRepo() = default;
     virtual DBErrorType before(const Address& group, bool update = false) = 0;
@@ -342,11 +344,14 @@ public:
     virtual void remove(int id) = 0;
     virtual std::optional<Address> get(int id) = 0;
     virtual std::vector<Address> getAllByWallet(int walletId) = 0;
+
+Q_SIGNALS:
+    void inserted();
+    void updated(const Address& address);
+    void removed(int id);
 };
 
-class AddressRepo : public QObject, public IAddressRepo {
-    Q_OBJECT
-
+class AddressRepo : public IAddressRepo {
 public:
     AddressRepo(Storage* storage);
     DBErrorType before(const Address& address, bool update) override;
@@ -355,11 +360,6 @@ public:
     void remove(int id) override;
     std::optional<Address> get(int id) override;
     std::vector<Address> getAllByWallet(int walletId) override;
-
-Q_SIGNALS:
-    void inserted();
-    void updated(const Address& address);
-    void removed(int id);
 
 private:
     Storage* storage_;

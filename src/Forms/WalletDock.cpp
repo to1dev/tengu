@@ -68,8 +68,6 @@ void WalletDock::showEvent(QShowEvent* event)
 
 void WalletDock::select()
 {
-    WalletSelectorForm wsf(nullptr, globalManager_);
-    if (wsf.exec()) {
-    } else {
-    }
+    WalletSelectorForm wsf(this, globalManager_);
+    if (wsf.exec()) { }
 }

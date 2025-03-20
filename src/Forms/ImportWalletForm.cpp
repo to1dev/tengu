@@ -179,6 +179,10 @@ void ImportWalletForm::ok()
                 MessageForm { nullptr, 16, SAME_PRIV }.exec();
                 break;
 
+            case WalletType::Address:
+                MessageForm { nullptr, 16, SAME_ADDRESS }.exec();
+                break;
+
             case WalletType::Mnemonic:
             default:
                 MessageForm { nullptr, 16, SAME_MNEMONIC }.exec();

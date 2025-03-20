@@ -81,7 +81,8 @@ inline const QString SAME_MNEMONIC
 inline const QString SAME_PRIV
     = QObject::tr("这个私钥已经存在了！<p>请输入新的私钥。</p>");
 inline const QString SAME_WIF = QObject::tr("这个WIF私钥已经存在了！");
-inline const QString SAME_ADDRESS = QObject::tr("这个地址已经存在了！");
+inline const QString SAME_ADDRESS
+    = QObject::tr("这个地址已经存在了！<p>请输入新的地址。</p>");
 inline const QString INVALID_MNEMONIC = QObject::tr("这是一个无效助记词！");
 inline const QString INVALID_PRIV = QObject::tr("这是一个无效私钥！");
 inline const QString INVALID_ADDRESS = QObject::tr("这是一个无效地址！");

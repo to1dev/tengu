@@ -221,7 +221,7 @@ void ImportWalletForm::ok()
                 const auto address = wallet->getAddress();
                 const std::string addressName = STR_DEFAULT_ADDRESS_NAME;
                 const auto addressNameHash = Encryption::easyHash(addressName);
-                const auto addressHash = Encryption::genRandomHash();
+                const auto addressHash = Encryption::easyHash(address);
 
                 Address addressRecord {
                     .walletId = walletId,
@@ -285,7 +285,7 @@ void ImportWalletForm::ok()
                 const auto address = wallet->getAddress();
                 const std::string addressName = STR_DEFAULT_ADDRESS_NAME;
                 const auto addressNameHash = Encryption::easyHash(addressName);
-                const auto addressHash = Encryption::genRandomHash();
+                const auto addressHash = Encryption::easyHash(address);
 
                 Address addressRecord {
                     .walletId = walletId,
@@ -325,6 +325,59 @@ void ImportWalletForm::ok()
     }
 
     case (WalletType::Address): {
+        try {
+            {
+                walletRecord_->chainType
+                    = static_cast<int>(currentContent_.chain);
+            }
+
+            auto database = globalManager_->settingManager()->database();
+            bool success = database->storage()->transaction([&]() {
+                const int walletId
+                    = database->walletRepo()->insert(*walletRecord_);
+
+                if (walletId <= 0) {
+                    return false;
+                }
+
+                walletRecord_->id = walletId;
+
+                const auto address = currentContent_.content.toStdString();
+                const std::string addressName = STR_DEFAULT_ADDRESS_NAME;
+                const auto addressNameHash = Encryption::easyHash(addressName);
+                const auto addressHash = Encryption::easyHash(address);
+
+                Address addressRecord {
+                    .walletId = walletId,
+                    .hash = Encryption::genRandomHash(),
+                    .name = addressName,
+                    .nameHash = addressNameHash,
+                    .address = address,
+                    .addressHash = addressHash,
+                    .derivationPath = std::string(wallet->getDerivationPath()),
+                };
+
+                if (database->addressRepo()->insert(addressRecord) <= 0) {
+                    return false;
+                }
+
+                return true;
+            });
+
+            if (!success) {
+                MessageForm { nullptr, 16,
+                    "Failed to create wallet and address" }
+                    .exec();
+                return;
+            }
+
+            accept();
+        } catch (const std::exception& e) {
+            std::cerr << "Failed to import address: " << e.what() << std::endl;
+            MessageForm { nullptr, 5, NO_VALID_MNEMONIC_KEY }.exec();
+            return;
+        }
+
         break;
     }
 

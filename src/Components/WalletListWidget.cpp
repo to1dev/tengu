@@ -128,6 +128,8 @@ QVariant WalletListModel::data(const QModelIndex& index, int role) const
             static_cast<int>(WalletListIcons[group].items[chain].icon.size())));
         return icon;
     }
+    case Qt::ToolTipRole:
+        return QString::fromStdString(wallet.name);
     case Id:
         return wallet.id;
     case Type:

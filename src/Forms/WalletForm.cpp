@@ -38,6 +38,8 @@ WalletForm::WalletForm(
     layoutPanel->setContentsMargins(DEFAULT_GROUP_MARGINS);
 
     walletView_ = new WalletListView(this);
+    walletView_->load(
+        globalManager_->settingManager()->database()->walletRepo()->getAll());
 
     QWidget* panelButtons = new QWidget(this);
     panelButtons->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
@@ -74,9 +76,6 @@ WalletForm::WalletForm(
         [this](const QModelIndex&) { editWallet(); });
     connect(ui->ButtonDeleteWallet, &QPushButton::clicked, this,
         &WalletForm::delWallet);
-
-    walletView_->load(
-        globalManager_->settingManager()->database()->walletRepo()->getAll());
 }
 
 WalletForm::~WalletForm()

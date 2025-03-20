@@ -28,6 +28,14 @@ NewAddressForm::NewAddressForm(const NewAddress& address, QWidget* parent,
     frameless_->setContentFrame(ui->frameContent);
     frameless_->init(Frameless::Mode::DIALOG);
 
+    QVBoxLayout* layoutDesc = new QVBoxLayout(ui->groupBoxDesc);
+    layoutDesc->setContentsMargins(DEFAULT_GROUP_MARGINS);
+    layoutDesc->setSpacing(DEFAULT_SPACING);
+
+    QPlainTextEdit* text_ = new QPlainTextEdit(this);
+    layoutDesc->addWidget(text_);
+    ui->groupBoxDesc->setLayout(layoutDesc);
+
     QVBoxLayout* layoutOptions = new QVBoxLayout(ui->groupBox);
     layoutOptions->setContentsMargins(DEFAULT_GROUP_MARGINS);
     layoutOptions->setSpacing(DEFAULT_SPACING);

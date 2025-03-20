@@ -20,6 +20,7 @@
 
 #include <QDialog>
 #include <QLabel>
+#include <QPlainTextEdit>
 #include <QVBoxLayout>
 
 #include "Managers/GlobalManager.h"

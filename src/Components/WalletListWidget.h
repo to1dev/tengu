@@ -22,8 +22,10 @@
 #include <array>
 #include <string_view>
 #include <unordered_map>
+#include <vector>
 
-#include <QListWidget>
+#include <QAbstractListModel>
+#include <QListView>
 #include <QPainter>
 #include <QScrollBar>
 #include <QStyledItemDelegate>
@@ -110,34 +112,51 @@ public:
         const QModelIndex& index) const override;
 };
 
-class WalletListWidget : public QListWidget {
+class WalletListModel : public QAbstractListModel {
+    Q_OBJECT
+
 public:
-    enum class ItemData {
-        selected = Qt::UserRole + 100,
-        id,
-        type,
-        groupType,
-        chainType,
-        networkType,
-        index,
-        hash,
-        name,
-        mnemonic,
-        derivationPath,
+    enum ItemData {
+        Id = Qt::UserRole + 100,
+        Type,
+        GroupType,
+        ChainType,
+        NetworkType,
+        Index,
+        Hash,
+        Name,
+        Mnemonic,
+        DerivationPath,
     };
 
-    explicit WalletListWidget(QWidget* parent = nullptr);
-    bool focusChanged();
+    explicit WalletListModel(QObject* parent = nullptr);
 
-    void add(const Wallet& wallet, int index = 0);
+    int rowCount(const QModelIndex& parent = QModelIndex()) const override;
+    QVariant data(
+        const QModelIndex& index, int role = Qt::DisplayRole) const override;
+
+    void add(const Wallet& wallet);
     void load(const std::vector<Wallet>& wallets);
     void update(const Wallet& wallet);
-    void purge();
-
-    void setSelectedId(int newSelectedId);
+    void remove(const QList<int>& rows);
 
 private:
-    int selectedId_ { -1 };
+    std::vector<Wallet> wallets_;
+};
+
+class WalletListView : public QListView {
+    Q_OBJECT
+
+public:
+    explicit WalletListView(QWidget* parent = nullptr);
+
+    void load(const std::vector<Wallet>& wallets);
+    void add(const Wallet& wallet);
+    void update(const Wallet& wallet);
+    void remove(const QList<int>& rows);
+
+private:
+    WalletListModel* model_;
 };
 
 }

@@ -77,7 +77,7 @@ private:
     std::shared_ptr<const GlobalManager> globalManager_;
     std::unique_ptr<Frameless> frameless_;
 
-    WalletListWidget* walletList_;
+    WalletListView* walletView_;
 };
 
 #endif // WALLETFORM_H

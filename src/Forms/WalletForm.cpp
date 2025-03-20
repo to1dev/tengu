@@ -37,7 +37,7 @@ WalletForm::WalletForm(
     QHBoxLayout* layoutPanel = new QHBoxLayout(ui->groupBoxWallets);
     layoutPanel->setContentsMargins(DEFAULT_GROUP_MARGINS);
 
-    walletList_ = new WalletListWidget(this);
+    walletView_ = new WalletListView(this);
 
     QWidget* panelButtons = new QWidget(this);
     panelButtons->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
@@ -55,7 +55,7 @@ WalletForm::WalletForm(
     layoutButtons->addStretch(1);
     panelButtons->setLayout(layoutButtons);
 
-    layoutPanel->addWidget(walletList_);
+    layoutPanel->addWidget(walletView_);
     layoutPanel->addWidget(panelButtons);
     ui->groupBoxWallets->setLayout(layoutPanel);
 
@@ -70,12 +70,12 @@ WalletForm::WalletForm(
         &WalletForm::importWallet);
     connect(ui->ButtonEditWallet, &QPushButton::clicked, this,
         &WalletForm::editWallet);
-    connect(walletList_, &WalletListWidget::itemDoubleClicked, this,
-        &WalletForm::editWallet);
+    connect(walletView_, &WalletListView::doubleClicked,
+        [this](const QModelIndex&) { editWallet(); });
     connect(ui->ButtonDeleteWallet, &QPushButton::clicked, this,
         &WalletForm::delWallet);
 
-    walletList_->load(
+    walletView_->load(
         globalManager_->settingManager()->database()->walletRepo()->getAll());
 }
 
@@ -95,7 +95,7 @@ void WalletForm::newWallet()
     NewWalletForm nwf(wallet, this, globalManager_);
     int ret = nwf.exec();
     if (ret) {
-        walletList_->add(*nwf.walletRecord());
+        walletView_->add(*nwf.walletRecord());
     } else {
     }
 }
@@ -105,66 +105,57 @@ void WalletForm::importWallet()
     ImportWalletForm iwf(this, globalManager_);
     int ret = iwf.exec();
     if (ret) {
-        walletList_->add(*iwf.walletRecord());
+        walletView_->add(*iwf.walletRecord());
     } else {
     }
 }
 
 void WalletForm::editWallet()
 {
-    if (auto* item = walletList_->currentItem(); item && item->isSelected()) {
-        const auto id
-            = item->data(static_cast<int>(WalletListWidget::ItemData::id))
-                  .toInt();
+    QModelIndex index = walletView_->currentIndex();
+    if (!index.isValid())
+        return;
 
-        UpdateWalletForm::UpdateWallet wallet {
-            .id = id,
-        };
-        UpdateWalletForm uwf(wallet, this, globalManager_);
+    int id = walletView_->model()
+                 ->data(index, static_cast<int>(WalletListModel::ItemData::Id))
+                 .toInt();
 
-        int ret = uwf.exec();
-        if (ret) {
-            walletList_->update(*uwf.walletRecord());
-        } else {
-        }
+    UpdateWalletForm::UpdateWallet wallet {
+        .id = id,
+    };
+    UpdateWalletForm uwf(wallet, this, globalManager_);
+
+    int ret = uwf.exec();
+    if (ret) {
+        walletView_->update(*uwf.walletRecord());
+    } else {
     }
 }
 
 void WalletForm::delWallet()
 {
-    /*QListWidgetItem* item = walletList_->currentItem();
-    if (item && item->isSelected()) {
-        int id = item->data(static_cast<int>(WalletListWidget::ItemData::id))
-                     .toInt();
-        MessageForm mf(nullptr, -1, CONFIRM_WALLET_DELETE,
-    CONFIRM_WALLET_DELETE_TITLE, MessageButton::Ok | MessageButton::Cancel); int
-    ret = mf.exec(); if (ret) { }
-    }*/
+    QModelIndex index = walletView_->currentIndex();
+    if (!index.isValid())
+        return;
 
-    if (auto* item = walletList_->currentItem(); item && item->isSelected()) {
-        const auto id
-            = item->data(static_cast<int>(WalletListWidget::ItemData::id))
-                  .toInt();
-        const auto name
-            = item->data(static_cast<int>(WalletListWidget::ItemData::name))
-                  .toString();
-        MessageForm mf(nullptr, 14, CONFIRM_WALLET_DELETE.arg(name),
-            CONFIRM_WALLET_DELETE_TITLE, true,
-            MessageButton::Ok | MessageButton::Cancel);
-        if (mf.exec()) {
-            try {
-                globalManager_->settingManager()
-                    ->database()
-                    ->walletRepo()
-                    ->remove(id);
-                std::unique_ptr<QListWidgetItem> removedItem {
-                    walletList_->takeItem(walletList_->row(item))
-                };
-                walletList_->clearSelection();
-            } catch (const DatabaseException& e) {
-                std::cerr << "Failed to remove wallet: " << e.what()
-                          << std::endl;
-            }
+    int id = walletView_->model()
+                 ->data(index, static_cast<int>(WalletListModel::ItemData::Id))
+                 .toInt();
+    QString name
+        = walletView_->model()
+              ->data(index, static_cast<int>(WalletListModel::ItemData::Name))
+              .toString();
+
+    MessageForm mf(nullptr, 14, CONFIRM_WALLET_DELETE.arg(name),
+        CONFIRM_WALLET_DELETE_TITLE, true,
+        MessageButton::Ok | MessageButton::Cancel);
+    if (mf.exec()) {
+        try {
+            globalManager_->settingManager()->database()->walletRepo()->remove(
+                id);
+            walletView_->remove(QList<int>() << index.row());
+        } catch (const DatabaseException& e) {
+            std::cerr << "Failed to remove wallet: " << e.what() << std::endl;
         }
     }
 }

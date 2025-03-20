@@ -31,10 +31,10 @@ void BadgeItemDelegate::paint(QPainter* painter,
     QStyledItemDelegate::paint(painter, option, index);
 
     int group
-        = index.data(static_cast<int>(WalletListWidget::ItemData::groupType))
+        = index.data(static_cast<int>(WalletListModel::ItemData::GroupType))
               .toInt();
-    int type = index.data(static_cast<int>(WalletListWidget::ItemData::type))
-                   .toInt();
+    int type
+        = index.data(static_cast<int>(WalletListModel::ItemData::Type)).toInt();
 
     if (group > 0 && type > 0) {
         painter->setRenderHint(QPainter::Antialiasing);
@@ -66,14 +66,14 @@ void WalletTypeBadgeDelegate::paint(QPainter* painter,
     QStyledItemDelegate::paint(painter, option, index);
 
     int group
-        = index.data(static_cast<int>(WalletListWidget::ItemData::groupType))
+        = index.data(static_cast<int>(WalletListModel::ItemData::GroupType))
               .toInt();
-    int type = index.data(static_cast<int>(WalletListWidget::ItemData::type))
-                   .toInt();
+    int type
+        = index.data(static_cast<int>(WalletListModel::ItemData::Type)).toInt();
 
     if (group > 0 && type > 0) {
-        //bool isSelected = option.state & QStyle::State_Selected;
-        //int alpha = isSelected ? 200 : 220;
+        // bool isSelected = option.state & QStyle::State_Selected;
+        // int alpha = isSelected ? 200 : 220;
 
         QString badgeText
             = QString::fromStdString(std::string(WalletTypeText.at(type)));
@@ -98,8 +98,100 @@ void WalletTypeBadgeDelegate::paint(QPainter* painter,
     }
 }
 
-WalletListWidget::WalletListWidget(QWidget* parent)
-    : QListWidget(parent)
+WalletListModel::WalletListModel(QObject* parent)
+    : QAbstractListModel(parent)
+{
+}
+
+int WalletListModel::rowCount(const QModelIndex& parent) const
+{
+    if (parent.isValid())
+        return 0;
+    return static_cast<int>(wallets_.size());
+}
+
+QVariant WalletListModel::data(const QModelIndex& index, int role) const
+{
+    if (!index.isValid() || index.row() < 0
+        || index.row() >= static_cast<int>(wallets_.size()))
+        return QVariant();
+
+    const Wallet& wallet = wallets_[index.row()];
+    switch (role) {
+    case Qt::DisplayRole:
+        return QString::fromStdString(wallet.name);
+    case Qt::DecorationRole: {
+        int group = wallet.groupType;
+        int chain = wallet.chainType;
+        QIcon icon(QString::fromUtf8(
+            WalletListIcons[group].items[chain].icon.data(),
+            static_cast<int>(WalletListIcons[group].items[chain].icon.size())));
+        return icon;
+    }
+    case Id:
+        return wallet.id;
+    case Type:
+        return wallet.type;
+    case GroupType:
+        return wallet.groupType;
+    case ChainType:
+        return wallet.chainType;
+    case NetworkType:
+        return wallet.networkType;
+    case Index:
+        return index.row();
+    case Hash:
+        return QString::fromStdString(wallet.hash);
+    case Name:
+        return QString::fromStdString(wallet.name);
+    case Mnemonic:
+        return QString::fromStdString(wallet.mnemonic);
+    default:
+        return QVariant();
+    }
+}
+
+void WalletListModel::add(const Wallet& wallet)
+{
+    beginInsertRows(QModelIndex(), rowCount(), rowCount());
+    wallets_.push_back(wallet);
+    endInsertRows();
+}
+
+void WalletListModel::load(const std::vector<Wallet>& wallets)
+{
+    beginResetModel();
+    wallets_ = wallets;
+    endResetModel();
+}
+
+void WalletListModel::update(const Wallet& wallet)
+{
+    for (size_t i = 0; i < wallets_.size(); ++i) {
+        if (wallets_[i].id == wallet.id) {
+            wallets_[i] = wallet;
+            QModelIndex idx = index(static_cast<int>(i));
+            Q_EMIT dataChanged(idx, idx);
+            break;
+        }
+    }
+}
+
+void WalletListModel::remove(const QList<int>& rows)
+{
+    QList<int> sortedRows = rows;
+    std::sort(sortedRows.begin(), sortedRows.end(), std::greater<int>());
+    for (int row : sortedRows) {
+        if (row < 0 || row >= static_cast<int>(wallets_.size()))
+            continue;
+        beginRemoveRows(QModelIndex(), row, row);
+        wallets_.erase(wallets_.begin() + row);
+        endRemoveRows();
+    }
+}
+
+WalletListView::WalletListView(QWidget* parent)
+    : QListView(parent)
 {
     setObjectName(WALLET_OBJECT_NAME);
     setViewMode(QListView::IconMode);
@@ -114,87 +206,29 @@ WalletListWidget::WalletListWidget(QWidget* parent)
     setContextMenuPolicy(Qt::CustomContextMenu);
 
     setItemDelegate(new WalletTypeBadgeDelegate(this));
-    // setItemDelegate(new BadgeItemDelegate(this));
+
+    model_ = new WalletListModel(this);
+    setModel(model_);
 }
 
-bool WalletListWidget::focusChanged()
+void WalletListView::load(const std::vector<Wallet>& wallets)
 {
-    return currentItem() ? !currentItem()->isSelected() : false;
+    model_->load(wallets);
 }
 
-void WalletListWidget::add(const Wallet& wallet, int index)
+void WalletListView::add(const Wallet& wallet)
 {
-    QListWidgetItem* item = new QListWidgetItem;
-    QString name = QString::fromStdString(wallet.name);
-    item->setText(name);
-    item->setIcon(QIcon(QString::fromUtf8(
-        WalletListIcons[wallet.groupType].items[wallet.chainType].icon.data(),
-        WalletListIcons[wallet.groupType]
-            .items[wallet.chainType]
-            .icon.size())));
-    item->setToolTip(name);
-
-    item->setData(static_cast<int>(ItemData::selected), false);
-    item->setData(static_cast<int>(ItemData::id), wallet.id);
-    item->setData(static_cast<int>(ItemData::index), index);
-    item->setData(static_cast<int>(ItemData::type), wallet.type);
-    item->setData(static_cast<int>(ItemData::groupType), wallet.groupType);
-    item->setData(static_cast<int>(ItemData::chainType), wallet.chainType);
-    item->setData(static_cast<int>(ItemData::networkType), wallet.networkType);
-    item->setData(
-        static_cast<int>(ItemData::hash), QString::fromStdString(wallet.hash));
-    item->setData(static_cast<int>(ItemData::name), name);
-    item->setData(static_cast<int>(ItemData::mnemonic),
-        QString::fromStdString(wallet.mnemonic));
-
-    addItem(item);
-
-    if (selectedId_ == wallet.id) {
-        item->setSelected(true);
-        setCurrentRow(row(item));
-        scrollToItem(item);
-        // setFocus();
-    }
+    model_->add(wallet);
 }
 
-void WalletListWidget::load(const std::vector<Wallet>& wallets)
+void WalletListView::update(const Wallet& wallet)
 {
-    setUpdatesEnabled(false);
-
-    clear();
-    int index = 0;
-    for (const Wallet& wallet : wallets) {
-        add(wallet, index++);
-    }
-
-    setUpdatesEnabled(true);
+    model_->update(wallet);
 }
 
-void WalletListWidget::update(const Wallet& wallet)
+void WalletListView::remove(const QList<int>& rows)
 {
-    QListWidgetItem* item = currentItem();
-    QString name = QString::fromStdString(wallet.name);
-    item->setText(name);
-    item->setToolTip(name);
-    item->setData(static_cast<int>(ItemData::name), name);
-}
-
-void WalletListWidget::purge()
-{
-    setUpdatesEnabled(false);
-
-    QList<QListWidgetItem*> items = selectedItems();
-    if (!items.isEmpty()) {
-        qDeleteAll(items);
-        clearSelection();
-    }
-
-    setUpdatesEnabled(true);
-}
-
-void WalletListWidget::setSelectedId(int newSelectedId)
-{
-    selectedId_ = newSelectedId;
+    model_->remove(rows);
 }
 
 }

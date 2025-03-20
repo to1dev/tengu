@@ -20,8 +20,9 @@
 
 namespace Daitengu::Components {
 
-BoldFirstLineDelegate::BoldFirstLineDelegate(QObject* parent)
+BoldFirstLineDelegate::BoldFirstLineDelegate(QObject* parent, bool deletable)
     : QStyledItemDelegate(parent)
+    , isDeletable_(deletable)
 {
 }
 
@@ -99,7 +100,7 @@ void BoldFirstLineDelegate::paint(QPainter* painter,
         textRect.top() + (textRect.height() - buttonSize) / 2, buttonSize,
         buttonSize);
 
-    if (option.state & QStyle::State_MouseOver) {
+    if (isDeletable_ && option.state & QStyle::State_MouseOver) {
         deleteButtonSvg_->render(painter, buttonRect);
     }
 
@@ -137,8 +138,8 @@ bool BoldFirstLineDelegate::eventFilter(QObject* object, QEvent* event)
                         buttonSize, buttonSize);
 
                     hoverOverAddress = addressRect.contains(mouseEvent->pos());
-                    hoverOverDeleteButton
-                        = deleteButtonRect.contains(mouseEvent->pos());
+                    hoverOverDeleteButton = isDeletable_
+                        && deleteButtonRect.contains(mouseEvent->pos());
 
                     listView->viewport()->setCursor(
                         (hoverOverAddress || hoverOverDeleteButton)
@@ -279,7 +280,7 @@ void AddressListModel::remove(const QList<int>& rows)
     }
 }
 
-AddressListView::AddressListView(QWidget* parent)
+AddressListView::AddressListView(QWidget* parent, bool deletable)
     : QListView(parent)
 {
     setObjectName(ADDRESS_OBJECT_NAME);
@@ -295,7 +296,7 @@ AddressListView::AddressListView(QWidget* parent)
     model_ = new AddressListModel(this);
     setModel(model_);
 
-    auto* delegate = new BoldFirstLineDelegate(this);
+    auto* delegate = new BoldFirstLineDelegate(this, deletable);
     setItemDelegate(delegate);
 
     viewport()->installEventFilter(delegate);

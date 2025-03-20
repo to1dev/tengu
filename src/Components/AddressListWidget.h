@@ -50,7 +50,8 @@ class BoldFirstLineDelegate : public QStyledItemDelegate {
     Q_OBJECT
 
 public:
-    explicit BoldFirstLineDelegate(QObject* parent = nullptr);
+    explicit BoldFirstLineDelegate(
+        QObject* parent = nullptr, bool deletable = false);
     ~BoldFirstLineDelegate() override = default;
 
     void paint(QPainter* painter, const QStyleOptionViewItem& option,
@@ -68,6 +69,8 @@ private:
     std::unique_ptr<QSvgRenderer> deleteButtonSvg_ {
         std::make_unique<QSvgRenderer>(QString(":/Media/Xmark"))
     };
+
+    bool isDeletable_ { false };
 };
 
 class AddressListModel : public QAbstractListModel {
@@ -105,7 +108,7 @@ class AddressListView : public QListView {
     Q_OBJECT
 
 public:
-    explicit AddressListView(QWidget* parent = nullptr);
+    explicit AddressListView(QWidget* parent = nullptr, bool deletable = false);
 
     void add(const Address& address);
     void load(const std::vector<Address>& addresses);

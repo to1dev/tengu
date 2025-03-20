@@ -39,7 +39,7 @@ UpdateWalletForm::UpdateWalletForm(const UpdateWallet& wallet, QWidget* parent,
     layoutAddressList->setContentsMargins(DEFAULT_GROUP_MARGINS);
     layoutAddressList->setSpacing(DEFAULT_SPACING);
 
-    addressView_ = new AddressListView(this);
+    addressView_ = new AddressListView(this, true);
     layoutAddressList->addWidget(addressView_);
     ui->groupBoxAddress->setLayout(layoutAddressList);
 

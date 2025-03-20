@@ -18,9 +18,12 @@
 
 #pragma once
 
+#include <vector>
+
+#include <QAbstractListModel>
 #include <QApplication>
 #include <QClipboard>
-#include <QListWidget>
+#include <QListView>
 #include <QMouseEvent>
 #include <QPainter>
 #include <QScrollBar>
@@ -67,39 +70,59 @@ private:
     };
 };
 
-class AddressListWidget : public QListWidget {
+class AddressListModel : public QAbstractListModel {
     Q_OBJECT
 
 public:
     enum class ItemData {
-        selected = Qt::UserRole + 200,
-        id,
-        type,
-        walletId,
-        index,
-        hash,
-        name,
-        address,
-        derivationPath,
+        Id = Qt::UserRole + 200,
+        Type,
+        WalletId,
+        Index,
+        Hash,
+        Name,
+        Address,
+        DerivationPath,
     };
 
-    explicit AddressListWidget(QWidget* parent = nullptr);
-    ~AddressListWidget() override = default;
+    explicit AddressListModel(QObject* parent = nullptr);
+
+    int rowCount(const QModelIndex& parent = QModelIndex()) const override;
+    QVariant data(
+        const QModelIndex& index, int role = Qt::DisplayRole) const override;
 
     void add(const Address& address);
     void load(const std::vector<Address>& addresses);
     void update(const Address& address);
     void purge();
-
-    bool focusChanged();
-
-    void setSelectedId(int newSelectedId);
-
-Q_SIGNALS:
-    void itemDeleted(const QModelIndex& index);
+    void remove(const QList<int>& rows);
 
 private:
-    int selectedId_ { -1 };
+    std::vector<Address> addresses_;
+};
+
+class AddressListView : public QListView {
+    Q_OBJECT
+
+public:
+    explicit AddressListView(QWidget* parent = nullptr);
+
+    void add(const Address& address);
+    void load(const std::vector<Address>& addresses);
+    void update(const Address& address);
+    void purge();
+    void remove(const QList<int>& rows);
+
+    AddressListModel* model() const
+    {
+        return model_;
+    }
+
+Q_SIGNALS:
+    void deleteRequested(const QModelIndex& index);
+
+private:
+    AddressListModel* model_;
 };
 
 }

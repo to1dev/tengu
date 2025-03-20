@@ -129,7 +129,7 @@ private:
     std::shared_ptr<const GlobalManager> globalManager_;
     std::unique_ptr<Frameless> frameless_;
 
-    AddressListWidget* addressList_;
+    AddressListView* addressView_;
     LineEditEx* editName_;
     ComboBoxEx* comboChain_;
 

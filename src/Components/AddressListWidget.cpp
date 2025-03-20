@@ -36,10 +36,10 @@ void BoldFirstLineDelegate::paint(QPainter* painter,
         QStyle::CE_ItemViewItem, &options, painter, options.widget);
 
     const QString name
-        = index.data(static_cast<int>(AddressListWidget::ItemData::name))
+        = index.data(static_cast<int>(AddressListModel::ItemData::Name))
               .toString();
     const QString address = hideAddress(
-        index.data(static_cast<int>(AddressListWidget::ItemData::address))
+        index.data(static_cast<int>(AddressListModel::ItemData::Address))
             .toString());
 
     painter->save();
@@ -119,7 +119,7 @@ bool BoldFirstLineDelegate::eventFilter(QObject* object, QEvent* event)
                     const QFontMetrics metrics(listView->font());
                     const QString address = hideAddress(index
                             .data(static_cast<int>(
-                                AddressListWidget::ItemData::address))
+                                AddressListModel::ItemData::Address))
                             .toString());
                     const int availableWidth = rect.width() - 16;
                     const int addressWidth = metrics.horizontalAdvance(address);
@@ -159,7 +159,7 @@ bool BoldFirstLineDelegate::eventFilter(QObject* object, QEvent* event)
                         if (hoverOverAddress) {
                             QApplication::clipboard()->setText(index
                                     .data(static_cast<int>(
-                                        AddressListWidget::ItemData::address))
+                                        AddressListModel::ItemData::Address))
                                     .toString());
                             return true;
                         } else if (hoverOverDeleteButton) {
@@ -190,8 +190,97 @@ bool BoldFirstLineDelegate::eventFilter(QObject* object, QEvent* event)
     return QObject::eventFilter(object, event);
 }
 
-AddressListWidget::AddressListWidget(QWidget* parent)
-    : QListWidget(parent)
+AddressListModel::AddressListModel(QObject* parent)
+    : QAbstractListModel(parent)
+{
+}
+
+int AddressListModel::rowCount(const QModelIndex& parent) const
+{
+    if (parent.isValid())
+        return 0;
+    return static_cast<int>(addresses_.size());
+}
+
+QVariant AddressListModel::data(const QModelIndex& index, int role) const
+{
+    if (!index.isValid() || index.row() < 0
+        || index.row() >= static_cast<int>(addresses_.size()))
+        return QVariant();
+
+    const Address& addr = addresses_[index.row()];
+    switch (role) {
+    case Qt::DisplayRole:
+        return "Dummy Text First\nSecond";
+    case static_cast<int>(ItemData::Id):
+        return addr.id;
+    case static_cast<int>(ItemData::Type):
+        return addr.type;
+    case static_cast<int>(ItemData::WalletId):
+        return addr.walletId;
+    case static_cast<int>(ItemData::Index):
+        return addr.index;
+    case static_cast<int>(ItemData::Hash):
+        return QString::fromStdString(addr.hash);
+    case static_cast<int>(ItemData::Name):
+        return QString::fromStdString(addr.name);
+    case static_cast<int>(ItemData::Address):
+        return QString::fromStdString(addr.address);
+    case static_cast<int>(ItemData::DerivationPath):
+        return QString::fromStdString(addr.derivationPath);
+    default:
+        return QVariant();
+    }
+}
+
+void AddressListModel::add(const Address& address)
+{
+    beginInsertRows(QModelIndex(), rowCount(), rowCount());
+    addresses_.push_back(address);
+    endInsertRows();
+}
+
+void AddressListModel::load(const std::vector<Address>& addresses)
+{
+    beginResetModel();
+    addresses_ = addresses;
+    endResetModel();
+}
+
+void AddressListModel::update(const Address& address)
+{
+    for (size_t i = 0; i < addresses_.size(); ++i) {
+        if (addresses_[i].id == address.id) {
+            addresses_[i] = address;
+            QModelIndex idx = index(static_cast<int>(i));
+            Q_EMIT dataChanged(idx, idx);
+            break;
+        }
+    }
+}
+
+void AddressListModel::purge()
+{
+    beginResetModel();
+    addresses_.clear();
+    endResetModel();
+}
+
+void AddressListModel::remove(const QList<int>& rows)
+{
+    QList<int> sortedRows = rows;
+    std::sort(sortedRows.begin(), sortedRows.end(), std::greater<int>());
+    for (int row : sortedRows) {
+        if (row < 0 || row >= static_cast<int>(addresses_.size()))
+            continue;
+        beginRemoveRows(QModelIndex(), row, row);
+        addresses_.erase(addresses_.begin() + row);
+        endRemoveRows();
+    }
+}
+
+AddressListView::AddressListView(QWidget* parent)
+    : QListView(parent)
 {
     setObjectName(ADDRESS_OBJECT_NAME);
     setIconSize(QSize(ADDRESS_ICON_SIZE, ADDRESS_ICON_SIZE));
@@ -201,83 +290,43 @@ AddressListWidget::AddressListWidget(QWidget* parent)
     verticalScrollBar()->setContextMenuPolicy(Qt::NoContextMenu);
     horizontalScrollBar()->setContextMenuPolicy(Qt::NoContextMenu);
     setContextMenuPolicy(Qt::CustomContextMenu);
+    setMouseTracking(true);
+
+    model_ = new AddressListModel(this);
+    setModel(model_);
 
     auto* delegate = new BoldFirstLineDelegate(this);
     setItemDelegate(delegate);
+
     viewport()->installEventFilter(delegate);
 
     connect(delegate, &BoldFirstLineDelegate::deleteRequested, this,
-        &AddressListWidget::itemDeleted);
+        [this](const QModelIndex& index) { Q_EMIT deleteRequested(index); });
 }
 
-void AddressListWidget::add(const Address& address)
+void AddressListView::add(const Address& address)
 {
-    auto* item = new QListWidgetItem();
-
-    item->setText("Dummy Text First\nSecond");
-
-    item->setData(static_cast<int>(ItemData::selected), false);
-    item->setData(static_cast<int>(ItemData::id), address.id);
-    item->setData(static_cast<int>(ItemData::type), address.type);
-    item->setData(static_cast<int>(ItemData::walletId), address.walletId);
-    item->setData(static_cast<int>(ItemData::index), address.index);
-    item->setData(
-        static_cast<int>(ItemData::hash), QString::fromStdString(address.hash));
-    item->setData(
-        static_cast<int>(ItemData::name), QString::fromStdString(address.name));
-    item->setData(static_cast<int>(ItemData::address),
-        QString::fromStdString(address.address));
-    item->setData(static_cast<int>(ItemData::derivationPath),
-        QString::fromStdString(address.derivationPath));
-
-    addItem(item);
-
-    if (selectedId_ == address.id) {
-        item->setSelected(true);
-        setCurrentRow(row(item));
-        scrollToItem(item);
-    }
+    model_->add(address);
 }
 
-void AddressListWidget::load(const std::vector<Address>& addresses)
+void AddressListView::load(const std::vector<Address>& addresses)
 {
-    setUpdatesEnabled(false);
-
-    clear();
-    for (const auto& address : addresses) {
-        add(address);
-    }
-
-    setUpdatesEnabled(true);
+    model_->load(addresses);
 }
 
-void AddressListWidget::update(const Address& address)
+void AddressListView::update(const Address& address)
 {
-    QListWidgetItem* item = currentItem();
-    if (!item)
-        return;
-
-    item->setData(
-        static_cast<int>(ItemData::name), QString::fromStdString(address.name));
-    item->setData(static_cast<int>(ItemData::address),
-        QString::fromStdString(address.address));
+    model_->update(address);
 }
 
-void AddressListWidget::purge()
+void AddressListView::purge()
 {
-    while (!selectedItems().isEmpty()) {
-        delete takeItem(row(selectedItems().first()));
-    }
+    model_->purge();
 }
 
-bool AddressListWidget::focusChanged()
+void AddressListView::remove(const QList<int>& rows)
 {
-    return currentItem() ? !currentItem()->isSelected() : false;
-}
-
-void AddressListWidget::setSelectedId(int newSelectedId)
-{
-    selectedId_ = newSelectedId;
+    model_->remove(rows);
 }
 
 }

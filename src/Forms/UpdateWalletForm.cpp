@@ -39,8 +39,9 @@ UpdateWalletForm::UpdateWalletForm(const UpdateWallet& wallet, QWidget* parent,
     QVBoxLayout* layoutAddressList = new QVBoxLayout(ui->groupBoxAddress);
     layoutAddressList->setContentsMargins(DEFAULT_GROUP_MARGINS);
     layoutAddressList->setSpacing(DEFAULT_SPACING);
-    addressList_ = new AddressListWidget(this);
-    layoutAddressList->insertWidget(index++, addressList_);
+
+    addressView_ = new AddressListView(this);
+    layoutAddressList->insertWidget(index++, addressView_);
     ui->groupBoxAddress->setLayout(layoutAddressList);
 
     index = 0;
@@ -94,9 +95,11 @@ UpdateWalletForm::UpdateWalletForm(const UpdateWallet& wallet, QWidget* parent,
         &UpdateWalletForm::newAddress);
     connect(ui->ButtonEditAddress, &QPushButton::clicked, this,
         &UpdateWalletForm::editAddress);
-    connect(addressList_, &AddressListWidget::itemDoubleClicked, this,
-        &UpdateWalletForm::editAddress);
-    connect(addressList_, &AddressListWidget::itemDeleted, this,
+
+    connect(addressView_, &QListView::doubleClicked,
+        [this](const QModelIndex&) { editAddress(); });
+
+    connect(addressView_, &AddressListView::deleteRequested, this,
         &UpdateWalletForm::delAddress);
 
     auto opt = globalManager_->settingManager()->database()->walletRepo()->get(
@@ -119,7 +122,7 @@ UpdateWalletForm::UpdateWalletForm(const UpdateWallet& wallet, QWidget* parent,
 
         for (const auto& addr : addresses) {
             addressManager_.addAddress(addr);
-            addressList_->add(addr);
+            addressView_->add(addr);
         }
     } else {
         std::cerr << "No wallet found." << std::endl;
@@ -156,69 +159,69 @@ void UpdateWalletForm::newAddress()
     if (ret) {
         auto newAddr = *naf.addressRecord();
         addressManager_.addAddress(newAddr);
-        addressList_->add(newAddr);
+        addressView_->add(newAddr);
     } else {
     }
 }
 
 void UpdateWalletForm::editAddress()
 {
-    if (auto* item = addressList_->currentItem(); item && item->isSelected()) {
-        const auto id
-            = item->data(static_cast<int>(AddressListWidget::ItemData::id))
-                  .toInt();
+    QModelIndex index = addressView_->currentIndex();
+    if (!index.isValid())
+        return;
 
-        NewAddressForm::NewAddress address {
-            .op = NewAddressForm::Op::EDIT,
-            .id = id,
-        };
-        NewAddressForm naf(address, this, globalManager_);
+    int id = addressView_->model()
+                 ->data(index, static_cast<int>(AddressListModel::ItemData::Id))
+                 .toInt();
 
-        int ret = naf.exec();
-        if (ret) {
-            addressList_->update(*naf.addressRecord());
-        } else {
-        }
+    NewAddressForm::NewAddress address {
+        .op = NewAddressForm::Op::EDIT,
+        .id = id,
+    };
+    NewAddressForm naf(address, this, globalManager_);
+
+    int ret = naf.exec();
+    if (ret) {
+        addressView_->update(*naf.addressRecord());
     }
 }
 
 void UpdateWalletForm::delAddress(const QModelIndex& index)
 {
-    if (index.isValid()) {
-        if (index.row() == 0) {
-            MessageForm mf(nullptr, 14, CONFIRM_FIRST_WALLET_DELETE,
-                CONFIRM_WALLET_DELETE_TITLE, false, MessageButton::Ok);
-            mf.exec();
-            return;
-        }
+    if (!index.isValid())
+        return;
 
-        const int id
-            = index.data(static_cast<int>(AddressListWidget::ItemData::id))
-                  .toInt();
-        const auto name
-            = index.data(static_cast<int>(AddressListWidget::ItemData::name))
-                  .toString();
-        MessageForm mf(nullptr, 14, CONFIRM_ADDRESS_DELETE.arg(name),
-            CONFIRM_WALLET_DELETE_TITLE, false,
-            MessageButton::Ok | MessageButton::Cancel);
-        if (mf.exec()) {
-            try {
-                int addrIndex = index
-                                    .data(static_cast<int>(
-                                        AddressListWidget::ItemData::index))
-                                    .toInt();
-                addressManager_.removeAddress(addrIndex);
-                globalManager_->settingManager()
-                    ->database()
-                    ->addressRepo()
-                    ->remove(id);
-                std::unique_ptr<QListWidgetItem> removedItem {
-                    addressList_->takeItem(index.row())
-                };
-            } catch (const DatabaseException& e) {
-                std::cerr << "Failed to remove address: " << e.what()
-                          << std::endl;
-            }
+    if (index.row() == 0) {
+        MessageForm mf(nullptr, 14, CONFIRM_FIRST_WALLET_DELETE,
+            CONFIRM_WALLET_DELETE_TITLE, false, MessageButton::Ok);
+        mf.exec();
+        return;
+    }
+
+    int id
+        = index.data(static_cast<int>(AddressListModel::ItemData::Id)).toInt();
+
+    QString name
+        = index.data(static_cast<int>(AddressListModel::ItemData::Name))
+              .toString();
+
+    MessageForm mf(nullptr, 14, CONFIRM_ADDRESS_DELETE.arg(name),
+        CONFIRM_WALLET_DELETE_TITLE, false,
+        MessageButton::Ok | MessageButton::Cancel);
+
+    if (mf.exec()) {
+        try {
+            int addrIndex
+                = index
+                      .data(static_cast<int>(AddressListModel::ItemData::Index))
+                      .toInt();
+
+            addressManager_.removeAddress(addrIndex);
+            globalManager_->settingManager()->database()->addressRepo()->remove(
+                id);
+            addressView_->remove(QList<int>() << index.row());
+        } catch (const DatabaseException& e) {
+            std::cerr << "Failed to remove address: " << e.what() << std::endl;
         }
     }
 }

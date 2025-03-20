@@ -35,16 +35,14 @@ UpdateWalletForm::UpdateWalletForm(const UpdateWallet& wallet, QWidget* parent,
     frameless_->setContentFrame(ui->frameContent);
     frameless_->init(Frameless::Mode::DIALOG);
 
-    int index = 0;
     QVBoxLayout* layoutAddressList = new QVBoxLayout(ui->groupBoxAddress);
     layoutAddressList->setContentsMargins(DEFAULT_GROUP_MARGINS);
     layoutAddressList->setSpacing(DEFAULT_SPACING);
 
     addressView_ = new AddressListView(this);
-    layoutAddressList->insertWidget(index++, addressView_);
+    layoutAddressList->addWidget(addressView_);
     ui->groupBoxAddress->setLayout(layoutAddressList);
 
-    index = 0;
     QVBoxLayout* layoutOptions = new QVBoxLayout(ui->groupBox);
     layoutOptions->setContentsMargins(DEFAULT_GROUP_MARGINS);
     layoutOptions->setSpacing(DEFAULT_SPACING);
@@ -64,7 +62,7 @@ UpdateWalletForm::UpdateWalletForm(const UpdateWallet& wallet, QWidget* parent,
     comboChain_ = new ComboBoxEx(this);
     comboChain_->setEnabled(false);
 
-    index = 0;
+    int index = 0;
     for (const auto& chain : Chains) {
         comboChain_->addItem(QString::fromUtf8(
             chain.second.name.data(), chain.second.name.size()));

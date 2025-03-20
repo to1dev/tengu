@@ -49,6 +49,9 @@ WalletDock::WalletDock(
             this, 1, WindowManager::WindowShape::RIGHT_PANEL);
     });
 
+    connect(globalManager_->settingManager()->database()->addressRepo(),
+        AddressRepo::removed, [](int id) { qInfo() << "removed: " << id; });
+
     connect(walletPanel_->userCard(), &UserCard::doSelect, this,
         &WalletDock::select);
 }
@@ -69,5 +72,6 @@ void WalletDock::showEvent(QShowEvent* event)
 void WalletDock::select()
 {
     WalletSelectorForm wsf(this, globalManager_);
-    if (wsf.exec()) { }
+    int ret = wsf.exec();
+    if (ret) { }
 }

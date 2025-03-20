@@ -57,6 +57,7 @@ WalletSelectorForm::WalletSelectorForm(
     connect(ui->ButtonOK, &QPushButton::clicked, this, &WalletSelectorForm::ok);
     connect(ui->ButtonCancel, &QPushButton::clicked, this,
         &WalletSelectorForm::reject);
+
     connect(walletView_->selectionModel(), &QItemSelectionModel::currentChanged,
         this, &WalletSelectorForm::currentItemChanged);
 }
@@ -73,6 +74,22 @@ std::shared_ptr<Address> WalletSelectorForm::addressRecord() const
 
 void WalletSelectorForm::ok()
 {
+    QModelIndex index = addressView_->currentIndex();
+    if (index.isValid()) {
+        const AddressListModel* model = addressView_->model();
+
+        {
+            addressRecord_->id
+                = model
+                      ->data(index,
+                          static_cast<int>(AddressListModel::ItemData::Id))
+                      .toInt();
+        }
+
+        accept();
+    } else {
+        MessageForm { nullptr, 5, NO_ADDRESS_SELECTED }.exec();
+    }
 }
 
 void WalletSelectorForm::currentItemChanged(

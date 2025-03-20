@@ -33,6 +33,8 @@
 
 #include "Databases/Database.h"
 
+#include "Forms/MessageForm.h"
+
 using namespace Daitengu::Components;
 using namespace Daitengu::Core;
 using namespace Daitengu::Databases;
@@ -41,6 +43,8 @@ using namespace Daitengu::UI;
 namespace Ui {
 class WalletSelectorForm;
 }
+
+inline const QString NO_ADDRESS_SELECTED = QObject::tr("请选取一个有效地址！");
 
 class WalletSelectorForm : public QDialog {
     Q_OBJECT

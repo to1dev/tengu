@@ -32,7 +32,7 @@ NewAddressForm::NewAddressForm(const NewAddress& address, QWidget* parent,
     layoutDesc->setContentsMargins(DEFAULT_GROUP_MARGINS);
     layoutDesc->setSpacing(DEFAULT_SPACING);
 
-    QPlainTextEdit* text_ = new QPlainTextEdit(this);
+    text_ = new QPlainTextEdit(this);
     layoutDesc->addWidget(text_);
     ui->groupBoxDesc->setLayout(layoutDesc);
 
@@ -85,6 +85,8 @@ NewAddressForm::NewAddressForm(const NewAddress& address, QWidget* parent,
             addressRecord_ = std::make_shared<Address>(*opt);
 
             editName_->setText(QString::fromStdString(addressRecord_->name));
+            text_->setPlainText(
+                QString::fromStdString(addressRecord_->description));
         } else {
             std::cerr << "No address found." << std::endl;
         }
@@ -118,6 +120,10 @@ void NewAddressForm::ok()
         ? QString::fromStdString(addressRecord_->name)
               .simplified()
               .toStdString()
+        : "";
+    const std::string desc = text_->toPlainText().toStdString();
+    const std::string oldDesc = addressRecord_
+        ? QString::fromStdString(addressRecord_->description).toStdString()
         : "";
 
     auto addressRepo
@@ -176,6 +182,7 @@ void NewAddressForm::ok()
                         wallet->getPrivateKey(address_.index));
                     addressRecord_->publicKey
                         = wallet->getAddress(address_.index);
+                    addressRecord_->description = desc;
                 }
 
                 const auto addressId = globalManager_->settingManager()
@@ -200,18 +207,21 @@ void NewAddressForm::ok()
     }
 
     case Op::EDIT: {
-        if (name == oldName) {
+        if (name == oldName && desc == oldDesc) {
             reject();
             return;
         }
-        DBErrorType error = checkNameAndReturnError();
-        if (error != DBErrorType::none) {
-            if (error == DBErrorType::haveName) {
-                MessageForm { nullptr, 16, SAME_WALLET_NAME }.exec();
+        if (name != oldName) {
+            DBErrorType error = checkNameAndReturnError();
+            if (error != DBErrorType::none) {
+                if (error == DBErrorType::haveName) {
+                    MessageForm { nullptr, 16, SAME_WALLET_NAME }.exec();
+                }
+                return;
             }
-            return;
         }
         addressRecord_->name = name;
+        addressRecord_->description = desc;
         addressRepo->update(*addressRecord_);
         accept();
         break;

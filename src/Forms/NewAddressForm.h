@@ -92,6 +92,7 @@ private:
     std::unique_ptr<Frameless> frameless_;
 
     LineEditEx* editName_;
+    QPlainTextEdit* text_;
 
     NewAddress address_ {};
 

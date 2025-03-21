@@ -20,10 +20,14 @@
 
 namespace Daitengu::Databases {
 
-DatabaseContext::DatabaseContext(const QString& dataPath)
+DatabaseContext::DatabaseContext(const QString& dataPath,
+    const std::shared_ptr<const DatabaseConfig>& config)
     : storage_(std::make_unique<Storage>(initStorage(dataPath)))
+    , config_(config)
 {
-    storage_->sync_schema();
+    if (config_->autoSyncSchema) {
+        storage_->sync_schema();
+    }
     storage_->pragma.journal_mode(journal_mode::WAL);
 }
 
@@ -176,8 +180,10 @@ std::vector<Address> AddressRepo::getAllByWallet(int walletId)
     return storage_->get_all<Address>(where(c(&Address::walletId) == walletId));
 }
 
-Database::Database(const QString& dataPath)
-    : context_(dataPath)
+Database::Database(const QString& dataPath,
+    const std::shared_ptr<const DatabaseConfig>& config)
+    : context_(dataPath, config)
+    , config_(config)
 {
     storage_ = context_.storage();
     walletGroupRepo_ = std::make_unique<WalletGroupRepo>(storage_);

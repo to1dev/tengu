@@ -164,6 +164,17 @@ struct Subscription {
     long long timestamp = 0;
 };
 
+struct DatabaseConfig {
+    std::string dataPath;
+    journal_mode journalMode = journal_mode::WAL;
+    int syncMode = 1;
+    int cacheSize = 2000;
+    int busyTimeoutMs = 3000;
+    bool enableForeignKeys = true;
+    bool autoSyncSchema = false;
+    std::vector<std::string> initQueries;
+};
+
 inline auto initStorage(const QString& dataPath)
 {
     QString filePath = QDir::toNativeSeparators(
@@ -265,12 +276,14 @@ using Storage = decltype(initStorage(""));
 
 class DatabaseContext {
 public:
-    DatabaseContext(const QString& dataPath);
+    DatabaseContext(const QString& dataPath,
+        const std::shared_ptr<const DatabaseConfig>& config);
 
     Storage* storage();
 
 private:
     std::unique_ptr<Storage> storage_;
+    std::shared_ptr<const DatabaseConfig> config_;
 };
 
 class IWalletGroupRepo {
@@ -382,7 +395,8 @@ public:
 
 class Database : public IDatabsae {
 public:
-    Database(const QString& dataPath);
+    Database(const QString& dataPath,
+        const std::shared_ptr<const DatabaseConfig>& config);
 
     IWalletGroupRepo* walletGroupRepo() override;
     IWalletRepo* walletRepo() override;
@@ -398,6 +412,8 @@ private:
     std::unique_ptr<IWalletGroupRepo> walletGroupRepo_;
     std::unique_ptr<IWalletRepo> walletRepo_;
     std::unique_ptr<IAddressRepo> addressRepo_;
+
+    std::shared_ptr<const DatabaseConfig> config_;
 };
 
 }

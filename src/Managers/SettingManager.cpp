@@ -37,9 +37,11 @@ SettingManager::SettingManager()
     options_.sysOpt.appPath = appPath_
         = QString::fromStdString(PathUtils::getExecutableDir().string());
 
-    database_ = std::make_unique<Database>(dataPath_);
-
     readSettings();
+
+    auto config = std::make_shared<DatabaseConfig>();
+
+    database_ = std::make_unique<Database>(dataPath_, config);
 }
 
 SettingManager::~SettingManager()

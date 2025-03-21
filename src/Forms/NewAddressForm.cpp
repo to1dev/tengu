@@ -28,14 +28,6 @@ NewAddressForm::NewAddressForm(const NewAddress& address, QWidget* parent,
     frameless_->setContentFrame(ui->frameContent);
     frameless_->init(Frameless::Mode::DIALOG);
 
-    QVBoxLayout* layoutDesc = new QVBoxLayout(ui->groupBoxDesc);
-    layoutDesc->setContentsMargins(DEFAULT_GROUP_MARGINS);
-    layoutDesc->setSpacing(DEFAULT_SPACING);
-
-    text_ = new PlainTextEditEx(this);
-    layoutDesc->addWidget(text_);
-    ui->groupBoxDesc->setLayout(layoutDesc);
-
     QVBoxLayout* layoutOptions = new QVBoxLayout(ui->groupBox);
     layoutOptions->setContentsMargins(DEFAULT_GROUP_MARGINS);
     layoutOptions->setSpacing(DEFAULT_SPACING);
@@ -52,14 +44,24 @@ NewAddressForm::NewAddressForm(const NewAddress& address, QWidget* parent,
         // TODO
     }
 
+    QLabel* labelDesc = new QLabel(this);
+    labelDesc->setText(STR_LABEL_DESC);
+
+    text_ = new PlainTextEditEx(this);
+    text_->setObjectName("plainDesc");
+
     layoutOptions->addWidget(labelName);
     layoutOptions->addWidget(editName_);
-    layoutOptions->addStretch(1);
+    layoutOptions->addWidget(labelDesc);
+    layoutOptions->addWidget(text_, 1);
     ui->groupBox->setLayout(layoutOptions);
 
-    globalManager_->windowManager()->reset(this, 0.6);
-    connect(frameless_.get(), &Frameless::onMax, this,
-        [this]() { globalManager_->windowManager()->reset(this, 0.6); });
+    globalManager_->windowManager()->reset(
+        this, 0.6, WindowManager::WindowShape::SQUARE);
+    connect(frameless_.get(), &Frameless::onMax, this, [this]() {
+        globalManager_->windowManager()->reset(
+            this, 0.6, WindowManager::WindowShape::SQUARE);
+    });
 
     connect(ui->ButtonOK, &QPushButton::clicked, this, &NewAddressForm::ok);
     connect(
@@ -115,16 +117,11 @@ void NewAddressForm::ok()
         return;
     }
 
-    const std::string name = editName_->text().simplified().toStdString();
-    const std::string oldName = addressRecord_
-        ? QString::fromStdString(addressRecord_->name)
-              .simplified()
-              .toStdString()
-        : "";
-    const std::string desc = text_->toPlainText().toStdString();
-    const std::string oldDesc = addressRecord_
-        ? QString::fromStdString(addressRecord_->description).toStdString()
-        : "";
+    const auto name = simplified(editName_->text().toStdString());
+    const auto oldName = simplified(addressRecord_->name);
+
+    const auto desc = trim(text_->toPlainText().toStdString());
+    const auto oldDesc = trim(addressRecord_->description);
 
     auto addressRepo
         = globalManager_->settingManager()->database()->addressRepo();
@@ -148,14 +145,14 @@ void NewAddressForm::ok()
         case WalletGroupType::User:
         case WalletGroupType::Import: {
             std::unique_ptr<ChainWallet> wallet;
-            switch (address_.chainType) {
-            case 0:
+            switch (static_cast<ChainType>(address_.chainType)) {
+            case ChainType::BITCOIN:
                 wallet = std::make_unique<BitcoinWallet>();
                 break;
-            case 1:
+            case ChainType::ETHEREUM:
                 wallet = std::make_unique<EthereumWallet>();
                 break;
-            case 2:
+            case ChainType::SOLANA:
                 wallet = std::make_unique<SolanaWallet>();
                 break;
             default:

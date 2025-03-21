@@ -28,10 +28,12 @@
 #include "UI/Frameless.h"
 
 #include "Utils/Encryption.h"
+#include "Utils/Helpers.hpp"
 #include "Utils/NameGenerator.h"
 
 #include "Components/ComboBoxEx.h"
 #include "Components/LineEditEx.h"
+#include "Components/PlainTextEditEx.h"
 #include "Components/WalletImport/CryptoTextEdit.h"
 
 #include "Wallets/Core/BaseMnemonic.h"
@@ -81,6 +83,7 @@ private:
     LineEditEx* editName_;
     ComboBoxEx* comboChain_;
     CryptoTextEdit* text_;
+    PlainTextEditEx* desc_;
 
     ContentInfo currentContent_;
 

@@ -183,14 +183,14 @@ void NewWalletForm::ok()
     }
 
     std::unique_ptr<ChainWallet> wallet;
-    switch (comboChain_->currentIndex()) {
-    case 0:
+    switch (static_cast<ChainType>(comboChain_->currentIndex())) {
+    case ChainType::BITCOIN:
         wallet = std::make_unique<BitcoinWallet>();
         break;
-    case 1:
+    case ChainType::ETHEREUM:
         wallet = std::make_unique<EthereumWallet>();
         break;
-    case 2:
+    case ChainType::SOLANA:
         wallet = std::make_unique<SolanaWallet>();
         break;
     default:
@@ -206,6 +206,7 @@ void NewWalletForm::ok()
         walletRecord_->hash = Encryption::genRandomHash();
         walletRecord_->name = name.toStdString();
         walletRecord_->mnemonic = encrypted;
+        walletRecord_->description = trim(text_->toPlainText().toStdString());
     }
 
     auto database = globalManager_->settingManager()->database();

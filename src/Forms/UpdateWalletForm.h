@@ -33,6 +33,7 @@
 #include "UI/Frameless.h"
 
 #include "Utils/Encryption.h"
+#include "Utils/Helpers.hpp"
 
 #include "Components/AddressListWidget.h"
 #include "Components/ComboBoxEx.h"

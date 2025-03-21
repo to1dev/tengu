@@ -114,6 +114,7 @@ UpdateWalletForm::UpdateWalletForm(const UpdateWallet& wallet, QWidget* parent,
 
         editName_->setText(QString::fromStdString(walletRecord_->name));
         comboChain_->setCurrentIndex(walletRecord_->chainType);
+        text_->setPlainText(QString::fromStdString(walletRecord_->description));
 
         if (walletRecord_->type > static_cast<int>(WalletType::Mnemonic)) {
             ui->ButtonNewAddress->setEnabled(false);
@@ -238,13 +239,19 @@ void UpdateWalletForm::ok()
         return;
     }
 
-    const QString name = editName_->text().simplified();
-    const QString oldName = walletRecord_
-        ? QString::fromStdString(walletRecord_->name).simplified()
-        : "";
+    const auto name = simplified(editName_->text().toStdString());
+    const auto oldName = simplified(walletRecord_->name);
+
+    const auto desc = trim(text_->toPlainText().toStdString());
+    const auto oldDesc = trim(walletRecord_->description);
+
+    if (name == oldName && desc == oldDesc) {
+        reject();
+        return;
+    }
 
     if (name != oldName) {
-        walletRecord_->nameHash = Encryption::easyHash(name.toStdString());
+        walletRecord_->nameHash = Encryption::easyHash(name);
         DBErrorType error = globalManager_->settingManager()
                                 ->database()
                                 ->walletRepo()
@@ -263,13 +270,12 @@ void UpdateWalletForm::ok()
             }
             return;
         }
-
-        walletRecord_->name = name.toStdString();
-        globalManager_->settingManager()->database()->walletRepo()->update(
-            *walletRecord_);
-
-        accept();
-    } else {
-        reject();
     }
+
+    walletRecord_->name = name;
+    walletRecord_->description = desc;
+    globalManager_->settingManager()->database()->walletRepo()->update(
+        *walletRecord_);
+
+    accept();
 }

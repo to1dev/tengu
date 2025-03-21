@@ -30,6 +30,7 @@
 #include "UI/Frameless.h"
 
 #include "Utils/Encryption.h"
+#include "Utils/Helpers.hpp"
 #include "Utils/NameGenerator.h"
 
 #include "Components/ComboBoxEx.h"

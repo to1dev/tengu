@@ -59,5 +59,44 @@ inline QString hideAddress(const QString& address)
     return address.left(5) + "..." + address.right(5);
 }
 
+inline std::string trim(const std::string& s)
+{
+    std::string_view sv(s);
+    const char* whitespace = " \t\n\r\f\v";
+    auto start = sv.find_first_not_of(whitespace);
+    if (start == std::string_view::npos) {
+        return "";
+    }
+    auto end = sv.find_last_not_of(whitespace);
+    return std::string(sv.substr(start, end - start + 1));
+}
+
+inline std::string simplified(const std::string& s)
+{
+    std::string_view sv(s);
+    const char* whitespace = " \t\n\r\f\v";
+    auto start = sv.find_first_not_of(whitespace);
+    if (start == std::string_view::npos)
+        return "";
+    auto end = sv.find_last_not_of(whitespace);
+    sv = sv.substr(start, end - start + 1);
+
+    std::string result;
+    result.reserve(sv.size());
+    bool in_whitespace = false;
+    for (char ch : sv) {
+        if (std::isspace(static_cast<unsigned char>(ch))) {
+            if (!in_whitespace) {
+                result.push_back(' ');
+                in_whitespace = true;
+            }
+        } else {
+            result.push_back(ch);
+            in_whitespace = false;
+        }
+    }
+    return result;
+}
+
 }
 #endif // HELPERS_HPP

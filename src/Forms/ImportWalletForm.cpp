@@ -76,11 +76,18 @@ ImportWalletForm::ImportWalletForm(
     }
     comboChain_->setCurrentIndex(0);
 
+    QLabel* labelDesc = new QLabel(this);
+    labelDesc->setText(STR_LABEL_DESC);
+
+    desc_ = new PlainTextEditEx(this);
+    desc_->setObjectName("plainDesc");
+
     layoutOptions->addWidget(labelName);
     layoutOptions->addWidget(editName_);
     layoutOptions->addWidget(labelChain);
     layoutOptions->addWidget(comboChain_);
-    layoutOptions->addStretch(1);
+    layoutOptions->addWidget(labelDesc);
+    layoutOptions->addWidget(desc_, 1);
     ui->groupBoxOptions->setLayout(layoutOptions);
 
     ui->ButtonOK->setDefault(true);
@@ -200,6 +207,7 @@ void ImportWalletForm::ok()
     walletRecord_->groupType = static_cast<int>(WalletGroupType::Import);
     walletRecord_->hash = Encryption::genRandomHash();
     walletRecord_->name = name.toStdString();
+    walletRecord_->description = trim(desc_->toPlainText().toStdString());
 
     switch (currentContent_.type) {
     case (WalletType::Mnemonic): {

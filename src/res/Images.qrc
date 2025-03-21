@@ -21,8 +21,7 @@
         <file alias="arbitrage.svg">Images/Buttons/arbitrage.svg</file>
     </qresource>
     <qresource prefix="/Splash">
-        <file alias="1">Images/Splash/1.png</file>
-        <file alias="2">Images/Splash/2.png</file>
+        <file alias="1">Images/Splash/4.png</file>
     </qresource>
     <qresource prefix="/Media">
         <file alias="Down">Images/Media/down.svg</file>

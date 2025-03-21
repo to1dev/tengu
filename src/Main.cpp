@@ -80,7 +80,7 @@ int main(int argc, char* argv[])
         QApplication a(argc, argv);
         QApplication::setEffectEnabled(Qt::UI_General, false);
 
-        Splash splash(QPixmap(QString(SPLASH_PATH).arg(randomIndex(1, 2))));
+        Splash splash(QPixmap(QString(SPLASH_PATH).arg(1)));
         splash.stayOnTop();
         splash.show();
 

@@ -200,7 +200,7 @@ QComboBox::down-arrow:on, QComboBox::down-arrow:hover, QComboBox::down-arrow:foc
 
 #listWidgetAddress QScrollBar:vertical {
     background: #2A3A4A;
-    width: 12px;
+    width: 14px;
     margin: 0px;
 }
 
@@ -482,7 +482,7 @@ QComboBox::down-arrow:on, QComboBox::down-arrow:hover, QComboBox::down-arrow:foc
 
 #listWidgetWallet QScrollBar:vertical {
     background: #2A3A4A;
-    width: 12px;
+    width: 14px;
     margin: 0px;
 }
 
@@ -819,7 +819,7 @@ QScrollBar::handle:horizontal:hover {
 QScrollBar:vertical {
     border-radius: 0;
     border: 0;
-    width: 20px;
+    width: 14px;
     margin: 16px 3px 16px 3px;
 }
 

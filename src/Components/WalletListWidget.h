@@ -126,7 +126,6 @@ public:
         Hash,
         Name,
         Mnemonic,
-        DerivationPath,
     };
 
     explicit WalletListModel(QObject* parent = nullptr);

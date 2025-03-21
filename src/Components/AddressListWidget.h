@@ -86,6 +86,7 @@ public:
         Name,
         Address,
         DerivationPath,
+        PrivateKey,
     };
 
     explicit AddressListModel(QObject* parent = nullptr);

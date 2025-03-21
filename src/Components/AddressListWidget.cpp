@@ -229,6 +229,8 @@ QVariant AddressListModel::data(const QModelIndex& index, int role) const
         return QString::fromStdString(addr.address);
     case static_cast<int>(ItemData::DerivationPath):
         return QString::fromStdString(addr.derivationPath);
+    case static_cast<int>(ItemData::PrivateKey):
+        return QString::fromStdString(addr.privateKey);
     default:
         return QVariant();
     }

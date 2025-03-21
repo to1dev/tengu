@@ -58,6 +58,7 @@ inline constexpr int DEFAULT_MAXLENGTH = 42;
 inline const QString STR_LABEL_NAME = QObject::tr("名称");
 inline const QString STR_LABEL_PATH = QObject::tr("路径");
 inline const QString STR_LABEL_CHAIN = QObject::tr("公链");
+inline const QString STR_LABEL_DESC = QObject::tr("备注");
 inline const QString STR_LABEL_NETWORK = QObject::tr("网络");
 inline const QString STR_LINEEDIT_WALLET_NAME_PLACEHOLDER
     = QObject::tr("输入钱包名称");

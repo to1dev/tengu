@@ -1,3 +1,11 @@
+#plainDesc {
+    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:0.5, stop:0 rgba(20, 20, 20, 50), stop:.03 palette(window));
+    padding: 9;
+    border-radius: 6;
+    border: 3px solid #32414b;
+    color: #DFE1E2;
+}
+
 #popupList {
     border-radius: 0;
     border: 3px solid #32414b;
@@ -111,6 +119,7 @@ QPlainTextEdit:hover,
 QPlainTextEdit:focus {
     border-color: #32414b;
 }
+
 
 QComboBox {
     background-color: #19232D;

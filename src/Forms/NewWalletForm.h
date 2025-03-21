@@ -35,6 +35,7 @@
 #include "Components/ComboBoxEx.h"
 #include "Components/LineEditEx.h"
 #include "Components/MnemonicView.h"
+#include "Components/PlainTextEditEx.h"
 
 #include "Wallets/Core/BaseMnemonic.h"
 #include "Wallets/Core/BitcoinWallet.h"
@@ -92,6 +93,7 @@ private:
     MnemonicView* view_;
     LineEditEx* editName_;
     ComboBoxEx* comboChain_;
+    PlainTextEditEx* text_;
 
     NewWallet wallet_ {};
 

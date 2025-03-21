@@ -73,11 +73,18 @@ UpdateWalletForm::UpdateWalletForm(const UpdateWallet& wallet, QWidget* parent,
         index++;
     }
 
+    QLabel* labelDesc = new QLabel(this);
+    labelDesc->setText(STR_LABEL_DESC);
+
+    text_ = new PlainTextEditEx(this);
+    text_->setObjectName("plainDesc");
+
     layoutOptions->addWidget(labelName);
     layoutOptions->addWidget(editName_);
     layoutOptions->addWidget(labelChain);
     layoutOptions->addWidget(comboChain_);
-    layoutOptions->addStretch(1);
+    layoutOptions->addWidget(labelDesc);
+    layoutOptions->addWidget(text_, 1);
     ui->groupBox->setLayout(layoutOptions);
 
     ui->ButtonOK->setDefault(true);

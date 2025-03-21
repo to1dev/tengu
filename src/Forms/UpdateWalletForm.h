@@ -37,6 +37,7 @@
 #include "Components/AddressListWidget.h"
 #include "Components/ComboBoxEx.h"
 #include "Components/LineEditEx.h"
+#include "Components/PlainTextEditEx.h"
 
 #include "Databases/Database.h"
 
@@ -55,9 +56,10 @@ class UpdateWalletForm;
 
 inline const QString CONFIRM_FIRST_WALLET_DELETE
     = QObject::tr("无法删除此地址！<p>请注意：保留地址无法删除！</p>");
-inline const QString CONFIRM_ADDRESS_DELETE = QObject::tr(
-    "是否确定删除<font "
-    "color='orange'>[%1]</font>这个地址！<p>本操作不可逆！请务必谨慎！</p>");
+inline const QString CONFIRM_ADDRESS_DELETE
+    = QObject::tr("是否确定删除<font "
+                  "color='orange'>[%1]</"
+                  "font>这个地址！<p>本操作有可能引起不便！请务必谨慎！</p>");
 
 class AddressManager {
 public:
@@ -132,6 +134,7 @@ private:
     AddressListView* addressView_;
     LineEditEx* editName_;
     ComboBoxEx* comboChain_;
+    PlainTextEditEx* text_;
 
     AddressManager addressManager_;
 

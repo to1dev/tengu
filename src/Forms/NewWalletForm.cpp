@@ -82,6 +82,12 @@ NewWalletForm::NewWalletForm(const NewWallet& wallet, QWidget* parent,
     }
     comboChain_->setCurrentIndex(0);
 
+    QLabel* labelDesc = new QLabel(this);
+    labelDesc->setText(STR_LABEL_DESC);
+
+    text_ = new PlainTextEditEx(this);
+    text_->setObjectName("plainDesc");
+
     QPushButton* buttonClipboard = new QPushButton(this);
     buttonClipboard->setObjectName("ButtonClipboard");
     buttonClipboard->setText(STR_BUTTON_CLIPBOARD);
@@ -94,7 +100,9 @@ NewWalletForm::NewWalletForm(const NewWallet& wallet, QWidget* parent,
     layoutOptions->addWidget(editName_);
     layoutOptions->addWidget(labelChain);
     layoutOptions->addWidget(comboChain_);
-    layoutOptions->addStretch(1);
+    layoutOptions->addWidget(labelDesc);
+    layoutOptions->addWidget(text_, 1);
+    layoutOptions->addSpacing(10);
     layoutOptions->addWidget(buttonClipboard);
     ui->groupBox->setLayout(layoutOptions);
 

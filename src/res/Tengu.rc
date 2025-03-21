@@ -1,4 +1,4 @@
-IDI_ICON1          ICON           "Images/main.ico"
+IDI_ICON1          ICON           "Images/tengu.ico"
 
 #include <windows.h>
 #include "version.h"

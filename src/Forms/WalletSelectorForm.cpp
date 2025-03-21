@@ -60,6 +60,8 @@ WalletSelectorForm::WalletSelectorForm(
 
     connect(walletView_->selectionModel(), &QItemSelectionModel::currentChanged,
         this, &WalletSelectorForm::currentItemChanged);
+    connect(addressView_, &QListView::doubleClicked,
+        [this](const QModelIndex&) { ok(); });
 }
 
 WalletSelectorForm::~WalletSelectorForm()

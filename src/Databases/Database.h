@@ -175,6 +175,8 @@ struct DatabaseConfig {
     std::vector<std::string> initQueries;
 };
 
+using Record = std::pair<Wallet, Address>;
+
 inline auto initStorage(const QString& dataPath)
 {
     QString filePath = QDir::toNativeSeparators(

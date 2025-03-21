@@ -69,7 +69,7 @@ WalletSelectorForm::~WalletSelectorForm()
     delete ui;
 }
 
-std::shared_ptr<WalletSelectorForm::Record> WalletSelectorForm::record() const
+std::shared_ptr<Record> WalletSelectorForm::record() const
 {
     return record_;
 }
@@ -83,13 +83,13 @@ void WalletSelectorForm::ok()
         const AddressListModel* modelAddress = addressView_->model();
 
         {
-            record_->wallet.id
+            record_->first.id
                 = modelWallet->data(indexWallet, WalletListModel::ItemData::Id)
                       .toInt();
         }
 
         {
-            record_->address.id
+            record_->second.id
                 = modelAddress
                       ->data(indexAddress,
                           static_cast<int>(AddressListModel::ItemData::Id))

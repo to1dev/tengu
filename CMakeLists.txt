@@ -71,6 +71,7 @@ set(SOURCE_FILES
     src/Components/FlowLayout.cpp
     src/Components/LineEditEx.cpp
     src/Components/MnemonicView.cpp
+    src/Components/PlainTextEditEx.cpp
     src/Components/SVGWidget.cpp
     src/Components/Splash.cpp
     src/Components/TitleBar.cpp
@@ -127,6 +128,7 @@ set(HEADER_FILES
     src/Components/FlowLayout.h
     src/Components/LineEditEx.h
     src/Components/MnemonicView.h
+    src/Components/PlainTextEditEx.h
     src/Components/SVGWidget.h
     src/Components/Splash.h
     src/Components/TitleBar.h

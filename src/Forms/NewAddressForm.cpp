@@ -32,7 +32,7 @@ NewAddressForm::NewAddressForm(const NewAddress& address, QWidget* parent,
     layoutDesc->setContentsMargins(DEFAULT_GROUP_MARGINS);
     layoutDesc->setSpacing(DEFAULT_SPACING);
 
-    text_ = new QPlainTextEdit(this);
+    text_ = new PlainTextEditEx(this);
     layoutDesc->addWidget(text_);
     ui->groupBoxDesc->setLayout(layoutDesc);
 

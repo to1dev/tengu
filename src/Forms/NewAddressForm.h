@@ -31,6 +31,7 @@
 #include "Utils/Encryption.h"
 
 #include "Components/LineEditEx.h"
+#include "Components/PlainTextEditEx.h"
 
 #include "Wallets/Core/BaseMnemonic.h"
 #include "Wallets/Core/BitcoinWallet.h"
@@ -92,7 +93,7 @@ private:
     std::unique_ptr<Frameless> frameless_;
 
     LineEditEx* editName_;
-    QPlainTextEdit* text_;
+    PlainTextEditEx* text_;
 
     NewAddress address_ {};
 

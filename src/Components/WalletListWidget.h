@@ -155,6 +155,11 @@ public:
     void update(const Wallet& wallet);
     void remove(const QList<int>& rows);
 
+    WalletListModel* model() const
+    {
+        return model_;
+    }
+
 private:
     WalletListModel* model_;
 };

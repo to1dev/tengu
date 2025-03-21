@@ -52,11 +52,17 @@ class WalletSelectorForm : public QDialog {
     const QString DEFAULT_TITLE = QObject::tr("Select Address");
 
 public:
+    struct Record {
+        Wallet wallet;
+        Address address;
+    };
+
     explicit WalletSelectorForm(QWidget* parent = nullptr,
         const std::shared_ptr<const GlobalManager>& globalManager = nullptr);
+
     ~WalletSelectorForm();
 
-    std::shared_ptr<Address> addressRecord() const;
+    std::shared_ptr<Record> record() const;
 
 private Q_SLOTS:
     void ok();
@@ -72,5 +78,5 @@ private:
     WalletListView* walletView_;
     AddressListView* addressView_;
 
-    std::shared_ptr<Address> addressRecord_;
+    std::shared_ptr<Record> record_;
 };

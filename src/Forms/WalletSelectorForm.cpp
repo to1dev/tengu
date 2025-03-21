@@ -24,7 +24,7 @@ WalletSelectorForm::WalletSelectorForm(
     : QDialog(parent)
     , ui(new Ui::WalletSelectorForm)
     , globalManager_(globalManager)
-    , addressRecord_(std::make_shared<Address>())
+    , record_(std::make_shared<Record>())
 {
     ui->setupUi(this);
 
@@ -67,21 +67,23 @@ WalletSelectorForm::~WalletSelectorForm()
     delete ui;
 }
 
-std::shared_ptr<Address> WalletSelectorForm::addressRecord() const
+std::shared_ptr<WalletSelectorForm::Record> WalletSelectorForm::record() const
 {
-    return addressRecord_;
+    return record_;
 }
 
 void WalletSelectorForm::ok()
 {
-    QModelIndex index = addressView_->currentIndex();
-    if (index.isValid()) {
-        const AddressListModel* model = addressView_->model();
+    QModelIndex indexWallet = walletView_->currentIndex();
+    QModelIndex indexAddress = addressView_->currentIndex();
+    if (indexWallet.isValid() && indexAddress.isValid()) {
+        const WalletListModel* modelWallet = walletView_->model();
+        const AddressListModel* modelAddress = addressView_->model();
 
         {
-            addressRecord_->id
-                = model
-                      ->data(index,
+            record_->address.id
+                = modelAddress
+                      ->data(indexAddress,
                           static_cast<int>(AddressListModel::ItemData::Id))
                       .toInt();
         }

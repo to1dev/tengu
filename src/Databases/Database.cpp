@@ -28,7 +28,8 @@ DatabaseContext::DatabaseContext(const QString& dataPath,
     if (config_->autoSyncSchema) {
         storage_->sync_schema();
     }
-    storage_->pragma.journal_mode(journal_mode::WAL);
+
+    storage_->pragma.journal_mode(config->journalMode);
 }
 
 Storage* DatabaseContext::storage()

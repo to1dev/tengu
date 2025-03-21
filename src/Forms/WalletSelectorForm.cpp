@@ -81,6 +81,12 @@ void WalletSelectorForm::ok()
         const AddressListModel* modelAddress = addressView_->model();
 
         {
+            record_->wallet.id
+                = modelWallet->data(indexWallet, WalletListModel::ItemData::Id)
+                      .toInt();
+        }
+
+        {
             record_->address.id
                 = modelAddress
                       ->data(indexAddress,

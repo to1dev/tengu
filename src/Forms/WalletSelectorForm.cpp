@@ -50,9 +50,9 @@ WalletSelectorForm::WalletSelectorForm(
     layout->addWidget(addressView_);
     ui->groupBox->setLayout(layout);
 
-    globalManager_->windowManager()->reset(this, 0.6);
+    globalManager_->windowManager()->reset(this, 0.7);
     connect(frameless_.get(), &Frameless::onMax, this,
-        [this]() { globalManager_->windowManager()->reset(this, 0.6); });
+        [this]() { globalManager_->windowManager()->reset(this, 0.7); });
 
     connect(ui->ButtonOK, &QPushButton::clicked, this, &WalletSelectorForm::ok);
     connect(ui->ButtonCancel, &QPushButton::clicked, this,

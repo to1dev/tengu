@@ -271,6 +271,7 @@ set(THIRD_PARTY_LIBS
     izanagi
     secp256k1
     fmt
+    clip
 )
 
 if (ENABLE_GRPC)

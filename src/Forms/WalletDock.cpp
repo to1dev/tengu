@@ -53,9 +53,19 @@ WalletDock::WalletDock(
         WalletRepo::removed,
         [this](int id) { walletPanel_->userCard()->reset(id, -1); });
 
+    connect(globalManager_->settingManager()->database()->walletRepo(),
+        WalletRepo::updated, [this](const std::optional<Wallet>& wallet) {
+            walletPanel_->userCard()->update(wallet, std::nullopt);
+        });
+
     connect(globalManager_->settingManager()->database()->addressRepo(),
         AddressRepo::removed,
         [this](int id) { walletPanel_->userCard()->reset(-1, id); });
+
+    connect(globalManager_->settingManager()->database()->addressRepo(),
+        AddressRepo::updated, [this](const std::optional<Address>& address) {
+            walletPanel_->userCard()->update(std::nullopt, address);
+        });
 
     connect(walletPanel_->userCard(), &UserCard::doSelect, this,
         &WalletDock::select);

@@ -284,7 +284,7 @@ QComboBox::down-arrow:on, QComboBox::down-arrow:hover, QComboBox::down-arrow:foc
 
 #userCard #nameLabel {
     color: white;
-    font-weight: bold;
+    /*font-weight: bold;*/
 }
 
 #userCard #addressLabel {

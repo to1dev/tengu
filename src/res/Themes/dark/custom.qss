@@ -120,60 +120,6 @@ QPlainTextEdit:focus {
     border-color: #32414b;
 }
 
-
-QComboBox {
-    background-color: #19232D;
-    padding: 6;
-    border-radius: 6;
-    border: 3px solid #32414b;
-    color: #DFE1E2;
-}
-
-QComboBox:hover,
-QComboBox:focus {
-    border: 3px solid #32414b;
-}
-
-QComboBox::item:checked {
-    font-weight: normal;
-}
-
-QComboBox::item {
-    height: 16px;
-    padding: 6px;
-}
-
-QComboBox::item::selected {
-    background-color: #1464A0;
-    color: #F0F0F0;
-}
-
-QComboBox::drop-down {
-    width: 20px;
-}
-
-QComboBox::icon {
-    margin-left: 4px;
-}
-
-QComboBox::indicator {
-    margin-left: 4px;
-}
-
-QComboBox::indicator:checked {
-    image: url(:/Media/Check);
-}
-
-QComboBox::down-arrow {
-    image: url(":/Media/Down");
-    height: 20px;
-    width: 20px;
-}
-
-QComboBox::down-arrow:on, QComboBox::down-arrow:hover, QComboBox::down-arrow:focus {
-    image: url(":/Media/Down");
-}
-
 #listWidgetAddress {
     border-radius: 0;
     border-color: #32414b;
@@ -705,15 +651,44 @@ QComboBox::down-arrow:on, QComboBox::down-arrow:hover, QComboBox::down-arrow:foc
     border-color: palette(highlight);
 }
 
-#ButtonMin,
-#ButtonMax,
-#ButtonFixed,
+#ButtonMin {
+    background: #52363C;
+    padding: 2;
+    border-radius: 3;
+    border: 0;
+    min-width: 24px;
+    min-height: 24px;
+    height: 24px;
+    width: 24px;
+}
+
+#ButtonMax {
+    background: #52363C;
+    padding: 2;
+    border-radius: 3;
+    border: 0;
+    min-width: 24px;
+    min-height: 24px;
+    height: 24px;
+    width: 24px;
+}
+
+#ButtonFixed {
+    background: #52363C;
+    padding: 2;
+    border-radius: 3;
+    border: 0;
+    min-width: 24px;
+    min-height: 24px;
+    height: 24px;
+    width: 24px;
+}
+
 #ButtonClose {
-    color: #ffffff;
-    background: transparent;
-    padding: 1;
-    border-radius: 0;
-    border: 1 solid #32414b;
+    background: #52363C;
+    padding: 2;
+    border-radius: 3;
+    border: 0;
     min-width: 24px;
     min-height: 24px;
     height: 24px;
@@ -721,20 +696,39 @@ QComboBox::down-arrow:on, QComboBox::down-arrow:hover, QComboBox::down-arrow:foc
 }
 
 #ButtonFixed:checked {
-    background: palette(highlight);
+    background: #8A6E4A;
 }
 
-#ButtonMin:hover,
-#ButtonMax:hover,
-#ButtonFixed:hover,
+#ButtonMin:hover {
+    background: #36525A;
+}
+
+#ButtonMax:hover {
+    background: #52365A;
+}
+
+#ButtonFixed:hover {
+    background: #5C4A36;
+}
+
 #ButtonClose:hover {
-    border: 1 solid palette(highlight);
+    background: #7C3A43;
 }
 
-#ButtonMin:pressed,
-#ButtonMax:pressed,
-#ButtonFixed:pressed,
+#ButtonMin:pressed {
+    background: #3A6F7C;
+}
+
+#ButtonMax:pressed {
+    background: #7C3A7C;
+}
+
+#ButtonFixed:pressed {
+    background: #8A6E4A;
+}
+
 #ButtonClose:pressed {
+    background: #A63A4D;
 }
 
 #frameMain {

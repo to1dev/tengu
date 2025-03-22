@@ -101,7 +101,12 @@ void UserCard::setRecord(Record&& record)
         QString::fromStdString(hideAddress(record_.second.address)));
 }
 
-const Record& UserCard::record() const
+const Record& UserCard::record_ref() const
+{
+    return record_;
+}
+
+Record UserCard::record() const
 {
     return record_;
 }

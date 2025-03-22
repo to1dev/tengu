@@ -77,6 +77,7 @@ void WalletDock::showEvent(QShowEvent* event)
 void WalletDock::select()
 {
     WalletSelectorForm wsf(this, globalManager_);
+    wsf.setRecord(walletPanel_->userCard()->record());
     int ret = wsf.exec();
     if (ret) {
         walletPanel_->userCard()->setRecord(wsf.record());

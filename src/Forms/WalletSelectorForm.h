@@ -57,6 +57,8 @@ public:
 
     ~WalletSelectorForm();
 
+    void setRecord(Record&& record);
+    const Record& record_ref() const;
     Record record() const;
 
 private Q_SLOTS:

@@ -60,7 +60,8 @@ public:
     void reset(int walletId, int id);
 
     void setRecord(Record&& record);
-    const Record& record() const;
+    const Record& record_ref() const;
+    Record record() const;
 
 Q_SIGNALS:
     void doSelect();

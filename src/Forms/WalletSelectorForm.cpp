@@ -68,6 +68,16 @@ WalletSelectorForm::~WalletSelectorForm()
     delete ui;
 }
 
+void WalletSelectorForm::setRecord(Record&& record)
+{
+    record_ = std::move(record);
+}
+
+const Record& WalletSelectorForm::record_ref() const
+{
+    return record_;
+}
+
 Record WalletSelectorForm::record() const
 {
     return record_;

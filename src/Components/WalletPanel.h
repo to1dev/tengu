@@ -19,12 +19,16 @@
 #ifndef WALLETPANEL_H
 #define WALLETPANEL_H
 
+#include <QApplication>
+#include <QClipboard>
 #include <QFrame>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QWidget>
+
+#include "clip.h"
 
 #include "Consts.h"
 

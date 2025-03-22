@@ -59,6 +59,9 @@ UserCard::UserCard(QWidget* parent)
     QString address(DEFAULT_ADDRESS);
     addressLabel_->setText(hideAddress(address));
 
+    connect(addressLabel_, &ClickableLabel::clicked,
+        [&]() { clip::set_text(record_.second.address); });
+
     addressLayout->addWidget(addressLabel_);
     addressLayout->addStretch(1);
 

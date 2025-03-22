@@ -19,8 +19,6 @@
 #ifndef WALLETPANEL_H
 #define WALLETPANEL_H
 
-#include <QApplication>
-#include <QClipboard>
 #include <QFrame>
 #include <QHBoxLayout>
 #include <QLabel>

@@ -21,14 +21,14 @@
 #include <vector>
 
 #include <QAbstractListModel>
-#include <QApplication>
-#include <QClipboard>
 #include <QListView>
 #include <QMouseEvent>
 #include <QPainter>
 #include <QScrollBar>
 #include <QStyledItemDelegate>
 #include <QSvgRenderer>
+
+#include "clip.h"
 
 #include "Consts.h"
 

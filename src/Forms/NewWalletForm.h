@@ -19,8 +19,9 @@
 #ifndef NEWWALLETFORM_H
 #define NEWWALLETFORM_H
 
-#include <QClipboard>
 #include <QDialog>
+
+#include "clip.h"
 
 #include "Consts.h"
 

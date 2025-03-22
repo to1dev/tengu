@@ -158,10 +158,11 @@ bool BoldFirstLineDelegate::eventFilter(QObject* object, QEvent* event)
                         = listView->indexAt(mouseEvent->pos());
                     if (index.isValid()) {
                         if (hoverOverAddress) {
-                            QApplication::clipboard()->setText(index
+                            clip::set_text(index
                                     .data(static_cast<int>(
                                         AddressListModel::ItemData::Address))
-                                    .toString());
+                                    .toString()
+                                    .toStdString());
                             return true;
                         } else if (hoverOverDeleteButton) {
                             Q_EMIT deleteRequested(index);

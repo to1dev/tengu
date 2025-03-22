@@ -94,7 +94,7 @@ NewWalletForm::NewWalletForm(const NewWallet& wallet, QWidget* parent,
     buttonClipboard->setMinimumHeight(30);
     buttonClipboard->setMaximumHeight(30);
     connect(buttonClipboard, &QPushButton::clicked,
-        [this]() { QApplication::clipboard()->setText(view_->mnemonic()); });
+        [this]() { clip::set_text(view_->mnemonic().toStdString()); });
 
     layoutOptions->addWidget(labelName);
     layoutOptions->addWidget(editName_);

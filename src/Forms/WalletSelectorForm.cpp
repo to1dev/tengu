@@ -71,6 +71,20 @@ WalletSelectorForm::~WalletSelectorForm()
 void WalletSelectorForm::setRecord(Record&& record)
 {
     record_ = std::move(record);
+
+    const int walletId = record_.first.id;
+    if (walletId > 0) {
+        const WalletListModel* model = walletView_->model();
+        for (int i = 0; i < model->rowCount(); ++i) {
+            int id = model->data(model->index(i), WalletListModel::ItemData::Id)
+                         .toInt();
+            if (id == walletId) {
+                QModelIndex index = model->index(i);
+                walletView_->setCurrentIndex(index);
+                break;
+            }
+        }
+    }
 }
 
 const Record& WalletSelectorForm::record_ref() const
@@ -90,6 +104,19 @@ void WalletSelectorForm::ok()
     if (indexWallet.isValid() && indexAddress.isValid()) {
         const WalletListModel* modelWallet = walletView_->model();
         const AddressListModel* modelAddress = addressView_->model();
+
+        const int walletId
+            = modelWallet->data(indexWallet, WalletListModel::ItemData::Id)
+                  .toInt();
+        const int addressId
+            = modelAddress
+                  ->data(indexAddress,
+                      static_cast<int>(AddressListModel::ItemData::Id))
+                  .toInt();
+        if (walletId == record_.first.id && addressId == record_.second.id) {
+            reject();
+            return;
+        }
 
         {
             record_.first.id
@@ -203,5 +230,22 @@ void WalletSelectorForm::currentItemChanged(
                 ->database()
                 ->addressRepo()
                 ->getAllByWallet(id));
+
+        const int addressId = record_.second.id;
+        if (addressId > 0) {
+            const AddressListModel* model = addressView_->model();
+            for (int i = 0; i < model->rowCount(); ++i) {
+                int id
+                    = model
+                          ->data(model->index(i),
+                              static_cast<int>(AddressListModel::ItemData::Id))
+                          .toInt();
+                if (id == addressId) {
+                    QModelIndex index = model->index(i);
+                    addressView_->setCurrentIndex(index);
+                    break;
+                }
+            }
+        }
     }
 }

@@ -58,6 +58,8 @@ class UserCard : public QWidget {
 public:
     explicit UserCard(QWidget* parent = nullptr);
     void reset(int walletId, int id);
+    void update(const std::optional<Wallet>& wallet,
+        const std::optional<Address>& address);
 
     void setRecord(Record&& record);
     const Record& record_ref() const;

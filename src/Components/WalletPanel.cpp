@@ -93,6 +93,20 @@ void UserCard::reset(int walletId, int id)
     }
 }
 
+void UserCard::update(
+    const std::optional<Wallet>& wallet, const std::optional<Address>& address)
+{
+    if (!wallet) {
+        std::cerr << "wallet is empty" << std::endl;
+        return;
+    }
+
+    if (!address) {
+        std::cerr << "address is empty" << std::endl;
+        return;
+    }
+}
+
 void UserCard::setRecord(Record&& record)
 {
     record_ = std::move(record);

@@ -30,12 +30,15 @@
 
 #include "Utils/Helpers.hpp"
 
+#include "Databases/Database.h"
+
 #include "AnimatedTabWidget.h"
 #include "ClickableLabel.h"
 #include "LineEditEx.h"
 #include "SVGWidget.h"
 
 using namespace Daitengu::Core;
+using namespace Daitengu::Databases;
 using namespace Daitengu::Utils;
 
 namespace Daitengu::Components {
@@ -53,12 +56,17 @@ class UserCard : public QWidget {
 public:
     explicit UserCard(QWidget* parent = nullptr);
 
+    void setRecord(Record&& record);
+    const Record& record() const;
+
 Q_SIGNALS:
     void doSelect();
 
 private:
     QLabel* nameLabel_;
     ClickableLabel* addressLabel_;
+
+    Record record_;
 };
 
 class ValueCard : public QWidget {

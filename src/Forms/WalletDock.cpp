@@ -73,5 +73,7 @@ void WalletDock::select()
 {
     WalletSelectorForm wsf(this, globalManager_);
     int ret = wsf.exec();
-    if (ret) { }
+    if (ret) {
+        walletPanel_->userCard()->setRecord(wsf.record());
+    }
 }

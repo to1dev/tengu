@@ -83,6 +83,16 @@ UserCard::UserCard(QWidget* parent)
     mainLayout->addLayout(bottomLayout);
 }
 
+void UserCard::setRecord(Record&& record)
+{
+    record_ = std::move(record);
+}
+
+const Record& UserCard::record() const
+{
+    return record_;
+}
+
 ValueCard::ValueCard(QWidget* parent)
     : QWidget(parent)
 {

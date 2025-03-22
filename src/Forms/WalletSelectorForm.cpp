@@ -24,7 +24,6 @@ WalletSelectorForm::WalletSelectorForm(
     : QDialog(parent)
     , ui(new Ui::WalletSelectorForm)
     , globalManager_(globalManager)
-    , record_(std::make_shared<Record>())
 {
     ui->setupUi(this);
 
@@ -69,7 +68,7 @@ WalletSelectorForm::~WalletSelectorForm()
     delete ui;
 }
 
-std::shared_ptr<Record> WalletSelectorForm::record() const
+Record WalletSelectorForm::record() const
 {
     return record_;
 }
@@ -83,13 +82,45 @@ void WalletSelectorForm::ok()
         const AddressListModel* modelAddress = addressView_->model();
 
         {
-            record_->first.id
+            record_.first.id
                 = modelWallet->data(indexWallet, WalletListModel::ItemData::Id)
                       .toInt();
+            record_.first.type
+                = modelWallet->data(
+                                 indexWallet, WalletListModel::ItemData::Type)
+                      .toInt();
+            record_.first.groupType
+                = modelWallet
+                      ->data(indexWallet, WalletListModel::ItemData::GroupType)
+                      .toInt();
+            record_.first.chainType
+                = modelWallet
+                      ->data(indexWallet, WalletListModel::ItemData::ChainType)
+                      .toInt();
+            record_.first.networkType
+                = modelWallet
+                      ->data(
+                          indexWallet, WalletListModel::ItemData::NetworkType)
+                      .toInt();
+            record_.first.hash
+                = modelWallet->data(
+                                 indexWallet, WalletListModel::ItemData::Hash)
+                      .toString()
+                      .toStdString();
+            record_.first.name
+                = modelWallet->data(
+                                 indexWallet, WalletListModel::ItemData::Name)
+                      .toString()
+                      .toStdString();
+            record_.first.mnemonic
+                = modelWallet
+                      ->data(indexWallet, WalletListModel::ItemData::Mnemonic)
+                      .toString()
+                      .toStdString();
         }
 
         {
-            record_->second.id
+            record_.second.id
                 = modelAddress
                       ->data(indexAddress,
                           static_cast<int>(AddressListModel::ItemData::Id))

@@ -57,7 +57,7 @@ public:
 
     ~WalletSelectorForm();
 
-    std::shared_ptr<Record> record() const;
+    Record record() const;
 
 private Q_SLOTS:
     void ok();
@@ -73,5 +73,5 @@ private:
     WalletListView* walletView_;
     AddressListView* addressView_;
 
-    std::shared_ptr<Record> record_;
+    Record record_;
 };

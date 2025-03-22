@@ -55,6 +55,7 @@ class UserCard : public QWidget {
 
 public:
     explicit UserCard(QWidget* parent = nullptr);
+    void reset(int walletId, int id);
 
     void setRecord(Record&& record);
     const Record& record() const;

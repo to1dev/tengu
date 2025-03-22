@@ -23,6 +23,7 @@ namespace Daitengu::Components {
 ClickableLabel::ClickableLabel(QWidget* parent)
     : QLabel(parent)
 {
+    setCursor(Qt::PointingHandCursor);
     installEventFilter(this);
 }
 

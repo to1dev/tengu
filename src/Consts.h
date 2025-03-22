@@ -96,6 +96,10 @@ inline const QString STR_APP_RESET_DB = QObject::tr("重置数据");
 inline const QString STR_MENU_ABOUT = QObject::tr("关于程序");
 inline const QString STR_MENU_EXIT = QObject::tr("退出程序");
 
+inline const QString DEFAULT_ADDRESS_NAME = QObject::tr("无效地址");
+inline constexpr char DEFAULT_ADDRESS[]
+    = "0x0000000000000000000000000000000000000000000000000000000000";
+
 struct AvatarRange {
     int start;
     int end;

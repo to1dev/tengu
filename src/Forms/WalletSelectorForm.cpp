@@ -125,6 +125,54 @@ void WalletSelectorForm::ok()
                       ->data(indexAddress,
                           static_cast<int>(AddressListModel::ItemData::Id))
                       .toInt();
+            record_.second.type
+                = modelAddress
+                      ->data(indexAddress,
+                          static_cast<int>(AddressListModel::ItemData::Type))
+                      .toInt();
+            record_.second.walletId
+                = modelAddress
+                      ->data(indexAddress,
+                          static_cast<int>(
+                              AddressListModel::ItemData::WalletId))
+                      .toInt();
+            record_.second.index
+                = modelAddress
+                      ->data(indexAddress,
+                          static_cast<int>(AddressListModel::ItemData::Index))
+                      .toInt();
+            record_.second.hash
+                = modelAddress
+                      ->data(indexAddress,
+                          static_cast<int>(AddressListModel::ItemData::Hash))
+                      .toString()
+                      .toStdString();
+            record_.second.name
+                = modelAddress
+                      ->data(indexAddress,
+                          static_cast<int>(AddressListModel::ItemData::Name))
+                      .toString()
+                      .toStdString();
+            record_.second.address
+                = modelAddress
+                      ->data(indexAddress,
+                          static_cast<int>(AddressListModel::ItemData::Address))
+                      .toString()
+                      .toStdString();
+            record_.second.derivationPath
+                = modelAddress
+                      ->data(indexAddress,
+                          static_cast<int>(
+                              AddressListModel::ItemData::DerivationPath))
+                      .toString()
+                      .toStdString();
+            record_.second.privateKey
+                = modelAddress
+                      ->data(indexAddress,
+                          static_cast<int>(
+                              AddressListModel::ItemData::PrivateKey))
+                      .toString()
+                      .toStdString();
         }
 
         accept();

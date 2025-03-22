@@ -49,15 +49,14 @@ UserCard::UserCard(QWidget* parent)
     QVBoxLayout* textLayout = new QVBoxLayout();
 
     nameLabel_ = new QLabel(this);
-    nameLabel_->setText("Satoshi Nakamoto");
+    nameLabel_->setText(DEFAULT_ADDRESS_NAME);
     nameLabel_->setObjectName(STR_NAME_LABEL);
 
     QHBoxLayout* addressLayout = new QHBoxLayout();
 
     addressLabel_ = new ClickableLabel(this);
     addressLabel_->setObjectName(STR_ADDRESS_LABEL);
-    QString address("So11111111111111111111111111111111111111112");
-    addressLabel_->setCursor(Qt::PointingHandCursor);
+    QString address(DEFAULT_ADDRESS);
     addressLabel_->setText(hideAddress(address));
 
     addressLayout->addWidget(addressLabel_);
@@ -83,9 +82,20 @@ UserCard::UserCard(QWidget* parent)
     mainLayout->addLayout(bottomLayout);
 }
 
+void UserCard::reset(int walletId, int id)
+{
+    if (record_.first.id == walletId || record_.second.id == id) {
+        nameLabel_->setText(DEFAULT_ADDRESS_NAME);
+        addressLabel_->setText(hideAddress(QString(DEFAULT_ADDRESS)));
+    }
+}
+
 void UserCard::setRecord(Record&& record)
 {
     record_ = std::move(record);
+    nameLabel_->setText(QString::fromStdString(record_.second.name));
+    addressLabel_->setText(
+        QString::fromStdString(hideAddress(record_.second.address)));
 }
 
 const Record& UserCard::record() const

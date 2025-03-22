@@ -49,8 +49,13 @@ WalletDock::WalletDock(
             this, 1, WindowManager::WindowShape::RIGHT_PANEL);
     });
 
+    connect(globalManager_->settingManager()->database()->walletRepo(),
+        WalletRepo::removed,
+        [this](int id) { walletPanel_->userCard()->reset(id, -1); });
+
     connect(globalManager_->settingManager()->database()->addressRepo(),
-        AddressRepo::removed, [](int id) { qInfo() << "removed: " << id; });
+        AddressRepo::removed,
+        [this](int id) { walletPanel_->userCard()->reset(-1, id); });
 
     connect(walletPanel_->userCard(), &UserCard::doSelect, this,
         &WalletDock::select);

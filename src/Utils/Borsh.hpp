@@ -40,4 +40,9 @@ public:
     }
 };
 
+template <typename T>
+concept Integer = std::is_integral_v<T> && !std::is_same_v<T, bool>;
+
+template <typename T>
+concept FloatingPoint = std::is_floating_point_v<T>;
 }

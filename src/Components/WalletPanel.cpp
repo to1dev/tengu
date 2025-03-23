@@ -96,14 +96,15 @@ void UserCard::reset(int walletId, int id)
 void UserCard::update(
     const std::optional<Wallet>& wallet, const std::optional<Address>& address)
 {
-    if (!wallet) {
-        std::cerr << "wallet is empty" << std::endl;
-        return;
+    if (wallet.has_value()) {
+        record_.first = *wallet;
     }
 
-    if (!address) {
-        std::cerr << "address is empty" << std::endl;
-        return;
+    if (address.has_value()) {
+        record_.second = *address;
+        nameLabel_->setText(QString::fromStdString(record_.second.name));
+        addressLabel_->setText(
+            QString::fromStdString(hideAddress(record_.second.address)));
     }
 }
 

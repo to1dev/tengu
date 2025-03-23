@@ -113,10 +113,6 @@ void WalletSelectorForm::ok()
                   ->data(indexAddress,
                       static_cast<int>(AddressListModel::ItemData::Id))
                   .toInt();
-        if (walletId == record_.first.id && addressId == record_.second.id) {
-            reject();
-            return;
-        }
 
         {
             record_.first.id

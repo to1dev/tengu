@@ -43,7 +43,7 @@ ImportWalletForm::ImportWalletForm(
     text_->setFocus();
 
     layout->addWidget(text_);
-    ui->groupBox->setLayout(layout);
+    // ui->groupBox->setLayout(layout);
 
     QVBoxLayout* layoutOptions = new QVBoxLayout(ui->groupBoxOptions);
     layoutOptions->setContentsMargins(DEFAULT_GROUP_MARGINS);
@@ -88,7 +88,7 @@ ImportWalletForm::ImportWalletForm(
     layoutOptions->addWidget(comboChain_);
     layoutOptions->addWidget(labelDesc);
     layoutOptions->addWidget(desc_, 1);
-    ui->groupBoxOptions->setLayout(layoutOptions);
+    // ui->groupBoxOptions->setLayout(layoutOptions);
 
     ui->ButtonOK->setDefault(true);
 

@@ -25,9 +25,9 @@ UserCard::UserCard(QWidget* parent)
 {
     setObjectName("userCard");
 
-    auto* mainLayout = new QVBoxLayout(this);
-    auto* topLayout = new QHBoxLayout();
-    auto* bottomLayout = new QHBoxLayout();
+    auto mainLayout = new QVBoxLayout(this);
+    auto topLayout = new QHBoxLayout();
+    auto bottomLayout = new QHBoxLayout();
 
     // mainLayout->setContentsMargins(QMargins(0, 0, 0, 0));
 
@@ -83,6 +83,8 @@ UserCard::UserCard(QWidget* parent)
     mainLayout->setSpacing(20);
     mainLayout->addLayout(topLayout);
     mainLayout->addLayout(bottomLayout);
+
+    // setLayout(mainLayout);
 }
 
 void UserCard::reset(int walletId, int id)
@@ -135,8 +137,8 @@ ValueCard::ValueCard(QWidget* parent)
 {
     setObjectName("valueCard");
 
-    auto* mainLayout = new QVBoxLayout(this);
-    auto* valueLayout = new QVBoxLayout();
+    auto mainLayout = new QVBoxLayout(this);
+    auto valueLayout = new QVBoxLayout();
 
     // mainLayout->setContentsMargins(QMargins(0, 9, 0, 9));
 
@@ -148,6 +150,8 @@ ValueCard::ValueCard(QWidget* parent)
 
     valueLayout->addWidget(valueLabel_);
     mainLayout->addLayout(valueLayout);
+
+    // setLayout(mainLayout);
 }
 
 std::uint64_t ValueCard::value() const
@@ -185,7 +189,7 @@ WalletPanel::WalletPanel(QWidget* parent)
     QVBoxLayout* layoutUser = new QVBoxLayout(frameUser);
     userCard_ = new UserCard(frameUser);
     layoutUser->addWidget(userCard_);
-    // frameUser->setLayout(layoutUser);
+    // frameUser->(layoutUser);
 
     QWidget* frameValue = new QWidget(this);
     frameValue->setObjectName("walletFrame");

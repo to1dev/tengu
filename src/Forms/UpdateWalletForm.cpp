@@ -41,7 +41,7 @@ UpdateWalletForm::UpdateWalletForm(const UpdateWallet& wallet, QWidget* parent,
 
     addressView_ = new AddressListView(this, true);
     layoutAddressList->addWidget(addressView_);
-    ui->groupBoxAddress->setLayout(layoutAddressList);
+    // ui->groupBoxAddress->setLayout(layoutAddressList);
 
     QVBoxLayout* layoutOptions = new QVBoxLayout(ui->groupBox);
     layoutOptions->setContentsMargins(DEFAULT_GROUP_MARGINS);
@@ -85,7 +85,7 @@ UpdateWalletForm::UpdateWalletForm(const UpdateWallet& wallet, QWidget* parent,
     layoutOptions->addWidget(comboChain_);
     layoutOptions->addWidget(labelDesc);
     layoutOptions->addWidget(text_, 1);
-    ui->groupBox->setLayout(layoutOptions);
+    // ui->groupBox->setLayout(layoutOptions);
 
     ui->ButtonOK->setDefault(true);
 

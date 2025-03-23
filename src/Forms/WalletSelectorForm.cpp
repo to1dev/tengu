@@ -47,7 +47,7 @@ WalletSelectorForm::WalletSelectorForm(
 
     layout->addWidget(walletView_);
     layout->addWidget(addressView_);
-    ui->groupBox->setLayout(layout);
+    // ui->groupBox->setLayout(layout);
 
     globalManager_->windowManager()->reset(this, 0.7);
     connect(frameless_.get(), &Frameless::onMax, this,

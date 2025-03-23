@@ -50,7 +50,7 @@ NewWalletForm::NewWalletForm(const NewWallet& wallet, QWidget* parent,
     layoutView->setContentsMargins(DEFAULT_GROUP_MARGINS);
     layoutView->setSpacing(DEFAULT_SPACING);
     layoutView->addWidget(view_);
-    ui->groupBoxMnemonic->setLayout(layoutView);
+    // ui->groupBoxMnemonic->setLayout(layoutView);
 
     QVBoxLayout* layoutOptions = new QVBoxLayout(ui->groupBox);
     layoutOptions->setContentsMargins(DEFAULT_GROUP_MARGINS);
@@ -104,7 +104,7 @@ NewWalletForm::NewWalletForm(const NewWallet& wallet, QWidget* parent,
     layoutOptions->addWidget(text_, 1);
     layoutOptions->addSpacing(10);
     layoutOptions->addWidget(buttonClipboard);
-    ui->groupBox->setLayout(layoutOptions);
+    // ui->groupBox->setLayout(layoutOptions);
 
     ui->ButtonOK->setDefault(true);
 

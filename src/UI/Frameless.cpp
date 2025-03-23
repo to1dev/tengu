@@ -296,6 +296,8 @@ void Frameless::init(const Mode& mode, bool fixed)
 
     if (layoutMiddle)
         layoutMain->insertLayout(index++, layoutMiddle, 1);
+
+    // mainFrame_->setLayout(layoutMain);
 }
 
 void Frameless::setMainFrame(QWidget* newMainFrame)

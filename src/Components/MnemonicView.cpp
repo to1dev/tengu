@@ -62,7 +62,7 @@ void MnemonicView::setMnemonic(const QString& newMnemonic)
     scene_.clear();
 
     widget_ = new QGraphicsWidget;
-    auto* layout = new FlowLayout;
+    auto layout = new FlowLayout(widget_);
     const QStringList words = mnemonic_.split(" ", Qt::SkipEmptyParts);
 
     for (const auto& word : words) {
@@ -74,7 +74,7 @@ void MnemonicView::setMnemonic(const QString& newMnemonic)
         layout->addItem(proxy);
     }
 
-    widget_->setLayout(layout);
+    // widget_->setLayout(layout);
     scene_.addItem(widget_);
     setScene(&scene_);
 

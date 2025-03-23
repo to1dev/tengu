@@ -55,11 +55,11 @@ WalletForm::WalletForm(
     layoutButtons->addSpacing(16);
     layoutButtons->addWidget(ui->ButtonSmartWallet);
     layoutButtons->addStretch(1);
-    panelButtons->setLayout(layoutButtons);
+    // panelButtons->setLayout(layoutButtons);
 
     layoutPanel->addWidget(walletView_);
     layoutPanel->addWidget(panelButtons);
-    ui->groupBoxWallets->setLayout(layoutPanel);
+    // ui->groupBoxWallets->setLayout(layoutPanel);
 
     globalManager_->windowManager()->reset(this, 0.8);
     connect(frameless_.get(), &Frameless::onMax, this,

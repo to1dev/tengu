@@ -54,7 +54,7 @@ NewAddressForm::NewAddressForm(const NewAddress& address, QWidget* parent,
     layoutOptions->addWidget(editName_);
     layoutOptions->addWidget(labelDesc);
     layoutOptions->addWidget(text_, 1);
-    ui->groupBox->setLayout(layoutOptions);
+    // ui->groupBox->setLayout(layoutOptions);
 
     globalManager_->windowManager()->reset(
         this, 0.6, WindowManager::WindowShape::SQUARE);

@@ -39,6 +39,7 @@ WalletDock::WalletDock(
     walletPanel_ = new WalletPanel(this);
 
     layout->addWidget(walletPanel_);
+    // ui->frameContent->setLayout(layout);
 
     walletPanel_->userCard()->setRecord(
         globalManager_->settingManager()->record());

@@ -64,6 +64,86 @@ QString SettingManager::appPath() const
     return appPath_;
 }
 
+/*
+void modifyTomlExample()
+{
+    try {
+        auto tbl = toml::parse_file("example.toml");
+
+        tbl["version"] = 1.1;
+        tbl["active"] = false;
+
+        tbl.insert_or_assign("updated", true);
+
+        if (auto server = tbl["server"].as_table()) {
+            (*server)["port"] = 9090;
+        }
+
+        if (auto numbers = tbl["numbers"].as_array()) {
+            numbers->push_back(4);
+            numbers->push_back(5);
+        }
+
+        if (auto users = tbl["users"].as_array()) {
+            toml::table user3;
+            user3.insert("name", "Charlie");
+            user3.insert("role", "moderator");
+            users->push_back(user3);
+        }
+
+        std::ofstream file("example_modified.toml");
+        file << tbl;
+        file.close();
+
+    } catch (const toml::parse_error& err) {
+        std::cerr << "Error parsing file: " << err.description() << std::endl;
+    }
+}
+
+void safeAccessExample()
+{
+    try {
+        auto tbl = toml::parse_file("example.toml");
+
+        int count = tbl["count"].value_or(0);
+
+        if (tbl.contains("database")) {
+            if (tbl["database"].is_table()) {
+                auto& db = *tbl["database"].as_table();
+            }
+        }
+
+        if (auto opt_str = tbl["title"].value<std::string>()) {
+            std::string title = *opt_str;
+            std::cout << "Title: " << title << std::endl;
+        }
+
+        for (auto&& [key, value] : tbl) {
+            std::cout << "Key: " << key << ", Type: ";
+            if (value.is_string())
+                std::cout << "string" << std::endl;
+            else if (value.is_integer())
+                std::cout << "integer" << std::endl;
+            else if (value.is_floating_point())
+                std::cout << "float" << std::endl;
+            else if (value.is_boolean())
+                std::cout << "boolean" << std::endl;
+            else if (value.is_array())
+                std::cout << "array" << std::endl;
+            else if (value.is_table())
+                std::cout << "table" << std::endl;
+            else
+                std::cout << "other" << std::endl;
+        }
+
+    } catch (const toml::parse_error& err) {
+        std::cerr << "Parse error: " << err.description() << std::endl;
+    } catch (const std::exception& ex) {
+        std::cerr << "Error: " << ex.what() << std::endl;
+    }
+}
+*/
+
 bool SettingManager::readSettings()
 {
     auto configPath = QDir(dataPath_).filePath("config.toml");
@@ -76,9 +156,9 @@ bool SettingManager::readSettings()
     try {
         auto tbl = toml::parse(ifs);
 
-        if (auto machineId = tbl[Settings::STR_SYSTEM_OPTIONS]["machineId"]
-                .value<std::string>())
-            options_.sysOpt.machineId = QString::fromStdString(*machineId);
+        options_.sysOpt.machineId = QString::fromStdString(
+            tbl[Settings::STR_SYSTEM_OPTIONS]["machineId"]
+                .value_or<std::string>(""));
     } catch (const toml::parse_error& err) {
         std::cerr << "Failed to parse config: " << err.description()
                   << std::endl;
@@ -117,6 +197,35 @@ bool SettingManager::writeSettings()
     addressTable.insert_or_assign("name", options_.recordOpt.second.name);
     addressTable.insert_or_assign("address", options_.recordOpt.second.address);
     tbl.insert_or_assign(Settings::STR_ADDRESS_OPTIONS, addressTable);
+
+    /*
+    toml::array arr;
+    arr.push_back(1);
+    arr.push_back(2);
+    arr.push_back(3);
+    tbl.insert("numbers", arr);
+
+    tbl.insert("created", toml::date_time({2023, 4, 12}, {15, 30, 0}));
+
+    toml::table serverTable;
+    serverTable.insert("host", "localhost");
+    serverTable.insert("port", 8080);
+    tbl.insert("server", serverTable);
+
+    toml::array usersArray;
+
+    toml::table user1;
+    user1.insert("name", "Alice");
+    user1.insert("role", "admin");
+    usersArray.push_back(user1);
+
+    toml::table user2;
+    user2.insert("name", "Bob");
+    user2.insert("role", "user");
+    usersArray.push_back(user2);
+
+    tbl.insert("users", usersArray);
+    */
 
     std::ofstream ofs(configPath.toStdString());
     if (!ofs) {

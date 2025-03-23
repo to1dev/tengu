@@ -38,6 +38,7 @@ namespace Daitengu::Core {
 
 namespace Settings {
     inline constexpr char STR_SYSTEM_OPTIONS[] = "System";
+    inline constexpr char STR_RECORD_OPTIONS[] = "Record";
     inline constexpr char STR_WALLET_OPTIONS[] = "Wallet";
     inline constexpr char STR_ADDRESS_OPTIONS[] = "Address";
     inline constexpr char STR_WALLET_ID[] = "walletId";
@@ -73,6 +74,8 @@ public:
     const Options& options() const;
 
     void setRecord(Record&& record);
+    const Record& record_ref() const;
+    Record record() const;
 
 private:
     QString dataPath_;

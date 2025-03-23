@@ -87,7 +87,9 @@ UserCard::UserCard(QWidget* parent)
 
 void UserCard::reset(int walletId, int id)
 {
-    if (record_.first.id == walletId || record_.second.id == id) {
+    const Wallet& wallet = record_.first;
+    const Address& address = record_.second;
+    if (wallet.id == walletId || address.id == id) {
         nameLabel_->setText(DEFAULT_ADDRESS_NAME);
         addressLabel_->setText(hideAddress(QString(DEFAULT_ADDRESS)));
     }
@@ -111,9 +113,11 @@ void UserCard::update(
 void UserCard::setRecord(Record&& record)
 {
     record_ = std::move(record);
-    nameLabel_->setText(QString::fromStdString(record_.second.name));
-    addressLabel_->setText(
-        QString::fromStdString(hideAddress(record_.second.address)));
+    if (!record_.second.name.empty() && !record_.second.address.empty()) {
+        nameLabel_->setText(QString::fromStdString(record_.second.name));
+        addressLabel_->setText(
+            QString::fromStdString(hideAddress(record_.second.address)));
+    }
 }
 
 const Record& UserCard::record_ref() const
@@ -181,7 +185,7 @@ WalletPanel::WalletPanel(QWidget* parent)
     QVBoxLayout* layoutUser = new QVBoxLayout(frameUser);
     userCard_ = new UserCard(frameUser);
     layoutUser->addWidget(userCard_);
-    frameUser->setLayout(layoutUser);
+    // frameUser->setLayout(layoutUser);
 
     QWidget* frameValue = new QWidget(this);
     frameValue->setObjectName("walletFrame");
@@ -189,7 +193,7 @@ WalletPanel::WalletPanel(QWidget* parent)
     QVBoxLayout* layoutValue = new QVBoxLayout(frameValue);
     valueCard_ = new ValueCard(frameValue);
     layoutValue->addWidget(valueCard_);
-    frameValue->setLayout(layoutValue);
+    // frameValue->setLayout(layoutValue);
 
     LineEditEx* editFilter = new LineEditEx(this);
     editFilter->setObjectName("editFilter");
@@ -201,21 +205,7 @@ WalletPanel::WalletPanel(QWidget* parent)
     layout->addWidget(frameValue);
     layout->addWidget(editFilter);
     layout->addWidget(objectsCard_, 1);
-    setLayout(layout);
-
-    /*userCard_ = new UserCard(this);
-    valueCard_ = new ValueCard(this);
-    objectsCard_ = new ObjectsCard(this);
-
-    LineEditEx* editFilter = new LineEditEx(this);
-    editFilter->setObjectName("editFilter");
-    editFilter->setMaxLength(64);
-
-    layout->addWidget(userCard_);
-    layout->addWidget(valueCard_);
-    layout->addWidget(editFilter);
-    layout->addWidget(objectsCard_, 1);*/
-    setLayout(layout);
+    // setLayout(layout);
 }
 
 UserCard* WalletPanel::userCard() const

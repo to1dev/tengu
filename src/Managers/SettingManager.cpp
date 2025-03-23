@@ -156,9 +156,31 @@ bool SettingManager::readSettings()
     try {
         auto tbl = toml::parse(ifs);
 
-        options_.sysOpt.machineId = QString::fromStdString(
-            tbl[Settings::STR_SYSTEM_OPTIONS]["machineId"]
-                .value_or<std::string>(""));
+        if (auto systemTablePtr
+            = tbl.get_as<toml::table>(Settings::STR_SYSTEM_OPTIONS)) {
+            const auto& systemTable = *systemTablePtr;
+            options_.sysOpt.machineId = QString::fromStdString(
+                systemTable["machineId"].value_or<std::string>(""));
+        }
+
+        if (auto record
+            = tbl.get_as<toml::table>(Settings::STR_RECORD_OPTIONS)) {
+            if (auto walletTable
+                = record->get_as<toml::table>(Settings::STR_WALLET_OPTIONS)) {
+                Wallet& walletOpt = options_.recordOpt.first;
+                walletOpt.id = walletTable->at("id").value_or<int>(0);
+            }
+
+            if (auto addressTable
+                = record->get_as<toml::table>(Settings::STR_ADDRESS_OPTIONS)) {
+                Address& addressOpt = options_.recordOpt.second;
+                addressOpt.id = addressTable->at("id").value_or<int>(0);
+                addressOpt.name
+                    = addressTable->at("name").value_or<std::string>("");
+                addressOpt.address
+                    = addressTable->at("address").value_or<std::string>("");
+            }
+        }
     } catch (const toml::parse_error& err) {
         std::cerr << "Failed to parse config: " << err.description()
                   << std::endl;
@@ -187,7 +209,6 @@ bool SettingManager::writeSettings()
     walletTable.insert_or_assign("id", options_.recordOpt.first.id);
     walletTable.insert_or_assign("type", options_.recordOpt.first.type);
     walletTable.insert_or_assign("name", options_.recordOpt.first.name);
-    tbl.insert_or_assign(Settings::STR_WALLET_OPTIONS, walletTable);
 
     toml::table addressTable;
     addressTable.insert_or_assign("id", options_.recordOpt.second.id);
@@ -196,7 +217,12 @@ bool SettingManager::writeSettings()
         "walletId", options_.recordOpt.second.walletId);
     addressTable.insert_or_assign("name", options_.recordOpt.second.name);
     addressTable.insert_or_assign("address", options_.recordOpt.second.address);
-    tbl.insert_or_assign(Settings::STR_ADDRESS_OPTIONS, addressTable);
+
+    toml::table recordTable;
+    recordTable.insert_or_assign(Settings::STR_WALLET_OPTIONS, walletTable);
+    recordTable.insert_or_assign(Settings::STR_ADDRESS_OPTIONS, addressTable);
+
+    tbl.insert_or_assign(Settings::STR_RECORD_OPTIONS, recordTable);
 
     /*
     toml::array arr;
@@ -245,5 +271,15 @@ const Options& SettingManager::options() const
 void SettingManager::setRecord(Record&& record)
 {
     options_.recordOpt = std::move(record);
+}
+
+const Record& SettingManager::record_ref() const
+{
+    return options_.recordOpt;
+}
+
+Record SettingManager::record() const
+{
+    return options_.recordOpt;
 }
 }

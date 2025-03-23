@@ -40,7 +40,8 @@ WalletDock::WalletDock(
 
     layout->addWidget(walletPanel_);
 
-    ui->frameContent->setLayout(layout);
+    walletPanel_->userCard()->setRecord(
+        globalManager_->settingManager()->record());
 
     globalManager_->windowManager()->addWindow(
         WindowManager::WindowShape::RIGHT_PANEL, this);

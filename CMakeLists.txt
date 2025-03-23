@@ -164,6 +164,7 @@ set(HEADER_FILES
     src/Tengu.h
     src/UI/Frameless.h
     src/Utils/Base58.hpp
+    src/Utils/Borsh.hpp
     src/Utils/DotEnv.hpp
     src/Utils/Encryption.h
     src/Utils/Helpers.hpp

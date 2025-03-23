@@ -92,6 +92,7 @@ void UserCard::reset(int walletId, int id)
     const Wallet& wallet = record_.first;
     const Address& address = record_.second;
     if (wallet.id == walletId || address.id == id) {
+        record_ = Record {};
         nameLabel_->setText(DEFAULT_ADDRESS_NAME);
         addressLabel_->setText(hideAddress(QString(DEFAULT_ADDRESS)));
     }

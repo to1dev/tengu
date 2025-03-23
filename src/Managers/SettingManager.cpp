@@ -106,6 +106,7 @@ bool SettingManager::writeSettings()
     toml::table walletTable;
     walletTable.insert_or_assign("id", options_.recordOpt.first.id);
     walletTable.insert_or_assign("type", options_.recordOpt.first.type);
+    walletTable.insert_or_assign("name", options_.recordOpt.first.name);
     tbl.insert_or_assign(Settings::STR_WALLET_OPTIONS, walletTable);
 
     toml::table addressTable;
@@ -113,6 +114,8 @@ bool SettingManager::writeSettings()
     addressTable.insert_or_assign("type", options_.recordOpt.second.type);
     addressTable.insert_or_assign(
         "walletId", options_.recordOpt.second.walletId);
+    addressTable.insert_or_assign("name", options_.recordOpt.second.name);
+    addressTable.insert_or_assign("address", options_.recordOpt.second.address);
     tbl.insert_or_assign(Settings::STR_ADDRESS_OPTIONS, addressTable);
 
     std::ofstream ofs(configPath.toStdString());

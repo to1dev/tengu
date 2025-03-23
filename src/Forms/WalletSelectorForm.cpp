@@ -105,15 +105,6 @@ void WalletSelectorForm::ok()
         const WalletListModel* modelWallet = walletView_->model();
         const AddressListModel* modelAddress = addressView_->model();
 
-        const int walletId
-            = modelWallet->data(indexWallet, WalletListModel::ItemData::Id)
-                  .toInt();
-        const int addressId
-            = modelAddress
-                  ->data(indexAddress,
-                      static_cast<int>(AddressListModel::ItemData::Id))
-                  .toInt();
-
         {
             record_.first.id
                 = modelWallet->data(indexWallet, WalletListModel::ItemData::Id)

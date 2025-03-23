@@ -43,7 +43,7 @@ UserCard::UserCard(QWidget* parent)
         this, 6);
     svgAvatar->setImageSize(QSize(AVATAR_SIZE, AVATAR_SIZE));
 
-    topLayout->setSpacing(6);
+    topLayout->setSpacing(9);
     topLayout->addWidget(svgAvatar);
 
     QVBoxLayout* textLayout = new QVBoxLayout();

@@ -16,6 +16,9 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <chrono>
+#include <iostream>
+
 #include "catch_amalgamated.hpp"
 
 #include "Utils/Dotenv.hpp"
@@ -25,6 +28,19 @@ using namespace Daitengu::Utils;
 
 TEST_CASE("Test DotEnv")
 {
+    SECTION("Clock test")
+    {
+        using namespace std::chrono;
+
+        steady_clock::time_point t1 = steady_clock::now();
+        for (volatile int i = 0; i < 1000; ++i)
+            ;
+        steady_clock::time_point t2 = steady_clock::now();
+
+        auto duration = duration_cast<nanoseconds>(t2 - t1).count();
+        std::cout << "Duration: " << duration << " ns" << std::endl;
+    }
+
     SECTION("Load .env")
     {
         auto currentPath = PathUtils::getExecutableDir();

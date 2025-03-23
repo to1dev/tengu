@@ -73,6 +73,9 @@ WalletDock::WalletDock(
 
 WalletDock::~WalletDock()
 {
+    globalManager_->settingManager()->setRecord(
+        walletPanel_->userCard()->record());
+
     delete ui;
 }
 
@@ -91,5 +94,6 @@ void WalletDock::select()
     int ret = wsf.exec();
     if (ret) {
         walletPanel_->userCard()->setRecord(wsf.record());
+        // globalManager_->settingManager()->setRecord(wsf.record());
     }
 }

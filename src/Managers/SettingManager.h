@@ -36,11 +36,14 @@ using namespace Daitengu::Utils;
 
 namespace Daitengu::Core {
 
-inline constexpr char STR_SYSTEM_OPTIONS[] = "System";
-inline constexpr char STR_ADDRESS_OPTIONS[] = "Wallet";
-inline constexpr char STR_WALLET_ID[] = "walletId";
-inline constexpr char STR_ADDRESS_ID[] = "id";
-inline constexpr char STR_ADDRESS_TYPE[] = "type";
+namespace Settings {
+    inline constexpr char STR_SYSTEM_OPTIONS[] = "System";
+    inline constexpr char STR_WALLET_OPTIONS[] = "Wallet";
+    inline constexpr char STR_ADDRESS_OPTIONS[] = "Address";
+    inline constexpr char STR_WALLET_ID[] = "walletId";
+    inline constexpr char STR_ADDRESS_ID[] = "id";
+    inline constexpr char STR_ADDRESS_TYPE[] = "type";
+}
 
 struct SystemOptions {
     QString machineId;
@@ -51,7 +54,7 @@ struct SystemOptions {
 
 struct Options {
     SystemOptions sysOpt;
-    Address addressOpt;
+    Record recordOpt;
 };
 
 class SettingManager {
@@ -67,7 +70,9 @@ public:
     bool readSettings();
     bool writeSettings();
 
-    Options& options();
+    const Options& options() const;
+
+    void setRecord(Record&& record);
 
 private:
     QString dataPath_;

@@ -76,8 +76,8 @@ bool SettingManager::readSettings()
     try {
         auto tbl = toml::parse(ifs);
 
-        if (auto machineId
-            = tbl[STR_SYSTEM_OPTIONS]["machineId"].value<std::string>())
+        if (auto machineId = tbl[Settings::STR_SYSTEM_OPTIONS]["machineId"]
+                .value<std::string>())
             options_.sysOpt.machineId = QString::fromStdString(*machineId);
     } catch (const toml::parse_error& err) {
         std::cerr << "Failed to parse config: " << err.description()
@@ -101,13 +101,19 @@ bool SettingManager::writeSettings()
     sysOptTable.insert_or_assign("deviceRatio", options_.sysOpt.deviceRatio);
     sysOptTable.insert_or_assign(
         "dpiSuffix", options_.sysOpt.dpiSuffix.toStdString());
-    tbl.insert_or_assign(STR_SYSTEM_OPTIONS, sysOptTable);
+    tbl.insert_or_assign(Settings::STR_SYSTEM_OPTIONS, sysOptTable);
 
-    toml::table addressOptTable;
-    addressOptTable.insert_or_assign("id", options_.addressOpt.id);
-    addressOptTable.insert_or_assign("type", options_.addressOpt.type);
-    addressOptTable.insert_or_assign("walletId", options_.addressOpt.walletId);
-    tbl.insert_or_assign(STR_ADDRESS_OPTIONS, addressOptTable);
+    toml::table walletTable;
+    walletTable.insert_or_assign("id", options_.recordOpt.first.id);
+    walletTable.insert_or_assign("type", options_.recordOpt.first.type);
+    tbl.insert_or_assign(Settings::STR_WALLET_OPTIONS, walletTable);
+
+    toml::table addressTable;
+    addressTable.insert_or_assign("id", options_.recordOpt.second.id);
+    addressTable.insert_or_assign("type", options_.recordOpt.second.type);
+    addressTable.insert_or_assign(
+        "walletId", options_.recordOpt.second.walletId);
+    tbl.insert_or_assign(Settings::STR_ADDRESS_OPTIONS, addressTable);
 
     std::ofstream ofs(configPath.toStdString());
     if (!ofs) {
@@ -119,9 +125,13 @@ bool SettingManager::writeSettings()
     return true;
 }
 
-Options& SettingManager::options()
+const Options& SettingManager::options() const
 {
     return options_;
 }
 
+void SettingManager::setRecord(Record&& record)
+{
+    options_.recordOpt = std::move(record);
+}
 }

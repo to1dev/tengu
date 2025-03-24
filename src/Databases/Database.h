@@ -25,6 +25,7 @@
 #include <string>
 #include <vector>
 
+#include <QDebug>
 #include <QDir>
 #include <QString>
 
@@ -284,6 +285,18 @@ inline auto initStorage(const QString& dataPath)
 }
 
 using Storage = decltype(initStorage(""));
+
+template <typename Func>
+auto safeExecute(Func&& func) -> std::optional<decltype(func())>
+{
+    try {
+        return func();
+    } catch (const std::exception& e) {
+        qCritical() << "[Database] was fucked: " << e.what();
+        // Q_EMIT databaseCorrupted();
+        return std::nullopt;
+    }
+}
 
 class DatabaseContext {
 public:

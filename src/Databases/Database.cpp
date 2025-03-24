@@ -154,12 +154,24 @@ std::optional<Wallet> WalletRepo::get(int id)
 
 std::vector<Wallet> WalletRepo::getAll()
 {
-    return storage_->get_all<Wallet>(order_by(&Wallet::groupType));
+    auto result = safeExecute([&] {
+        return storage_->get_all<Wallet>(order_by(&Wallet::groupType));
+    });
+    return result.value_or(std::vector<Wallet> {});
+
+    // return storage_->get_all<Wallet>(order_by(&Wallet::groupType));
 }
 
 std::vector<Wallet> WalletRepo::getByGroup(int groupType)
 {
-    return storage_->get_all<Wallet>(where(c(&Wallet::groupType) == groupType));
+    auto result = safeExecute([&] {
+        return storage_->get_all<Wallet>(
+            where(c(&Wallet::groupType) == groupType));
+    });
+    return result.value_or(std::vector<Wallet> {});
+
+    // return storage_->get_all<Wallet>(where(c(&Wallet::groupType) ==
+    // groupType));
 }
 
 AddressRepo::AddressRepo(Storage* storage)

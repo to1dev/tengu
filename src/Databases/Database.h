@@ -171,7 +171,7 @@ struct DatabaseConfig {
     int cacheSize = 2000;
     int busyTimeoutMs = 3000;
     bool enableForeignKeys = true;
-    bool autoSyncSchema = false;
+    bool autoSyncSchema = true;
     std::vector<std::string> initQueries;
 };
 

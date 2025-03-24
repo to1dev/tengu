@@ -118,8 +118,14 @@ QVariant WalletListModel::data(const QModelIndex& index, int role) const
 
     const Wallet& wallet = wallets_[index.row()];
     switch (role) {
-    case Qt::DisplayRole:
+    case Qt::DisplayRole: {
+        const QString name = QString::fromStdString(wallet.name);
+        if (wallet.groupType > 0) {
+            return QString::fromStdString(std::format(
+                "[{}]{}", WalletTypeText.at(wallet.type), wallet.name));
+        }
         return QString::fromStdString(wallet.name);
+    }
     case Qt::DecorationRole: {
         int group = wallet.groupType;
         int chain = wallet.chainType;

@@ -89,9 +89,8 @@ UserCard::UserCard(QWidget* parent)
 
 void UserCard::reset(int walletId, int id)
 {
-    const Wallet& wallet = record_.first;
     const Address& address = record_.second;
-    if (wallet.id == walletId || address.id == id) {
+    if (address.walletId == walletId || address.id == id) {
         record_ = Record {};
         nameLabel_->setText(DEFAULT_ADDRESS_NAME);
         addressLabel_->setText(hideAddress(QString(DEFAULT_ADDRESS)));
@@ -102,14 +101,20 @@ void UserCard::update(
     const std::optional<Wallet>& wallet, const std::optional<Address>& address)
 {
     if (wallet.has_value()) {
-        record_.first = *wallet;
+        const Wallet& _wallet = *wallet;
+        if (_wallet.id == record_.second.walletId) {
+            record_.first = *wallet;
+        }
     }
 
     if (address.has_value()) {
-        record_.second = *address;
-        nameLabel_->setText(QString::fromStdString(record_.second.name));
-        addressLabel_->setText(
-            QString::fromStdString(hideAddress(record_.second.address)));
+        const Address& _address = *address;
+        if (_address.id == record_.second.id) {
+            record_.second = *address;
+            nameLabel_->setText(QString::fromStdString(record_.second.name));
+            addressLabel_->setText(
+                QString::fromStdString(hideAddress(record_.second.address)));
+        }
     }
 }
 

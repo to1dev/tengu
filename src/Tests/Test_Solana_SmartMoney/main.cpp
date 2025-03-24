@@ -42,8 +42,10 @@ using json = nlohmann::json;
 #include "ankerl/unordered_dense.h"
 
 #include "Utils/Base58.hpp"
+#include "Utils/Borsh.hpp"
 #include "Utils/Dotenv.hpp"
 #include "Utils/PathUtils.hpp"
+
 using namespace Daitengu::Utils;
 
 static const ankerl::unordered_dense::map<std::string_view, std::string_view>
@@ -99,6 +101,44 @@ static const ankerl::unordered_dense::map<std::string_view, std::string_view>
         { "Aldrin", "AMM55ShdkoGRB5jVYPjWziwk8m5MpwyDgsMWHaMSQWH6" },
     };
 
+namespace borsh {
+struct SwapEvent {
+    PublicKey poolState;
+    PublicKey sender;
+    PublicKey tokenAccount0;
+    PublicKey tokenAccount1;
+    std::uint64_t amount0;
+    std::uint64_t transferFee0;
+    std::uint64_t amount1;
+    std::uint64_t transferFee1;
+    bool zeroForOne;
+    U128 sqrtPriceX64;
+    U128 liquidity;
+    std::int32_t tick;
+};
+
+template <> struct Deserializer<SwapEvent> {
+    static SwapEvent deserialize(
+        const std::vector<std::uint8_t>& data, size_t& pos)
+    {
+        SwapEvent evt {};
+        evt.poolState = Deserializer<PublicKey>::deserialize(data, pos);
+        evt.sender = Deserializer<PublicKey>::deserialize(data, pos);
+        evt.tokenAccount0 = Deserializer<PublicKey>::deserialize(data, pos);
+        evt.tokenAccount1 = Deserializer<PublicKey>::deserialize(data, pos);
+        evt.amount0 = Deserializer<std::uint64_t>::deserialize(data, pos);
+        evt.transferFee0 = Deserializer<std::uint64_t>::deserialize(data, pos);
+        evt.amount1 = Deserializer<std::uint64_t>::deserialize(data, pos);
+        evt.transferFee1 = Deserializer<std::uint64_t>::deserialize(data, pos);
+        evt.zeroForOne = Deserializer<bool>::deserialize(data, pos);
+        evt.sqrtPriceX64 = Deserializer<U128>::deserialize(data, pos);
+        evt.liquidity = Deserializer<U128>::deserialize(data, pos);
+        evt.tick = Deserializer<std::int32_t>::deserialize(data, pos);
+        return evt;
+    }
+};
+}
+
 inline std::string base64Decode(const std::string& input)
 {
     size_t decodedLength = input.size();
@@ -112,6 +152,11 @@ inline std::string base64Decode(const std::string& input)
     }
 
     return std::string(reinterpret_cast<char*>(decoded.data()), decodedLength);
+}
+
+inline std::vector<std::uint8_t> toBytes(const std::string& binStr)
+{
+    return std::vector<std::uint8_t>(binStr.begin(), binStr.end());
 }
 
 json parse_create_instruction(const std::string& data)
@@ -175,6 +220,164 @@ json parse_create_instruction(const std::string& data)
     }
 }
 
+static inline uint64_t read_u64(const std::string& data, size_t& offset)
+{
+    if (offset + 8 > data.size()) {
+        throw std::runtime_error("read_u64: out of range");
+    }
+
+    uint64_t val = 0;
+    std::memcpy(&val, data.data() + offset, sizeof(val));
+    offset += 8;
+
+    return val;
+}
+
+static inline std::string read_public_key_base58(
+    const std::string& data, size_t& offset)
+{
+    if (offset + 32 > data.size()) {
+        throw std::runtime_error("read_public_key_base58: out of range");
+    }
+
+    std::vector<unsigned char> key_bytes(
+        reinterpret_cast<const unsigned char*>(data.data() + offset),
+        reinterpret_cast<const unsigned char*>(data.data() + offset + 32));
+    offset += 32;
+
+    return EncodeBase58(key_bytes);
+}
+
+static inline bool read_bool(const std::string& data, size_t& offset)
+{
+    if (offset + 1 > data.size()) {
+        throw std::runtime_error("read_bool: out of range");
+    }
+    uint8_t b = static_cast<uint8_t>(data[offset]);
+    offset += 1;
+    return (b != 0);
+}
+
+static inline int32_t read_i32(const std::string& data, size_t& offset)
+{
+    if (offset + 4 > data.size()) {
+        throw std::runtime_error("read_i32: out of range");
+    }
+    int32_t val = 0;
+    std::memcpy(&val, data.data() + offset, sizeof(val));
+    offset += 4;
+    return val;
+}
+
+static inline std::string read_u128_as_hex(
+    const std::string& data, size_t& offset)
+{
+    if (offset + 16 > data.size()) {
+        throw std::runtime_error("read_u128_as_hex: out of range");
+    }
+
+    const unsigned char* ptr
+        = reinterpret_cast<const unsigned char*>(data.data() + offset);
+    offset += 16;
+
+    static const char* hexDigits = "0123456789abcdef";
+
+    std::string hexStr;
+    hexStr.reserve(32);
+    for (int i = 0; i < 16; i++) {
+        unsigned char c = ptr[i];
+        // hi
+        hexStr.push_back(hexDigits[c >> 4]);
+        // lo
+        hexStr.push_back(hexDigits[c & 0x0f]);
+    }
+
+    // return "0x" + hexStr;
+    return hexStr;
+}
+
+json parse_swap_event(const std::string& data)
+{
+    if (data.size() < 8 + 32 * 4 + 8 * 4 + 1 + 16 * 2 + 4) {
+        return json();
+    }
+
+    /*if (data.size() < 8) {
+        return json();
+    }*/
+
+    size_t offset = 8;
+
+    try {
+        json result;
+
+        {
+            std::string v = read_public_key_base58(data, offset);
+            result["poolState"] = v;
+        }
+
+        {
+            std::string v = read_public_key_base58(data, offset);
+            result["sender"] = v;
+        }
+
+        {
+            std::string v = read_public_key_base58(data, offset);
+            result["tokenAccount0"] = v;
+        }
+
+        {
+            std::string v = read_public_key_base58(data, offset);
+            result["tokenAccount1"] = v;
+        }
+
+        {
+            uint64_t v = read_u64(data, offset);
+            result["amount0"] = v;
+        }
+
+        {
+            uint64_t v = read_u64(data, offset);
+            result["transferFee0"] = v;
+        }
+
+        {
+            uint64_t v = read_u64(data, offset);
+            result["amount1"] = v;
+        }
+
+        {
+            uint64_t v = read_u64(data, offset);
+            result["transferFee1"] = v;
+        }
+
+        {
+            bool v = read_bool(data, offset);
+            result["zeroForOne"] = v;
+        }
+
+        {
+            std::string hexStr = read_u128_as_hex(data, offset);
+            result["sqrtPriceX64"] = hexStr;
+        }
+
+        {
+            std::string hexStr = read_u128_as_hex(data, offset);
+            result["liquidity"] = hexStr;
+        }
+
+        {
+            int32_t v = read_i32(data, offset);
+            result["tick"] = v;
+        }
+
+        return result;
+    } catch (const std::exception& e) {
+        std::cerr << "parse_swap_event error: " << e.what() << std::endl;
+        return json();
+    }
+}
+
 class SolanaClient : public QObject {
     Q_OBJECT
 
@@ -186,7 +389,6 @@ public:
         m_monitoredAddresses
             = { "2j3MGgjTZnf5woD1dV9XScaSy5SxPeKh5eTTzcpZ142z" };
 
-        // 连接信号到槽函数
         connect(&m_webSocket, &QWebSocket::connected, this,
             &SolanaClient::onConnected);
         connect(&m_webSocket, &QWebSocket::disconnected, this,
@@ -194,17 +396,14 @@ public:
         connect(&m_webSocket, &QWebSocket::textMessageReceived, this,
             &SolanaClient::onTextMessageReceived);
 
-        // 连接心跳定时器，每60秒触发一次
         connect(&m_heartbeatTimer, &QTimer::timeout, this,
             &SolanaClient::sendHeartbeat);
 
-        // 建立连接（注意使用 wss:// 表示 SSL 连接）
         m_webSocket.open(url);
     }
 
 private Q_SLOTS:
 
-    // 连接建立成功后发送订阅消息
     void onConnected()
     {
         qDebug() << "WebSocket connected";
@@ -224,14 +423,11 @@ private Q_SLOTS:
 
         QString subscriptionMessage = QString::fromStdString(req.dump());
 
-        // 发送订阅消息
         m_webSocket.sendTextMessage(subscriptionMessage);
 
-        // 启动心跳定时器（60000 毫秒 = 1 分钟）
         m_heartbeatTimer.start(60000);
     }
 
-    // 处理接收到的文本消息
     void onTextMessageReceived(const QString& message)
     {
         try {
@@ -274,7 +470,7 @@ private Q_SLOTS:
                                             != std::string::npos;
                                     });*/
 
-                                bool createInstructionFound
+                                bool swapInstructionFound
                                     = std::any_of(logs.begin(), logs.end(),
                                         [](const std::string& log) {
                                             return log.find("Program log: "
@@ -282,7 +478,8 @@ private Q_SLOTS:
                                                 != std::string::npos;
                                         });
 
-                                if (createInstructionFound) {
+                                if (swapInstructionFound
+                                    && foundDexName == "Raydium CLMM") {
                                     for (const auto& logEntry : logs) {
                                         std::string log
                                             = logEntry
@@ -295,35 +492,38 @@ private Q_SLOTS:
                                                         log.find(": ") + 2);
                                                 std::string decoded
                                                     = base64Decode(encoded);
-                                                std::cout << decoded
-                                                          << std::endl;
-                                                std::cout << foundDexName
-                                                          << std::endl;
-                                                /*json parsed
-                                                    = parse_create_instruction(
-                                                        decoded);
-                                                if (!parsed.empty()
-                                                    && parsed.contains(
-                                                        "name")) {
-                                                    fmt::print("{}: {}\n",
-                                                        fmt::styled(
-                                                            foundDexName,
-                                                            fmt::fg(fmt::color::
-                                                                    green)),
-                                                        fmt::styled(
-                                                            value["signature"]
-                                                                .get<std::
-                                                                        string>(),
-                                                            fmt::fg(fmt::color::
-                                                                    blue)));
-                                                    for (const auto& [key,
-                                                             value] :
-                                                        parsed.items()) {
-                                                        std::cout << key << ": "
-                                                                  << value
-                                                                  << std::endl;
+
+                                                try {
+                                                    auto parsed
+                                                        = parse_swap_event(
+                                                            decoded);
+                                                    if (!parsed.empty()) {
+                                                        std::cout
+                                                            << std::string(
+                                                                   50, '-')
+                                                            << std::endl;
+                                                        for (const auto& [key,
+                                                                 value] :
+                                                            parsed.items()) {
+                                                            std::cout
+                                                                << key << ": "
+                                                                << value
+                                                                << std::endl;
+                                                        }
+                                                        std::cout
+                                                            << std::string(
+                                                                   50, '-')
+                                                            << std::endl;
                                                     }
-                                                }*/
+                                                } catch (
+                                                    const std::exception& e) {
+                                                    std::cerr
+                                                        << foundDexName
+                                                        << " - Error parse "
+                                                           "SwapEvent: "
+                                                        << e.what()
+                                                        << std::endl;
+                                                }
                                             } catch (const std::exception& e) {
                                                 std::cerr
                                                     << "Failed to decode: "
@@ -335,17 +535,6 @@ private Q_SLOTS:
                                         }
                                     }
                                 }
-
-                                /*if (value.contains("signature")) {
-                                    std::string signature = value["signature"];
-                                    fmt::print("{} transaction found: {}\n",
-                                        fmt::styled(foundDexName,
-                                            fmt::fg(fmt::color::green)),
-                                        fmt::styled(signature,
-                                            fmt::fg(fmt::color::blue)));
-                                } else {
-                                    qDebug() << "No signature";
-                                }*/
                             }
                         }
                     } else {
@@ -362,12 +551,10 @@ private Q_SLOTS:
         }
     }
 
-    // 当 WebSocket 断开时，启动延时重连
     void onDisconnected()
     {
         qDebug() << "WebSocket disconnected";
         m_heartbeatTimer.stop();
-        // 延时 5000 毫秒（5秒）后调用 reconnect()
         QTimer::singleShot(5000, this, &SolanaClient::reconnect);
     }
 
@@ -377,11 +564,9 @@ private Q_SLOTS:
         m_webSocket.open(m_url);
     }
 
-    // 心跳函数，每隔1分钟发送一次心跳消息
     void sendHeartbeat()
     {
         qDebug() << "Sending heartbeat";
-        // 这里使用文本消息发送心跳，也可以考虑使用 QWebSocket::ping()
         m_webSocket.ping("ping");
     }
 

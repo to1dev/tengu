@@ -123,10 +123,7 @@ QVariant WalletListModel::data(const QModelIndex& index, int role) const
     case Qt::DecorationRole: {
         int group = wallet.groupType;
         int chain = wallet.chainType;
-        QIcon icon(QString::fromUtf8(
-            WalletListIcons[group].items[chain].icon.data(),
-            static_cast<int>(WalletListIcons[group].items[chain].icon.size())));
-        return icon;
+        return getCachedIcon(group, chain);
     }
     case Qt::ToolTipRole:
         return QString::fromStdString(wallet.name);
@@ -207,7 +204,7 @@ WalletListView::WalletListView(QWidget* parent)
     setDragEnabled(false);
     setContextMenuPolicy(Qt::CustomContextMenu);
 
-    setItemDelegate(new WalletTypeBadgeDelegate(this));
+    // setItemDelegate(new WalletTypeBadgeDelegate(this));
 
     model_ = new WalletListModel(this);
     setModel(model_);

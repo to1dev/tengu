@@ -143,6 +143,26 @@ private:
     std::vector<Wallet> wallets_;
 };
 
+namespace {
+    static const QIcon& getCachedIcon(int group, int chain)
+    {
+        static bool initialized = false;
+        static QIcon iconCache[2][3];
+        if (!initialized) {
+            for (int g = 0; g < 2; ++g) {
+                for (int c = 0; c < 3; ++c) {
+                    iconCache[g][c] = QIcon(QString::fromUtf8(
+                        WalletListIcons[g].items[c].icon.data(),
+                        static_cast<int>(
+                            WalletListIcons[g].items[c].icon.size())));
+                }
+            }
+            initialized = true;
+        }
+        return iconCache[group][chain];
+    }
+} // end anonymous namespace
+
 class WalletListView : public QListView {
     Q_OBJECT
 

@@ -41,6 +41,11 @@ namespace Daitengu::Databases {
 
 inline constexpr char DB_NAME[] = "tengu";
 
+struct Migration {
+    int id = 0;
+    int version = 0;
+};
+
 enum class WalletGroupType {
     User = 0,
     Import,
@@ -183,6 +188,10 @@ inline auto initStorage(const QString& dataPath)
         QString("%1/%2.db").arg(dataPath).arg(DB_NAME));
 
     return make_storage(filePath.toStdString(),
+        make_table("migration",
+            make_column("id", &Migration::id, primary_key()),
+            make_column("version", &Migration::version)),
+
         make_table("groups",
             make_column("id", &WalletGroup::id, primary_key().autoincrement()),
             make_column("type", &WalletGroup::type),
@@ -282,6 +291,10 @@ public:
         const std::shared_ptr<const DatabaseConfig>& config);
 
     Storage* storage();
+
+private:
+    int getVersion(Storage* storage);
+    void setVersion(Storage* storage, int version);
 
 private:
     std::unique_ptr<Storage> storage_;

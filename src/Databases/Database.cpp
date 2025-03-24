@@ -30,11 +30,39 @@ DatabaseContext::DatabaseContext(const QString& dataPath,
     }
 
     storage_->pragma.journal_mode(config->journalMode);
+
+    int currentVersion = getVersion(storage_.get());
+
+    if (currentVersion < 1) {
+        storage_->replace(Migration { 1, 1 });
+        currentVersion = 1;
+    }
+
+#ifdef enable_migration
+    if (currentVersion < 2) {
+        // Migration
+    }
+#endif
 }
 
 Storage* DatabaseContext::storage()
 {
     return storage_.get();
+}
+
+int DatabaseContext::getVersion(Storage* storage)
+{
+    if (!storage->table_exists("migration")) {
+        return 0;
+    }
+
+    auto records = storage->get_all<Migration>();
+    return records.empty() ? 0 : records.front().version;
+}
+
+void DatabaseContext::setVersion(Storage* storage, int version)
+{
+    storage->replace(Migration { 1, version });
 }
 
 WalletGroupRepo::WalletGroupRepo(Storage* storage)

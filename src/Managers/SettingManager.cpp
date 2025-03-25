@@ -168,17 +168,54 @@ bool SettingManager::readSettings()
             if (auto walletTable
                 = record->get_as<toml::table>(Settings::STR_WALLET_OPTIONS)) {
                 Wallet& walletOpt = options_.recordOpt.first;
-                walletOpt.id = walletTable->at("id").value_or<int>(0);
+                walletOpt.id = walletTable->contains(Settings::STR_WALLET_ID)
+                    ? walletTable->at(Settings::STR_WALLET_ID).value_or<int>(0)
+                    : 0;
+                walletOpt.type
+                    = walletTable->contains(Settings::STR_WALLET_TYPE)
+                    ? walletTable->at(Settings::STR_WALLET_TYPE)
+                          .value_or<int>(0)
+                    : 0;
+                walletOpt.groupType
+                    = walletTable->contains(Settings::STR_WALLET_GROUPTYPE)
+                    ? walletTable->at(Settings::STR_WALLET_GROUPTYPE)
+                          .value_or<int>(0)
+                    : 0;
+                walletOpt.chainType
+                    = walletTable->contains(Settings::STR_WALLET_CHAINTYPE)
+                    ? walletTable->at(Settings::STR_WALLET_CHAINTYPE)
+                          .value_or<int>(0)
+                    : 0;
+                walletOpt.name
+                    = walletTable->contains(Settings::STR_WALLET_NAME)
+                    ? walletTable->at("name").value_or<std::string>("")
+                    : "";
             }
 
             if (auto addressTable
                 = record->get_as<toml::table>(Settings::STR_ADDRESS_OPTIONS)) {
                 Address& addressOpt = options_.recordOpt.second;
-                addressOpt.id = addressTable->at("id").value_or<int>(0);
+                addressOpt.id = addressTable->contains(Settings::STR_ADDRESS_ID)
+                    ? addressTable->at(Settings::STR_ADDRESS_ID)
+                          .value_or<int>(0)
+                    : 0;
+                addressOpt.type
+                    = addressTable->contains(Settings::STR_ADDRESS_TYPE)
+                    ? addressTable->at(Settings::STR_ADDRESS_TYPE)
+                          .value_or<int>(0)
+                    : 0;
+                addressOpt.walletId
+                    = addressTable->contains(Settings::STR_ADDRESS_WALLETID)
+                    ? addressTable->at("walletId").value_or<int>(0)
+                    : 0;
                 addressOpt.name
-                    = addressTable->at("name").value_or<std::string>("");
+                    = addressTable->contains(Settings::STR_ADDRESS_NAME)
+                    ? addressTable->at("name").value_or<std::string>("")
+                    : "";
                 addressOpt.address
-                    = addressTable->at("address").value_or<std::string>("");
+                    = addressTable->contains(Settings::STR_ADDRESS_ADDRESS)
+                    ? addressTable->at("address").value_or<std::string>("")
+                    : "";
             }
         }
     } catch (const toml::parse_error& err) {
@@ -208,6 +245,10 @@ bool SettingManager::writeSettings()
     toml::table walletTable;
     walletTable.insert_or_assign("id", options_.recordOpt.first.id);
     walletTable.insert_or_assign("type", options_.recordOpt.first.type);
+    walletTable.insert_or_assign(
+        "groupType", options_.recordOpt.first.groupType);
+    walletTable.insert_or_assign(
+        "chainType", options_.recordOpt.first.chainType);
     walletTable.insert_or_assign("name", options_.recordOpt.first.name);
 
     toml::table addressTable;

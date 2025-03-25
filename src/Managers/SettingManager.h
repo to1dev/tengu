@@ -41,9 +41,16 @@ namespace Settings {
     inline constexpr char STR_RECORD_OPTIONS[] = "Record";
     inline constexpr char STR_WALLET_OPTIONS[] = "Wallet";
     inline constexpr char STR_ADDRESS_OPTIONS[] = "Address";
-    inline constexpr char STR_WALLET_ID[] = "walletId";
+    inline constexpr char STR_WALLET_ID[] = "id";
+    inline constexpr char STR_WALLET_TYPE[] = "type";
+    inline constexpr char STR_WALLET_GROUPTYPE[] = "groupType";
+    inline constexpr char STR_WALLET_CHAINTYPE[] = "chainType";
+    inline constexpr char STR_WALLET_NAME[] = "name";
     inline constexpr char STR_ADDRESS_ID[] = "id";
     inline constexpr char STR_ADDRESS_TYPE[] = "type";
+    inline constexpr char STR_ADDRESS_WALLETID[] = "walletId";
+    inline constexpr char STR_ADDRESS_NAME[] = "name";
+    inline constexpr char STR_ADDRESS_ADDRESS[] = "address";
 }
 
 struct SystemOptions {

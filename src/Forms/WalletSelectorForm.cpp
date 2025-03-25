@@ -40,8 +40,7 @@ WalletSelectorForm::WalletSelectorForm(
 
     walletView_ = new WalletListView(this);
     walletView_->load(
-        globalManager_->settingManager()->database()->walletRepo()->getByGroup(
-            static_cast<int>(WalletGroupType::User)));
+        globalManager_->settingManager()->database()->walletRepo()->getAll());
 
     addressView_ = new AddressListView(this);
 

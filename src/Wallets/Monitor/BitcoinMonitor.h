@@ -34,6 +34,52 @@ public:
     explicit BitcoinMonitor(
         const QString& rpcUrl, const QString& wsUrl, QObject* parent = nullptr);
     ~BitcoinMonitor() override;
+
+    bool connect() override;
+    void disconnect() override;
+    void refreshBalance() override;
+    void refreshTokens() override;
+    [[nodiscard]] bool isValidAddress(const QString& address) const override;
+
+private Q_SLOTS:
+    void onWebSocketConnected();
+    void onWebSocketDisconnected();
+    void onWebSocketTextMessageReceived(const QString& message);
+    void onNetworkReplyFinished();
+
+    void onWebSocketError(QAbstractSocket::SocketError error);
+    void onSslErrors(const QList<QSslError>& errors);
+    void onNetworkError(QNetworkReply::NetworkError error);
+
+protected:
+    void setupConnection() override;
+
+private:
+    QString rpcUrl_;
+    QString wsUrl_;
+    std::unique_ptr<QWebSocket> webSocket_;
+    std::unique_ptr<QNetworkAccessManager> networkManager_;
+    std::unique_ptr<QTimer> reconnectTimer_;
+
+    std::unique_ptr<QTimer> pingTimer_;
+    QDateTime lastPingTime_;
+    QDateTime lastPongTime_;
+    int pingLatency_ { 0 };
+    int consecutivePingFailures_ { 0 };
+
+    int requestId_ { 0 };
+
+    void subscribeToAddress();
+
+    void checkPingPongHealth();
+    void setupPingPong();
+
+    void sendJsonRpcRequest(const QString& method, const json& params);
+
+    void processBalanceResponse(const json& response);
+    void processTokenResponse(const json& response);
+
+    [[nodiscard]] static bool isValidBitcoinAddress(const QString& address);
 };
 
 }

@@ -21,12 +21,39 @@
 namespace Daitengu::Wallets {
 
 BlockchainMonitor::BlockchainMonitor(QObject* parent)
+    : QObject(parent)
+    , refreshTimer_(std::make_unique<QTimer>(this))
 {
+    QObject::connect(refreshTimer_.get(), &QTimer::timeout, this,
+        &BlockchainMonitor::refreshBalance);
 }
 
 BlockchainMonitor::~BlockchainMonitor() = default;
 
 void BlockchainMonitor::setAddress(const QString& address)
 {
+    if (currentAddress_ != address) {
+        currentAddress_ = address;
+        if (!currentAddress_.isEmpty() && isConnected()) {
+            refreshBalance();
+            refreshTokens();
+        }
+    }
+}
+
+void BlockchainMonitor::startRefreshTimer()
+{
+    if (refreshInterval_ > 0 && !currentAddress_.isEmpty() && isConnected()) {
+        refreshTimer_->start(refreshInterval_);
+    }
+}
+
+void BlockchainMonitor::setRefreshInterval(int milliseconds)
+{
+    refreshInterval_ = milliseconds;
+    if (refreshTimer_->isActive()) {
+        refreshTimer_->stop();
+        startRefreshTimer();
+    }
 }
 }

@@ -22,6 +22,7 @@
 #include <memory>
 #include <optional>
 
+#include <QDebug>
 #include <QList>
 #include <QObject>
 #include <QString>
@@ -76,8 +77,49 @@ public:
     virtual void refreshBalance() = 0;
     virtual void refreshTokens() = 0;
 
+    [[nodiscard]] virtual bool isConnected() const
+    {
+        return connected_;
+    }
+
+    [[nodiscard]] virtual bool isValidAddress(const QString& address) const = 0;
+
+    void setRefreshInterval(int milliseconds);
+
+    [[nodiscard]] int refreshInterval() const
+    {
+        return refreshInterval_;
+    }
+
+Q_SIGNALS:
+    void balanceUpdated(const QString& address, const QString& balance);
+    void tokensUpdated(const QString& address, const QList<TokenInfo>& tokens);
+    void connectionStatusChanged(bool connected);
+    void error(const QString& message);
+
 protected:
     QString currentAddress_;
+    bool connected_ { false };
+    int refreshInterval_ { 30000 };
+    std::unique_ptr<QTimer> refreshTimer_;
+
+    virtual void setupConnection() = 0;
+
+    void startRefreshTimer();
+
+    template <typename T>
+    static std::optional<T> getJsonValue(const json& j, const std::string& key)
+    {
+        if (j.contains(key) && !j[key].is_null()) {
+            try {
+                return j[key].get<T>();
+            } catch (const std::exception& e) {
+                qWarning() << "Error extracting JSON value: " << e.what();
+                return std::nullopt;
+            }
+        }
+        return std::nullopt;
+    }
 };
 
 }

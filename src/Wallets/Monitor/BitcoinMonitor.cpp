@@ -57,36 +57,99 @@ BitcoinMonitor::~BitcoinMonitor()
 
 bool BitcoinMonitor::connect()
 {
-    return false;
+    if (isConnected()) {
+        return true;
+    }
+
+    try {
+        webSocket_->open(QUrl(wsUrl_));
+        return true;
+    } catch (const std::exception& e) {
+        Q_EMIT error(
+            QString("Failed to connect to Bitcoin node: %1").arg(e.what()));
+        return false;
+    }
 }
 
 void BitcoinMonitor::disconnect()
 {
+    reconnectTimer_->stop();
+    if (webSocket_->isValid()) {
+        webSocket_->close();
+    }
+    connected_ = false;
+    Q_EMIT connectionStatusChanged(false);
 }
 
 void BitcoinMonitor::refreshBalance()
 {
+    if (!isConnected() || currentAddress_.isEmpty()) {
+        return;
+    }
+
+    json params = {
+        { "addresses", { currentAddress_.toStdString() } },
+    };
+
+    sendJsonRpcRequest("getaddressbalance", params);
 }
 
 void BitcoinMonitor::refreshTokens()
 {
+    if (!isConnected() || currentAddress_.isEmpty()) {
+        return;
+    }
+
+    json params = {
+        { "address", currentAddress_.toStdString() },
+    };
+
+    sendJsonRpcRequest("getaddresstokens", params);
 }
 
 bool BitcoinMonitor::isValidAddress(const QString& address) const
 {
-    return false;
+    return isValidBitcoinAddress(address);
 }
 
 void BitcoinMonitor::onWebSocketConnected()
 {
+    qDebug() << "Connected to Bitcoin WebSocket";
+    connected_ = true;
+    Q_EMIT connectionStatusChanged(true);
+
+    if (!currentAddress_.isEmpty()) {
+        subscribeToAddress();
+        refreshBalance();
+        refreshTokens();
+    }
+
+    startRefreshTimer();
 }
 
 void BitcoinMonitor::onWebSocketDisconnected()
 {
+    qDebug() << "Disconnected from Bitcoin WebSocket";
+    connected_ = false;
+    Q_EMIT connectionStatusChanged(false);
+    reconnectTimer_->start();
 }
 
 void BitcoinMonitor::onWebSocketTextMessageReceived(const QString& message)
 {
+    try {
+        json j = json::parse(message.toStdString());
+
+        if (j.contains("method") && j["method"] == "address_update") {
+            if (j.contains("params") && j["params"].contains("address")
+                && j["params"]["address"] == currentAddress_.toStdString()) {
+                refreshBalance();
+                refreshTokens();
+            }
+        }
+    } catch (const std::exception& e) {
+        qWarning() << "Error parsing Bitcoin WebSocket message: " << e.what();
+    }
 }
 
 void BitcoinMonitor::onNetworkReplyFinished()

@@ -48,7 +48,8 @@ using json = nlohmann::json;
 
 using namespace Daitengu::Utils;
 
-static const ankerl::unordered_dense::map<std::string_view, std::string_view>
+static inline const ankerl::unordered_dense::map<std::string_view,
+    std::string_view>
     dexMap = {
         { "Pump.fun Amm", "pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA" },
         { "Saber", "SSwpkEEcbUqx4vtoEByFjSkhKdCT862DNVb52nZg1UZ" },

@@ -20,6 +20,7 @@ find_package(Qt5 REQUIRED COMPONENTS
     Svg
     Charts
     WebSockets
+    Concurrent
 )
 
 option(ENABLE_GRPC "Enable gRPC support" OFF)
@@ -115,6 +116,7 @@ set(SOURCE_FILES
     src/Wallets/Core/EthereumWallet.cpp
     src/Wallets/Core/SolanaWallet.cpp
     src/Wallets/Core/SuiWallet.cpp
+    src/Wallets/Monitor/Bitcoin/MempoolSpaceBitcoinProvider.cpp
     src/Wallets/Utils/SecureBytes.cpp
 )
 
@@ -181,6 +183,7 @@ set(HEADER_FILES
     src/Wallets/Core/SolanaWallet.h
     src/Wallets/Core/SuiWallet.h
     src/Wallets/Core/Types.h
+    src/Wallets/Monitor/Bitcoin/MempoolSpaceBitcoinProvider.h
     src/Wallets/Utils/Hex.hpp
     src/Wallets/Utils/SecureBytes.h
 )
@@ -291,6 +294,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt5::Svg
     Qt5::Charts
     Qt5::WebSockets
+    Qt5::Concurrent
 )
 
 if (WIN32)

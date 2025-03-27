@@ -409,6 +409,44 @@ private Q_SLOTS:
     {
         qDebug() << "WebSocket connected";
 
+        send1();
+
+        m_heartbeatTimer.start(60000);
+    }
+
+    void onTextMessageReceived(const QString& message)
+    {
+        data1(message);
+    }
+
+    void onDisconnected()
+    {
+        qDebug() << "WebSocket disconnected";
+        m_heartbeatTimer.stop();
+        QTimer::singleShot(5000, this, &SolanaClient::reconnect);
+    }
+
+    void reconnect()
+    {
+        qDebug() << "Reconnecting...";
+        m_webSocket.open(m_url);
+    }
+
+    void sendHeartbeat()
+    {
+        qDebug() << "Sending heartbeat";
+        m_webSocket.ping("ping");
+    }
+
+private:
+    QWebSocket m_webSocket;
+    QUrl m_url;
+    QTimer m_heartbeatTimer;
+
+    ankerl::unordered_dense::set<std::string> m_monitoredAddresses;
+
+    void send1()
+    {
         json params = json::array();
         params.push_back("all");
 
@@ -425,11 +463,49 @@ private Q_SLOTS:
         QString subscriptionMessage = QString::fromStdString(req.dump());
 
         m_webSocket.sendTextMessage(subscriptionMessage);
-
-        m_heartbeatTimer.start(60000);
     }
 
-    void onTextMessageReceived(const QString& message)
+    void send2()
+    {
+        json params = json::array();
+        params.push_back("675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8");
+
+        json options;
+        options["encoding"] = "jsonParsed";
+        params.push_back(options);
+
+        json req;
+        req["jsonrpc"] = "2.0";
+        req["id"] = 1;
+        req["method"] = "programSubscribe";
+        req["params"] = params;
+
+        QString subscriptionMessage = QString::fromStdString(req.dump());
+
+        m_webSocket.sendTextMessage(subscriptionMessage);
+    }
+
+    void send3()
+    {
+        json params = json::array();
+        params.push_back("675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8");
+
+        json options;
+        options["encoding"] = "jsonParsed";
+        params.push_back(options);
+
+        json req;
+        req["jsonrpc"] = "2.0";
+        req["id"] = 1;
+        req["method"] = "programSubscribe";
+        req["params"] = params;
+
+        QString subscriptionMessage = QString::fromStdString(req.dump());
+
+        m_webSocket.sendTextMessage(subscriptionMessage);
+    }
+
+    void data1(const QString& message)
     {
         try {
             auto data = json::parse(message.toStdString());
@@ -512,6 +588,10 @@ private Q_SLOTS:
                                                                 << std::endl;
                                                         }
                                                         std::cout
+                                                            << "Dex: "
+                                                            << foundDexName
+                                                            << std::endl
+                                                            << "Signature: "
                                                             << value
                                                                    ["signature"]
                                                                        .dump(4)
@@ -559,31 +639,15 @@ private Q_SLOTS:
         }
     }
 
-    void onDisconnected()
+    void data2(const QString& message)
     {
-        qDebug() << "WebSocket disconnected";
-        m_heartbeatTimer.stop();
-        QTimer::singleShot(5000, this, &SolanaClient::reconnect);
+        try {
+            auto data = json::parse(message.toStdString());
+            std::cout << data.dump(4) << std::endl;
+        } catch (const std::exception& e) {
+            qDebug() << "Failed to parse Json: " << e.what();
+        }
     }
-
-    void reconnect()
-    {
-        qDebug() << "Reconnecting...";
-        m_webSocket.open(m_url);
-    }
-
-    void sendHeartbeat()
-    {
-        qDebug() << "Sending heartbeat";
-        m_webSocket.ping("ping");
-    }
-
-private:
-    QWebSocket m_webSocket;
-    QUrl m_url;
-    QTimer m_heartbeatTimer;
-
-    ankerl::unordered_dense::set<std::string> m_monitoredAddresses;
 };
 
 int main(int argc, char* argv[])

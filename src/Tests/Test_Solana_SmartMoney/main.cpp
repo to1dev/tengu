@@ -512,6 +512,11 @@ private Q_SLOTS:
                                                                 << std::endl;
                                                         }
                                                         std::cout
+                                                            << value
+                                                                   ["signature"]
+                                                                       .dump(4)
+                                                            << std::endl;
+                                                        std::cout
                                                             << std::string(
                                                                    50, '-')
                                                             << std::endl;
@@ -533,6 +538,8 @@ private Q_SLOTS:
                                                     << "Error: " << e.what()
                                                     << std::endl;
                                             }
+
+                                            break;
                                         }
                                     }
                                 }

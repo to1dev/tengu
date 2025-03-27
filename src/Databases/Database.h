@@ -25,9 +25,13 @@
 #include <string>
 #include <vector>
 
+#include <QDateTime>
 #include <QDebug>
 #include <QDir>
+#include <QEventLoop>
 #include <QString>
+#include <QThread>
+#include <QTimer>
 
 #include "sqlite_orm/sqlite_orm.h"
 
@@ -52,6 +56,19 @@ enum class WalletGroupType {
     Import,
     Smart,
     Vault,
+};
+
+enum class DatabaseErrorType {
+    none = 0,
+    corruptedDatabase,
+    migrationFailed,
+    schemaUpgradeFailed,
+    backupFailed,
+    restoreFailed,
+    connectionLost,
+    transactionFailed,
+    constraintViolation,
+    general
 };
 
 enum class DBErrorType {
@@ -178,7 +195,37 @@ struct DatabaseConfig {
     int busyTimeoutMs = 3000;
     bool enableForeignKeys = true;
     bool autoSyncSchema = true;
+    int targetVersion = 1;
+    bool backupBeforeUpdate = true;
+    bool useThreadedBackup = false;
+    int maxBackupCount = 5;
+    bool enableScheduledBackups = false;
+    int backupIntervalHours = 24;
+    int maxScheduledBackupCount = 7;
     std::vector<std::string> initQueries;
+};
+
+class DatabaseError : public std::exception {
+public:
+    DatabaseError(DatabaseErrorType type, const std::string& message)
+        : type_(type)
+        , message_(message)
+    {
+    }
+
+    DatabaseErrorType type() const
+    {
+        return type_;
+    }
+
+    const char* what() const noexcept override
+    {
+        return message_.c_str();
+    }
+
+private:
+    DatabaseErrorType type_;
+    std::string message_;
 };
 
 using Record = std::pair<Wallet, Address>;
@@ -291,12 +338,47 @@ auto safeExecute(Func&& func) -> std::optional<decltype(func())>
 {
     try {
         return func();
+    } catch (const DatabaseError& e) {
+        qCritical() << "[Database] Specific error:" << e.what()
+                    << "Type:" << static_cast<int>(e.type());
+        return std::nullopt;
     } catch (const std::exception& e) {
-        qCritical() << "[Database] was fucked: " << e.what();
-        // Q_EMIT databaseCorrupted();
+        qCritical() << "[Database] General error:" << e.what();
+        return std::nullopt;
+    } catch (...) {
+        qCritical() << "[Database] Unknown error occurred";
         return std::nullopt;
     }
 }
+
+class DatabaseBackupWorker : public QObject {
+    Q_OBJECT
+
+public:
+    DatabaseBackupWorker(Storage* storage)
+        : storage_(storage)
+    {
+    }
+
+public Q_SLOTS:
+
+    void performBackup(const QString& backupFilePath)
+    {
+        try {
+            storage_->backup_to(backupFilePath.toStdString());
+            Q_EMIT backupCompleted(backupFilePath);
+        } catch (const std::exception& e) {
+            Q_EMIT backupFailed(QString("Backup failed: %1").arg(e.what()));
+        }
+    }
+
+Q_SIGNALS:
+    void backupCompleted(const QString& backupFilePath);
+    void backupFailed(const QString& errorMessage);
+
+private:
+    Storage* storage_;
+};
 
 class DatabaseContext {
 public:
@@ -308,6 +390,12 @@ public:
 private:
     int getVersion(Storage* storage);
     void setVersion(Storage* storage, int version);
+
+    void applyMigrations(int currentVersion, int targetVersion);
+
+    void createBackup(const QString& dataPath);
+    void createBackup_async(const QString& dataPath);
+    void cleanupOldBackups(const QString& backupDir, int maxCount);
 
 private:
     std::unique_ptr<Storage> storage_;
@@ -406,7 +494,9 @@ private:
     Storage* storage_;
 };
 
-class IDatabsae {
+class IDatabsae : public QObject {
+    Q_OBJECT
+
 public:
     virtual ~IDatabsae() = default;
     virtual IWalletGroupRepo* walletGroupRepo() = 0;
@@ -419,12 +509,42 @@ public:
     }
 
     virtual Storage* storage() = 0;
+
+    template <typename Func>
+    auto safeTransaction(Func&& func) -> std::optional<decltype(func())>
+    {
+        try {
+            return storage()->transaction([&] {
+                try {
+                    return func();
+                } catch (const std::exception& e) {
+                    qWarning()
+                        << "Transaction failed, rolling back:" << e.what();
+                    return false; // Return false will cause rollback
+                }
+            });
+        } catch (const std::exception& e) {
+            qCritical() << "Transaction failed:" << e.what();
+            return std::nullopt;
+        }
+    }
+
+Q_SIGNALS:
+    void databaseError(DatabaseErrorType errorType, const QString& message);
+    void databaseCorrupted();
+    void migrationSuccessful(int newVersion);
+    void backupSucceeded(const QString& backupFilePath);
+    void backupFailed(const QString& errorMessage);
+    void requestBackup(const QString& backupFilePath);
 };
 
 class Database : public IDatabsae {
+    Q_OBJECT
+
 public:
     Database(const QString& dataPath,
         const std::shared_ptr<const DatabaseConfig>& config);
+    ~Database();
 
     IWalletGroupRepo* walletGroupRepo() override;
     IWalletRepo* walletRepo() override;
@@ -434,6 +554,20 @@ public:
 
     void reset();
 
+    void startPeriodicBackups(int intervalHours = -1);
+
+private Q_SLOTS:
+    void checkScheduledBackup();
+
+    void handleBackupCompleted(const QString& backupFilePath);
+
+    void handleBackupFailed(const QString& errorMessage);
+
+private:
+    void performScheduledBackup();
+    void cleanupOldBackups(const QString& backupDir, int maxCount);
+    void handleError(DatabaseErrorType type, const std::string& message);
+
 private:
     DatabaseContext context_;
     Storage* storage_;
@@ -442,7 +576,11 @@ private:
     std::unique_ptr<IAddressRepo> addressRepo_;
 
     std::shared_ptr<const DatabaseConfig> config_;
-};
 
+    QTimer* backupTimer_ = nullptr;
+    QDateTime lastBackupTime_;
+    QThread* backupThread_ = nullptr;
+    DatabaseBackupWorker* backupWorker_ = nullptr;
+};
 }
 #endif // DATABASE_H

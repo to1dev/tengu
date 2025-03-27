@@ -25,24 +25,53 @@ DatabaseContext::DatabaseContext(const QString& dataPath,
     : storage_(std::make_unique<Storage>(initStorage(dataPath)))
     , config_(config)
 {
-    if (config_->autoSyncSchema) {
-        storage_->sync_schema();
-    }
-
-    storage_->pragma.journal_mode(config->journalMode);
+    storage_->pragma.journal_mode(config_->journalMode);
+    storage_->pragma.busy_timeout(config_->busyTimeoutMs);
 
     int currentVersion = getVersion(storage_.get());
+    int targetVersion = config_->targetVersion;
+    bool needsUpgrade = (currentVersion < targetVersion);
 
-    if (currentVersion < 1) {
-        storage_->replace(Migration { 1, 1 });
-        currentVersion = 1;
+    /*QString dbFile = QDir::toNativeSeparators(
+        QString("%1/%2.db").arg(dataPath).arg(DB_NAME));
+    bool dbExists = QFile::exists(dbFile);*/
+
+    // or dbExists
+    bool shouldBackup
+        = needsUpgrade && config_->backupBeforeUpdate && (currentVersion > 0);
+
+    if (shouldBackup) {
+        try {
+            if (config_->useThreadedBackup) {
+                createBackup_async(dataPath);
+            } else {
+                createBackup(dataPath);
+            }
+        } catch (const std::exception& e) {
+            qWarning() << "Database backup before upgrade failed:" << e.what();
+        }
     }
 
-#ifdef enable_migration
-    if (currentVersion < 2) {
-        // Migration
+    if (needsUpgrade && config_->autoSyncSchema) {
+        try {
+            storage_->sync_schema(true);
+        } catch (const std::exception& e) {
+            qCritical() << "Schema sync failed:" << e.what();
+            throw DatabaseError(DatabaseErrorType::schemaUpgradeFailed,
+                std::string("Schema upgrade failed: ") + e.what());
+        }
     }
-#endif
+
+    try {
+        applyMigrations(currentVersion, targetVersion);
+    } catch (const std::exception& e) {
+        qCritical() << "Migration failed:" << e.what();
+        throw DatabaseError(DatabaseErrorType::migrationFailed,
+            std::string("Migration failed: ") + e.what());
+    }
+
+    qInfo() << "Database initialized successfully. Version:"
+            << getVersion(storage_.get());
 }
 
 Storage* DatabaseContext::storage()
@@ -63,6 +92,129 @@ int DatabaseContext::getVersion(Storage* storage)
 void DatabaseContext::setVersion(Storage* storage, int version)
 {
     storage->replace(Migration { 1, version });
+}
+
+void DatabaseContext::applyMigrations(int currentVersion, int targetVersion)
+{
+    if (currentVersion < 1 && targetVersion >= 1) {
+        qInfo() << "Applying migration to version 1";
+        storage_->transaction([&] {
+            storage_->replace(Migration { 1, 1 });
+            return true;
+        });
+        currentVersion = 1;
+    }
+
+    if (currentVersion < 2 && targetVersion >= 2) {
+        qInfo() << "Applying migration to version 2";
+        storage_->transaction([&] {
+            storage_->replace(Migration { 1, 2 });
+            return true;
+        });
+        currentVersion = 2;
+    }
+
+    if (currentVersion != getVersion(storage_.get())) {
+        setVersion(storage_.get(), currentVersion);
+    }
+}
+
+void DatabaseContext::createBackup(const QString& dataPath)
+{
+    QString dbFile = QDir::toNativeSeparators(
+        QString("%1/%2.db").arg(dataPath).arg(DB_NAME));
+
+    QString backupDir = dataPath + "/db_backups";
+    QDir().mkpath(backupDir);
+
+    int currentVersion = getVersion(storage_.get());
+    QString backupFile
+        = QString("%1/%2_v%3_%4.db")
+              .arg(backupDir)
+              .arg(DB_NAME)
+              .arg(currentVersion)
+              .arg(QDateTime::currentDateTime().toString("yyyyMMdd_hhmmss"));
+
+    QFile file(dbFile);
+    if (file.exists()) {
+        qInfo() << "Creating database backup before upgrade:" << backupFile;
+        if (!file.copy(backupFile)) {
+            qWarning() << "Failed to create database backup:"
+                       << file.errorString();
+        } else {
+            cleanupOldBackups(backupDir, config_->maxBackupCount);
+        }
+    }
+}
+
+void DatabaseContext::createBackup_async(const QString& dataPath)
+{
+    QString dbFile = QDir::toNativeSeparators(
+        QString("%1/%2.db").arg(dataPath).arg(DB_NAME));
+
+    QString backupDir = dataPath + "/db_backups";
+    QDir().mkpath(backupDir);
+
+    int currentVersion = getVersion(storage_.get());
+    QString backupFile
+        = QString("%1/%2_v%3_%4.db")
+              .arg(backupDir)
+              .arg(DB_NAME)
+              .arg(currentVersion)
+              .arg(QDateTime::currentDateTime().toString("yyyyMMdd_hhmmss"));
+
+    QEventLoop loop;
+    bool backupSuccess = false;
+
+    QThread* backupThread = new QThread();
+    DatabaseBackupWorker* worker = new DatabaseBackupWorker(storage_.get());
+    worker->moveToThread(backupThread);
+
+    QObject::connect(
+        backupThread, &QThread::finished, worker, &QObject::deleteLater);
+    QObject::connect(
+        worker, &DatabaseBackupWorker::backupCompleted, [&](const QString&) {
+            backupSuccess = true;
+            loop.quit();
+        });
+    QObject::connect(
+        worker, &DatabaseBackupWorker::backupFailed, [&](const QString& error) {
+            qWarning() << "Backup before upgrade failed:" << error;
+            backupSuccess = false;
+            loop.quit();
+        });
+
+    backupThread->start();
+
+    QMetaObject::invokeMethod(worker, "performBackup", Qt::QueuedConnection,
+        Q_ARG(QString, backupFile));
+
+    QTimer::singleShot(30000, &loop, &QEventLoop::quit);
+    loop.exec();
+
+    backupThread->quit();
+    backupThread->wait();
+    backupThread->deleteLater();
+
+    if (backupSuccess) {
+        cleanupOldBackups(backupDir, config_->maxBackupCount);
+    }
+}
+
+void DatabaseContext::cleanupOldBackups(const QString& backupDir, int maxCount)
+{
+    QDir dir(backupDir);
+    QStringList filters;
+    filters << QString("%1_*.db").arg(DB_NAME);
+    dir.setNameFilters(filters);
+    dir.setSorting(QDir::Time);
+
+    QStringList backups = dir.entryList();
+    if (backups.size() > maxCount) {
+        for (int i = maxCount; i < backups.size(); ++i) {
+            QFile::remove(dir.filePath(backups[i]));
+        }
+    }
 }
 
 WalletGroupRepo::WalletGroupRepo(Storage* storage)
@@ -230,6 +382,24 @@ Database::Database(const QString& dataPath,
     walletGroupRepo_ = std::make_unique<WalletGroupRepo>(storage_);
     walletRepo_ = std::make_unique<WalletRepo>(storage_);
     addressRepo_ = std::make_unique<AddressRepo>(storage_);
+
+    if (config_->enableScheduledBackups) {
+        startPeriodicBackups(config_->backupIntervalHours);
+    }
+}
+
+Database::~Database()
+{
+    if (backupThread_) {
+        backupThread_->quit();
+        backupThread_->wait();
+        backupThread_->deleteLater();
+    }
+
+    if (backupTimer_) {
+        backupTimer_->stop();
+        backupTimer_->deleteLater();
+    }
 }
 
 IWalletGroupRepo* Database::walletGroupRepo()
@@ -262,7 +432,139 @@ void Database::reset()
     storage_->remove_all<Wallet>();
     storage_->remove_all<Network>();
     storage_->remove_all<WalletGroup>();
+    storage_->remove_all<Migration>();
     storage_->vacuum();
 }
 
+void Database::startPeriodicBackups(int intervalHours)
+{
+    if (intervalHours <= 0) {
+        intervalHours = config_->backupIntervalHours;
+        if (intervalHours <= 0)
+            return;
+    }
+
+    if (config_->useThreadedBackup && !backupThread_) {
+        backupThread_ = new QThread(this);
+        backupWorker_ = new DatabaseBackupWorker(storage_);
+        backupWorker_->moveToThread(backupThread_);
+
+        QObject::connect(backupThread_, &QThread::finished, backupWorker_,
+            &QObject::deleteLater);
+        QObject::connect(this, &Database::requestBackup, backupWorker_,
+            &DatabaseBackupWorker::performBackup);
+        QObject::connect(backupWorker_, &DatabaseBackupWorker::backupCompleted,
+            this, &Database::handleBackupCompleted);
+        QObject::connect(backupWorker_, &DatabaseBackupWorker::backupFailed,
+            this, &Database::handleBackupFailed);
+
+        backupThread_->start();
+    }
+
+    if (lastBackupTime_.isNull()) {
+        lastBackupTime_ = QDateTime::currentDateTime();
+    }
+
+    if (!backupTimer_) {
+        backupTimer_ = new QTimer(this);
+        QObject::connect(backupTimer_, &QTimer::timeout, this,
+            &Database::checkScheduledBackup);
+        backupTimer_->start(60 * 60 * 1000);
+    }
+
+    qInfo() << "Scheduled database backups enabled, interval:" << intervalHours
+            << "hours";
+}
+
+void Database::checkScheduledBackup()
+{
+    QDateTime currentTime = QDateTime::currentDateTime();
+    int hoursSinceLastBackup = lastBackupTime_.secsTo(currentTime) / 3600;
+
+    if (hoursSinceLastBackup >= config_->backupIntervalHours) {
+        qInfo() << "Scheduled backup triggered, hours since last backup:"
+                << hoursSinceLastBackup;
+        performScheduledBackup();
+    }
+}
+
+void Database::handleBackupCompleted(const QString& backupFilePath)
+{
+    lastBackupTime_ = QDateTime::currentDateTime();
+
+    QString backupDir = QFileInfo(backupFilePath).dir().path();
+    cleanupOldBackups(backupDir, config_->maxScheduledBackupCount);
+
+    qInfo() << "Threaded backup completed:" << backupFilePath;
+
+    Q_EMIT backupSucceeded(backupFilePath);
+}
+
+void Database::handleBackupFailed(const QString& errorMessage)
+{
+    qWarning() << "Threaded backup failed:" << errorMessage;
+
+    Q_EMIT backupFailed(errorMessage);
+}
+
+void Database::performScheduledBackup()
+{
+    QString backupPath
+        = QString::fromStdString(config_->dataPath) + "/scheduled_backups";
+    QDir().mkpath(backupPath);
+
+    QString backupFileName
+        = QString("%1/%2_scheduled_%3.db")
+              .arg(backupPath)
+              .arg(DB_NAME)
+              .arg(QDateTime::currentDateTime().toString("yyyyMMdd_hhmmss"));
+
+    if (config_->useThreadedBackup && backupThread_) {
+        Q_EMIT requestBackup(backupFileName);
+    } else {
+        try {
+            storage_->backup_to(backupFileName.toStdString());
+            lastBackupTime_ = QDateTime::currentDateTime();
+
+            cleanupOldBackups(backupPath, config_->maxScheduledBackupCount);
+
+            qInfo() << "Scheduled backup completed:" << backupFileName;
+            Q_EMIT backupSucceeded(backupFileName);
+        } catch (const std::exception& e) {
+            QString errorMsg
+                = QString("Scheduled backup failed: %1").arg(e.what());
+            qWarning() << errorMsg;
+            Q_EMIT backupFailed(errorMsg);
+        }
+    }
+}
+
+void Database::cleanupOldBackups(const QString& backupDir, int maxCount)
+{
+    QDir dir(backupDir);
+    QStringList filters;
+    filters << QString("%1_*.db").arg(DB_NAME);
+    dir.setNameFilters(filters);
+    dir.setSorting(QDir::Time);
+
+    QStringList backups = dir.entryList();
+    if (backups.size() > maxCount) {
+        for (int i = maxCount; i < backups.size(); ++i) {
+            QString filePath = dir.filePath(backups[i]);
+            QFile::remove(filePath);
+            qInfo() << "Removed old backup:" << filePath;
+        }
+    }
+}
+
+void Database::handleError(DatabaseErrorType type, const std::string& message)
+{
+    QString qMessage = QString::fromStdString(message);
+    qCritical() << "[Database Error]" << qMessage;
+    Q_EMIT databaseError(type, qMessage);
+
+    if (type == DatabaseErrorType::corruptedDatabase) {
+        Q_EMIT databaseCorrupted();
+    }
+}
 }

@@ -183,6 +183,7 @@ set(HEADER_FILES
     src/Wallets/Core/SolanaWallet.h
     src/Wallets/Core/SuiWallet.h
     src/Wallets/Core/Types.h
+    src/Wallets/Monitor/BlockchainProvider.h
     src/Wallets/Monitor/Bitcoin/MempoolSpaceBitcoinProvider.h
     src/Wallets/Utils/Hex.hpp
     src/Wallets/Utils/SecureBytes.h

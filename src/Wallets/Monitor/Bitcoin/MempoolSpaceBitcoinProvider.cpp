@@ -28,4 +28,79 @@ MempoolSpaceBitcoinProvider::MempoolSpaceBitcoinProvider(QObject* parent)
 MempoolSpaceBitcoinProvider::~MempoolSpaceBitcoinProvider()
 {
 }
+
+QFuture<ProviderResponse<BalanceResult>>
+MempoolSpaceBitcoinProvider::getBalance(const QString& address)
+{
+    return QFuture<ProviderResponse<BalanceResult>>();
+}
+
+QFuture<ProviderResponse<TokenList>> MempoolSpaceBitcoinProvider::getTokens(
+    const QString& address)
+{
+    return QFuture<ProviderResponse<TokenList>>();
+}
+
+QFuture<ProviderResponse<bool>> MempoolSpaceBitcoinProvider::isValidAddress(
+    const QString& address)
+{
+    return QFuture<ProviderResponse<bool>>();
+}
+
+bool MempoolSpaceBitcoinProvider::subscribeToAddressChanges(
+    const QString& address)
+{
+    return false;
+}
+
+void MempoolSpaceBitcoinProvider::unsubscribeFromAddressChanges(
+    const QString& address)
+{
+}
+
+bool MempoolSpaceBitcoinProvider::initialize()
+{
+    return false;
+}
+
+void MempoolSpaceBitcoinProvider::shutdown()
+{
+}
+
+void MempoolSpaceBitcoinProvider::onWebSocketConnected()
+{
+}
+
+void MempoolSpaceBitcoinProvider::onWebSocketDisconnected()
+{
+}
+
+void MempoolSpaceBitcoinProvider::onWebSocketTextMessageReceived(
+    const QString& message)
+{
+}
+
+void MempoolSpaceBitcoinProvider::onWebSocketError(
+    QAbstractSocket::SocketError error)
+{
+}
+
+void MempoolSpaceBitcoinProvider::onSslErrors(const QList<QSslError>& errors)
+{
+}
+
+void MempoolSpaceBitcoinProvider::setupPingPong()
+{
+}
+
+void MempoolSpaceBitcoinProvider::checkPingPongHealth()
+{
+}
+
+ProviderResponse<BalanceResult>
+MempoolSpaceBitcoinProvider::parseBalanceResponse(
+    const nlohmann::json& response)
+{
+    return ProviderResponse<BalanceResult>();
+}
 }

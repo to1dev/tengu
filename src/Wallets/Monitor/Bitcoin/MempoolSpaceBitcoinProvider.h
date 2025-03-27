@@ -18,8 +18,15 @@
 
 #pragma once
 
+#include <QNetworkReply>
+#include <QNetworkRequest>
+#include <QRegularExpression>
 #include <QWebSocket>
 #include <QtConcurrent>
+
+#include "nlohmann/json.hpp"
+
+using json = nlohmann::json;
 
 #include "../BlockchainProvider.h"
 
@@ -31,5 +38,62 @@ class MempoolSpaceBitcoinProvider : public BlockchainProvider {
 public:
     explicit MempoolSpaceBitcoinProvider(QObject* parent = nullptr);
     ~MempoolSpaceBitcoinProvider() override;
+
+    QFuture<ProviderResponse<BalanceResult>> getBalance(
+        const QString& address) override;
+    QFuture<ProviderResponse<TokenList>> getTokens(
+        const QString& address) override;
+    QFuture<ProviderResponse<bool>> isValidAddress(
+        const QString& address) override;
+
+    bool supportsRealTimeUpdates() const override
+    {
+        return true;
+    }
+
+    bool subscribeToAddressChanges(const QString& address) override;
+    void unsubscribeFromAddressChanges(const QString& address) override;
+
+    QString providerName() const override
+    {
+        return "mempool.space";
+    }
+
+    QString providerUrl() const override
+    {
+        return "https://mempool.space";
+    }
+
+    QUrl providerIconUrl() const override
+    {
+        return QUrl("https://mempool.space/resources/mempool-logo.png");
+    }
+
+    bool initialize() override;
+    void shutdown() override;
+
+private Q_SLOTS:
+    void onWebSocketConnected();
+    void onWebSocketDisconnected();
+    void onWebSocketTextMessageReceived(const QString& message);
+    void onWebSocketError(QAbstractSocket::SocketError error);
+    void onSslErrors(const QList<QSslError>& errors);
+
+private:
+    std::unique_ptr<QWebSocket> webSocket_;
+    QMap<QString, bool> subscribedAddresses_;
+    bool connected_ { false };
+
+    std::unique_ptr<QTimer> pingTimer_;
+    QDateTime lastPongTime_;
+    int consecutivePingFailures_ { 0 };
+
+    static const QString API_BASE_URL;
+    static const QString WS_BASE_URL;
+
+    void setupPingPong();
+    void checkPingPongHealth();
+    ProviderResponse<BalanceResult> parseBalanceResponse(
+        const nlohmann::json& response);
 };
 }

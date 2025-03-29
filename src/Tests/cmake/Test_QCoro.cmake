@@ -15,6 +15,7 @@ find_package(Qt5 REQUIRED COMPONENTS
     Core
     Network
     WebSockets
+    Concurrent
 )
 
 set(TEST_SOURCES
@@ -51,6 +52,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt5::Core
     Qt5::Network
     Qt5::WebSockets
+    Qt5::Concurrent
     QCoro5Core
     QCoro5Network
     QCoro5WebSockets

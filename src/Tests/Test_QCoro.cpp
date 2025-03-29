@@ -44,24 +44,61 @@ QCoro::Task<void> testWebSocketCoro()
         co_await qCoro(&socket, &QWebSocket::connected);
         qDebug() << "Already connected...";
 
-        socket.sendTextMessage("Hello, WebSocket with QCoro!");
+        QString message1 = "Hello, WebSocket with QCoro!";
+        qDebug() << "Sending message: " << message1;
+        socket.sendTextMessage(message1);
 
-        QString reply
+        QString reply1
             = co_await qCoro(&socket, &QWebSocket::textMessageReceived);
+        qDebug() << "Received: " << reply1;
 
-        qDebug() << reply;
+        QString message2 = "Hello, this is the second message";
+        qDebug() << "Sending message: " << message2;
+        socket.sendTextMessage(message2);
 
-        QCoreApplication::quit();
+        QString reply2
+            = co_await qCoro(&socket, &QWebSocket::textMessageReceived);
+        qDebug() << "Received: " << reply2;
+
+        auto disconnectFuture = qCoro(&socket, &QWebSocket::disconnected);
+
+        socket.close();
+
+        co_await disconnectFuture;
+        qDebug() << "Already disconnected...";
     } catch (const std::exception& e) {
         qCritical() << "An unexpected error occurred:" << e.what();
     }
+
+    co_return;
 }
 
 int main(int argc, char* argv[])
 {
     QCoreApplication app(argc, argv);
 
-    QTimer::singleShot(0, []() { testWebSocketCoro(); });
+    QTimer::singleShot(0, &app, [&app]() {
+        /*auto task = testWebSocketCoro();
+
+        task.then([&app]() {
+            qDebug() << "Completed, quiting...";
+            app.quit();
+        });*/
+
+        auto task = testWebSocketCoro();
+
+        auto quit = [&app, task = std::move(task)]() -> QCoro::Task<void> {
+            try {
+                co_await task;
+                qDebug() << "Completed";
+            } catch (const std::exception& e) {
+                qDebug() << "Error: " << e.what();
+            }
+            app.quit();
+        };
+
+        quit();
+    });
 
     return app.exec();
 }

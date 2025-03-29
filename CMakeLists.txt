@@ -59,7 +59,6 @@ else()
 endif()
 
 set(SOLANA_WEBSOCKET_FILES
-    src/Clients/Solana/WebSocket/Client.cpp
 )
 
 set(SOURCE_FILES
@@ -116,7 +115,8 @@ set(SOURCE_FILES
     src/Wallets/Core/EthereumWallet.cpp
     src/Wallets/Core/SolanaWallet.cpp
     src/Wallets/Core/SuiWallet.cpp
-    src/Wallets/Monitor/Bitcoin/MempoolSpaceBitcoinProvider.cpp
+    src/Wallets/Monitor/BlockchainProvider.cpp
+    src/Wallets/Monitor/Bitcoin/MempoolSpaceProvider.cpp
     src/Wallets/Utils/SecureBytes.cpp
 )
 
@@ -184,7 +184,7 @@ set(HEADER_FILES
     src/Wallets/Core/SuiWallet.h
     src/Wallets/Core/Types.h
     src/Wallets/Monitor/BlockchainProvider.h
-    src/Wallets/Monitor/Bitcoin/MempoolSpaceBitcoinProvider.h
+    src/Wallets/Monitor/Bitcoin/MempoolSpaceProvider.h
     src/Wallets/Utils/Hex.hpp
     src/Wallets/Utils/SecureBytes.h
 )
@@ -275,6 +275,9 @@ set(THIRD_PARTY_LIBS
     secp256k1
     fmt
     clip
+    QCoro5Core
+    QCoro5Network
+    QCoro5WebSockets
 )
 
 if (ENABLE_GRPC)

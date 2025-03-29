@@ -18,16 +18,11 @@
 
 #pragma once
 
-#include <memory>
-#include <optional>
-#include <variant>
-
-#include <QFuture>
-#include <QList>
 #include <QNetworkAccessManager>
 #include <QObject>
-#include <QString>
-#include <QUrl>
+
+#include "qcoro/QCoro"
+#include "qcoro/QCoroTask"
 
 #include "nlohmann/json.hpp"
 
@@ -37,51 +32,46 @@ using json = nlohmann::json;
 
 namespace Daitengu::Wallets {
 
-using BalanceResult = std::variant<QString, std::string, double>;
-using TokenList = QList<TokenInfo>;
-
-using ProviderError = struct {
-    int code;
-    QString message;
-};
-
-template <typename T> struct ProviderResponse {
-    bool success;
-    std::optional<T> data;
-    std::optional<ProviderError> error;
-};
-
 class BlockchainProvider : public QObject {
     Q_OBJECT
 
 public:
-    explicit BlockchainProvider(QObject* parent = nullptr)
-        : QObject(parent)
-    {
-    }
+    explicit BlockchainProvider(QObject* parent = nullptr);
+    virtual ~BlockchainProvider();
 
-    virtual ~BlockchainProvider() = default;
-
-    virtual QFuture<ProviderResponse<BalanceResult>> getBalance(
+    virtual QCoro::Task<ProviderResponse<BalanceResult>> getBalance(
         const QString& address)
         = 0;
-    virtual QFuture<ProviderResponse<TokenList>> getTokens(
+    virtual QCoro::Task<ProviderResponse<TokenList>> getTokens(
         const QString& address)
         = 0;
-    virtual QFuture<ProviderResponse<bool>> isValidAddress(
+    virtual QCoro::Task<ProviderResponse<bool>> isValidAddress(
         const QString& address)
         = 0;
 
     virtual bool supportsRealTimeUpdates() const = 0;
-    virtual bool subscribeToAddressChanges(const QString& address) = 0;
-    virtual void unsubscribeFromAddressChanges(const QString& address) = 0;
+    virtual QCoro::Task<bool> subscribeToAddressChanges(const QString& address)
+        = 0;
+    virtual QCoro::Task<void> unsubscribeFromAddressChanges(
+        const QString& address)
+        = 0;
 
     virtual QString providerName() const = 0;
     virtual QString providerUrl() const = 0;
     virtual QUrl providerIconUrl() const = 0;
 
-    virtual bool initialize() = 0;
-    virtual void shutdown() = 0;
+    virtual bool isConnected() const
+    {
+        return connected_;
+    }
+
+    virtual bool isConnecting() const
+    {
+        return connecting_;
+    }
+
+    virtual QCoro::Task<bool> initialize() = 0;
+    virtual QCoro::Task<void> shutdown() = 0;
 
 Q_SIGNALS:
     void balanceChanged(
@@ -91,7 +81,9 @@ Q_SIGNALS:
     void error(const QString& message);
 
 protected:
-    QNetworkAccessManager* networkManager_;
+    std::unique_ptr<QNetworkAccessManager> networkManager_;
+    bool connected_ = false;
+    bool connecting_ = false;
 };
 
 }

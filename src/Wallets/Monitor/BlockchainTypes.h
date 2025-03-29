@@ -18,8 +18,15 @@
 
 #pragma once
 
+#include <optional>
+#include <variant>
+
+#include <QList>
+#include <QLoggingCategory>
 #include <QString>
 #include <QUrl>
+
+Q_DECLARE_LOGGING_CATEGORY(bcMonitor)
 
 namespace Daitengu::Wallets {
 
@@ -43,6 +50,37 @@ struct TokenInfo {
         , iconUrl(std::move(icon))
     {
     }
+};
+
+using BalanceResult = double;
+using TokenList = QList<TokenInfo>;
+
+struct ProviderError {
+    int code;
+    QString message;
+};
+
+template <typename T>
+struct ProviderResponse {
+    bool success = false;
+    std::optional<T> data;
+    std::optional<ProviderError> error;
+};
+
+enum class ProviderType {
+    NONE = 0,
+
+    MEMPOOL_SPACE,
+    BLOCKCHAIN_COM,
+    BLOCKSTREAM,
+
+    ETHERSCAN,
+    INFURA,
+    ALCHEMY,
+
+    SOLSCAN,
+    SOLANA_BEACH,
+    SOLANA_FM
 };
 
 }

@@ -18,11 +18,21 @@
 
 #pragma once
 
+#include <atomic>
+#include <coroutine>
+
+#include <QDateTime>
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QRegularExpression>
+#include <QSslError>
+#include <QTimer>
 #include <QWebSocket>
-#include <QtConcurrent>
+
+#include "qcoro/QCoroNetwork"
+#include "qcoro/QCoroSignal"
+#include "qcoro/QCoroTimer"
+#include "qcoro/QCoroWebSocket"
 
 #include "nlohmann/json.hpp"
 
@@ -32,18 +42,18 @@ using json = nlohmann::json;
 
 namespace Daitengu::Wallets {
 
-class MempoolSpaceBitcoinProvider : public BlockchainProvider {
+class MempoolSpaceProvider : public BlockchainProvider {
     Q_OBJECT
 
 public:
-    explicit MempoolSpaceBitcoinProvider(QObject* parent = nullptr);
-    ~MempoolSpaceBitcoinProvider() override;
+    explicit MempoolSpaceProvider(QObject* parent = nullptr);
+    ~MempoolSpaceProvider() override;
 
-    QFuture<ProviderResponse<BalanceResult>> getBalance(
+    QCoro::Task<ProviderResponse<BalanceResult>> getBalance(
         const QString& address) override;
-    QFuture<ProviderResponse<TokenList>> getTokens(
+    QCoro::Task<ProviderResponse<TokenList>> getTokens(
         const QString& address) override;
-    QFuture<ProviderResponse<bool>> isValidAddress(
+    QCoro::Task<ProviderResponse<bool>> isValidAddress(
         const QString& address) override;
 
     bool supportsRealTimeUpdates() const override
@@ -51,8 +61,10 @@ public:
         return true;
     }
 
-    bool subscribeToAddressChanges(const QString& address) override;
-    void unsubscribeFromAddressChanges(const QString& address) override;
+    QCoro::Task<bool> subscribeToAddressChanges(
+        const QString& address) override;
+    QCoro::Task<void> unsubscribeFromAddressChanges(
+        const QString& address) override;
 
     QString providerName() const override
     {
@@ -66,11 +78,11 @@ public:
 
     QUrl providerIconUrl() const override
     {
-        return QUrl("https://mempool.space/resources/mempool-logo.png");
+        return QUrl("https://mempool.space/resources/mempool-tube.png");
     }
 
-    bool initialize() override;
-    void shutdown() override;
+    QCoro::Task<bool> initialize() override;
+    QCoro::Task<void> shutdown() override;
 
 private Q_SLOTS:
     void onWebSocketConnected();
@@ -82,7 +94,9 @@ private Q_SLOTS:
 private:
     std::unique_ptr<QWebSocket> webSocket_;
     QMap<QString, bool> subscribedAddresses_;
-    bool connected_ { false };
+    std::atomic<bool> shutdownRequested_ { false };
+
+    std::unique_ptr<QTimer> connectTimeoutTimer_;
 
     std::unique_ptr<QTimer> pingTimer_;
     QDateTime lastPongTime_;
@@ -90,10 +104,19 @@ private:
 
     static const QString API_BASE_URL;
     static const QString WS_BASE_URL;
+    static constexpr int CONNECT_TIMEOUT_MS = 10000;
+    static constexpr int PING_INTERVAL_MS = 30000;
+    static constexpr int PING_TIMEOUT_MS = 90000;
 
     void setupPingPong();
     void checkPingPongHealth();
-    ProviderResponse<BalanceResult> parseBalanceResponse(
-        const nlohmann::json& response);
+    QCoro::Task<void> waitForConnection(int timeoutMs = 10000);
+    QCoro::Task<ProviderResponse<BalanceResult>> fetchBalanceFromAPI(
+        const QString& address);
+    ProviderResponse<BalanceResult> parseBalanceResponse(const json& response);
+
+    QCoro::Task<QString> waitForMessage(int timeoutMs = 10000);
+
+    static bool isValidBitcoinAddress(const QString& address);
 };
 }

@@ -20,7 +20,6 @@ find_package(Qt5 REQUIRED COMPONENTS
 )
 
 set(ALL_SOURCES
-    ${CMAKE_SOURCE_DIR}/src/Clients/Solana/WebSocket/Client.cpp
 )
 
 set(TEST_SOURCES

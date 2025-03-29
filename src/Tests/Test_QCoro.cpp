@@ -16,11 +16,52 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <exception>
 #include <iostream>
+
+#include <QCoreApplication>
+#include <QDebug>
+#include <QTimer>
+#include <QUrl>
+#include <QWebSocket>
+
+#include "qcoro/QCoroCore"
+#include "qcoro/QCoroSignal"
+#include "qcoro/QCoroTask"
+#include "qcoro/QCoroWebSocket"
+
+QCoro::Task<void> testWebSocketCoro()
+{
+    QWebSocket socket;
+
+    QUrl serverUrl("wss://echo.websocket.org");
+
+    socket.open(serverUrl);
+
+    qDebug() << "Connecting to" << serverUrl.toString() << "...";
+
+    try {
+        co_await qCoro(&socket, &QWebSocket::connected);
+        qDebug() << "Already connected...";
+
+        socket.sendTextMessage("Hello, WebSocket with QCoro!");
+
+        QString reply
+            = co_await qCoro(&socket, &QWebSocket::textMessageReceived);
+
+        qDebug() << reply;
+
+        QCoreApplication::quit();
+    } catch (const std::exception& e) {
+        qCritical() << "An unexpected error occurred:" << e.what();
+    }
+}
 
 int main(int argc, char* argv[])
 {
-    std::cout << "Hello world!" << std::endl;
+    QCoreApplication app(argc, argv);
 
-    return 0;
+    QTimer::singleShot(0, []() { testWebSocketCoro(); });
+
+    return app.exec();
 }

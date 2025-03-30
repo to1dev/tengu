@@ -22,15 +22,24 @@
 
 #include <QCoreApplication>
 #include <QDebug>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QNetworkRequest>
 #include <QTimer>
 #include <QUrl>
 #include <QWebSocket>
 #include <QtConcurrent>
 
+#include "nlohmann/json.hpp"
+
+using json = nlohmann::json;
+
 #include "qcoro/QCoroCore"
-#include "qcoro/QCoroSignal"
+#include "qcoro/QCoroNetworkReply"
 #include "qcoro/QCoroTask"
 #include "qcoro/QCoroWebSocket"
+
+#include "semver.hpp"
 
 QCoro::Task<> startTask()
 {
@@ -101,6 +110,32 @@ QCoro::Task<void> testWebSocketCoro()
     co_return;
 }
 
+QCoro::Task<void> testReply()
+{
+    QNetworkRequest request { QUrl(
+        "https://api.github.com/repos/vercel/next.js/releases/latest") };
+
+    QNetworkAccessManager manager;
+    auto reply = std::unique_ptr<QNetworkReply>(manager.get(request));
+
+    co_await qCoro(reply.get()).waitForFinished();
+
+    if (reply->isFinished() && reply->error() == QNetworkReply::NoError) {
+        json data = json::parse(reply->readAll().constData());
+
+        std::string tagName = data["tag_name"].get<std::string>();
+        if (!tagName.empty() && tagName[0] == 'v') {
+            tagName.erase(0, 1);
+        }
+
+        auto ver = semver::version { tagName };
+
+        std::cout << ver << std::endl;
+    }
+
+    co_return;
+}
+
 int main(int argc, char* argv[])
 {
     QCoreApplication app(argc, argv);
@@ -127,7 +162,8 @@ int main(int argc, char* argv[])
 
         quit();*/
 
-        auto task = startTask();
+        // auto task = startTask();
+        auto task = testReply();
         task.then([&app]() {
             qDebug() << "Completed, quiting...";
             app.quit();

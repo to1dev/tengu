@@ -19,6 +19,7 @@
 #pragma once
 
 #include <atomic>
+#include <chrono>
 #include <coroutine>
 
 #include <QDateTime>
@@ -39,6 +40,8 @@
 using json = nlohmann::json;
 
 #include "../BlockchainProvider.h"
+
+#include "../../Core/BitcoinWallet.h"
 
 namespace Daitengu::Wallets {
 
@@ -88,7 +91,7 @@ private Q_SLOTS:
     void onWebSocketConnected();
     void onWebSocketDisconnected();
     void onWebSocketTextMessageReceived(const QString& message);
-    void onWebSocketError(QAbstractSocket::SocketError error);
+    void onWebSocketError(QAbstractSocket::SocketError socketError);
     void onSslErrors(const QList<QSslError>& errors);
 
 private:

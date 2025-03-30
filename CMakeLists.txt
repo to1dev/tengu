@@ -116,6 +116,7 @@ set(SOURCE_FILES
     src/Wallets/Core/EthereumWallet.cpp
     src/Wallets/Core/SolanaWallet.cpp
     src/Wallets/Core/SuiWallet.cpp
+    src/Wallets/Monitor/BlockchainMonitor.cpp
     src/Wallets/Monitor/BlockchainProvider.cpp
     src/Wallets/Monitor/ProviderFactory.cpp
     src/Wallets/Monitor/Bitcoin/MempoolSpaceProvider.cpp
@@ -186,6 +187,7 @@ set(HEADER_FILES
     src/Wallets/Core/SolanaWallet.h
     src/Wallets/Core/SuiWallet.h
     src/Wallets/Core/Types.h
+    src/Wallets/Monitor/BlockchainMonitor.h
     src/Wallets/Monitor/BlockchainProvider.h
     src/Wallets/Monitor/ProviderFactory.h
     src/Wallets/Monitor/Bitcoin/MempoolSpaceProvider.h

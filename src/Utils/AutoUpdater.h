@@ -28,11 +28,14 @@
 
 namespace fs = std::filesystem;
 
+#include <QCoreApplication>
+#include <QDesktopServices>
 #include <QDir>
 #include <QFile>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QObject>
+#include <QProcess>
 #include <QRegularExpression>
 
 #include "nlohmann/json.hpp"

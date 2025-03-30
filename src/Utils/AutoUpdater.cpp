@@ -107,12 +107,129 @@ QCoro::Task<std::optional<fs::path>> AutoUpdater::downloadUpdate(
     const Version& version,
     std::function<void(const UpdateProgress&)> progressCallback)
 {
-    return QCoro::Task<std::optional<fs::path>>();
+    try {
+        std::string filename = std::format("update_{}_{}", version.version,
+            fs::path(version.downloadUrl).filename().string());
+
+        fs::path filePath = tempDir_ / filename;
+
+        QNetworkRequest request { QUrl(
+            QString::fromStdString(version.downloadUrl)) };
+        request.setAttribute(QNetworkRequest::RedirectPolicyAttribute,
+            QNetworkRequest::NoLessSafeRedirectPolicy);
+
+        downloadFile_ = std::make_unique<QFile>(
+            QString::fromStdString(filePath.string()));
+        if (!downloadFile_->open(QIODevice::WriteOnly)) {
+            Q_EMIT errorOccurred(static_cast<int>(Error::DownloadError),
+                QString::fromStdString(std::format(
+                    "Cannot open file for writing: {}", filePath.string())));
+            co_return std::nullopt;
+        }
+
+        QNetworkReply* reply = networkManager_->get(request);
+
+        QObject::connect(reply, &QNetworkReply::downloadProgress,
+            [this, progressCallback](qint64 bytesReceived, qint64 bytesTotal) {
+                Q_EMIT downloadProgress(bytesReceived, bytesTotal);
+
+                if (progressCallback) {
+                    UpdateProgress progress { static_cast<uint64_t>(
+                                                  bytesReceived),
+                        static_cast<uint64_t>(bytesTotal) };
+                    progressCallback(progress);
+                }
+            });
+
+        while (!reply->isFinished()) {
+            co_await qCoro(reply).waitForFinished();
+
+            if (downloadFile_ && reply->bytesAvailable() > 0) {
+                downloadFile_->write(reply->readAll());
+            }
+        }
+
+        if (downloadFile_) {
+            downloadFile_->close();
+        }
+
+        if (reply->error() != QNetworkReply::NoError) {
+            Q_EMIT errorOccurred(static_cast<int>(Error::DownloadError),
+                QString::fromStdString(std::format(
+                    "Download error: {}", reply->errorString().toStdString())));
+
+            reply->deleteLater();
+            downloadFile_.reset();
+
+            if (fs::exists(filePath)) {
+                fs::remove(filePath);
+            }
+
+            co_return std::nullopt;
+        }
+
+        reply->deleteLater();
+        downloadFile_.reset();
+
+        Q_EMIT downloadComplete(QString::fromStdString(filePath.string()));
+        co_return filePath;
+    } catch (const std::exception& e) {
+        Q_EMIT errorOccurred(static_cast<int>(Error::DownloadError),
+            QString::fromStdString(
+                std::format("Exception during download: {}", e.what())));
+        downloadFile_.reset();
+    }
+
+    co_return std::nullopt;
 }
 
 bool AutoUpdater::installUpdate(const fs::path& updateFile)
 {
-    return false;
+    if (!fs::exists(updateFile)) {
+        Q_EMIT errorOccurred(static_cast<int>(Error::InstallationError),
+            QString::fromStdString(std::format(
+                "Update file does not exist: {}", updateFile.string())));
+        return false;
+    }
+
+    std::string extension = updateFile.extension().string();
+    std::string filePath = updateFile.string();
+
+#if defined(Q_OS_WIN)
+    if (extension == ".exe" || extension == ".msi") {
+        QProcess::startDetached(
+            QString::fromStdString(filePath), QStringList());
+        QCoreApplication::quit();
+        return true;
+    }
+#elif defined(Q_OS_MACOS)
+    if (extension == ".dmg" || extension == ".pkg") {
+        QDesktopServices::openUrl(
+            QUrl::fromLocalFile(QString::fromStdString(filePath)));
+        QCoreApplication::quit();
+        return true;
+    }
+#elif defined(Q_OS_LINUX)
+    if (extension == ".AppImage") {
+        fs::permissions(updateFile,
+            fs::perms::owner_exec | fs::perms::group_exec
+                | fs::perms::others_exec,
+            fs::perm_options::add);
+        QProcess::startDetached(
+            QString::fromStdString(filePath), QStringList());
+        QCoreApplication::quit();
+        return true;
+    } else if (extension == ".deb" || extension == ".rpm") {
+        QDesktopServices::openUrl(
+            QUrl::fromLocalFile(QString::fromStdString(filePath)));
+        return true;
+    }
+#endif
+
+    QDesktopServices::openUrl(
+        QUrl::fromLocalFile(QString::fromStdString(filePath)));
+
+    return true;
 }
 
 std::string AutoUpdater::getApiUrl() const

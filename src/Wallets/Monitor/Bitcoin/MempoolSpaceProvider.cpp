@@ -21,7 +21,8 @@
 namespace Daitengu::Wallets {
 
 const QString MempoolSpaceProvider::API_BASE_URL = "https://mempool.space/api";
-const QString MempoolSpaceProvider::WS_BASE_URL = "wss://mempool.space/api/ws";
+const QString MempoolSpaceProvider::WS_BASE_URL
+    = "wss://mempool.space/api/v1/ws";
 
 MempoolSpaceProvider::MempoolSpaceProvider(QObject* parent)
     : BlockchainProvider(parent)

@@ -104,6 +104,7 @@ set(SOURCE_FILES
     src/Managers/WindowManager.cpp
     src/Tengu.cpp
     src/UI/Frameless.cpp
+    src/Utils/AutoUpdater.cpp
     src/Utils/Encryption.cpp
     src/Utils/NameGenerator.cpp
     src/Utils/RunGuard.cpp
@@ -164,6 +165,7 @@ set(HEADER_FILES
     src/Security/Security.h
     src/Tengu.h
     src/UI/Frameless.h
+    src/Utils/AutoUpdater.h
     src/Utils/Base58.hpp
     src/Utils/Borsh.hpp
     src/Utils/DotEnv.hpp

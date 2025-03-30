@@ -52,7 +52,7 @@ struct TokenInfo {
     }
 };
 
-using BalanceResult = double;
+using BalanceResult = std::variant<QString, std::string, double>;
 using TokenList = QList<TokenInfo>;
 
 struct ProviderError {

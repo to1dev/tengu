@@ -67,6 +67,8 @@ struct Transaction {
 
     void sign(const std::vector<uint8_t>& privateKey,
         const Blockhash& recentBlockhash);
+    void multiSign(const std::vector<std::vector<uint8_t>>& privateKeys,
+        const Blockhash& recentBlockhash);
 };
 
 struct AccountMeta {

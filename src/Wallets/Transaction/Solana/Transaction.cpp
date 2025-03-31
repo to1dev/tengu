@@ -174,6 +174,13 @@ void Transaction::sign(
     signatures.push_back(signature);
 }
 
+void Transaction::multiSign(
+    const std::vector<std::vector<uint8_t>>& privateKeys,
+    const Blockhash& recentBlockhash)
+{
+    // TODO
+}
+
 TransactionInstruction createTransferInstruction(
     const Pubkey& fromPubkey, const Pubkey& toPubkey, uint64_t lamports)
 {

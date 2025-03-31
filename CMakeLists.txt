@@ -171,7 +171,6 @@ set(HEADER_FILES
     src/UI/Frameless.h
     src/Utils/AutoUpdater.h
     src/Utils/Base58.hpp
-    src/Utils/Borsh.hpp
     src/Utils/DotEnv.hpp
     src/Utils/Encryption.h
     src/Utils/Helpers.hpp
@@ -194,6 +193,7 @@ set(HEADER_FILES
     src/Wallets/Monitor/ProviderFactory.h
     src/Wallets/Monitor/Bitcoin/MempoolSpaceProvider.h
     src/Wallets/Transaction/Solana/Bincode.hpp
+    src/Wallets/Transaction/Solana/Borsh.hpp
     src/Wallets/Transaction/Solana/Builder.h
     src/Wallets/Transaction/Solana/Types.h
     src/Wallets/Utils/Hex.hpp

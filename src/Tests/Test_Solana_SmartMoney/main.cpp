@@ -42,7 +42,6 @@ using json = nlohmann::json;
 #include "ankerl/unordered_dense.h"
 
 #include "Utils/Base58.hpp"
-#include "Utils/Borsh.hpp"
 #include "Utils/Dotenv.hpp"
 #include "Utils/PathUtils.hpp"
 

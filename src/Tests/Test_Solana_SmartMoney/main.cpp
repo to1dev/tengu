@@ -102,44 +102,6 @@ static inline const ankerl::unordered_dense::map<std::string_view,
         { "Aldrin", "AMM55ShdkoGRB5jVYPjWziwk8m5MpwyDgsMWHaMSQWH6" },
     };
 
-namespace borsh {
-struct SwapEvent {
-    PublicKey poolState;
-    PublicKey sender;
-    PublicKey tokenAccount0;
-    PublicKey tokenAccount1;
-    std::uint64_t amount0;
-    std::uint64_t transferFee0;
-    std::uint64_t amount1;
-    std::uint64_t transferFee1;
-    bool zeroForOne;
-    U128 sqrtPriceX64;
-    U128 liquidity;
-    std::int32_t tick;
-};
-
-template <> struct Deserializer<SwapEvent> {
-    static SwapEvent deserialize(
-        const std::vector<std::uint8_t>& data, size_t& pos)
-    {
-        SwapEvent evt {};
-        evt.poolState = Deserializer<PublicKey>::deserialize(data, pos);
-        evt.sender = Deserializer<PublicKey>::deserialize(data, pos);
-        evt.tokenAccount0 = Deserializer<PublicKey>::deserialize(data, pos);
-        evt.tokenAccount1 = Deserializer<PublicKey>::deserialize(data, pos);
-        evt.amount0 = Deserializer<std::uint64_t>::deserialize(data, pos);
-        evt.transferFee0 = Deserializer<std::uint64_t>::deserialize(data, pos);
-        evt.amount1 = Deserializer<std::uint64_t>::deserialize(data, pos);
-        evt.transferFee1 = Deserializer<std::uint64_t>::deserialize(data, pos);
-        evt.zeroForOne = Deserializer<bool>::deserialize(data, pos);
-        evt.sqrtPriceX64 = Deserializer<U128>::deserialize(data, pos);
-        evt.liquidity = Deserializer<U128>::deserialize(data, pos);
-        evt.tick = Deserializer<std::int32_t>::deserialize(data, pos);
-        return evt;
-    }
-};
-}
-
 inline std::string base64Decode(const std::string& input)
 {
     size_t decodedLength = input.size();

@@ -120,6 +120,8 @@ set(SOURCE_FILES
     src/Wallets/Monitor/BlockchainProvider.cpp
     src/Wallets/Monitor/ProviderFactory.cpp
     src/Wallets/Monitor/Bitcoin/MempoolSpaceProvider.cpp
+    src/Wallets/Transaction/Solana/Builder.cpp
+    src/Wallets/Transaction/Solana/Transaction.cpp
     src/Wallets/Utils/SecureBytes.cpp
 )
 
@@ -191,6 +193,9 @@ set(HEADER_FILES
     src/Wallets/Monitor/BlockchainProvider.h
     src/Wallets/Monitor/ProviderFactory.h
     src/Wallets/Monitor/Bitcoin/MempoolSpaceProvider.h
+    src/Wallets/Transaction/Solana/Bincode.hpp
+    src/Wallets/Transaction/Solana/Builder.h
+    src/Wallets/Transaction/Solana/Types.h
     src/Wallets/Utils/Hex.hpp
     src/Wallets/Utils/SecureBytes.h
 )

@@ -22,6 +22,10 @@
 #include <QDir>
 #include <QStandardPaths>
 
+#include <spdlog/sinks/rotating_file_sink.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/spdlog.h>
+
 #include "toml.hpp"
 
 #include "Consts.h"
@@ -83,6 +87,9 @@ public:
     void setRecord(Record&& record);
     const Record& record_ref() const;
     Record record() const;
+
+private:
+    void initLoggins();
 
 private:
     QString dataPath_;

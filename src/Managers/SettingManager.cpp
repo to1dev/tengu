@@ -42,6 +42,8 @@ SettingManager::SettingManager()
     auto config = std::make_shared<DatabaseConfig>();
 
     database_ = std::make_unique<Database>(dataPath_, config);
+
+    initLoggins();
 }
 
 SettingManager::~SettingManager()
@@ -322,5 +324,36 @@ const Record& SettingManager::record_ref() const
 Record SettingManager::record() const
 {
     return options_.recordOpt;
+}
+
+void SettingManager::initLoggins()
+{
+    try {
+        QString logFilePath
+            = QDir::toNativeSeparators(dataPath_ + "/logs/tengu.log");
+        QDir logDir(dataPath_ + "/logs");
+        if (!logDir.exists()) {
+            QDir().mkpath(logDir.absolutePath());
+        }
+
+        auto console_sink
+            = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+        console_sink->set_level(spdlog::level::info);
+
+        auto file_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(
+            logFilePath.toStdString(), 5 * 1024 * 1024, 3);
+        file_sink->set_level(spdlog::level::trace);
+
+        spdlog::logger logger("main", { console_sink, file_sink });
+        logger.set_level(spdlog::level::debug);
+
+        spdlog::set_default_logger(std::make_shared<spdlog::logger>(logger));
+        spdlog::set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%^%l%$] [%t] %v");
+
+        spdlog::info("Logging initialized at: {}", logFilePath.toStdString());
+    } catch (const spdlog::spdlog_ex& ex) {
+        throw std::runtime_error(
+            std::string("Log initialization failed: ") + ex.what());
+    }
 }
 }

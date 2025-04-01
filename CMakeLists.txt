@@ -118,6 +118,7 @@ set(SOURCE_FILES
     src/Wallets/Core/SuiWallet.cpp
     src/Wallets/Monitor/BlockchainMonitor.cpp
     src/Wallets/Monitor/BlockchainProvider.cpp
+    src/Wallets/Monitor/MonitorManager.cpp
     src/Wallets/Monitor/ProviderFactory.cpp
     src/Wallets/Monitor/Bitcoin/MempoolSpaceProvider.cpp
     src/Wallets/Transaction/Solana/Builder.cpp
@@ -190,6 +191,7 @@ set(HEADER_FILES
     src/Wallets/Core/Types.h
     src/Wallets/Monitor/BlockchainMonitor.h
     src/Wallets/Monitor/BlockchainProvider.h
+    src/Wallets/Monitor/MonitorManager.h
     src/Wallets/Monitor/ProviderFactory.h
     src/Wallets/Monitor/Bitcoin/MempoolSpaceProvider.h
     src/Wallets/Transaction/Solana/Bincode.hpp

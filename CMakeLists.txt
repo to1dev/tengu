@@ -288,6 +288,7 @@ set(THIRD_PARTY_LIBS
     secp256k1
     fmt
     clip
+    spdlog
     QCoro5Core
     QCoro5Network
     QCoro5WebSockets

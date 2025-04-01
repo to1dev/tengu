@@ -23,6 +23,7 @@
 
 #include <QMap>
 #include <QObject>
+#include <QRegularExpression>
 
 #include "qcoro/QCoro"
 
@@ -54,12 +55,18 @@ public:
     QCoro::Task<void> setAutoRefreshInterval(int milliseconds);
 
 Q_SIGNALS:
-    void balanceUpdated(const QString& address, const QString& balance,
-        Wallets::ChainType chain);
+    void balanceUpdated(
+        const QString& address, const QString& balance, ChainType chain);
     void tokensUpdated(const QString& address, const QList<TokenInfo>& tokens,
-        Wallets::ChainType chain);
-    void addressChanged(const QString& address, Wallets::ChainType chain);
-    void error(const QString& message, Wallets::ChainType chain);
+        ChainType chain);
+    void addressChanged(const QString& address, ChainType chain);
+    void error(const QString& message, ChainType chain);
+
+private Q_SLOTS:
+    void onBalanceUpdated(const QString& address, const QString& balance);
+    void onTokensUpdated(
+        const QString& address, const QList<TokenInfo>& tokens);
+    void onMonitorError(const QString& message);
 
 private:
     [[nodiscard]] QCoro::Task<ChainType> detectChainType(

@@ -64,7 +64,7 @@ public:
         return currentProviderType_;
     }
 
-    Wallets::ChainType chainType() const
+    ChainType chainType() const
     {
         return chainType_;
     }

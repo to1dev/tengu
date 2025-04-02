@@ -441,6 +441,9 @@ public:
     virtual std::vector<Wallet> getAll() = 0;
     virtual std::vector<Wallet> getByGroup(int groupType) = 0;
 
+    virtual void addRemovedCallback(std::function<void(int)> cb) = 0;
+    virtual void addUpdatedCallback(std::function<void(const Wallet&)> cb) = 0;
+
 Q_SIGNALS:
     void inserted();
     void updated(const Wallet& wallet);
@@ -458,8 +461,15 @@ public:
     std::vector<Wallet> getAll() override;
     std::vector<Wallet> getByGroup(int groupType) override;
 
+    void addRemovedCallback(std::function<void(int)> cb);
+    void addUpdatedCallback(std::function<void(const Wallet&)> cb);
+
 private:
     Storage* storage_;
+
+    std::vector<std::function<void()>> insertedCbs_;
+    std::vector<std::function<void(const Wallet&)>> updatedCbs_;
+    std::vector<std::function<void(int)>> removedCbs_;
 };
 
 class IAddressRepo : public QObject {
@@ -473,6 +483,9 @@ public:
     virtual void remove(int id) = 0;
     virtual std::optional<Address> get(int id) = 0;
     virtual std::vector<Address> getAllByWallet(int walletId) = 0;
+
+    virtual void addRemovedCallback(std::function<void(int)> cb) = 0;
+    virtual void addUpdatedCallback(std::function<void(const Address&)> cb) = 0;
 
 Q_SIGNALS:
     void inserted();
@@ -490,8 +503,15 @@ public:
     std::optional<Address> get(int id) override;
     std::vector<Address> getAllByWallet(int walletId) override;
 
+    void addRemovedCallback(std::function<void(int)> cb);
+    void addUpdatedCallback(std::function<void(const Address&)> cb);
+
 private:
     Storage* storage_;
+
+    std::vector<std::function<void()>> insertedCbs_;
+    std::vector<std::function<void(const Address&)>> updatedCbs_;
+    std::vector<std::function<void(int)>> removedCbs_;
 };
 
 class IDatabsae : public QObject {
@@ -503,7 +523,8 @@ public:
     virtual IWalletRepo* walletRepo() = 0;
     virtual IAddressRepo* addressRepo() = 0;
 
-    template <typename Func> auto transaction(Func&& func) -> decltype(func())
+    template <typename Func>
+    auto transaction(Func&& func) -> decltype(func())
     {
         return storage()->transaction(std::forward<Func>(func));
     }

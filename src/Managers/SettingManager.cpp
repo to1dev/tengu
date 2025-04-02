@@ -155,8 +155,6 @@ bool SettingManager::readSettings()
         return false;
     }
 
-    std::cout << configPath.string() << std::endl;
-
     try {
         auto tbl = toml::parse(ifs);
 

@@ -21,6 +21,8 @@
 
 #include <filesystem>
 
+namespace fs = std::filesystem;
+
 #ifdef _WIN32
 #include <shlobj.h>
 #include <windows.h>
@@ -39,11 +41,16 @@ public:
         GetModuleFileNameW(NULL, path, MAX_PATH);
         return std::filesystem::path(path);
 #elif defined(__linux__)
-        // Todo
+        return fs::read_symlink("/proc/self/exe");
 #elif defined(__APPLE__)
-        // Todo
+        char path[1024];
+        uint32_t size = sizeof(path);
+        if (_NSGetExecutablePath(path, &size) == 0) {
+            return fs::path(path);
+        }
+        return fs::current_path();
 #else
-        return std::filesystem::current_path();
+        return fs::current_path();
 #endif
     }
 
@@ -69,6 +76,12 @@ public:
         if (SUCCEEDED(SHGetFolderPathW(NULL, CSIDL_PROFILE, NULL, 0, path))) {
             return std::filesystem::path(path);
         }
+#elif defined(__linux__)
+        const char* home = std::getenv("HOME");
+        return home ? fs::path(home) : fs::path("/home/user");
+#elif defined(__APPLE__)
+        const char* home = std::getenv("HOME");
+        return home ? fs::path(home) : fs::path("/Users/user");
 #else
         // Todo
 #endif
@@ -79,11 +92,14 @@ public:
     {
 #ifdef _WIN32
         wchar_t path[MAX_PATH];
-        if (SUCCEEDED(SHGetFolderPathW(NULL, CSIDL_APPDATA, NULL, 0, path))) {
+        if (SUCCEEDED(
+                SHGetFolderPathW(NULL, CSIDL_LOCAL_APPDATA, NULL, 0, path))) {
             return std::filesystem::path(path) / appName;
         }
+#elif defined(__linux__)
+        return getHomePath() / ".local/share" / appName;
 #elif defined(__APPLE__)
-        // Todo
+        return getHomePath() / "Library/Application Support" / appName;
 #else
         return getHomePath() / ("." + appName);
 #endif

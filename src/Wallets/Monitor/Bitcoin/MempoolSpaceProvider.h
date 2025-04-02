@@ -30,6 +30,8 @@
 #include <QTimer>
 #include <QWebSocket>
 
+#include <spdlog/spdlog.h>
+
 #include "qcoro/QCoroNetwork"
 #include "qcoro/QCoroSignal"
 #include "qcoro/QCoroTimer"

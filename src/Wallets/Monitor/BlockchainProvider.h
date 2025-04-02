@@ -21,6 +21,8 @@
 #include <QNetworkAccessManager>
 #include <QObject>
 
+#include <spdlog/spdlog.h>
+
 #include "qcoro/QCoro"
 #include "qcoro/QCoroTask"
 
@@ -37,7 +39,7 @@ class BlockchainProvider : public QObject {
 
 public:
     explicit BlockchainProvider(QObject* parent = nullptr);
-    virtual ~BlockchainProvider();
+    virtual ~BlockchainProvider() override;
 
     virtual QCoro::Task<ProviderResponse<BalanceResult>> getBalance(
         const QString& address)
@@ -60,12 +62,12 @@ public:
     virtual QString providerUrl() const = 0;
     virtual QUrl providerIconUrl() const = 0;
 
-    virtual bool isConnected() const
+    [[nodiscard]] virtual bool isConnected() const
     {
         return connected_;
     }
 
-    virtual bool isConnecting() const
+    [[nodiscard]] virtual bool isConnecting() const
     {
         return connecting_;
     }

@@ -18,9 +18,15 @@
 
 #pragma once
 
+#include <memory>
+#include <optional>
+
+#include <QCache>
 #include <QObject>
 #include <QString>
 #include <QTimer>
+
+#include <spdlog/spdlog.h>
 
 #include "qcoro/QCoro"
 #include "qcoro/QCoroCore"
@@ -30,6 +36,9 @@
 
 namespace Daitengu::Wallets {
 
+/**
+ * @brief Monitors a specific blockchain address for balance and token updates.
+ */
 class BlockchainMonitor : public QObject {
     Q_OBJECT
 
@@ -38,24 +47,23 @@ public:
         ProviderType initialProvider = ProviderType::NONE,
         QObject* parent = nullptr);
 
-    virtual ~BlockchainMonitor();
+    ~BlockchainMonitor() override;
 
-    virtual QCoro::Task<void> setAddress(const QString& address);
+    QCoro::Task<void> setAddress(const QString& address);
 
     [[nodiscard]] QString address() const
     {
         return currentAddress_;
     }
 
-    virtual QCoro::Task<bool> connect();
-    virtual QCoro::Task<void> disconnect();
-    virtual QCoro::Task<void> refreshBalance();
-    virtual QCoro::Task<void> refreshTokens();
+    QCoro::Task<bool> connect();
+    QCoro::Task<void> disconnect();
+    QCoro::Task<void> refreshBalance();
+    QCoro::Task<void> refreshTokens();
 
-    [[nodiscard]] virtual bool isConnected() const;
-    [[nodiscard]] virtual bool isConnecting() const;
-    [[nodiscard]] virtual QCoro::Task<bool> isValidAddress(
-        const QString& address);
+    [[nodiscard]] bool isConnected() const;
+    [[nodiscard]] bool isConnecting() const;
+    [[nodiscard]] QCoro::Task<bool> isValidAddress(const QString& address);
 
     QCoro::Task<bool> switchProvider(ProviderType newProvider);
 
@@ -88,23 +96,23 @@ private Q_SLOTS:
     void onProviderError(const QString& message);
     void onAutoRefreshTimer();
 
-protected:
-    QString currentAddress_;
-
 private:
+    QCoro::Task<void> setupProviderConnections();
+    QString balanceResultToString(const BalanceResult& balance) const;
+
     ChainType chainType_;
     ProviderType currentProviderType_;
     std::unique_ptr<BlockchainProvider> provider_;
 
+    QString currentAddress_;
+
     std::unique_ptr<QTimer> autoRefreshTimer_;
     int autoRefreshInterval_ { 0 };
 
-    QCoro::Task<void> setupProviderConnections();
-    QString balanceResultToString(const BalanceResult& balance) const;
-
     std::unique_ptr<QTimer> connectionRetryTimer_;
     int connectionRetryCount_ { 0 };
-    static const int MAX_CONNECTION_RETRIES { 5 };
+    QCache<QString, QString> balanceCache_ { 100 };
+    static constexpr int MAX_CONNECTION_RETRIES { 5 };
 };
 
 }

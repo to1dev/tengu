@@ -20,10 +20,24 @@
 
 namespace Daitengu::Wallets {
 
+void BlockchainMonitorRegistry::registerMonitor(
+    ChainType type, std::unique_ptr<BlockchainMonitor> monitor)
+{
+    monitors_[type] = std::move(monitor);
+    spdlog::info(
+        "Registered monitor for chain type: {}", static_cast<int>(type));
+}
+
+BlockchainMonitor* BlockchainMonitorRegistry::getMonitor(ChainType type)
+{
+    auto it = monitors_.find(type);
+    return (it != monitors_.end()) ? it.value().get() : nullptr;
+}
+
 MonitorManager::MonitorManager(QObject* parent)
     : QObject(parent)
 {
-    qCInfo(bcMonitor) << "MonitorManager initialized";
+    spdlog::info("MonitorManager initialized");
 }
 
 MonitorManager::~MonitorManager() = default;
@@ -31,28 +45,23 @@ MonitorManager::~MonitorManager() = default;
 QCoro::Task<void> MonitorManager::setAddress(const QString& address)
 {
     if (currentAddress_ != address) {
-        qCInfo(bcMonitor) << "Setting new address to monitor: " << address;
+        spdlog::info(
+            "Setting new address to monitor: {}", address.toStdString());
 
         ChainType chainType = co_await detectChainType(address);
 
         if (chainType != currentChainType_ || !activeMonitor_) {
-            if (activeMonitor_ && activeMonitor_->isConnected()) {
-                co_await activeMonitor_->disconnect();
-            }
-
-            auto it = monitors_.find(chainType);
-            if (it != monitors_.end()) {
-                activeMonitor_ = it.value();
-                currentChainType_ = chainType;
-                qCInfo(bcMonitor) << "Switched to chain type: "
-                                  << static_cast<int>(chainType);
-            } else {
-                qCWarning(bcMonitor) << "No monitor registered for chain type: "
-                                     << static_cast<int>(chainType);
+            activeMonitor_ = registry_.getMonitor(chainType);
+            if (!activeMonitor_) {
+                spdlog::warn("No monitor registered for chain type: {}",
+                    static_cast<int>(chainType));
                 Q_EMIT error(
-                    "No monitor available for this address type ", chainType);
+                    "No monitor available for this address type", chainType);
                 co_return;
             }
+            currentChainType_ = chainType;
+            spdlog::info(
+                "Switched to chain type: {}", static_cast<int>(chainType));
         }
 
         currentAddress_ = address;
@@ -67,75 +76,81 @@ QCoro::Task<void> MonitorManager::setAddress(const QString& address)
 
         Q_EMIT addressChanged(address, currentChainType_);
     }
+
+    co_return;
 }
 
 QCoro::Task<void> MonitorManager::refreshBalance()
 {
     if (activeMonitor_) {
-        qCDebug(bcMonitor) << "Manually refreshing balance for address: "
-                           << currentAddress_;
+        spdlog::debug("Manually refreshing balance for address: {}",
+            currentAddress_.toStdString());
         co_await activeMonitor_->refreshBalance();
     }
+
+    co_return;
 }
 
 QCoro::Task<void> MonitorManager::refreshTokens()
 {
     if (activeMonitor_) {
-        qCDebug(bcMonitor) << "Manually refreshing tokens for address: "
-                           << currentAddress_;
+        spdlog::debug("Manually refreshing tokens for address: {}",
+            currentAddress_.toStdString());
         co_await activeMonitor_->refreshTokens();
     }
+
+    co_return;
 }
 
-void MonitorManager::registerMonitor(ChainType type, BlockchainMonitor* monitor)
+void MonitorManager::registerMonitor(
+    ChainType type, std::unique_ptr<BlockchainMonitor> monitor)
 {
     if (!monitor) {
-        qCWarning(bcMonitor)
-            << "Attempting to register null monitor for chain type: "
-            << static_cast<int>(type);
+        spdlog::warn("Attempting to register null monitor for chain type: {}",
+            static_cast<int>(type));
         return;
     }
 
-    monitors_[type] = monitor;
+    registry_.registerMonitor(type, std::move(monitor));
 
-    connect(monitor, &BlockchainMonitor::balanceUpdated, this,
+    auto* regMonitor = registry_.getMonitor(type);
+
+    connect(regMonitor, &BlockchainMonitor::balanceUpdated, this,
         &MonitorManager::onBalanceUpdated);
-    connect(monitor, &BlockchainMonitor::tokensUpdated, this,
+    connect(regMonitor, &BlockchainMonitor::tokensUpdated, this,
         &MonitorManager::onTokensUpdated);
-    connect(monitor, &BlockchainMonitor::error, this,
+    connect(regMonitor, &BlockchainMonitor::error, this,
         &MonitorManager::onMonitorError);
 
-    monitor->setAutoRefreshInterval(autoRefreshInterval_);
+    regMonitor->setAutoRefreshInterval(autoRefreshInterval_);
 
     if (!activeMonitor_) {
-        activeMonitor_ = monitor;
+        activeMonitor_ = regMonitor;
         currentChainType_ = type;
     }
-
-    qCInfo(bcMonitor) << "Registered monitor for chain type: "
-                      << static_cast<int>(type);
 }
 
 BlockchainMonitor* MonitorManager::getMonitor(ChainType chainType)
 {
-    auto it = monitors_.find(chainType);
-    if (it != monitors_.end()) {
-        return it.value();
-    }
-
-    return nullptr;
+    return registry_.getMonitor(chainType);
 }
 
 QCoro::Task<void> MonitorManager::setAutoRefreshInterval(int milliseconds)
 {
     autoRefreshInterval_ = milliseconds;
 
-    for (auto it = monitors_.begin(); it != monitors_.end(); ++it) {
-        co_await it.value()->setAutoRefreshInterval(milliseconds);
+    for (int type = static_cast<int>(ChainType::BITCOIN);
+        type <= static_cast<int>(ChainType::SOLANA); ++type) {
+        ChainType chainType = static_cast<ChainType>(type);
+        if (auto* monitor = registry_.getMonitor(chainType)) {
+            co_await monitor->setAutoRefreshInterval(milliseconds);
+        }
     }
 
-    qCInfo(bcMonitor) << "Set auto-refresh interval to " << milliseconds
-                      << "ms for all monitors";
+    spdlog::info(
+        "Set auto-refresh interval to {}ms for all monitors", milliseconds);
+
+    co_return;
 }
 
 void MonitorManager::onBalanceUpdated(
@@ -144,10 +159,10 @@ void MonitorManager::onBalanceUpdated(
     auto* monitor = qobject_cast<BlockchainMonitor*>(sender());
     if (monitor) {
         Q_EMIT balanceUpdated(address, balance, monitor->chainType());
-        qCDebug(bcMonitor) << "Balance updated for address: " << address
-                           << " on chain: "
-                           << static_cast<int>(monitor->chainType())
-                           << " - Value: " << balance;
+        spdlog::debug(
+            "Balance updated for address: {} on chain: {} - Value: {}",
+            address.toStdString(), static_cast<int>(monitor->chainType()),
+            balance.toStdString());
     }
 }
 
@@ -157,10 +172,10 @@ void MonitorManager::onTokensUpdated(
     auto* monitor = qobject_cast<BlockchainMonitor*>(sender());
     if (monitor) {
         Q_EMIT tokensUpdated(address, tokens, monitor->chainType());
-        qCDebug(bcMonitor) << "Tokens updated for address: " << address
-                           << " on chain: "
-                           << static_cast<int>(monitor->chainType())
-                           << " - Token count: " << tokens.size();
+        spdlog::debug(
+            "Tokens updated for address: {} on chain: {} - Token count: {}",
+            address.toStdString(), static_cast<int>(monitor->chainType()),
+            tokens.size());
     }
 }
 
@@ -169,22 +184,22 @@ void MonitorManager::onMonitorError(const QString& message)
     auto* monitor = qobject_cast<BlockchainMonitor*>(sender());
     if (monitor) {
         Q_EMIT error(message, monitor->chainType());
-        qCWarning(bcMonitor)
-            << "Error from chain " << static_cast<int>(monitor->chainType())
-            << " : " << message;
+        spdlog::warn("Error from chain {}: {}",
+            static_cast<int>(monitor->chainType()), message.toStdString());
     }
 }
 
 QCoro::Task<ChainType> MonitorManager::detectChainType(const QString& address)
 {
-    for (auto it = monitors_.constBegin(); it != monitors_.constEnd(); ++it) {
-        if (it.value()) {
-            bool isValid = co_await it.value()->isValidAddress(address);
-            if (isValid) {
-                qCDebug(bcMonitor)
-                    << "Address " << address
-                    << "detected as chain type: " << static_cast<int>(it.key());
-                co_return it.key();
+    for (int type = static_cast<int>(ChainType::BITCOIN);
+        type <= static_cast<int>(ChainType::SOLANA); ++type) {
+        ChainType chainType = static_cast<ChainType>(type);
+        if (auto* monitor = registry_.getMonitor(chainType)) {
+            if (co_await monitor->isValidAddress(address)) {
+                spdlog::debug("Address {} detected as chain type: {}",
+                    address.toStdString(),
+                    static_cast<int>(monitor->chainType()));
+                co_return monitor->chainType();
             }
         }
     }
@@ -193,26 +208,23 @@ QCoro::Task<ChainType> MonitorManager::detectChainType(const QString& address)
     static const QRegularExpression btcLegacyRegex(
         "^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$");
     static const QRegularExpression btcSegwitRegex("^bc1[a-zA-Z0-9]{25,90}$");
-    static const QRegularExpression solRegex("^[1-9A-HJ-NP-Za-km-z]{43,44}$");
 
     if (ethRegex.match(address).hasMatch()) {
-        qCDebug(bcMonitor) << "Address " << address
-                           << " detected as Ethereum by regex";
-        co_return Wallets::ChainType::ETHEREUM;
+        spdlog::debug(
+            "Address {} detected as Ethereum by regex", address.toStdString());
+        co_return ChainType::ETHEREUM;
     } else if (btcLegacyRegex.match(address).hasMatch()
         || btcSegwitRegex.match(address).hasMatch()) {
-        qCDebug(bcMonitor) << "Address " << address
-                           << " detected as Bitcoin by regex";
-        co_return Wallets::ChainType::BITCOIN;
-    } else if (solRegex.match(address).hasMatch()) {
-        qCDebug(bcMonitor) << "Address " << address
-                           << " detected as Solana by regex";
-        co_return Wallets::ChainType::SOLANA;
+        spdlog::debug(
+            "Address {} detected as Bitcoin by regex", address.toStdString());
+        co_return ChainType::BITCOIN;
     }
 
-    qCWarning(bcMonitor) << "Could not determine chain type for address: "
-                         << address << " - defaulting to Bitcoin";
+    spdlog::warn("Could not determine chain type for address: {} - defaulting "
+                 "to Bitcoin",
+        address.toStdString());
 
-    co_return Wallets::ChainType::BITCOIN;
+    co_return ChainType::BITCOIN;
 }
+
 }

@@ -25,18 +25,33 @@
 #include <QObject>
 #include <QRegularExpression>
 
+#include <spdlog/spdlog.h>
+
 #include "qcoro/QCoro"
 
 #include "BlockchainMonitor.h"
 
 namespace Daitengu::Wallets {
 
+class BlockchainMonitorRegistry {
+public:
+    void registerMonitor(
+        ChainType type, std::unique_ptr<BlockchainMonitor> monitor);
+    BlockchainMonitor* getMonitor(ChainType type);
+
+private:
+    QMap<ChainType, std::unique_ptr<BlockchainMonitor>> monitors_;
+};
+
+/**
+ * @brief Manages multiple blockchain monitors.
+ */
 class MonitorManager : public QObject {
     Q_OBJECT
 
 public:
     explicit MonitorManager(QObject* parent = nullptr);
-    ~MonitorManager();
+    ~MonitorManager() override;
 
     QCoro::Task<void> setAddress(const QString& address);
 
@@ -48,8 +63,8 @@ public:
     QCoro::Task<void> refreshBalance();
     QCoro::Task<void> refreshTokens();
 
-    void registerMonitor(ChainType type, BlockchainMonitor* monitor);
-
+    void registerMonitor(
+        ChainType type, std::unique_ptr<BlockchainMonitor> monitor);
     BlockchainMonitor* getMonitor(ChainType chainType);
 
     QCoro::Task<void> setAutoRefreshInterval(int milliseconds);
@@ -69,17 +84,12 @@ private Q_SLOTS:
     void onMonitorError(const QString& message);
 
 private:
-    [[nodiscard]] QCoro::Task<ChainType> detectChainType(
-        const QString& address);
+    QCoro::Task<ChainType> detectChainType(const QString& address);
 
     QString currentAddress_;
-
     BlockchainMonitor* activeMonitor_ { nullptr };
-
-    QMap<ChainType, BlockchainMonitor*> monitors_;
-
+    BlockchainMonitorRegistry registry_;
     ChainType currentChainType_ { ChainType::BITCOIN };
-
     int autoRefreshInterval_ { 0 };
 };
 

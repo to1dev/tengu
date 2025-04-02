@@ -18,8 +18,10 @@
 
 #pragma once
 
-#include <QMap>
+#include <QList>
 #include <QString>
+
+#include <spdlog/spdlog.h>
 
 #include "../Core/Types.h"
 

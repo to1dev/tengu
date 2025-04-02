@@ -18,8 +18,6 @@
 
 #include "BlockchainProvider.h"
 
-Q_LOGGING_CATEGORY(bcMonitor, "blockchain.monitor")
-
 namespace Daitengu::Wallets {
 
 BlockchainProvider::BlockchainProvider(QObject* parent)
@@ -27,6 +25,7 @@ BlockchainProvider::BlockchainProvider(QObject* parent)
     , networkManager_(std::make_unique<QNetworkAccessManager>())
 {
     networkManager_->setParent(this);
+    spdlog::info("Initialized BlockchainProvider base class");
 }
 
 BlockchainProvider::~BlockchainProvider() = default;

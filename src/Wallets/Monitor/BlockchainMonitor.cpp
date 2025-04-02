@@ -45,31 +45,28 @@ BlockchainMonitor::BlockchainMonitor(
         currentProviderType_ = initialProvider;
         setupProviderConnections();
 
-        qCInfo(bcMonitor) << "Created monitor for chain "
-                          << static_cast<int>(chainType) << " with provider "
-                          << ProviderFactory::getProviderName(initialProvider);
+        spdlog::info("Created monitor for chain {} with provider {}",
+            static_cast<int>(chainType),
+            ProviderFactory::getProviderName(initialProvider).toStdString());
     } else {
-        qCWarning(bcMonitor) << "Failed to create provider of type: "
-                             << static_cast<int>(initialProvider)
-                             << " for chain " << static_cast<int>(chainType);
+        spdlog::warn("Failed to create provider of type {} for chain {}",
+            static_cast<int>(initialProvider), static_cast<int>(chainType));
     }
 
     connectionRetryTimer_->setSingleShot(true);
     QObject::connect(
         connectionRetryTimer_.get(), &QTimer::timeout, this, [this]() {
-            if (!isConnected() && !isConnecting()) {
-                if (connectionRetryCount_ < MAX_CONNECTION_RETRIES) {
-                    connectionRetryCount_++;
-                    qCInfo(bcMonitor)
-                        << "Retry connection attempt" << connectionRetryCount_
-                        << "for chain" << static_cast<int>(chainType_);
-                    connect();
-                } else {
-                    qCWarning(bcMonitor)
-                        << "Maximum connection retries reached for chain"
-                        << static_cast<int>(chainType_);
-                    Q_EMIT error("Failed to connect after multiple attempts");
-                }
+            if (!isConnected() && !isConnecting()
+                && connectionRetryCount_ < MAX_CONNECTION_RETRIES) {
+                connectionRetryCount_++;
+                spdlog::info("Retry connection attempt {}/{} for chain {}",
+                    connectionRetryCount_, MAX_CONNECTION_RETRIES,
+                    static_cast<int>(chainType_));
+                connect();
+            } else if (connectionRetryCount_ >= MAX_CONNECTION_RETRIES) {
+                spdlog::warn("Maximum connection retries reached for chain {}",
+                    static_cast<int>(chainType_));
+                Q_EMIT error("Failed to connect after multiple attempts");
             }
         });
 }
@@ -82,8 +79,8 @@ BlockchainMonitor::~BlockchainMonitor()
 QCoro::Task<void> BlockchainMonitor::setAddress(const QString& address)
 {
     if (currentAddress_ != address) {
-        qCInfo(bcMonitor) << "Setting address to " << address << " for chain "
-                          << static_cast<int>(chainType_);
+        spdlog::info("Setting address to {} for chain {}",
+            address.toStdString(), static_cast<int>(chainType_));
         currentAddress_ = address;
 
         if (!address.isEmpty() && provider_) {
@@ -95,26 +92,27 @@ QCoro::Task<void> BlockchainMonitor::setAddress(const QString& address)
             co_await refreshTokens();
         }
     }
+
+    co_return;
 }
 
 QCoro::Task<bool> BlockchainMonitor::connect()
 {
     if (!provider_) {
-        qCWarning(bcMonitor)
-            << "Cannot connect: no provider available for chain "
-            << static_cast<int>(chainType_);
+        spdlog::warn("Cannot connect: no provider available for chain {}",
+            static_cast<int>(chainType_));
         co_return false;
     }
 
     if (isConnected()) {
-        qCDebug(bcMonitor) << "Already connected for chain "
-                           << static_cast<int>(chainType_);
+        spdlog::debug(
+            "Already connected for chain {}", static_cast<int>(chainType_));
         co_return true;
     }
 
     if (isConnecting()) {
-        qCDebug(bcMonitor) << "Connection already in progress for chain "
-                           << static_cast<int>(chainType_);
+        spdlog::debug("Connection already in progress for chain {}",
+            static_cast<int>(chainType_));
         co_return true;
     }
 
@@ -156,9 +154,9 @@ QCoro::Task<void> BlockchainMonitor::disconnect()
     }
 
     co_await provider_->shutdown();
+    spdlog::info("Disconnected for chain {}", static_cast<int>(chainType_));
 
-    qCInfo(bcMonitor) << "Disconnected for chain "
-                      << static_cast<int>(chainType_);
+    co_return;
 }
 
 QCoro::Task<void> BlockchainMonitor::refreshBalance()
@@ -167,19 +165,28 @@ QCoro::Task<void> BlockchainMonitor::refreshBalance()
         co_return;
     }
 
-    qCDebug(bcMonitor) << "Refreshing balance for address " << currentAddress_
-                       << " on chain " << static_cast<int>(chainType_);
+    if (balanceCache_.contains(currentAddress_)) {
+        Q_EMIT balanceUpdated(
+            currentAddress_, *balanceCache_.object(currentAddress_));
+        co_return;
+    }
+
+    spdlog::debug("Refreshing balance for address {} on chain {}",
+        currentAddress_.toStdString(), static_cast<int>(chainType_));
 
     auto response = co_await provider_->getBalance(currentAddress_);
 
     if (response.success && response.data) {
         QString balanceStr = balanceResultToString(response.data.value());
+        balanceCache_.insert(currentAddress_, new QString(balanceStr));
         Q_EMIT balanceUpdated(currentAddress_, balanceStr);
     } else if (response.error) {
-        qCWarning(bcMonitor)
-            << "Balance refresh error: " << response.error->message;
+        spdlog::warn(
+            "Balance refresh error: {}", response.error->message.toStdString());
         Q_EMIT error(response.error->message);
     }
+
+    co_return;
 }
 
 QCoro::Task<void> BlockchainMonitor::refreshTokens()
@@ -188,18 +195,20 @@ QCoro::Task<void> BlockchainMonitor::refreshTokens()
         co_return;
     }
 
-    qCDebug(bcMonitor) << "Refreshing tokens for address " << currentAddress_
-                       << " on chain " << static_cast<int>(chainType_);
+    spdlog::debug("Refreshing tokens for address {} on chain {}",
+        currentAddress_.toStdString(), static_cast<int>(chainType_));
 
     auto response = co_await provider_->getTokens(currentAddress_);
 
     if (response.success && response.data) {
         Q_EMIT tokensUpdated(currentAddress_, response.data.value());
     } else if (response.error) {
-        qCWarning(bcMonitor)
-            << "Tokens refresh error: " << response.error->message;
+        spdlog::warn(
+            "Tokens refresh error: {}", response.error->message.toStdString());
         Q_EMIT error(response.error->message);
     }
+
+    co_return;
 }
 
 bool BlockchainMonitor::isConnected() const
@@ -220,11 +229,7 @@ QCoro::Task<bool> BlockchainMonitor::isValidAddress(const QString& address)
 
     auto response = co_await provider_->isValidAddress(address);
 
-    if (response.success && response.data) {
-        co_return response.data.value();
-    }
-
-    co_return false;
+    co_return response.success&& response.data.value_or(false);
 }
 
 QCoro::Task<bool> BlockchainMonitor::switchProvider(ProviderType newProvider)
@@ -233,10 +238,10 @@ QCoro::Task<bool> BlockchainMonitor::switchProvider(ProviderType newProvider)
         co_return true;
     }
 
-    qCInfo(bcMonitor) << "Switching provider from "
-                      << ProviderFactory::getProviderName(currentProviderType_)
-                      << " to " << ProviderFactory::getProviderName(newProvider)
-                      << " for chain " << static_cast<int>(chainType_);
+    spdlog::info("Switching provider from {} to {} for chain {}",
+        ProviderFactory::getProviderName(currentProviderType_).toStdString(),
+        ProviderFactory::getProviderName(newProvider).toStdString(),
+        static_cast<int>(chainType_));
 
     QString currentAddr = currentAddress_;
 
@@ -253,8 +258,8 @@ QCoro::Task<bool> BlockchainMonitor::switchProvider(ProviderType newProvider)
     auto newProviderInstance
         = ProviderFactory::createProvider(chainType_, newProvider, this);
     if (!newProviderInstance) {
-        qCWarning(bcMonitor) << "Failed to create new provider of type: "
-                             << static_cast<int>(newProvider);
+        spdlog::warn("Failed to create new provider of type: {}",
+            static_cast<int>(newProvider));
         co_return false;
     }
 
@@ -266,16 +271,12 @@ QCoro::Task<bool> BlockchainMonitor::switchProvider(ProviderType newProvider)
     bool initResult = co_await provider_->initialize();
 
     if (!currentAddr.isEmpty()) {
-        auto validResponse = co_await provider_->isValidAddress(currentAddr);
-        bool isValid
-            = validResponse.success && validResponse.data.value_or(false);
-
+        bool isValid = co_await isValidAddress(currentAddr);
         if (isValid) {
             co_await setAddress(currentAddr);
         } else {
-            qCWarning(bcMonitor)
-                << "Address format incompatible with new provider: "
-                << currentAddr;
+            spdlog::warn("Address format incompatible with new provider: {}",
+                currentAddr.toStdString());
             Q_EMIT error("Address format incompatible with new provider");
         }
     }
@@ -302,11 +303,11 @@ QCoro::Task<void> BlockchainMonitor::setAutoRefreshInterval(int milliseconds)
 
     if (milliseconds > 0 && isConnected()) {
         autoRefreshTimer_->start(milliseconds);
-        qCDebug(bcMonitor) << "Auto-refresh set to " << milliseconds
-                           << "ms for chain " << static_cast<int>(chainType_);
+        spdlog::debug("Auto-refresh set to {}ms for chain {}", milliseconds,
+            static_cast<int>(chainType_));
     } else {
-        qCDebug(bcMonitor) << "Auto-refresh disabled for chain "
-                           << static_cast<int>(chainType_);
+        spdlog::debug(
+            "Auto-refresh disabled for chain {}", static_cast<int>(chainType_));
     }
 
     co_return;
@@ -316,6 +317,7 @@ void BlockchainMonitor::onProviderBalanceChanged(
     const QString& address, const BalanceResult& balance)
 {
     QString balanceStr = balanceResultToString(balance);
+    balanceCache_.insert(address, new QString(balanceStr));
     Q_EMIT balanceUpdated(address, balanceStr);
 }
 

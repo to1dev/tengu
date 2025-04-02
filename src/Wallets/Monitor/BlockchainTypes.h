@@ -22,11 +22,8 @@
 #include <variant>
 
 #include <QList>
-#include <QLoggingCategory>
 #include <QString>
 #include <QUrl>
-
-Q_DECLARE_LOGGING_CATEGORY(bcMonitor)
 
 namespace Daitengu::Wallets {
 

@@ -31,5 +31,36 @@ int main(int argc, char* argv[])
 
     MonitorManager manager;
 
+    auto btcMonitor = std::make_unique<BlockchainMonitor>(
+        ChainType::BITCOIN, ProviderType::MEMPOOL_SPACE);
+    manager.registerMonitor(ChainType::BITCOIN, std::move(btcMonitor));
+
+    QObject::connect(&manager, &MonitorManager::balanceUpdated,
+        [](const QString& address, const QString& balance, ChainType chain) {
+            spdlog::info("Balance updated for address {} on chain {}: {}",
+                address.toStdString(), static_cast<int>(chain),
+                balance.toStdString());
+            qDebug() << "Address:" << address << "Balance:" << balance
+                     << "Chain:" << static_cast<int>(chain);
+        });
+
+    QObject::connect(&manager, &MonitorManager::error,
+        [](const QString& message, ChainType chain) {
+            spdlog::error("Error on chain {}: {}", static_cast<int>(chain),
+                message.toStdString());
+            qDebug() << "Error:" << message
+                     << "Chain:" << static_cast<int>(chain);
+        });
+
+    QString address = "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa";
+    spdlog::info("Querying balance for address: {}", address.toStdString());
+
+    manager.setAddress(address)
+        .then([&manager]() { return manager.refreshBalance(); })
+        .then([&app]() {
+            spdlog::info("Balance query completed");
+            app.quit();
+        });
+
     return app.exec();
 }

@@ -13,12 +13,14 @@ set(CMAKE_AUTORCC ON)
 
 find_package(Qt5 REQUIRED COMPONENTS
     Core
+    Gui
     Network
     WebSockets
     Concurrent
 )
 
 set(TEST_SOURCES
+    ${CMAKE_SOURCE_DIR}/src/Utils/AutoUpdater.cpp
     ${CMAKE_SOURCE_DIR}/src/tests/Test_QCoro.cpp
 )
 
@@ -50,6 +52,7 @@ target_compile_options(${PROJECT_NAME} PRIVATE
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt5::Core
+    Qt5::Gui
     Qt5::Network
     Qt5::WebSockets
     Qt5::Concurrent

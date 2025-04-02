@@ -232,7 +232,7 @@ bool AutoUpdater::installUpdate(const fs::path& updateFile)
 
 std::string AutoUpdater::getApiUrl() const
 {
-    return std::format("{}", kApiBaseUrl, username_, repo_);
+    return std::format(kApiBaseUrl, username_, repo_);
 }
 
 std::optional<AutoUpdater::Version> AutoUpdater::parseGitHubResponse(

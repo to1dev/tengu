@@ -41,6 +41,10 @@ using json = nlohmann::json;
 
 #include "semver.hpp"
 
+#include "Utils/AutoUpdater.h"
+
+using namespace Daitengu::Utils;
+
 QCoro::Task<> startTask()
 {
     const auto data = co_await QtConcurrent::run([]() {
@@ -136,6 +140,33 @@ QCoro::Task<void> testReply()
     co_return;
 }
 
+QCoro::Task<void> testUpdater()
+{
+    AutoUpdater updater;
+    updater.setGitHubRepo("cculianu", "Fulcrum");
+    updater.setCurrentVersion("1.0.0");
+    updater.setLogCallback(
+        [](AutoUpdater::Error error, const std::string& msg) {
+            std::cerr << "Error " << static_cast<int>(error) << ": " << msg
+                      << std::endl;
+        });
+
+    auto checkTask = updater.checkForUpdates();
+    auto version = co_await checkTask;
+    if (version) {
+        auto downloadTask = updater.downloadUpdate(
+            *version, [](const AutoUpdater::UpdateProgress& progress) {
+                std::cout << "Download: " << progress.percentage() << "%\n";
+            });
+        auto filePath = co_await downloadTask;
+        if (filePath) {
+            std::cout << "Dummy install " << *filePath << std::endl;
+        }
+    }
+
+    co_return;
+}
+
 int main(int argc, char* argv[])
 {
     QCoreApplication app(argc, argv);
@@ -163,7 +194,8 @@ int main(int argc, char* argv[])
         quit();*/
 
         // auto task = startTask();
-        auto task = testReply();
+        // auto task = testReply();
+        auto task = testUpdater();
         task.then([&app]() {
             qDebug() << "Completed, quiting...";
             app.quit();

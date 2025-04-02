@@ -33,8 +33,6 @@
 #include <spdlog/spdlog.h>
 
 #include "qcoro/QCoroNetwork"
-#include "qcoro/QCoroSignal"
-#include "qcoro/QCoroTimer"
 #include "qcoro/QCoroWebSocket"
 
 #include "nlohmann/json.hpp"
@@ -99,29 +97,23 @@ private Q_SLOTS:
 private:
     std::unique_ptr<QWebSocket> webSocket_;
     QMap<QString, bool> subscribedAddresses_;
-    std::atomic<bool> shutdownRequested_ { false };
-
     std::unique_ptr<QTimer> connectTimeoutTimer_;
-
     std::unique_ptr<QTimer> pingTimer_;
     QDateTime lastPongTime_;
     int consecutivePingFailures_ { 0 };
+    bool shutdownRequested_ { false };
 
-    static const QString API_BASE_URL;
-    static const QString WS_BASE_URL;
+    static constexpr auto API_BASE_URL = "https://mempool.space/api";
+    static constexpr auto WS_BASE_URL = "wss://mempool.space/api/v1/ws";
     static constexpr int CONNECT_TIMEOUT_MS = 10000;
     static constexpr int PING_INTERVAL_MS = 30000;
     static constexpr int PING_TIMEOUT_MS = 90000;
 
     void setupPingPong();
     void checkPingPongHealth();
-    QCoro::Task<void> waitForConnection(int timeoutMs = 10000);
     QCoro::Task<ProviderResponse<BalanceResult>> fetchBalanceFromAPI(
         const QString& address);
     ProviderResponse<BalanceResult> parseBalanceResponse(const json& response);
-
-    QCoro::Task<QString> waitForMessage(int timeoutMs = 10000);
-
     static bool isValidBitcoinAddress(const QString& address);
 };
 }

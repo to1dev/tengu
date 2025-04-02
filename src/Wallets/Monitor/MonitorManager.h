@@ -21,7 +21,6 @@
 #include <memory>
 #include <optional>
 
-#include <QMap>
 #include <QObject>
 #include <QRegularExpression>
 
@@ -40,7 +39,7 @@ public:
     BlockchainMonitor* getMonitor(ChainType type);
 
 private:
-    QMap<ChainType, std::unique_ptr<BlockchainMonitor>> monitors_;
+    std::map<ChainType, std::unique_ptr<BlockchainMonitor>> monitors_;
 };
 
 /**

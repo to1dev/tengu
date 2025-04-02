@@ -21,29 +21,30 @@
 namespace Daitengu::Core {
 
 SettingManager::SettingManager()
+    : dataPath_(PathUtils::getAppDataPath(COMPANY) / NAME)
+    , appPath_(PathUtils::getExecutableDir())
 {
-    dataPath_ = QDir::toNativeSeparators(QString("%1/%2/%3")
-            .arg(QStandardPaths::writableLocation(
-                QStandardPaths::GenericDataLocation))
-            .arg(COMPANY)
-            .arg(NAME));
-
-    if (!QDir(dataPath_).exists())
-        QDir().mkpath(dataPath_);
+    if (!fs::exists(dataPath_)) {
+        if (!PathUtils::createDirectories(dataPath_)) {
+            throw std::runtime_error(
+                "Failed to create data directory: " + dataPath_.string());
+        }
+    }
 
     // QString path = QDir::toNativeSeparators(QString(argv[0]));
     // mOptions.sysOpt.appPath = mAppPath = QFileInfo(path).absolutePath();
 
-    options_.sysOpt.appPath = appPath_
-        = QString::fromStdString(PathUtils::getExecutableDir().string());
+    options_.sysOpt.appPath = appPath_.string();
 
-    readSettings();
+    initLogging();
 
-    auto config = std::make_shared<DatabaseConfig>();
+    if (!readSettings()) {
+        spdlog::warn("Failed to read settings, using defaults.");
+    }
 
-    database_ = std::make_unique<Database>(dataPath_, config);
-
-    initLoggins();
+    database_
+        = std::make_unique<Database>(QString::fromStdString(dataPath_.string()),
+            std::make_shared<DatabaseConfig>());
 }
 
 SettingManager::~SettingManager()
@@ -51,17 +52,17 @@ SettingManager::~SettingManager()
     writeSettings();
 }
 
-Database* SettingManager::database() const
+Database* SettingManager::database() const noexcept
 {
     return database_.get();
 }
 
-QString SettingManager::dataPath() const
+const fs::path& SettingManager::dataPath() const noexcept
 {
     return dataPath_;
 }
 
-QString SettingManager::appPath() const
+const fs::path& SettingManager::appPath() const noexcept
 {
     return appPath_;
 }
@@ -148,81 +149,59 @@ void safeAccessExample()
 
 bool SettingManager::readSettings()
 {
-    auto configPath = QDir(dataPath_).filePath("config.toml");
-    std::ifstream ifs(configPath.toStdString());
-    if (!ifs) {
-        std::cerr << "Failed to open config" << std::endl;
+    auto configPath = dataPath_ / "config.toml";
+    std::ifstream ifs(configPath);
+    if (!ifs.is_open()) {
         return false;
     }
+
+    std::cout << configPath.string() << std::endl;
 
     try {
         auto tbl = toml::parse(ifs);
 
-        if (auto systemTablePtr
-            = tbl.get_as<toml::table>(Settings::STR_SYSTEM_OPTIONS)) {
-            const auto& systemTable = *systemTablePtr;
-            options_.sysOpt.machineId = QString::fromStdString(
-                systemTable["machineId"].value_or<std::string>(""));
+        if (auto systemTable = tbl[Settings::STR_SYSTEM_OPTIONS].as_table()) {
+            options_.sysOpt.machineId
+                = systemTable->at("machineId").value_or<std::string>("");
         }
 
-        if (auto record
-            = tbl.get_as<toml::table>(Settings::STR_RECORD_OPTIONS)) {
+        if (auto record = tbl[Settings::STR_RECORD_OPTIONS].as_table()) {
             if (auto walletTable
-                = record->get_as<toml::table>(Settings::STR_WALLET_OPTIONS)) {
-                Wallet& walletOpt = options_.recordOpt.first;
-                walletOpt.id = walletTable->contains(Settings::STR_WALLET_ID)
-                    ? walletTable->at(Settings::STR_WALLET_ID).value_or<int>(0)
-                    : 0;
+                = record->at(Settings::STR_WALLET_OPTIONS).as_table()) {
+                auto& walletOpt = options_.recordOpt.first;
+                walletOpt.id
+                    = walletTable->at(Settings::STR_WALLET_ID).value_or(0);
                 walletOpt.type
-                    = walletTable->contains(Settings::STR_WALLET_TYPE)
-                    ? walletTable->at(Settings::STR_WALLET_TYPE)
-                          .value_or<int>(0)
-                    : 0;
+                    = walletTable->at(Settings::STR_WALLET_TYPE).value_or(0);
                 walletOpt.groupType
-                    = walletTable->contains(Settings::STR_WALLET_GROUPTYPE)
-                    ? walletTable->at(Settings::STR_WALLET_GROUPTYPE)
-                          .value_or<int>(0)
-                    : 0;
+                    = walletTable->at(Settings::STR_WALLET_GROUPTYPE)
+                          .value_or(0);
                 walletOpt.chainType
-                    = walletTable->contains(Settings::STR_WALLET_CHAINTYPE)
-                    ? walletTable->at(Settings::STR_WALLET_CHAINTYPE)
-                          .value_or<int>(0)
-                    : 0;
-                walletOpt.name
-                    = walletTable->contains(Settings::STR_WALLET_NAME)
-                    ? walletTable->at("name").value_or<std::string>("")
-                    : "";
+                    = walletTable->at(Settings::STR_WALLET_CHAINTYPE)
+                          .value_or(0);
+                walletOpt.name = walletTable->at(Settings::STR_WALLET_NAME)
+                                     .value_or<std::string>("");
             }
 
             if (auto addressTable
-                = record->get_as<toml::table>(Settings::STR_ADDRESS_OPTIONS)) {
-                Address& addressOpt = options_.recordOpt.second;
-                addressOpt.id = addressTable->contains(Settings::STR_ADDRESS_ID)
-                    ? addressTable->at(Settings::STR_ADDRESS_ID)
-                          .value_or<int>(0)
-                    : 0;
+                = record->at(Settings::STR_ADDRESS_OPTIONS).as_table()) {
+                auto& addressOpt = options_.recordOpt.second;
+                addressOpt.id
+                    = addressTable->at(Settings::STR_ADDRESS_ID).value_or(0);
                 addressOpt.type
-                    = addressTable->contains(Settings::STR_ADDRESS_TYPE)
-                    ? addressTable->at(Settings::STR_ADDRESS_TYPE)
-                          .value_or<int>(0)
-                    : 0;
+                    = addressTable->at(Settings::STR_ADDRESS_TYPE).value_or(0);
                 addressOpt.walletId
-                    = addressTable->contains(Settings::STR_ADDRESS_WALLETID)
-                    ? addressTable->at("walletId").value_or<int>(0)
-                    : 0;
-                addressOpt.name
-                    = addressTable->contains(Settings::STR_ADDRESS_NAME)
-                    ? addressTable->at("name").value_or<std::string>("")
-                    : "";
+                    = addressTable->at(Settings::STR_ADDRESS_WALLETID)
+                          .value_or(0);
+                addressOpt.name = addressTable->at(Settings::STR_ADDRESS_NAME)
+                                      .value_or<std::string>("");
                 addressOpt.address
-                    = addressTable->contains(Settings::STR_ADDRESS_ADDRESS)
-                    ? addressTable->at("address").value_or<std::string>("")
-                    : "";
+                    = addressTable->at(Settings::STR_ADDRESS_ADDRESS)
+                          .value_or<std::string>("");
             }
         }
     } catch (const toml::parse_error& err) {
-        std::cerr << "Failed to parse config: " << err.description()
-                  << std::endl;
+        spdlog::error("Failed to parse config: {}", err.description());
         return false;
     }
 
@@ -231,17 +210,14 @@ bool SettingManager::readSettings()
 
 bool SettingManager::writeSettings()
 {
-    auto configPath = QDir(dataPath_).filePath("config.toml");
+    auto configPath = dataPath_ / "config.toml";
     toml::table tbl;
 
     toml::table sysOptTable;
-    sysOptTable.insert_or_assign(
-        "machineId", options_.sysOpt.machineId.toStdString());
-    sysOptTable.insert_or_assign(
-        "appPath", options_.sysOpt.appPath.toStdString());
+    sysOptTable.insert_or_assign("machineId", options_.sysOpt.machineId);
+    sysOptTable.insert_or_assign("appPath", options_.sysOpt.appPath);
     sysOptTable.insert_or_assign("deviceRatio", options_.sysOpt.deviceRatio);
-    sysOptTable.insert_or_assign(
-        "dpiSuffix", options_.sysOpt.dpiSuffix.toStdString());
+    sysOptTable.insert_or_assign("dpiSuffix", options_.sysOpt.dpiSuffix);
     tbl.insert_or_assign(Settings::STR_SYSTEM_OPTIONS, sysOptTable);
 
     toml::table walletTable;
@@ -264,8 +240,16 @@ bool SettingManager::writeSettings()
     toml::table recordTable;
     recordTable.insert_or_assign(Settings::STR_WALLET_OPTIONS, walletTable);
     recordTable.insert_or_assign(Settings::STR_ADDRESS_OPTIONS, addressTable);
-
     tbl.insert_or_assign(Settings::STR_RECORD_OPTIONS, recordTable);
+
+    std::ofstream ofs(configPath);
+    if (!ofs.is_open()) {
+        spdlog::error("Failed to write config to: {}", configPath.string());
+        return false;
+    }
+    ofs << tbl;
+
+    return true;
 
     /*
     toml::array arr;
@@ -295,45 +279,38 @@ bool SettingManager::writeSettings()
 
     tbl.insert("users", usersArray);
     */
-
-    std::ofstream ofs(configPath.toStdString());
-    if (!ofs) {
-        std::cerr << "Failed to write config" << std::endl;
-        return false;
-    }
-    ofs << tbl;
-
-    return true;
 }
 
-const Options& SettingManager::options() const
+const Options& SettingManager::options() const noexcept
 {
     return options_;
 }
 
-void SettingManager::setRecord(Record&& record)
+void SettingManager::setRecord(Record&& record) noexcept
 {
     options_.recordOpt = std::move(record);
 }
 
-const Record& SettingManager::record_ref() const
+const Record& SettingManager::record_ref() const noexcept
 {
     return options_.recordOpt;
 }
 
-Record SettingManager::record() const
+Record SettingManager::record() const noexcept
 {
     return options_.recordOpt;
 }
 
-void SettingManager::initLoggins()
+void SettingManager::initLogging()
 {
     try {
-        QString logFilePath
-            = QDir::toNativeSeparators(dataPath_ + "/logs/tengu.log");
-        QDir logDir(dataPath_ + "/logs");
-        if (!logDir.exists()) {
-            QDir().mkpath(logDir.absolutePath());
+        auto logDir = dataPath_ / "logs";
+        auto logFilePath = logDir / "tengu.log";
+        if (!fs::exists(logDir)) {
+            if (!PathUtils::createDirectories(logDir)) {
+                throw std::runtime_error(
+                    "Failed to create log directory: " + logDir.string());
+            }
         }
 
         auto console_sink
@@ -341,16 +318,17 @@ void SettingManager::initLoggins()
         console_sink->set_level(spdlog::level::info);
 
         auto file_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(
-            logFilePath.toStdString(), 5 * 1024 * 1024, 3);
+            logFilePath.string(), 5 * 1024 * 1024, 3);
         file_sink->set_level(spdlog::level::trace);
 
-        spdlog::logger logger("main", { console_sink, file_sink });
-        logger.set_level(spdlog::level::debug);
-
-        spdlog::set_default_logger(std::make_shared<spdlog::logger>(logger));
+        std::vector<spdlog::sink_ptr> sinks { console_sink, file_sink };
+        auto logger = std::make_shared<spdlog::logger>(
+            "main", sinks.begin(), sinks.end());
+        logger->set_level(spdlog::level::debug);
+        spdlog::set_default_logger(logger);
         spdlog::set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%^%l%$] [%t] %v");
 
-        spdlog::info("Logging initialized at: {}", logFilePath.toStdString());
+        spdlog::info("Logging initialized at: {}", logFilePath.string());
     } catch (const spdlog::spdlog_ex& ex) {
         throw std::runtime_error(
             std::string("Log initialization failed: ") + ex.what());

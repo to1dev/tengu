@@ -28,8 +28,6 @@ AutoUpdater::AutoUpdater(QObject* parent)
     fs::create_directories(tempDir_);
 }
 
-AutoUpdater::~AutoUpdater() = default;
-
 void AutoUpdater::setGitHubRepo(
     std::string_view username, std::string_view repo)
 {
@@ -51,191 +49,190 @@ void AutoUpdater::setTempDirectory(const fs::path& path)
     fs::create_directories(tempDir_);
 }
 
+void AutoUpdater::setLogCallback(
+    std::function<void(Error, const std::string&)> cb)
+{
+    logCallback_ = std::move(cb);
+}
+
 QCoro::Task<std::optional<AutoUpdater::Version>> AutoUpdater::checkForUpdates()
 {
     QNetworkRequest request { QUrl(QString::fromStdString(getApiUrl())) };
-    request.setHeader(
-        QNetworkRequest::UserAgentHeader, "Tengu-AutoUpdater/1.0");
+    request.setHeader(QNetworkRequest::UserAgentHeader, kUserAgent.data());
 
-    QNetworkReply* reply = networkManager_->get(request);
-    try {
-        co_await qCoro(reply).waitForFinished();
+    NetworkReplyPtr reply { networkManager_->get(request) };
+    co_await qCoro(reply.get()).waitForFinished();
 
-        if (reply->error() != QNetworkReply::NoError) {
-            Q_EMIT errorOccurred(static_cast<int>(Error::NetworkError),
-                QString::fromStdString(std::format(
-                    "Network error: {}", reply->errorString().toStdString())));
-            reply->deleteLater();
-
-            co_return std::nullopt;
-        }
-
-        QByteArray responseData = reply->readAll();
-        reply->deleteLater();
-
-        auto version = parseGitHubResponse(responseData);
-        if (!version) {
-            co_return std::nullopt;
-        }
-
-        auto currentSemver = semver::version { currentVersion_ };
-        auto latestSemver = version->asSemver();
-
-        if (!latestSemver) {
-            Q_EMIT errorOccurred(static_cast<int>(Error::VersionError),
-                "Invalid version format in GitHub response");
-            co_return std::nullopt;
-        }
-
-        if (*latestSemver <= currentSemver) {
-            Q_EMIT updateCheckComplete(false, *version);
-            co_return std::nullopt;
-        }
-
-        Q_EMIT updateCheckComplete(true, *version);
-        co_return version;
-    } catch (const std::exception& e) {
-        Q_EMIT errorOccurred(static_cast<int>(Error::NetworkError),
-            QString::fromStdString(std::format("Exception: {}", e.what())));
-        reply->deleteLater();
+    if (reply->error() != QNetworkReply::NoError) {
+        auto errorMsg = std::format(
+            "Network error: {}", reply->errorString().toStdString());
+        logError(Error::NetworkError, errorMsg);
+        co_return std::nullopt;
     }
 
-    co_return std::nullopt;
+    QByteArray responseData = reply->readAll();
+    auto version = parseGitHubResponse(responseData);
+    if (!version) {
+        co_return std::nullopt;
+    }
+
+    auto currentSemver = semver::version { currentVersion_ };
+    auto latestSemver = version->asSemver();
+    if (!latestSemver) {
+        auto errorMsg = "Invalid version format in GitHub response";
+        logError(Error::VersionError, errorMsg);
+        co_return std::nullopt;
+    }
+
+    if (*latestSemver <= currentSemver) {
+        Q_EMIT updateCheckComplete(false, *version);
+        co_return std::nullopt;
+    }
+
+    Q_EMIT updateCheckComplete(true, *version);
+
+    co_return version;
 }
 
 QCoro::Task<std::optional<fs::path>> AutoUpdater::downloadUpdate(
     const Version& version,
     std::function<void(const UpdateProgress&)> progressCallback)
 {
-    try {
-        std::string filename = std::format("update_{}_{}", version.version,
-            fs::path(version.downloadUrl).filename().string());
+    std::string filename = std::format("update_{}_{}", version.version,
+        fs::path(version.downloadUrl).filename().string());
 
-        fs::path filePath = tempDir_ / filename;
+    fs::path filePath = tempDir_ / filename;
 
-        QNetworkRequest request { QUrl(
-            QString::fromStdString(version.downloadUrl)) };
-        request.setAttribute(QNetworkRequest::RedirectPolicyAttribute,
-            QNetworkRequest::NoLessSafeRedirectPolicy);
+    QNetworkRequest request { QUrl(
+        QString::fromStdString(version.downloadUrl)) };
+    request.setAttribute(QNetworkRequest::RedirectPolicyAttribute,
+        QNetworkRequest::NoLessSafeRedirectPolicy);
 
-        downloadFile_ = std::make_unique<QFile>(
-            QString::fromStdString(filePath.string()));
-        if (!downloadFile_->open(QIODevice::WriteOnly)) {
-            Q_EMIT errorOccurred(static_cast<int>(Error::DownloadError),
-                QString::fromStdString(std::format(
-                    "Cannot open file for writing: {}", filePath.string())));
-            co_return std::nullopt;
-        }
+    std::unique_ptr<QFile> downloadFile
+        = std::make_unique<QFile>(QString::fromStdString(filePath.string()));
 
-        QNetworkReply* reply = networkManager_->get(request);
-
-        QObject::connect(reply, &QNetworkReply::downloadProgress,
-            [this, progressCallback](qint64 bytesReceived, qint64 bytesTotal) {
-                Q_EMIT downloadProgress(bytesReceived, bytesTotal);
-
-                if (progressCallback) {
-                    UpdateProgress progress { static_cast<uint64_t>(
-                                                  bytesReceived),
-                        static_cast<uint64_t>(bytesTotal) };
-                    progressCallback(progress);
-                }
-            });
-
-        while (!reply->isFinished()) {
-            co_await qCoro(reply).waitForFinished();
-
-            if (downloadFile_ && reply->bytesAvailable() > 0) {
-                downloadFile_->write(reply->readAll());
-            }
-        }
-
-        if (downloadFile_) {
-            downloadFile_->close();
-        }
-
-        if (reply->error() != QNetworkReply::NoError) {
-            Q_EMIT errorOccurred(static_cast<int>(Error::DownloadError),
-                QString::fromStdString(std::format(
-                    "Download error: {}", reply->errorString().toStdString())));
-
-            reply->deleteLater();
-            downloadFile_.reset();
-
-            if (fs::exists(filePath)) {
-                fs::remove(filePath);
-            }
-
-            co_return std::nullopt;
-        }
-
-        reply->deleteLater();
-        downloadFile_.reset();
-
-        Q_EMIT downloadComplete(QString::fromStdString(filePath.string()));
-        co_return filePath;
-    } catch (const std::exception& e) {
-        Q_EMIT errorOccurred(static_cast<int>(Error::DownloadError),
-            QString::fromStdString(
-                std::format("Exception during download: {}", e.what())));
-        downloadFile_.reset();
+    if (!downloadFile->open(QIODevice::WriteOnly)) {
+        auto errorMsg = std::format(
+            "Cannot open file for writing: {}", filePath.string());
+        logError(Error::DownloadError, errorMsg);
+        co_return std::nullopt;
     }
 
-    co_return std::nullopt;
+    NetworkReplyPtr reply { networkManager_->get(request) };
+    QObject::connect(reply.get(), &QNetworkReply::downloadProgress,
+        [this, progressCallback](qint64 bytesReceived, qint64 bytesTotal) {
+            Q_EMIT downloadProgress(bytesReceived, bytesTotal);
+
+            if (progressCallback) {
+                UpdateProgress progress { static_cast<uint64_t>(bytesReceived),
+                    static_cast<uint64_t>(bytesTotal) };
+                progressCallback(progress);
+            }
+        });
+
+    co_await qCoro(reply.get()).waitForFinished();
+
+    if (reply->bytesAvailable() > 0) {
+        downloadFile->write(reply->readAll());
+    }
+    downloadFile->close();
+
+    if (reply->error() != QNetworkReply::NoError) {
+        auto errorMsg = std::format(
+            "Download error: {}", reply->errorString().toStdString());
+        logError(Error::DownloadError, errorMsg);
+        if (fs::exists(filePath))
+            fs::remove(filePath);
+
+        co_return std::nullopt;
+    }
+
+    Q_EMIT downloadComplete(QString::fromStdString(filePath.string()));
+
+    co_return filePath;
 }
+
+class WindowsInstallStrategy : public InstallStrategy {
+public:
+    bool install(const fs::path& updateFile) override
+    {
+        std::string ext = updateFile.extension().string();
+        if (ext == ".exe" || ext == ".msi") {
+            QProcess::startDetached(
+                QString::fromStdString(updateFile.string()), {});
+            QCoreApplication::quit();
+            return true;
+        }
+        QDesktopServices::openUrl(
+            QUrl::fromLocalFile(QString::fromStdString(updateFile.string())));
+        return true;
+    }
+};
+
+class MacOSInstallStrategy : public InstallStrategy {
+public:
+    bool install(const fs::path& updateFile) override
+    {
+        std::string ext = updateFile.extension().string();
+        if (ext == ".dmg" || ext == ".pkg") {
+            QDesktopServices::openUrl(QUrl::fromLocalFile(
+                QString::fromStdString(updateFile.string())));
+            QCoreApplication::quit();
+            return true;
+        }
+        QDesktopServices::openUrl(
+            QUrl::fromLocalFile(QString::fromStdString(updateFile.string())));
+        return true;
+    }
+};
+
+class LinuxInstallStrategy : public InstallStrategy {
+public:
+    bool install(const fs::path& updateFile) override
+    {
+        std::string ext = updateFile.extension().string();
+        if (ext == ".AppImage") {
+            fs::permissions(updateFile,
+                fs::perms::owner_exec | fs::perms::group_exec
+                    | fs::perms::others_exec,
+                fs::perm_options::add);
+            QProcess::startDetached(
+                QString::fromStdString(updateFile.string()), {});
+            QCoreApplication::quit();
+            return true;
+        } else if (ext == ".deb" || ext == ".rpm") {
+            QDesktopServices::openUrl(QUrl::fromLocalFile(
+                QString::fromStdString(updateFile.string())));
+            return true;
+        }
+        QDesktopServices::openUrl(
+            QUrl::fromLocalFile(QString::fromStdString(updateFile.string())));
+        return true;
+    }
+};
 
 bool AutoUpdater::installUpdate(const fs::path& updateFile)
 {
     if (!fs::exists(updateFile)) {
-        Q_EMIT errorOccurred(static_cast<int>(Error::InstallationError),
-            QString::fromStdString(std::format(
-                "Update file does not exist: {}", updateFile.string())));
+        auto errorMsg = std::format(
+            "Update file does not exist: {}", updateFile.string());
+        logError(Error::InstallationError, errorMsg);
         return false;
     }
 
-    std::string extension = updateFile.extension().string();
-    std::string filePath = updateFile.string();
-
-#if defined(Q_OS_WIN)
-    if (extension == ".exe" || extension == ".msi") {
-        QProcess::startDetached(
-            QString::fromStdString(filePath), QStringList());
-        QCoreApplication::quit();
-        return true;
+    auto strategy = createInstallStrategy();
+    if (strategy) {
+        return strategy->install(updateFile);
     }
-#elif defined(Q_OS_MACOS)
-    if (extension == ".dmg" || extension == ".pkg") {
-        QDesktopServices::openUrl(
-            QUrl::fromLocalFile(QString::fromStdString(filePath)));
-        QCoreApplication::quit();
-        return true;
-    }
-#elif defined(Q_OS_LINUX)
-    if (extension == ".AppImage") {
-        fs::permissions(updateFile,
-            fs::perms::owner_exec | fs::perms::group_exec
-                | fs::perms::others_exec,
-            fs::perm_options::add);
-        QProcess::startDetached(
-            QString::fromStdString(filePath), QStringList());
-        QCoreApplication::quit();
-        return true;
-    } else if (extension == ".deb" || extension == ".rpm") {
-        QDesktopServices::openUrl(
-            QUrl::fromLocalFile(QString::fromStdString(filePath)));
-        return true;
-    }
-#endif
 
     QDesktopServices::openUrl(
-        QUrl::fromLocalFile(QString::fromStdString(filePath)));
-
+        QUrl::fromLocalFile(QString::fromStdString(updateFile.string())));
     return true;
 }
 
 std::string AutoUpdater::getApiUrl() const
 {
-    return std::format(
-        "https://api.github.com/repos/{}/{}/releases/latest", username_, repo_);
+    return std::format("{}", kApiBaseUrl, username_, repo_);
 }
 
 std::optional<AutoUpdater::Version> AutoUpdater::parseGitHubResponse(
@@ -267,8 +264,8 @@ std::optional<AutoUpdater::Version> AutoUpdater::parseGitHubResponse(
         }
 
         if (downloadUrl.empty()) {
-            Q_EMIT errorOccurred(static_cast<int>(Error::ParsingError),
-                "No suitable download found for this platform");
+            auto errorMsg = "No suitable download found for this platform";
+            logError(Error::ParsingError, errorMsg);
             return std::nullopt;
         }
 
@@ -279,12 +276,10 @@ std::optional<AutoUpdater::Version> AutoUpdater::parseGitHubResponse(
             fileSize,
         };
     } catch (const json::exception& e) {
-        Q_EMIT errorOccurred(static_cast<int>(Error::ParsingError),
-            QString::fromStdString(
-                std::format("JSON parsing error: {}", e.what())));
+        auto errorMsg = std::format("JSON parsing error: {}", e.what());
+        logError(Error::ParsingError, errorMsg);
+        return std::nullopt;
     }
-
-    return std::nullopt;
 }
 
 QString AutoUpdater::getPlatformSpecificAssetName()
@@ -297,6 +292,26 @@ QString AutoUpdater::getPlatformSpecificAssetName()
     return ".*\\.(AppImage|deb|rpm|tar\\.gz|tar\\.xz)$";
 #else
     return ".*";
+#endif
+}
+
+void AutoUpdater::logError(Error error, const std::string& msg)
+{
+    Q_EMIT errorOccurred(static_cast<int>(error), QString::fromStdString(msg));
+    if (logCallback_)
+        logCallback_(error, msg);
+}
+
+std::unique_ptr<InstallStrategy> AutoUpdater::createInstallStrategy() const
+{
+#if defined(Q_OS_WIN)
+    return std::make_unique<WindowsInstallStrategy>();
+#elif defined(Q_OS_MACOS)
+    return std::make_unique<MacOSInstallStrategy>();
+#elif defined(Q_OS_LINUX)
+    return std::make_unique<LinuxInstallStrategy>();
+#else
+    return nullptr; // Fallback to default behavior
 #endif
 }
 }

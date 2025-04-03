@@ -21,6 +21,7 @@
 
 #include <iostream>
 #include <memory>
+#include <mutex>
 #include <optional>
 #include <string>
 #include <vector>
@@ -463,10 +464,12 @@ public:
 
     void addRemovedCallback(std::function<void(int)> cb);
     void addUpdatedCallback(std::function<void(const Wallet&)> cb);
+    void clearCallbacks();
 
 private:
     Storage* storage_;
 
+    std::mutex cbMutex_;
     std::vector<std::function<void()>> insertedCbs_;
     std::vector<std::function<void(const Wallet&)>> updatedCbs_;
     std::vector<std::function<void(int)>> removedCbs_;
@@ -505,10 +508,12 @@ public:
 
     void addRemovedCallback(std::function<void(int)> cb);
     void addUpdatedCallback(std::function<void(const Address&)> cb);
+    void clearCallbacks();
 
 private:
     Storage* storage_;
 
+    std::mutex cbMutex_;
     std::vector<std::function<void()>> insertedCbs_;
     std::vector<std::function<void(const Address&)>> updatedCbs_;
     std::vector<std::function<void(int)>> removedCbs_;

@@ -282,9 +282,15 @@ int WalletRepo::insert(const Wallet& wallet)
 {
     int id = storage_->insert(wallet);
     Q_EMIT inserted();
+    std::lock_guard<std::mutex> lock(cbMutex_);
     for (const auto& cb : insertedCbs_)
-        if (cb)
-            cb();
+        try {
+            if (cb)
+                cb();
+        } catch (const std::exception& e) {
+            std::cerr << "Callback failed: " << e.what() << std::endl;
+        }
+
     return id;
 }
 
@@ -292,9 +298,14 @@ void WalletRepo::update(const Wallet& wallet)
 {
     storage_->update(wallet);
     Q_EMIT updated(wallet);
+    std::lock_guard<std::mutex> lock(cbMutex_);
     for (const auto& cb : updatedCbs_)
-        if (cb)
-            cb(wallet);
+        try {
+            if (cb)
+                cb(wallet);
+        } catch (const std::exception& e) {
+            std::cerr << "Callback failed: " << e.what() << std::endl;
+        }
 }
 
 void WalletRepo::remove(int id)
@@ -302,9 +313,14 @@ void WalletRepo::remove(int id)
     storage_->remove_all<Address>(where(c(&Address::walletId) == id));
     storage_->remove<Wallet>(id);
     Q_EMIT removed(id);
+    std::lock_guard<std::mutex> lock(cbMutex_);
     for (const auto& cb : removedCbs_)
-        if (cb)
-            cb(id);
+        try {
+            if (cb)
+                cb(id);
+        } catch (const std::exception& e) {
+            std::cerr << "Callback failed: " << e.what() << std::endl;
+        }
 }
 
 std::optional<Wallet> WalletRepo::get(int id)
@@ -338,12 +354,21 @@ std::vector<Wallet> WalletRepo::getByGroup(int groupType)
 
 void WalletRepo::addRemovedCallback(std::function<void(int)> cb)
 {
+    std::lock_guard<std::mutex> lock(cbMutex_);
     removedCbs_.push_back(std::move(cb));
 }
 
 void WalletRepo::addUpdatedCallback(std::function<void(const Wallet&)> cb)
 {
     updatedCbs_.push_back(std::move(cb));
+}
+
+void WalletRepo::clearCallbacks()
+{
+    std::lock_guard<std::mutex> lock(cbMutex_);
+    insertedCbs_.clear();
+    updatedCbs_.clear();
+    removedCbs_.clear();
 }
 
 AddressRepo::AddressRepo(Storage* storage)
@@ -367,9 +392,15 @@ int AddressRepo::insert(const Address& address)
 {
     int id = storage_->insert(address);
     Q_EMIT inserted();
+    std::lock_guard<std::mutex> lock(cbMutex_);
     for (const auto& cb : insertedCbs_)
-        if (cb)
-            cb();
+        try {
+            if (cb)
+                cb();
+        } catch (const std::exception& e) {
+            std::cerr << "Callback failed: " << e.what() << std::endl;
+        }
+
     return id;
 }
 
@@ -377,18 +408,28 @@ void AddressRepo::update(const Address& address)
 {
     storage_->update(address);
     Q_EMIT updated(address);
+    std::lock_guard<std::mutex> lock(cbMutex_);
     for (const auto& cb : updatedCbs_)
-        if (cb)
-            cb(address);
+        try {
+            if (cb)
+                cb(address);
+        } catch (const std::exception& e) {
+            std::cerr << "Callback failed: " << e.what() << std::endl;
+        }
 }
 
 void AddressRepo::remove(int id)
 {
     storage_->remove<Address>(id);
     Q_EMIT removed(id);
+    std::lock_guard<std::mutex> lock(cbMutex_);
     for (const auto& cb : removedCbs_)
-        if (cb)
-            cb(id);
+        try {
+            if (cb)
+                cb(id);
+        } catch (const std::exception& e) {
+            std::cerr << "Callback failed: " << e.what() << std::endl;
+        }
 }
 
 std::optional<Address> AddressRepo::get(int id)
@@ -411,6 +452,14 @@ void AddressRepo::addRemovedCallback(std::function<void(int)> cb)
 void AddressRepo::addUpdatedCallback(std::function<void(const Address&)> cb)
 {
     updatedCbs_.push_back(std::move(cb));
+}
+
+void AddressRepo::clearCallbacks()
+{
+    std::lock_guard<std::mutex> lock(cbMutex_);
+    insertedCbs_.clear();
+    updatedCbs_.clear();
+    removedCbs_.clear();
 }
 
 Database::Database(const QString& dataPath,

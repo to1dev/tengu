@@ -561,7 +561,7 @@ QPlainTextEdit:focus {
 #ButtonNews:hover,
 #ButtonBell:hover,
 #ButtonWallet:hover {
-    background-color: #2D3E50;
+    background-color: #22303C;
 }
 
 #ButtonAI:disabled,

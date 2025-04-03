@@ -20,140 +20,50 @@
 
 namespace Daitengu::Components {
 
-SplashThread::SplashThread(QObject* parent)
-    : QThread(parent)
+static inline HBITMAP createBitmapFromImage(const QImage& image)
 {
-}
+    BITMAPINFO bmi = {};
+    bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+    bmi.bmiHeader.biWidth = image.width();
+    bmi.bmiHeader.biHeight = -image.height();
+    bmi.bmiHeader.biPlanes = 1;
+    bmi.bmiHeader.biBitCount = 32;
+    bmi.bmiHeader.biCompression = BI_RGB;
 
-void SplashThread::sleep(unsigned long secs)
-{
-    QThread::sleep(secs);
-}
+    DCWrapper hdc;
+    HBITMAP hBitmap = CreateDIBitmap(
+        hdc, &bmi.bmiHeader, CBM_INIT, image.constBits(), &bmi, DIB_RGB_COLORS);
 
-void SplashThread::msleep(unsigned long msecs)
-{
-    QThread::msleep(msecs);
-}
-
-void SplashThread::usleep(unsigned long usecs)
-{
-    QThread::usleep(usecs);
-}
-
-bool SplashThread::interruptibleSleep(unsigned long secs)
-{
-    const unsigned long checkInterval = 100;
-    unsigned long remainingTime = secs * 1000;
-
-    while (remainingTime > 0 && !isInterruptionRequested()) {
-        unsigned long sleepTime = std::min(remainingTime, checkInterval);
-        msleep(sleepTime);
-        remainingTime -= sleepTime;
+    if (!hBitmap) {
+        LOG_ERROR("Failed to create bitmap");
+        throw std::runtime_error("Failed to create bitmap");
     }
 
-    return !isInterruptionRequested();
+    return hBitmap;
 }
 
-void SplashThread::run()
-{
-    Q_EMIT started();
-    exec();
-    Q_EMIT finished();
-}
-
-void SplashThread::requestStop()
-{
-    requestInterruption();
-    quit();
-    wait();
-}
-
-SplashThreadEx::SplashThreadEx(QObject* parent)
-    : SplashThread(parent)
-    , isPaused_(false)
-{
-}
-
-void SplashThreadEx::pause()
-{
-    mutex_.lock();
-    isPaused_ = true;
-    mutex_.unlock();
-}
-
-void SplashThreadEx::resume()
-{
-    mutex_.lock();
-    isPaused_ = false;
-    condition_.wakeAll();
-    mutex_.unlock();
-}
-
-bool SplashThreadEx::interruptibleSleepWithTimeout(
-    unsigned long secs, unsigned long timeoutSecs)
-{
-    QDeadlineTimer deadline(timeoutSecs * 1000);
-
-    const unsigned long checkInterval = 100;
-    unsigned long remainingTime = secs * 1000;
-
-    while (remainingTime > 0 && !isInterruptionRequested()) {
-        if (deadline.hasExpired()) {
-            Q_EMIT error("Operation timed out");
-            return false;
-        }
-
-        checkPause();
-
-        unsigned long sleepTime = std::min(remainingTime, checkInterval);
-        msleep(sleepTime);
-        remainingTime -= sleepTime;
-    }
-
-    return !isInterruptionRequested();
-}
-
-void SplashThreadEx::checkPause()
-{
-    mutex_.lock();
-    while (isPaused_ && !isInterruptionRequested()) {
-        condition_.wait(&mutex_);
-    }
-    mutex_.unlock();
-}
-
-HBITMAP QImageToHBITMAP(const QImage& image, bool premultiplied = false)
+static inline HBITMAP QImageToHBITMAP(
+    const QImage& image, bool premultiplied = false)
 {
     try {
+        if ((premultiplied
+                && image.format() == QImage::Format_ARGB32_Premultiplied)
+            || (!premultiplied && image.format() == QImage::Format_RGBA8888)) {
+            return createBitmapFromImage(image);
+        }
+
         QImage convertedImage = premultiplied
             ? image.convertToFormat(QImage::Format_ARGB32_Premultiplied)
             : image.convertToFormat(QImage::Format_RGBA8888);
 
-        BITMAPINFO bmi = {};
-        bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-        bmi.bmiHeader.biWidth = convertedImage.width();
-        bmi.bmiHeader.biHeight = -convertedImage.height();
-        bmi.bmiHeader.biPlanes = 1;
-        bmi.bmiHeader.biBitCount = 32;
-        bmi.bmiHeader.biCompression = BI_RGB;
-
-        DCWrapper hdc;
-        HBITMAP hBitmap = CreateDIBitmap(hdc, &bmi.bmiHeader, CBM_INIT,
-            convertedImage.constBits(), &bmi, DIB_RGB_COLORS);
-
-        if (!hBitmap) {
-            LOG_ERROR("Failed to create bitmap");
-            throw std::runtime_error("Failed to create bitmap");
-        }
-
-        return hBitmap;
+        return createBitmapFromImage(convertedImage);
     } catch (const std::exception& e) {
         LOG_ERROR(QString("QImageToHBITMAP failed: %1").arg(e.what()));
         throw;
     }
 }
 
-HBITMAP QImageToHBITMAPWithPremultipliedAlpha(const QImage& image)
+static inline HBITMAP QImageToHBITMAPWithPremultipliedAlpha(const QImage& image)
 {
     return QImageToHBITMAP(image, true);
 }
@@ -164,6 +74,7 @@ Splash::Splash(const QPixmap& pixmap, const SplashConfig& config)
 {
     LOG_INFO("Initializing Splash Screen");
     try {
+        config_.validate();
         initializeWindow(pixmap);
     } catch (const std::exception& e) {
         LOG_ERROR(
@@ -172,7 +83,7 @@ Splash::Splash(const QPixmap& pixmap, const SplashConfig& config)
     }
 }
 
-void Splash::stayOnTop()
+void Splash::stayOnTop() const
 {
     try {
         if (auto handle = reinterpret_cast<HWND>(winId())) {
@@ -189,6 +100,7 @@ void Splash::stayOnTop()
 void Splash::setOpacity(BYTE opacity)
 {
     config_.opacity = opacity;
+    config_.validate();
     updateLayeredWindow();
 }
 
@@ -248,8 +160,15 @@ void Splash::updateLayeredWindow(const QPixmap& pixmap)
         }
 
         DeleteObject(hBitmap);
+    } catch (const std::bad_alloc& e) {
+        LOG_ERROR(QString("Memory allocation failed: %1").arg(e.what()));
+        recover();
+    } catch (const std::runtime_error& e) {
+        LOG_ERROR(QString("Runtime error: %1").arg(e.what()));
+        recover();
     } catch (const std::exception& e) {
-        LOG_ERROR(QString("updateLayeredWindow failed: %1").arg(e.what()));
+        LOG_ERROR(QString("Unexpected error: %1").arg(e.what()));
+        recover();
     }
 }
 

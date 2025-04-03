@@ -19,124 +19,85 @@
 #ifndef SPLASH_H
 #define SPLASH_H
 
+#include <chrono>
 #include <memory>
 #include <stdexcept>
 
 #include <QDebug>
-#include <QMutex>
 #include <QSplashScreen>
-#include <QThread>
-#include <QWaitCondition>
 
 #include <windows.h>
 
 namespace Daitengu::Components {
 
-inline constexpr int SLEEP_TIME = 1;
-
 #define LOG_ERROR(msg) qCritical() << "[Splash Error]" << msg
 #define LOG_INFO(msg) qInfo() << "[Splash Info]" << msg
-
-class SplashThread : public QThread {
-    Q_OBJECT
-
-public:
-    explicit SplashThread(QObject* parent = nullptr);
-
-    static void sleep(unsigned long secs);
-    static void msleep(unsigned long msecs);
-    static void usleep(unsigned long usecs);
-
-    bool interruptibleSleep(unsigned long secs);
-
-protected:
-    void run() override;
-
-Q_SIGNALS:
-    void started();
-    void finished();
-    void error(const QString& errorMessage);
-
-public Q_SLOTS:
-    void requestStop();
-};
-
-class SplashThreadEx : public SplashThread {
-    Q_OBJECT
-
-public:
-    explicit SplashThreadEx(QObject* parent = nullptr);
-
-    void pause();
-    void resume();
-
-    bool interruptibleSleepWithTimeout(
-        unsigned long secs, unsigned long timeoutSecs);
-
-protected:
-    void checkPause();
-
-private:
-    QMutex mutex_;
-    QWaitCondition condition_;
-    bool isPaused_;
-};
 
 struct SplashConfig {
     bool alwaysOnTop = true;
     BYTE opacity = 0xFF;
     DWORD layeredFlags = ULW_ALPHA;
+
+    void validate() const
+    {
+        if (opacity > 255) {
+            throw std::invalid_argument("Opacity must be 0-255");
+        }
+    }
 };
 
 class DCWrapper {
 public:
-    DCWrapper(HWND h = NULL)
-        : hwnd(h)
+    explicit DCWrapper(HWND hwnd = nullptr) noexcept(false)
+        : hwnd_(hwnd)
+        , dc_(GetDC(hwnd))
     {
-        dc = GetDC(hwnd);
-        if (!dc) {
+        if (!dc_) {
             LOG_ERROR("Failed to get DC");
             throw std::runtime_error("Failed to get DC");
         }
     }
 
-    ~DCWrapper()
+    DCWrapper(const DCWrapper&) = delete;
+    DCWrapper& operator=(const DCWrapper&) = delete;
+
+    ~DCWrapper() noexcept
     {
-        if (dc)
-            ReleaseDC(hwnd, dc);
+        if (dc_)
+            ReleaseDC(hwnd_, dc_);
     }
 
     operator HDC() const
     {
-        return dc;
+        return dc_;
     }
 
 private:
-    HDC dc;
-    HWND hwnd;
+    HDC dc_;
+    HWND hwnd_;
 };
 
 class BitmapSelector {
 public:
     BitmapSelector(HDC hdc, HBITMAP bitmap)
-        : dc(hdc)
+        : dc_(hdc)
     {
         if (!bitmap) {
             LOG_ERROR("Invalid bitmap handle");
             throw std::runtime_error("Invalid bitmap handle");
         }
-        oldBitmap = (HBITMAP)SelectObject(dc, bitmap);
+        oldBitmap_ = static_cast<HBITMAP>(SelectObject(dc_, bitmap));
     }
 
     ~BitmapSelector()
     {
-        if (oldBitmap)
-            SelectObject(dc, oldBitmap);
+        if (oldBitmap_)
+            SelectObject(dc_, oldBitmap_);
     }
 
 private:
-    HDC dc;
-    HBITMAP oldBitmap;
+    HDC dc_;
+    HBITMAP oldBitmap_;
 };
 
 class Splash : public QSplashScreen {
@@ -144,7 +105,7 @@ public:
     explicit Splash(
         const QPixmap& pixmap, const SplashConfig& config = SplashConfig());
 
-    void stayOnTop();
+    void stayOnTop() const;
     void setOpacity(BYTE opacity);
 
 private:

@@ -102,6 +102,7 @@ set(SOURCE_FILES
     src/Managers/SettingManager.cpp
     src/Managers/ThemeManager.cpp
     src/Managers/WindowManager.cpp
+    src/Scripting/JSScriptEngine.cpp
     src/Scripting/LuaScriptEngine.cpp
     src/Tengu.cpp
     src/UI/Frameless.cpp
@@ -214,6 +215,7 @@ set(THIRD_PARTY_LIBS
     sodium
     sqlite3
     luajit
+    qjs
     izanagi
     secp256k1
     fmt

@@ -18,7 +18,9 @@
 
 #include "Tengu.h"
 
+#include <chrono>
 #include <iostream>
+#include <thread>
 
 #include <QApplication>
 
@@ -95,7 +97,7 @@ int main(int argc, char* argv[])
             = std::make_shared<WalletDock>(&w, globalManager);
         w.setWalletDock(walletDock);
 
-        SplashThread::sleep(SLEEP_TIME);
+        std::this_thread::sleep_for(std::chrono::seconds(1));
         splash.hide();
 
         w.show();

@@ -195,4 +195,13 @@ engine->execute(R"(
         logMessage("Hello from Lua!")
         onBalanceUpdate("1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa", "50.0", 0)
     )");
+
+engine->registerFunction("getSystemTime", []() -> std::any {
+    auto now = std::chrono::system_clock::now();
+    auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(
+        now.time_since_epoch())
+                  .count();
+    return std::any(static_cast<double>(ms));
+});
+
 */

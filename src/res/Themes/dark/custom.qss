@@ -528,7 +528,7 @@ QPlainTextEdit:focus {
 #ButtonBell,
 #ButtonWallet {
     border-radius: 8px;
-    background: palette(window);
+    background-color: #19232D;
     color: #DFE1E2;
     width: 60px;
     height: 60px;
@@ -547,7 +547,7 @@ QPlainTextEdit:focus {
 #ButtonBell:pressed,
 #ButtonWallet:pressed {
     padding: 9px;
-    background-color: #1A72BB;
+    /*background-color: #1A72BB;*/
 }
 
 #ButtonAI:hover,
@@ -576,21 +576,6 @@ QPlainTextEdit:focus {
 #ButtonBell:disabled,
 #ButtonWallet:disabled {
     color: #788D9C;
-}
-
-#ButtonAI:checked,
-#ButtonScript:checked,
-#ButtonDefi:checked,
-#ButtonArbitrage:checked,
-#ButtonBridge:checked,
-#ButtonSwap:checked,
-#ButtonTrade:checked,
-#ButtonChart:checked,
-#ButtonNews:checked,
-#ButtonBell:checked,
-#ButtonWallet:checked {
-    background-color: #1A72BB;
-    color: #FFFFFF;
 }
 
 #ButtonLeftTop, #ButtonLeftBottom, #ButtonRightTop, #ButtonRightBottom {
@@ -1252,6 +1237,7 @@ QSpinBox {
     /*font-family: 'FontquanXinYiGuanHeiTi';*/
 }
 
+/*
 .button {
     border-radius: 16px;
     border: 0;
@@ -1343,3 +1329,4 @@ QSpinBox {
     color: #787878;
     background-color: #454545;
 }
+*/

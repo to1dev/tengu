@@ -102,6 +102,7 @@ set(SOURCE_FILES
     src/Managers/SettingManager.cpp
     src/Managers/ThemeManager.cpp
     src/Managers/WindowManager.cpp
+    src/Scripting/LuaScriptEngine.cpp
     src/Tengu.cpp
     src/UI/Frameless.cpp
     src/Utils/AutoUpdater.cpp
@@ -128,78 +129,6 @@ set(SOURCE_FILES
 
 set(HEADER_FILES
     ${GRPC_HEADER_FILES}
-    src/Components/AddressListWidget.h
-    src/Components/AnimatedTabWidget.h
-    src/Components/ClickableLabel.h
-    src/Components/ComboBoxEx.h
-    src/Components/FlowLayout.h
-    src/Components/LineEditEx.h
-    src/Components/MnemonicView.h
-    src/Components/PlainTextEditEx.h
-    src/Components/SVGWidget.h
-    src/Components/Splash.h
-    src/Components/TitleBar.h
-    src/Components/Toast/Toast.h
-    src/Components/TxListWidget.h
-    src/Components/WalletListWidget.h
-    src/Components/WalletPanel.h
-    src/Consts.h
-    src/Databases/Database.h
-    src/Forms/ImportWalletForm.h
-    src/Forms/MessageForm.h
-    src/Forms/NewAddressForm.h
-    src/Forms/NewWalletForm.h
-    src/Forms/UpdateWalletForm.h
-    src/Forms/WalletDock.h
-    src/Forms/WalletForm.h
-    src/Forms/WalletSelectorForm.h
-    src/Globals.h
-    src/Layouts/AnimationController.h
-    src/Layouts/GridLayoutEngine.h
-    src/Layouts/LayoutEngine.h
-    src/Layouts/LayoutOrchestrator.h
-    src/Layouts/PredefinedLayoutEngine.h
-    src/Layouts/ScreenManager.h
-    src/Layouts/WindowState.h
-    src/Managers/GlobalManager.h
-    src/Managers/ResourceManager.h
-    src/Managers/SettingManager.h
-    src/Managers/ThemeManager.h
-    src/Managers/WindowManager.h
-    src/Rust.h
-    src/Security/Security.h
-    src/Tengu.h
-    src/UI/Frameless.h
-    src/Utils/AutoUpdater.h
-    src/Utils/Base58.hpp
-    src/Utils/DotEnv.hpp
-    src/Utils/Encryption.h
-    src/Utils/Helpers.hpp
-    src/Utils/NameGenerator.h
-    src/Utils/PathUtils.hpp
-    src/Utils/RSS.hpp
-    src/Utils/RunGuard.h
-    src/Wallets/Core/BaseMnemonic.h
-    src/Wallets/Core/BaseWallet.h
-    src/Wallets/Core/BitcoinWallet.h
-    src/Wallets/Core/ChainWallet.h
-    src/Wallets/Core/Context.h
-    src/Wallets/Core/EthereumWallet.h
-    src/Wallets/Core/Errors.hpp
-    src/Wallets/Core/SolanaWallet.h
-    src/Wallets/Core/SuiWallet.h
-    src/Wallets/Core/Types.h
-    src/Wallets/Monitor/BlockchainMonitor.h
-    src/Wallets/Monitor/BlockchainProvider.h
-    src/Wallets/Monitor/MonitorManager.h
-    src/Wallets/Monitor/ProviderFactory.h
-    src/Wallets/Monitor/Bitcoin/MempoolSpaceProvider.h
-    src/Wallets/Transaction/Solana/Bincode.hpp
-    src/Wallets/Transaction/Solana/Borsh.hpp
-    src/Wallets/Transaction/Solana/Builder.h
-    src/Wallets/Transaction/Solana/Types.h
-    src/Wallets/Utils/Hex.hpp
-    src/Wallets/Utils/SecureBytes.h
 )
 
 set(UI_FILES
@@ -248,6 +177,7 @@ target_include_directories(${PROJECT_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}/src
         ${CMAKE_CURRENT_SOURCE_DIR}/src/3rd/inc
         ${CMAKE_CURRENT_SOURCE_DIR}/src/3rd/inc/izanagi
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/3rd/inc/luajit-2.1
 )
 
 if (CMAKE_BUILD_TYPE STREQUAL "Release")
@@ -283,7 +213,7 @@ set(THIRD_PARTY_LIBS
     pugixml
     sodium
     sqlite3
-    luajit-5.1
+    luajit
     izanagi
     secp256k1
     fmt

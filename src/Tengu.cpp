@@ -67,7 +67,11 @@ void Tengu::setWalletDock(const std::shared_ptr<WalletDock>& walletDock)
 
 void Tengu::showWalletDock()
 {
-    walletDock_->show();
+    if (auto wd = walletDock_.lock()) {
+        wd->show();
+    } else {
+        spdlog::error("WalletDock is no longer available");
+    }
 }
 
 void Tengu::reboot()

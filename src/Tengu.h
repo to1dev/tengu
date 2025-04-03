@@ -23,6 +23,8 @@
 #include <QMainWindow>
 #include <QTabBar>
 
+#include <spdlog/spdlog.h>
+
 #include "Consts.h"
 #include "Globals.h"
 
@@ -69,7 +71,7 @@ private Q_SLOTS:
 private:
     Ui::Tengu* ui;
 
-    std::shared_ptr<WalletDock> walletDock_;
+    std::weak_ptr<WalletDock> walletDock_;
 
     std::shared_ptr<const GlobalManager> globalManager_;
     std::unique_ptr<Frameless> frameless_;

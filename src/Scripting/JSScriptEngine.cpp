@@ -207,3 +207,37 @@ JSValue JSScriptEngine::jsCallbackWrapper(JSContext* ctx, JSValueConst this_val,
     return JS_UNDEFINED;
 }
 }
+
+/*
+auto engine = std::make_unique<JSScriptEngine>();
+
+engine->registerFunction("getSystemTime", []() -> std::any {
+    auto now = std::chrono::system_clock::now();
+    auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(
+        now.time_since_epoch())
+                  .count();
+    return std::any(static_cast<double>(ms));
+});
+
+engine->setCallback("onLog", [](const std::vector<std::any>& args) {
+    if (!args.empty() && args[0].type() == typeid(std::string)) {
+        spdlog::info(
+            "JS called onLog: {}", std::any_cast<std::string>(args[0]));
+    }
+});
+
+engine->execute(R"(
+        function test() {
+            let time = getSystemTime();
+            onLog("Current time: " + time);
+            return time;
+        }
+        let result = test();
+        console.log("Test result: " + result);
+    )");
+
+auto result = engine->callFunction("test", {});
+if (result.type() == typeid(double)) {
+    spdlog::info("JS returned: {}", std::any_cast<double>(result));
+}
+*/

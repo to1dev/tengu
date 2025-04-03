@@ -68,6 +68,40 @@ static inline HBITMAP QImageToHBITMAPWithPremultipliedAlpha(const QImage& image)
     return QImageToHBITMAP(image, true);
 }
 
+SplashImageDownloader::SplashImageDownloader(
+    const std::filesystem::path& savePath, const QUrl& url)
+    : savePath_(savePath)
+    , url_(url)
+{
+}
+
+SplashImageDownloader::~SplashImageDownloader()
+{
+    LOG_INFO("Destroy");
+}
+
+QCoro::Task<void> SplashImageDownloader::download()
+{
+    QNetworkRequest request { url_ };
+    auto reply = std::unique_ptr<QNetworkReply>(manager_.get(request));
+    co_await qCoro(reply.get()).waitForFinished();
+    if (reply->isFinished() && reply->error() == QNetworkReply::NoError) {
+        QByteArray data = co_await qCoro(reply.get()).readAll();
+        QFile file(savePath_.string().c_str());
+        if (file.open(QIODevice::WriteOnly)) {
+            file.write(data);
+            file.close();
+            LOG_INFO("Splash image downloaded and saved");
+        } else {
+            LOG_ERROR("Failed to save splash image");
+        }
+    } else {
+        LOG_ERROR("Failed to download splash image");
+    }
+
+    co_return;
+}
+
 Splash::Splash(const QPixmap& pixmap, const SplashConfig& config)
     : QSplashScreen(pixmap)
     , config_(config)
@@ -75,7 +109,15 @@ Splash::Splash(const QPixmap& pixmap, const SplashConfig& config)
     LOG_INFO("Initializing Splash Screen");
     try {
         config_.validate();
-        initializeWindow(pixmap);
+        std::filesystem::path dataPath
+            = PathUtils::getAppDataPath(COMPANY) / NAME;
+        QPixmap finalPixmap = pixmap;
+        QPixmap localPixmap = loadLocalImage(dataPath);
+        if (!localPixmap.isNull()) {
+            finalPixmap = localPixmap;
+            setPixmap(finalPixmap);
+        }
+        initializeWindow(finalPixmap);
     } catch (const std::exception& e) {
         LOG_ERROR(
             QString("Failed to initialize splash screen: %1").arg(e.what()));
@@ -180,6 +222,21 @@ void Splash::recover()
         ShowWindow(handle, SW_SHOW);
         UpdateWindow(handle);
     }
+}
+
+QPixmap Splash::loadLocalImage(const std::filesystem::path& dir)
+{
+    std::filesystem::path imagePath = dir / "splash.png";
+    if (Utils::PathUtils::exists(imagePath)) {
+        QPixmap pixmap;
+        if (pixmap.load(imagePath.string().c_str())) {
+            return pixmap;
+        } else {
+            LOG_ERROR("[Splash Warning] Local splash image is invalid");
+        }
+    }
+    LOG_INFO("[Splash Info] No valid local splash image found, using default");
+    return QPixmap();
 }
 
 }

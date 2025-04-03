@@ -24,9 +24,25 @@
 #include <stdexcept>
 
 #include <QDebug>
+#include <QFile>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QPixmap>
 #include <QSplashScreen>
+#include <QUrl>
 
+#ifdef WIN32
 #include <windows.h>
+#endif
+
+#include <qcoro/QCoro>
+
+#include "Consts.h"
+
+#include "Utils/PathUtils.hpp"
+
+using namespace Daitengu::Core;
+using namespace Daitengu::Utils;
 
 namespace Daitengu::Components {
 
@@ -100,6 +116,20 @@ private:
     HBITMAP oldBitmap_;
 };
 
+class SplashImageDownloader {
+public:
+    explicit SplashImageDownloader(const std::filesystem::path& savePath,
+        const QUrl& url = QUrl("https://img.tengu.to1.dev/splash.png"));
+    ~SplashImageDownloader();
+
+    QCoro::Task<void> download();
+
+private:
+    QNetworkAccessManager manager_;
+    std::filesystem::path savePath_;
+    QUrl url_;
+};
+
 class Splash : public QSplashScreen {
 public:
     explicit Splash(
@@ -114,6 +144,8 @@ private:
     void initializeWindow(const QPixmap& pixmap);
     void updateLayeredWindow(const QPixmap& pixmap = QPixmap());
     void recover();
+
+    QPixmap loadLocalImage(const std::filesystem::path& dir);
 };
 
 }

@@ -316,7 +316,7 @@ void SettingManager::initLogging()
         console_sink->set_level(spdlog::level::info);
 
         auto file_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(
-            logFilePath.string(), 5 * 1024 * 1024, 3);
+            logFilePath.string(), 512 * 1024, 3);
         file_sink->set_level(spdlog::level::trace);
 
         std::vector<spdlog::sink_ptr> sinks { console_sink, file_sink };

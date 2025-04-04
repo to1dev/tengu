@@ -112,10 +112,12 @@ Splash::Splash(const QPixmap& pixmap, const SplashConfig& config)
         std::filesystem::path dataPath
             = PathUtils::getAppDataPath(COMPANY) / NAME;
         QPixmap finalPixmap = pixmap;
-        QPixmap localPixmap = loadLocalImage(dataPath);
-        if (!localPixmap.isNull()) {
-            finalPixmap = localPixmap;
-            setPixmap(finalPixmap);
+        if (config.download) {
+            QPixmap localPixmap = loadLocalImage(dataPath);
+            if (!localPixmap.isNull()) {
+                finalPixmap = localPixmap;
+                setPixmap(finalPixmap);
+            }
         }
         initializeWindow(finalPixmap);
     } catch (const std::exception& e) {

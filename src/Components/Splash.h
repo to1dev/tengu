@@ -50,6 +50,7 @@ namespace Daitengu::Components {
 #define LOG_INFO(msg) qInfo() << "[Splash Info]" << msg
 
 struct SplashConfig {
+    bool download = false;
     bool alwaysOnTop = true;
     BYTE opacity = 0xFF;
     DWORD layeredFlags = ULW_ALPHA;

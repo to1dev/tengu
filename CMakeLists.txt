@@ -226,6 +226,8 @@ if (ENABLE_GRPC)
         grpc
         gpr
         protobuf
+        protobuf-lite
+        protoc
         cares
         absl_bad_any_cast_impl
         absl_bad_optional_access
@@ -328,6 +330,7 @@ if (ENABLE_GRPC)
         upb_wire_lib
         utf8_range
         utf8_validity
+        utf8_range_lib
         cares
         ssl
         crypto

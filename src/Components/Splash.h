@@ -20,10 +20,10 @@
 #define SPLASH_H
 
 #include <chrono>
+#include <iostream>
 #include <memory>
 #include <stdexcept>
 
-#include <QDebug>
 #include <QFile>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
@@ -46,11 +46,11 @@ using namespace Daitengu::Utils;
 
 namespace Daitengu::Components {
 
-#define LOG_ERROR(msg) qCritical() << "[Splash Error]" << msg
-#define LOG_INFO(msg) qInfo() << "[Splash Info]" << msg
+#define LOG_ERROR(msg) std::cerr << "[Splash Error] " << msg << std::endl;
+#define LOG_INFO(msg) std::cout << "[Splash Info] " << msg << std::endl;
 
 struct SplashConfig {
-    bool download = false;
+    bool download = true;
     bool alwaysOnTop = true;
     BYTE opacity = 0xFF;
     DWORD layeredFlags = ULW_ALPHA;

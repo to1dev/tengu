@@ -58,7 +58,7 @@ static inline HBITMAP QImageToHBITMAP(
 
         return createBitmapFromImage(convertedImage);
     } catch (const std::exception& e) {
-        LOG_ERROR(QString("QImageToHBITMAP failed: %1").arg(e.what()));
+        LOG_ERROR(std::format("QImageToHBITMAP failed: {}", e.what()));
         throw;
     }
 }
@@ -82,6 +82,14 @@ SplashImageDownloader::~SplashImageDownloader()
 
 QCoro::Task<void> SplashImageDownloader::download()
 {
+    /*QTimer timer;
+    timer.setSingleShot(true);
+    timer.start(5000);
+    co_await qCoro(&timer).waitForTimeout();
+    auto now = std::chrono::system_clock::now();
+    auto formatted = std::format("{:%Y-%m-%d %H:%M:%S}", now);
+    LOG_INFO(formatted);*/
+
     QNetworkRequest request { url_ };
     auto reply = std::unique_ptr<QNetworkReply>(manager_.get(request));
     co_await qCoro(reply.get()).waitForFinished();
@@ -112,17 +120,17 @@ Splash::Splash(const QPixmap& pixmap, const SplashConfig& config)
         std::filesystem::path dataPath
             = PathUtils::getAppDataPath(COMPANY) / NAME;
         QPixmap finalPixmap = pixmap;
-        if (config.download) {
-            QPixmap localPixmap = loadLocalImage(dataPath);
-            if (!localPixmap.isNull()) {
-                finalPixmap = localPixmap;
+        if (config_.download) {
+            if (QPixmap localPixmap = loadLocalImage(dataPath);
+                !localPixmap.isNull()) {
+                finalPixmap = std::move(localPixmap);
                 setPixmap(finalPixmap);
             }
         }
         initializeWindow(finalPixmap);
     } catch (const std::exception& e) {
         LOG_ERROR(
-            QString("Failed to initialize splash screen: %1").arg(e.what()));
+            std::format("Failed to initialize splash screen: {}", e.what()));
         recover();
     }
 }
@@ -137,7 +145,7 @@ void Splash::stayOnTop() const
             }
         }
     } catch (const std::exception& e) {
-        LOG_ERROR(QString("stayOnTop failed: %1").arg(e.what()));
+        LOG_ERROR(std::format("stayOnTop failed: {}", e.what()));
     }
 }
 
@@ -205,13 +213,13 @@ void Splash::updateLayeredWindow(const QPixmap& pixmap)
 
         DeleteObject(hBitmap);
     } catch (const std::bad_alloc& e) {
-        LOG_ERROR(QString("Memory allocation failed: %1").arg(e.what()));
+        LOG_ERROR(std::format("Memory allocation failed: {}", e.what()));
         recover();
     } catch (const std::runtime_error& e) {
-        LOG_ERROR(QString("Runtime error: %1").arg(e.what()));
+        LOG_ERROR(std::format("Runtime error: {}", e.what()));
         recover();
     } catch (const std::exception& e) {
-        LOG_ERROR(QString("Unexpected error: %1").arg(e.what()));
+        LOG_ERROR(std::format("Unexpected error: {}", e.what()));
         recover();
     }
 }

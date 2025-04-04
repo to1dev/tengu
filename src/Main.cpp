@@ -97,10 +97,6 @@ int main(int argc, char* argv[])
             = std::make_shared<WalletDock>(&w, globalManager);
         w.setWalletDock(walletDock);
 
-        SplashImageDownloader downloader(
-            globalManager->settingManager()->dataPath() / "splash.png");
-        downloader.download();
-
         std::this_thread::sleep_for(std::chrono::seconds(1));
         splash.hide();
 
@@ -109,6 +105,11 @@ int main(int argc, char* argv[])
 
         splash.finish(&w);
         splash.close();
+
+        const auto dataPath
+            = globalManager->settingManager()->dataPath() / "splash.png";
+        SplashImageDownloader downloader(dataPath);
+        downloader.download();
 
         currentExitCode = a.exec();
     } while (currentExitCode == EXIT_CODE_REBOOT);

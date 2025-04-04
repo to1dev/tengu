@@ -36,7 +36,6 @@ if (ENABLE_GRPC)
     )
 
     set(GRPC_SOURCE_FILES
-        src/Clients/Solana/gRPC/Config/ConfigManager.cpp
     )
 else()
     message(STATUS "gRPC is DISABLED")
@@ -222,12 +221,11 @@ if (ENABLE_GRPC)
         grpc++_alts
         grpc++
         grpc_authorization_provider
-        grpc_plugin_support
         grpc_unsecure
+        grpc_plugin_support
         grpc
         gpr
         protobuf
-        grpc_plugin_support
         cares
         absl_bad_any_cast_impl
         absl_bad_optional_access
@@ -330,6 +328,7 @@ if (ENABLE_GRPC)
         upb_wire_lib
         utf8_range
         utf8_validity
+        cares
         ssl
         crypto
         bcrypt
@@ -352,8 +351,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 )
 
 if (WIN32)
-    #add_definitions(-DQT_STATIC)
-    #add_definitions(-DWIN32_LEAN_AND_MEAN)
     target_compile_definitions(${PROJECT_NAME} PRIVATE
         WIN32_LEAN_AND_MEAN
     )

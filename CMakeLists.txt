@@ -36,6 +36,8 @@ if (ENABLE_GRPC)
     )
 
     set(GRPC_SOURCE_FILES
+        src/Clients/Solana/gRPC/ConfigManager.cpp
+        src/Clients/Solana/gRPC/StorageManager.cpp
     )
 else()
     message(STATUS "gRPC is DISABLED")
@@ -202,6 +204,9 @@ set(THIRD_PARTY_LIBS
     sodium
     sqlite3
     rocksdb
+    bz2
+    snappy
+    lz4
     luajit
     qjs
     izanagi
@@ -212,6 +217,8 @@ set(THIRD_PARTY_LIBS
     QCoro5Core
     QCoro5Network
     QCoro5WebSockets
+
+    Rpcrt4
 )
 
 if (ENABLE_GRPC)

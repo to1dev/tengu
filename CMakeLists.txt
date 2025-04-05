@@ -37,8 +37,14 @@ if (ENABLE_GRPC)
 
     set(GRPC_SOURCE_FILES
         src/Clients/Solana/gRPC/ConfigManager.cpp
+        src/Clients/Solana/gRPC/DexFilter.cpp
+        src/Clients/Solana/gRPC/FilterManager.cpp
+        src/Clients/Solana/gRPC/GeyserClientManager.cpp
+        src/Clients/Solana/gRPC/GeyserClientWorker.cpp
+        src/Clients/Solana/gRPC/HttpServer.cpp
         src/Clients/Solana/gRPC/NotificationManager.cpp
         src/Clients/Solana/gRPC/StorageManager.cpp
+        src/Clients/Solana/gRPC/SwapFilter.cpp
     )
 else()
     message(STATUS "gRPC is DISABLED")
@@ -180,6 +186,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
         -Wno-volatile
         -Wno-misleading-indentation
         -Wno-unused-but-set-parameter
+        -Wno-attributes
     )
 else()
     target_compile_options(${PROJECT_NAME} PRIVATE
@@ -190,6 +197,7 @@ else()
         -Wno-volatile
         -Wno-misleading-indentation
         -Wno-unused-but-set-parameter
+        -Wno-attributes
     )
 endif()
 
@@ -220,6 +228,7 @@ set(THIRD_PARTY_LIBS
     QCoro5WebSockets
 
     Rpcrt4
+    Mswsock
 )
 
 if (ENABLE_GRPC)

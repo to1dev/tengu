@@ -26,6 +26,13 @@
 
 #include <qcoro/QCoro>
 
+#include "Consts.h"
+
+#include "Utils/PathUtils.hpp"
+
+using namespace Daitengu::Core;
+using namespace Daitengu::Utils;
+
 namespace Daitengu::Clients::Solana::gRPC {
 
 class StorageManager {
@@ -44,5 +51,6 @@ public:
 
 private:
     std::unique_ptr<rocksdb::DB> db_;
+    fs::path dataPath_ { PathUtils::getAppDataPath(COMPANY) / NAME };
 };
 }

@@ -18,6 +18,7 @@
 
 #pragma once
 
+#include <fstream>
 #include <optional>
 #include <stdexcept>
 #include <string>
@@ -26,6 +27,15 @@
 #include <sodium.h>
 
 #include <toml.hpp>
+
+#include <spdlog/spdlog.h>
+
+#include "Consts.h"
+
+#include "Utils/PathUtils.hpp"
+
+using namespace Daitengu::Core;
+using namespace Daitengu::Utils;
 
 namespace Daitengu::Clients::Solana::gRPC {
 
@@ -42,12 +52,14 @@ public:
     int getHttpPort() const;
 
 private:
+    void initializeKeyAndNonce();
     std::string encrypt(const std::string& data) const;
     std::string decrypt(const std::string& data) const;
 
     toml::table config_;
     unsigned char key_[crypto_secretbox_KEYBYTES];
     unsigned char nonce_[crypto_secretbox_NONCEBYTES];
+    fs::path dataPath_ { PathUtils::getAppDataPath(COMPANY) / NAME };
 };
 
 }

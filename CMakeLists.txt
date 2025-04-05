@@ -37,6 +37,7 @@ if (ENABLE_GRPC)
 
     set(GRPC_SOURCE_FILES
         src/Clients/Solana/gRPC/ConfigManager.cpp
+        src/Clients/Solana/gRPC/NotificationManager.cpp
         src/Clients/Solana/gRPC/StorageManager.cpp
     )
 else()

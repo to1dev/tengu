@@ -22,12 +22,15 @@ namespace Daitengu::Clients::Solana::gRPC {
 
 StorageManager::StorageManager(const std::string& dbPath)
 {
+    fs::path fullDbPath = dataPath_ / dbPath;
     rocksdb::Options options;
     options.create_if_missing = true;
     rocksdb::DB* db;
-    rocksdb::Status status = rocksdb::DB::Open(options, dbPath, &db);
+    rocksdb::Status status
+        = rocksdb::DB::Open(options, fullDbPath.string(), &db);
     if (!status.ok()) {
-        spdlog::error("Failed to open RocksDB: {}", status.ToString());
+        spdlog::error("Failed to open RocksDB at {}: {}", fullDbPath.string(),
+            status.ToString());
         throw std::runtime_error("RocksDB open failed");
     }
     db_.reset(db);

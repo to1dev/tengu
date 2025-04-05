@@ -22,13 +22,17 @@ namespace Daitengu::Clients::Solana::gRPC {
 
 ConfigManager::ConfigManager(const std::string& configFile)
 {
-    config_ = toml::parse_file(configFile);
+    fs::path configPath = PathUtils::toAbsolutePath(configFile);
+    if (!PathUtils::exists(configPath)) {
+        throw std::runtime_error(
+            "Config file not found: " + configPath.string());
+    }
+    config_ = toml::parse_file(configPath.string());
     if (sodium_init() < 0) {
         throw std::runtime_error("Libsodium initialization failed");
     }
 
-    crypto_secretbox_keygen(key_);
-    randombytes_buf(nonce_, sizeof(nonce_));
+    initializeKeyAndNonce();
 }
 
 ConfigManager::~ConfigManager()
@@ -53,7 +57,7 @@ std::vector<std::string> ConfigManager::getGeyserAddresses() const
 
 std::string ConfigManager::getDbPath() const
 {
-    return config_["db_path"].value_or("./solana_geyser_db");
+    return (dataPath_ / "solana_geyser_db").string();
 }
 
 std::optional<std::pair<std::string, std::string>>
@@ -80,15 +84,48 @@ int ConfigManager::getHttpPort() const
     return config_["http_port"].value_or(8080);
 }
 
+void ConfigManager::initializeKeyAndNonce()
+{
+    fs::path keyFile = dataPath_ / "secret.key";
+    std::ifstream file(keyFile, std::ios::binary);
+    if (file.is_open()) {
+        file.read(reinterpret_cast<char*>(key_), sizeof(key_));
+        file.read(reinterpret_cast<char*>(nonce_), sizeof(nonce_));
+        file.close();
+        spdlog::info("Loaded key and nonce from {}", keyFile.string());
+    } else {
+        crypto_secretbox_keygen(key_);
+        randombytes_buf(nonce_, sizeof(nonce_));
+
+        std::ofstream outFile(keyFile, std::ios::binary);
+        if (!outFile.is_open()) {
+            spdlog::error("Failed to create key file: {}", keyFile.string());
+            throw std::runtime_error("Cannot write key file");
+        }
+        outFile.write(reinterpret_cast<const char*>(key_), sizeof(key_));
+        outFile.write(reinterpret_cast<const char*>(nonce_), sizeof(nonce_));
+        outFile.close();
+
+#ifdef __unix__
+        chmod(keyFile.c_str(), S_IRUSR | S_IWUSR);
+#endif
+        spdlog::info("Generated and saved key and nonce to {}", keyFile.string());
+    }
+}
+
 std::string ConfigManager::encrypt(const std::string& data) const
 {
+    if (data.empty())
+        return "";
+
     std::vector<unsigned char> ciphertext(
         crypto_secretbox_MACBYTES + data.size());
     if (crypto_secretbox_easy(ciphertext.data(),
             reinterpret_cast<const unsigned char*>(data.data()), data.size(),
             nonce_, key_)
         != 0) {
-        throw std::runtime_error("Encryption failed");
+        spdlog::error("Encryption failed");
+        return "";
     }
     return std::string(ciphertext.begin(), ciphertext.end());
 }
@@ -103,6 +140,7 @@ std::string ConfigManager::decrypt(const std::string& data) const
             reinterpret_cast<const unsigned char*>(data.data()), data.size(),
             nonce_, key_)
         != 0) {
+        spdlog::warn("Decryption failed");
         return "";
     }
     return std::string(plaintext.begin(), plaintext.end());

@@ -25,6 +25,7 @@
 #include "Utils/Base58.hpp"
 
 #include "Bincode.hpp"
+#include "Borsh.hpp"
 #include "Types.h"
 
 namespace solana {
@@ -33,6 +34,49 @@ const Pubkey SYSTEM_PROGRAM_ID
     = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+
+PDA findProgramAddress(
+    const std::vector<std::vector<uint8_t>>& seeds, const Pubkey& programId)
+{
+    if (sodium_init() < 0) {
+        throw std::runtime_error("Failed to initialize libsodium");
+    }
+
+    std::vector<uint8_t> buffer;
+    size_t total_size = 0;
+    for (const auto& seed : seeds) {
+        total_size += seed.size();
+    }
+    total_size += PUBKEY_SIZE + 1;
+    buffer.reserve(total_size);
+
+    for (uint8_t bump = 255; bump >= 0; --bump) {
+        buffer.clear();
+
+        for (const auto& seed : seeds) {
+            buffer.insert(buffer.end(), seed.begin(), seed.end());
+        }
+
+        buffer.insert(buffer.end(), programId.begin(), programId.end());
+
+        buffer.push_back(bump);
+
+        Pubkey hash;
+        if (crypto_hash_sha256(hash.data(), buffer.data(), buffer.size())
+            != 0) {
+            throw std::runtime_error("SHA-256 computation failed");
+        }
+
+        unsigned char scalar[32];
+        std::memcpy(scalar, hash.data(), 32);
+        unsigned char point[32];
+        if (crypto_scalarmult_ed25519_base(point, scalar) != 0) {
+            return { hash, bump };
+        }
+    }
+
+    throw std::runtime_error("No valid PDA found within bump range");
+}
 
 Pubkey pubkeyFromBase58(const std::string& base58Str)
 {
@@ -114,7 +158,8 @@ static Signature signMessage(
 
 std::vector<uint8_t> Message::serialize() const
 {
-    bincode::BincodeWriter writer;
+    // bincode::BincodeWriter writer;
+    borsh::BorshWriter writer;
 
     writer.write_u8(header.numRequiredSignatures);
     writer.write_u8(header.numReadOnlySignedAccounts);
@@ -147,7 +192,8 @@ std::vector<uint8_t> Message::serialize() const
 
 std::vector<uint8_t> Transaction::serialize() const
 {
-    bincode::BincodeWriter writer;
+    // bincode::BincodeWriter writer;
+    borsh::BorshWriter writer;
 
     writer.write_compact_u64(signatures.size());
     for (const auto& sig : signatures) {
@@ -184,7 +230,8 @@ void Transaction::multiSign(
 TransactionInstruction createTransferInstruction(
     const Pubkey& fromPubkey, const Pubkey& toPubkey, uint64_t lamports)
 {
-    bincode::BincodeWriter writer;
+    // bincode::BincodeWriter writer;
+    borsh::BorshWriter writer;
 
     // writer.write_u64(static_cast<uint64_t>(SystemInstructionType::Transfer));
     writer.write_u32(static_cast<uint32_t>(SystemInstructionType::Transfer));

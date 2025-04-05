@@ -132,6 +132,21 @@ public:
         writeLittleEndian(value);
     }
 
+    inline void write_compact_u64(uint64_t value)
+    {
+        while (true) {
+            uint8_t byte = static_cast<uint8_t>(value & 0x7F);
+            value >>= 7;
+            if (value != 0) {
+                byte |= 0x80;
+            }
+            buffer.push_back(byte);
+            if ((byte & 0x80) == 0) {
+                break;
+            }
+        }
+    }
+
     /**
      * @brief Write 128-bit signed integer (i128), little-endian (2's
      * complement)

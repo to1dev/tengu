@@ -97,6 +97,14 @@ struct TransactionInstruction {
     std::vector<uint8_t> data;
 };
 
+struct PDA {
+    Pubkey address;
+    uint8_t bump;
+};
+
+PDA findProgramAddress(
+    const std::vector<std::vector<uint8_t>>& seeds, const Pubkey& programId);
+
 enum class SystemInstructionType : uint32_t {
     CreateAccount = 0,
     Assign,

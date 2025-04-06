@@ -50,6 +50,7 @@ SettingManager::SettingManager()
 SettingManager::~SettingManager()
 {
     writeSettings();
+    spdlog::shutdown();
 }
 
 Database* SettingManager::database() const noexcept
@@ -311,25 +312,54 @@ void SettingManager::initLogging()
             }
         }
 
+        spdlog::init_thread_pool(8192, 1);
+
         auto console_sink
             = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-        console_sink->set_level(spdlog::level::info);
+        console_sink->set_level(spdlog::level::debug);
 
-        auto file_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(
+        auto info_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(
+            (logDir / "info.log").string(), 512 * 1024, 3);
+        info_sink->set_level(spdlog::level::info);
+
+        auto warn_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(
+            (logDir / "warn.log").string(), 512 * 1024, 3);
+        warn_sink->set_level(spdlog::level::warn);
+
+        auto error_sink
+            = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(
+                (logDir / "error.log").string(), 512 * 1024, 3);
+        error_sink->set_level(spdlog::level::err);
+
+        auto critical_sink
+            = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(
+                (logDir / "critical.log").string(), 512 * 1024, 3);
+        critical_sink->set_level(spdlog::level::critical);
+
+        /*auto file_sink =
+        std::make_shared<spdlog::sinks::rotating_file_sink_mt>(
             logFilePath.string(), 512 * 1024, 3);
-        file_sink->set_level(spdlog::level::trace);
+        file_sink->set_level(spdlog::level::trace);*/
 
-        std::vector<spdlog::sink_ptr> sinks { console_sink, file_sink };
-        auto logger = std::make_shared<spdlog::logger>(
-            "main", sinks.begin(), sinks.end());
-        logger->set_level(spdlog::level::debug);
-        spdlog::set_default_logger(logger);
+        std::vector<spdlog::sink_ptr> sinks {
+            console_sink,
+            info_sink,
+            warn_sink,
+            error_sink,
+            critical_sink,
+        };
+        auto async_logger
+            = std::make_shared<spdlog::async_logger>("async_global_logger",
+                sinks.begin(), sinks.end(), spdlog::thread_pool(),
+                spdlog::async_overflow_policy::overrun_oldest);
+        async_logger->set_level(spdlog::level::trace);
+        spdlog::set_default_logger(async_logger);
         spdlog::set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%^%l%$] [%t] %v");
 
         spdlog::info("Logging initialized at: {}", logFilePath.string());
     } catch (const spdlog::spdlog_ex& ex) {
         throw std::runtime_error(
-            std::string("Log initialization failed: ") + ex.what());
+            "Log initialization failed: " + std::string(ex.what()));
     }
 }
 }

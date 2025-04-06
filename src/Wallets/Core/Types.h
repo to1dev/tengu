@@ -34,6 +34,14 @@ enum class ChainType {
     SUI,
 };
 
+enum class NetworkType {
+    UNKNOWN,
+    MAINNET,
+    TESTNET,
+    DEVNET,
+    REGTEST,
+};
+
 enum class WalletType {
     Unknown = -1,
     Original = 0,

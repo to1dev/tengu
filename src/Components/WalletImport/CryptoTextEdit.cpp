@@ -175,6 +175,7 @@ ContentInfo CryptoTextEdit::detectContent(const QString& text)
 
     info.type = WalletType::Unknown;
     info.chain = ChainType::UNKNOWN;
+    info.network = NetworkType::UNKNOWN;
     return info;
 }
 

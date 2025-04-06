@@ -29,6 +29,8 @@ namespace Daitengu::Components {
 struct ContentInfo {
     WalletType type = WalletType::Unknown;
     ChainType chain = ChainType::UNKNOWN;
+    NetworkType network = NetworkType::UNKNOWN;
+    QString networkExtra;
     QString content;
 
     bool isValid() const

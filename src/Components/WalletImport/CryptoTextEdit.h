@@ -59,7 +59,9 @@ inline constexpr std::array<Qt::Key, 3> DefaultKeys = {
     Qt::Key_Tab,
 };
 
-inline constexpr std::array<const char*, 2> btcPrefixes = {
+inline constexpr std::array<const char*, 4> btcPrefixes = {
+    "1",
+    "3",
     "bc1",
     "tb1",
 };
@@ -112,7 +114,8 @@ private:
 
     QRegularExpression hexRegex_ { "^[0-9a-fA-F]+$" };
     QRegularExpression bitcoinRegex_ {
-        "^(bc|tb)1[023456789acdefghjklmnpqrstuvwxyz]{6,}$"
+        "^(1[1-9A-HJ-NP-Za-km-z]{26,35}|3[1-9A-HJ-NP-Za-km-z]{26,35}|"
+        "(bc|tb)1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{8,87})$"
     };
     QRegularExpression ethRegex_ { "^0x[0-9a-fA-F]{40}$" };
     QRegularExpression base58Regex_ { "^[1-9A-HJ-NP-Za-km-z]{32,44}$" };

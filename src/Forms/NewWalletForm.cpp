@@ -202,6 +202,7 @@ void NewWalletForm::ok()
     const auto encrypted = Encryption::encryptText(wallet->mnemonic());
     {
         walletRecord_->type = static_cast<int>(WalletType::Mnemonic);
+        walletRecord_->groupType = static_cast<int>(WalletGroupType::User);
         walletRecord_->chainType = comboChain_->currentIndex(),
         walletRecord_->hash = Encryption::genRandomHash();
         walletRecord_->name = name.toStdString();

@@ -111,10 +111,10 @@ struct Network {
 
 struct Wallet {
     int id = 0;
-    int type = 0;
-    int groupType = 0;
-    int chainType = 0;
-    int networkType = 0;
+    int type = static_cast<int>(WalletType::Unknown);
+    int groupType = static_cast<int>(WalletGroupType::User);
+    int chainType = static_cast<int>(ChainType::UNKNOWN);
+    int networkType = static_cast<int>(NetworkType::UNKNOWN);
     std::string hash = "";
     std::string name = "";
     std::string nameHash = "";

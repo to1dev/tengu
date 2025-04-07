@@ -29,13 +29,29 @@
 
 #include "Components/WalletPanel.h"
 
+#include "Clients/Core/Hydra.h"
+
+#include "Wallets/Monitor/Monitor.h"
+
 #include "Forms/WalletSelectorForm.h"
 
+using namespace Daitengu::Clients;
 using namespace Daitengu::Core;
 using namespace Daitengu::UI;
+using namespace Daitengu::Wallets;
 
 namespace Ui {
 class WalletDock;
+}
+
+namespace {
+inline constexpr std::array<std::string_view, 5> TickerSuffixes = {
+    "",
+    "BTC",
+    "ETH",
+    "SOL",
+    "SUI",
+};
 }
 
 class WalletDock : public QWidget {
@@ -53,12 +69,19 @@ protected:
 
 private Q_SLOTS:
     void select();
+    void onBalanceUpdated(const Monitor::BalanceResult& result);
+
+private:
+    void changeAddress();
 
 private:
     Ui::WalletDock* ui;
 
     std::shared_ptr<const GlobalManager> globalManager_;
     std::unique_ptr<Frameless> frameless_;
+
+    Hydra* hydra_;
+    Monitor* monitor_;
 
     WalletPanel* walletPanel_;
 };

@@ -19,6 +19,12 @@
 #include "WalletDock.h"
 #include "ui_WalletDock.h"
 
+#include <spdlog/spdlog.h>
+
+#include "Utils/Helpers.hpp"
+
+using namespace Daitengu::Utils;
+
 WalletDock::WalletDock(
     QWidget* parent, const std::shared_ptr<const GlobalManager>& globalManager)
     : QWidget(parent)
@@ -71,6 +77,14 @@ WalletDock::WalletDock(
 
     connect(walletPanel_->userCard(), &UserCard::doSelect, this,
         &WalletDock::select);
+
+    monitor_ = new Monitor(this);
+    monitor_->setRefreshInterval(30000);
+    connect(monitor_, &Monitor::balanceUpdated, this,
+        &WalletDock::onBalanceUpdated);
+
+    hydra_ = new Hydra(this, 60);
+    hydra_->start();
 }
 
 WalletDock::~WalletDock()
@@ -86,7 +100,31 @@ void WalletDock::showEvent(QShowEvent* event)
     globalManager_->windowManager()->reset(
         this, 1, WindowManager::WindowShape::RIGHT_PANEL);
 
+    changeAddress();
+
     QWidget::showEvent(event);
+}
+
+void WalletDock::onBalanceUpdated(const Monitor::BalanceResult& result)
+{
+    std::string_view suffix
+        = TickerSuffixes[static_cast<int>(result.chain) + 1];
+    if (result.success) {
+        walletPanel_->valueCard()->setValue(QString("%1 %2")
+                .arg(QFormat::formatPrice(result.balance))
+                .arg(suffix.data()));
+    } else {
+        walletPanel_->valueCard()->setValue(
+            QString("%1 %2").arg(QFormat::formatPrice(0.0)).arg(suffix.data()));
+    }
+}
+
+void WalletDock::changeAddress()
+{
+    auto address = walletPanel_->userCard()->record_ref().second.address;
+    auto chainType = walletPanel_->userCard()->record_ref().first.chainType;
+    monitor_->setAddress(
+        static_cast<ChainType>(chainType), QString::fromStdString(address));
 }
 
 void WalletDock::select()
@@ -97,5 +135,6 @@ void WalletDock::select()
     if (ret) {
         walletPanel_->userCard()->setRecord(wsf.record());
         // globalManager_->settingManager()->setRecord(wsf.record());
+        changeAddress();
     }
 }

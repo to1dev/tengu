@@ -36,15 +36,6 @@ if (ENABLE_GRPC)
     )
 
     set(GRPC_SOURCE_FILES
-        src/Clients/Solana/gRPC/ConfigManager.cpp
-        src/Clients/Solana/gRPC/DexFilter.cpp
-        src/Clients/Solana/gRPC/FilterManager.cpp
-        src/Clients/Solana/gRPC/GeyserClientManager.cpp
-        src/Clients/Solana/gRPC/GeyserClientWorker.cpp
-        src/Clients/Solana/gRPC/HttpServer.cpp
-        src/Clients/Solana/gRPC/NotificationManager.cpp
-        src/Clients/Solana/gRPC/StorageManager.cpp
-        src/Clients/Solana/gRPC/SwapFilter.cpp
     )
 else()
     message(STATUS "gRPC is DISABLED")
@@ -59,6 +50,7 @@ set(SOLANA_WEBSOCKET_FILES
 set(SOURCE_FILES
     ${GRPC_SOURCE_FILES}
     ${SOLANA_WEBSOCKET_FILES}
+    src/Clients/Core/Hydra.cpp
     src/Components/AddressListWidget.cpp
     src/Components/AnimatedTabWidget.cpp
     src/Components/ClickableLabel.cpp
@@ -113,11 +105,7 @@ set(SOURCE_FILES
     src/Wallets/Core/EthereumWallet.cpp
     src/Wallets/Core/SolanaWallet.cpp
     src/Wallets/Core/SuiWallet.cpp
-    src/Wallets/Monitor/BlockchainMonitor.cpp
-    src/Wallets/Monitor/BlockchainProvider.cpp
-    src/Wallets/Monitor/MonitorManager.cpp
-    src/Wallets/Monitor/ProviderFactory.cpp
-    src/Wallets/Monitor/Bitcoin/MempoolSpaceProvider.cpp
+    src/Wallets/Monitor/Monitor.cpp
     src/Wallets/Transaction/Solana/Builder.cpp
     src/Wallets/Transaction/Solana/Transaction.cpp
     src/Wallets/Utils/SecureBytes.cpp

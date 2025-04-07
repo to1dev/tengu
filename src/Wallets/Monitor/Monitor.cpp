@@ -27,6 +27,8 @@
 
 using json = nlohmann::json;
 
+using namespace std::string_literals;
+
 namespace Daitengu::Wallets {
 
 class MonitorPrivate {
@@ -36,7 +38,7 @@ public:
     {
         networkManager_ = std::make_unique<QNetworkAccessManager>();
         refreshTimer_ = std::make_unique<QTimer>();
-        refreshTimer_->setInterval(60000);
+        refreshTimer_->setInterval(DEFAUlT_INTERVAL);
 
         QObject::connect(refreshTimer_.get(), &QTimer::timeout, q, [this]() {
             if (currentChain_ != ChainType::UNKNOWN) {
@@ -64,7 +66,6 @@ Monitor::Monitor(QObject* parent)
 
 Monitor::~Monitor()
 {
-    spdlog::info("Monitor destroyed");
 }
 
 void Monitor::setAddress(ChainType chain, const QString& address)
@@ -77,7 +78,8 @@ void Monitor::setAddress(ChainType chain, const QString& address)
             address.toStdString(), static_cast<int>(chain));
         Q_EMIT addressChanged(chain, address);
         if (chain != ChainType::UNKNOWN) {
-            fetchBalance(chain, address);
+            d->refreshTimer_->start();
+            fetchBalance(d->currentChain_, d->currentAddress_);
         }
     }
 }
@@ -109,6 +111,99 @@ void Monitor::refresh()
 QCoro::Task<std::optional<Monitor::BalanceResult>> Monitor::fetchBalance(
     ChainType chain, const QString& address)
 {
-    return QCoro::Task<std::optional<BalanceResult>>();
+    Q_D(Monitor);
+
+    BalanceResult result {
+        .address = address,
+        .chain = chain,
+    };
+
+    try {
+        switch (chain) {
+        case ChainType::BITCOIN: {
+            QNetworkRequest request { QUrl(
+                QString("%1%2").arg(MEMPOOL_API).arg(address)) };
+            auto reply = std::unique_ptr<QNetworkReply>(
+                d->networkManager_->get(request));
+            co_await qCoro(reply.get())
+                .waitForFinished(std::chrono::milliseconds(5000));
+            if (!reply->error()) {
+                auto data = reply->readAll();
+                try {
+                    json j = json::parse(data.toStdString());
+                    if (j.is_object() && j.contains("chain_stats")
+                        && j["chain_stats"].contains("funded_txo_sum")) {
+                        uint64_t confirmed
+                            = j["chain_stats"]["funded_txo_sum"].get<uint64_t>()
+                            - j["chain_stats"]["spent_txo_sum"].get<uint64_t>();
+
+                        uint64_t unconfirmed
+                            = j["mempool_stats"]["funded_txo_sum"]
+                                  .get<uint64_t>()
+                            - j["mempool_stats"]["spent_txo_sum"]
+                                  .get<uint64_t>();
+                        double btcAmount
+                            = static_cast<double>(confirmed + unconfirmed)
+                            / 1e8;
+                        /*auto chain_stats = j.at("chain_stats");
+                        auto funded
+                            = chain_stats.at("funded_txo_sum").get<double>();
+                        auto spent
+                            = chain_stats.at("spent_txo_sum").get<double>();
+                        result.balance = (funded - spent) / 1e8;*/
+                        result.balance = btcAmount;
+                        result.success = true;
+
+                        spdlog::info("BTC balance for {}: {}",
+                            address.toStdString(), result.balance);
+                    }
+                } catch (const json::exception& e) {
+                    result.errorMessage = QString::fromStdString(e.what());
+                    spdlog::error("JSON parsing error for BTC: {}", e.what());
+                }
+            }
+
+            break;
+        }
+
+        case ChainType::ETHEREUM: {
+            d->refreshTimer_->stop();
+            result.errorMessage = "Ethereum monitoring not implemented yet";
+            spdlog::warn("ETH not implemented for {}", address.toStdString());
+            co_await QCoro::sleepFor(std::chrono::seconds(1));
+            break;
+        }
+
+        case ChainType::SOLANA: {
+            d->refreshTimer_->stop();
+            result.errorMessage = "Solana monitoring not implemented yet";
+            spdlog::warn("SOL not implemented for {}", address.toStdString());
+            co_await QCoro::sleepFor(std::chrono::seconds(1));
+            break;
+        }
+
+        case ChainType::SUI: {
+            d->refreshTimer_->stop();
+            result.errorMessage = "Sui monitoring not implemented yet";
+            spdlog::warn("SUI not implemented for {}", address.toStdString());
+            co_await QCoro::sleepFor(std::chrono::seconds(1));
+            break;
+        }
+
+        case ChainType::UNKNOWN:
+        default:
+            d->refreshTimer_->stop();
+            result.errorMessage = "No chain specified";
+            spdlog::warn("Attempted to fetch balance with unknown chain");
+            break;
+        }
+    } catch (const std::exception& e) {
+        result.errorMessage = e.what();
+        spdlog::error("Exception during balance fetch: {}", e.what());
+    }
+
+    Q_EMIT balanceUpdated(result);
+
+    co_return result.success ? std::make_optional(result) : std::nullopt;
 }
 }

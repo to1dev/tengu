@@ -160,14 +160,15 @@ ValueCard::ValueCard(QWidget* parent)
     // setLayout(mainLayout);
 }
 
-std::uint64_t ValueCard::value() const
+QString ValueCard::value() const
 {
     return value_;
 }
 
-void ValueCard::setValue(std::uint64_t newValue)
+void ValueCard::setValue(const QString& newValue)
 {
     value_ = newValue;
+    valueLabel_->setText(value_);
 }
 
 ObjectsCard::ObjectsCard(QWidget* parent)

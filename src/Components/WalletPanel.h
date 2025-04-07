@@ -81,12 +81,12 @@ class ValueCard : public QWidget {
 public:
     explicit ValueCard(QWidget* parent = nullptr);
 
-    std::uint64_t value() const;
-    void setValue(std::uint64_t newValue);
+    QString value() const;
+    void setValue(const QString& newValue);
 
 private:
     QLabel* valueLabel_;
-    std::uint64_t value_ { 0 };
+    QString value_;
 };
 
 class ObjectsCard : public AnimatedTabWidget {

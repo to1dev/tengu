@@ -25,10 +25,17 @@ LuaScriptEngine::LuaScriptEngine()
     initialize();
 }
 
+LuaScriptEngine::~LuaScriptEngine()
+{
+    stopScript();
+}
+
 bool LuaScriptEngine::initialize()
 {
+    std::lock_guard<std::mutex> lock { luaMutex_ };
     try {
         lua_.open_libraries(sol::lib::base, sol::lib::package);
+        scriptLua_.open_libraries(sol::lib::base, sol::lib::package);
         spdlog::info("LuaJIT script engine initialized");
         return true;
     } catch (const std::exception& e) {
@@ -37,10 +44,11 @@ bool LuaScriptEngine::initialize()
     }
 }
 
-bool LuaScriptEngine::loadScript(const std::string& filePath)
+bool LuaScriptEngine::loadScript(std::string_view filePath)
 {
+    std::lock_guard<std::mutex> lock { luaMutex_ };
     try {
-        auto result = lua_.script_file(filePath);
+        auto result = lua_.script_file(filePath.data());
         if (!result.valid()) {
             sol::error err = result;
             spdlog::error(
@@ -56,8 +64,9 @@ bool LuaScriptEngine::loadScript(const std::string& filePath)
     }
 }
 
-bool LuaScriptEngine::execute(const std::string& script)
+bool LuaScriptEngine::execute(std::string_view script)
 {
+    std::lock_guard<std::mutex> lock { luaMutex_ };
     try {
         auto result = lua_.script(script);
         if (!result.valid()) {
@@ -73,8 +82,9 @@ bool LuaScriptEngine::execute(const std::string& script)
 }
 
 std::any LuaScriptEngine::callFunction(
-    const std::string& funcName, const std::vector<std::any>& args)
+    std::string_view funcName, const std::vector<std::any>& args)
 {
+    std::lock_guard<std::mutex> lock { luaMutex_ };
     sol::protected_function func = lua_[funcName];
     if (!func.valid()) {
         spdlog::warn("Lua function {} not found", funcName);
@@ -111,10 +121,23 @@ std::any LuaScriptEngine::callFunction(
     return std::any {};
 }
 
-void LuaScriptEngine::registerFunction(const std::string& name,
+void LuaScriptEngine::registerFunction(std::string_view name,
     std::function<std::any(const std::vector<std::any>&)> func)
 {
+    std::lock_guard<std::mutex> lock { luaMutex_ };
     lua_.set_function(name, [func](sol::variadic_args va) -> sol::object {
+        std::vector<std::any> args;
+        for (auto v : va) {
+            if (v.get_type() == sol::type::number) {
+                args.emplace_back(v.as<double>());
+            } else if (v.get_type() == sol::type::string) {
+                args.emplace_back(v.as<std::string>());
+            }
+        }
+        return sol::make_object(va.lua_state(), func(args));
+    });
+
+    scriptLua_.set_function(name, [func](sol::variadic_args va) -> sol::object {
         std::vector<std::any> args;
         for (auto v : va) {
             if (v.get_type() == sol::type::number) {
@@ -129,9 +152,10 @@ void LuaScriptEngine::registerFunction(const std::string& name,
     spdlog::info("Registered C++ function to Lua: {}", name);
 }
 
-void LuaScriptEngine::setCallback(const std::string& name,
+void LuaScriptEngine::setCallback(std::string_view name,
     std::function<void(const std::vector<std::any>&)> callback)
 {
+    std::lock_guard<std::mutex> lock { luaMutex_ };
     callbacks_[name] = callback;
     lua_.set_function(name, [this, name](sol::variadic_args va) {
         std::vector<std::any> args;
@@ -142,27 +166,119 @@ void LuaScriptEngine::setCallback(const std::string& name,
                 args.emplace_back(v.as<std::string>());
             }
         }
+        if (callbacks_.count(name)) {
+            callbacks_[name](args);
+        }
+    });
 
+    scriptLua_.set_function(name, [this, name](sol::variadic_args va) {
+        std::vector<std::any> args;
+        for (auto v : va) {
+            if (v.get_type() == sol::type::number) {
+                args.emplace_back(v.as<double>());
+            } else if (v.get_type() == sol::type::string) {
+                args.emplace_back(v.as<std::string>());
+            }
+        }
         if (callbacks_.count(name)) {
             callbacks_[name](args);
         }
     });
 }
 
-void LuaScriptEngine::registerObjectImpl(
-    const std::string& name, void* obj, std::type_index type)
+void LuaScriptEngine::startScript(std::string_view scriptOrFile)
 {
-    if (type == std::type_index(typeid(MonitorManager))) {
-        auto* manager = static_cast<MonitorManager*>(obj);
-        lua_.new_usertype<MonitorManager>(
+    std::lock_guard<std::mutex> lock { luaMutex_ };
+
+    stopScript();
+
+    running_ = true;
+    scriptContent_ = std::string { scriptOrFile };
+    scriptThread_ = std::jthread { &LuaScriptEngine::runScript, this,
+        scriptContent_.value() };
+    spdlog::info(
+        "Script thread started with content: {}", scriptOrFile.substr(0, 50));
+}
+
+void LuaScriptEngine::stopScript()
+{
+    std::lock_guard<std::mutex> lock { luaMutex_ };
+
+    if (scriptThread_.joinable()) {
+        running_ = false;
+        scriptThread_.request_stop();
+        scriptThread_.join();
+        spdlog::info("Script thread stopped");
+    }
+    scriptContent_.reset();
+}
+
+bool LuaScriptEngine::isScriptRunning() const noexcept
+{
+    return running_ && scriptThread_.joinable();
+}
+
+void LuaScriptEngine::registerObjectImpl(
+    std::string_view name, void* obj, std::type_index type)
+{
+    std::lock_guard<std::mutex> lock { luaMutex_ };
+    if (type == std::type_index(typeid(Monitor))) {
+        auto* manager = static_cast<Monitor*>(obj);
+        lua_.new_usertype<Monitor>(
             name, "setAddress",
             [manager](const std::string& address) {
-                manager->setAddress(QString::fromStdString(address));
+                manager->setAddress(
+                    ChainType::UNKNOWN, QString::fromStdString(address));
             },
-            "refreshBalance", [manager]() { manager->refreshBalance(); },
-            "setAutoRefreshInterval", &MonitorManager::setAutoRefreshInterval);
+            "refreshBalance", [manager]() { manager->refresh(); },
+            "setAutoRefreshInterval", &Monitor::setRefreshInterval);
+
+        auto scriptUsertype = scriptLua_.new_usertype<Monitor>(name);
+        scriptUsertype["setAddress"] = [manager](const std::string& address) {
+            manager->setAddress(
+                ChainType::UNKNOWN, QString::fromStdString(address));
+        };
+        scriptUsertype["refreshBalance"] = [manager]() { manager->refresh(); };
+        scriptUsertype["setAutoRefreshInterval"] = &Monitor::setRefreshInterval;
+
         spdlog::info("Registered MonitorManager to Lua as {}", name);
     }
+}
+
+void LuaScriptEngine::runScript(
+    std::stop_token stopToken, std::string scriptOrFile)
+{
+    // Need more criteria
+    bool isFile = scriptOrFile.ends_with(".lua");
+
+    while (!stopToken.stop_requested() && running_) {
+        try {
+            sol::protected_function_result result;
+            if (isFile) {
+                result = scriptLua_.script_file(scriptOrFile);
+            } else {
+                result = scriptLua_.script(scriptOrFile);
+            }
+
+            if (!result.valid()) {
+                sol::error err = result;
+                spdlog::error("Script execution failed: {}", err.what());
+                running_ = false;
+                break;
+            }
+
+            sol::protected_function loop = scriptLua_["loop"];
+            if (!loop.valid() || !loop.call<bool>()) {
+                running_ = false;
+                break;
+            }
+        } catch (const std::exception& e) {
+            spdlog::error("Script thread exception: {}", e.what());
+            running_ = false;
+            break;
+        }
+    }
+    spdlog::info("Script thread completed or stopped");
 }
 }
 

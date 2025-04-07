@@ -35,25 +35,25 @@ public:
     ~JSScriptEngine() override;
 
     bool initialize() override;
-    bool loadScript(const std::string& filePath) override;
-    bool execute(const std::string& script) override;
-    std::any callFunction(const std::string& funcName,
-        const std::vector<std::any>& args) override;
-    void registerFunction(const std::string& name,
+    bool loadScript(std::string_view filePath) override;
+    bool execute(std::string_view script) override;
+    std::any callFunction(
+        std::string_view funcName, const std::vector<std::any>& args) override;
+    void registerFunction(std::string_view name,
         std::function<std::any(const std::vector<std::any>&)> func) override;
-    void setCallback(const std::string& name,
+    void setCallback(std::string_view name,
         std::function<void(const std::vector<std::any>&)> callback) override;
 
 protected:
     void registerObjectImpl(
-        const std::string& name, void* obj, std::type_index type) override;
+        std::string_view name, void* obj, std::type_index type) override;
 
 private:
     static JSValue jsCallbackWrapper(JSContext* ctx, JSValueConst this_val,
         int argc, JSValueConst* argv, int magic, JSValue* func_data);
     JSRuntime* runtime_ = nullptr;
     JSContext* context_ = nullptr;
-    std::unordered_map<std::string,
+    std::unordered_map<std::string_view,
         std::function<std::any(const std::vector<std::any>&)>>
         registeredFunctions_;
 };

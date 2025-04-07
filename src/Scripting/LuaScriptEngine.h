@@ -18,11 +18,17 @@
 
 #pragma once
 
+#include <atomic>
+#include <mutex>
+#include <optional>
+#include <string_view>
+#include <thread>
+
 #include <spdlog/spdlog.h>
 
 #include "sol/sol.hpp"
 
-#include "Wallets/Monitor/MonitorManager.h"
+#include "Wallets/Monitor/Monitor.h"
 
 #include "ScriptEngine.h"
 
@@ -33,24 +39,36 @@ namespace Daitengu::Scripting {
 class LuaScriptEngine : public ScriptEngine {
 public:
     LuaScriptEngine();
-    ~LuaScriptEngine() override = default;
+    ~LuaScriptEngine() override;
 
     bool initialize() override;
-    bool loadScript(const std::string& filePath) override;
-    bool execute(const std::string& script) override;
-    std::any callFunction(const std::string& funcName,
-        const std::vector<std::any>& args) override;
-    void registerFunction(const std::string& name,
+    bool loadScript(std::string_view filePath) override;
+    bool execute(std::string_view script) override;
+    std::any callFunction(
+        std::string_view funcName, const std::vector<std::any>& args) override;
+    void registerFunction(std::string_view name,
         std::function<std::any(const std::vector<std::any>&)> func) override;
-    void setCallback(const std::string& name,
+    void setCallback(std::string_view name,
         std::function<void(const std::vector<std::any>&)> callback) override;
+
+    void startScript(std::string_view scriptOrFile);
+    void stopScript();
+    [[nodiscard]] bool isScriptRunning() const noexcept;
 
 protected:
     void registerObjectImpl(
-        const std::string& name, void* obj, std::type_index type) override;
+        std::string_view name, void* obj, std::type_index type) override;
 
 private:
     sol::state lua_;
+    sol::state scriptLua_;
+    std::jthread scriptThread_;
+    std::atomic<bool> running_ { false };
+    std::mutex luaMutex_;
+    std::optional<std::string> scriptContent_;
+
+    void runScript(std::stop_token stopToken, std::string scriptOrFile);
+
     std::unordered_map<std::string, sol::protected_function> luaCallbacks_;
 };
 

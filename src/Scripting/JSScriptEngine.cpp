@@ -56,9 +56,9 @@ bool JSScriptEngine::initialize()
     return true;
 }
 
-bool JSScriptEngine::loadScript(const std::string& filePath)
+bool JSScriptEngine::loadScript(std::string_view filePath)
 {
-    std::ifstream file(filePath);
+    std::ifstream file(filePath.data());
     if (!file.is_open()) {
         spdlog::error("Failed to open JS script file: {}", filePath);
         return false;
@@ -71,10 +71,10 @@ bool JSScriptEngine::loadScript(const std::string& filePath)
     return execute(script);
 }
 
-bool JSScriptEngine::execute(const std::string& script)
+bool JSScriptEngine::execute(std::string_view script)
 {
-    JSValue result = JS_Eval(context_, script.c_str(), script.size(),
-        "<script>", JS_EVAL_TYPE_GLOBAL);
+    JSValue result = JS_Eval(context_, script.data(), script.size(), "<script>",
+        JS_EVAL_TYPE_GLOBAL);
     if (JS_IsException(result)) {
         JSValue exception = JS_GetException(context_);
         const char* error = JS_ToCString(context_, exception);
@@ -91,10 +91,10 @@ bool JSScriptEngine::execute(const std::string& script)
 }
 
 std::any JSScriptEngine::callFunction(
-    const std::string& funcName, const std::vector<std::any>& args)
+    std::string_view funcName, const std::vector<std::any>& args)
 {
     JSValue global = JS_GetGlobalObject(context_);
-    JSValue func = JS_GetPropertyStr(context_, global, funcName.c_str());
+    JSValue func = JS_GetPropertyStr(context_, global, funcName.data());
     if (JS_IsUndefined(func)) {
         spdlog::warn("JS function {} not found", funcName);
         JS_FreeValue(context_, global);
@@ -148,7 +148,7 @@ std::any JSScriptEngine::callFunction(
     return retVal;
 }
 
-void JSScriptEngine::registerFunction(const std::string& name,
+void JSScriptEngine::registerFunction(std::string_view name,
     std::function<std::any(const std::vector<std::any>&)> func)
 {
     registeredFunctions_[name] = func;
@@ -156,19 +156,19 @@ void JSScriptEngine::registerFunction(const std::string& name,
     JSValue data = JS_NewInt64(context_, reinterpret_cast<int64_t>(this));
     JSValue jsFunc = JS_NewCFunctionData(context_, jsCallbackWrapper, 0,
         static_cast<int>(registeredFunctions_.size() - 1), 1, &data);
-    JS_SetPropertyStr(context_, global, name.c_str(), jsFunc);
+    JS_SetPropertyStr(context_, global, name.data(), jsFunc);
     JS_FreeValue(context_, global);
     spdlog::info("Registered C++ function to JS: {}", name);
 }
 
-void JSScriptEngine::setCallback(const std::string& name,
+void JSScriptEngine::setCallback(std::string_view name,
     std::function<void(const std::vector<std::any>&)> callback)
 {
     callbacks_[name] = callback;
 }
 
 void JSScriptEngine::registerObjectImpl(
-    const std::string& name, void* obj, std::type_index type)
+    std::string_view name, void* obj, std::type_index type)
 {
     spdlog::warn("Object registration not yet implemented for JS: {}", name);
 }
@@ -180,7 +180,7 @@ JSValue JSScriptEngine::jsCallbackWrapper(JSContext* ctx, JSValueConst this_val,
         = reinterpret_cast<JSScriptEngine*>(JS_VALUE_GET_PTR(func_data[0]));
 
     auto it = std::next(engine->registeredFunctions_.begin(), magic);
-    std::string name = it->first;
+    std::string_view name = it->first;
 
     if (engine->registeredFunctions_.count(name)) {
         std::vector<std::any> args;

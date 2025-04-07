@@ -32,31 +32,31 @@ public:
     virtual ~ScriptEngine() = default;
 
     virtual bool initialize() = 0;
-    virtual bool loadScript(const std::string& filePath) = 0;
-    virtual bool execute(const std::string& script) = 0;
+    virtual bool loadScript(std::string_view filePath) = 0;
+    virtual bool execute(std::string_view script) = 0;
     virtual std::any callFunction(
-        const std::string& funcName, const std::vector<std::any>& args)
+        std::string_view funcName, const std::vector<std::any>& args)
         = 0;
-    virtual void registerFunction(const std::string& name,
+    virtual void registerFunction(std::string_view name,
         std::function<std::any(const std::vector<std::any>&)> func)
         = 0;
 
     template <typename T>
-    void registerObject(const std::string& name, T* obj)
+    void registerObject(std::string_view name, T* obj)
     {
         registerObjectImpl(name, obj, std::type_index(typeid(T)));
     }
 
-    virtual void setCallback(const std::string& name,
+    virtual void setCallback(std::string_view name,
         std::function<void(const std::vector<std::any>&)> callback)
         = 0;
 
 protected:
     virtual void registerObjectImpl(
-        const std::string& name, void* obj, std::type_index type)
+        std::string_view name, void* obj, std::type_index type)
         = 0;
 
-    std::unordered_map<std::string,
+    std::unordered_map<std::string_view,
         std::function<void(const std::vector<std::any>&)>>
         callbacks_;
 };

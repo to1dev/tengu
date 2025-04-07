@@ -34,8 +34,8 @@ int main(int argc, char* argv[])
 
     std::unique_ptr<Hydra> hydra = std::make_unique<Hydra>(nullptr, 30);
     QObject::connect(hydra.get(), &Hydra::priceUpdated,
-        [](const QString& crypto, double price) {
-            spdlog::info("{} Price: ${}", crypto.toStdString(), price);
+        [](const QString& ticker, double price) {
+            spdlog::info("{} Price: ${}", ticker.toStdString(), price);
         });
     hydra->start();
 

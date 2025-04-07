@@ -18,19 +18,12 @@ find_package(Qt5 REQUIRED COMPONENTS
     Concurrent
 )
 
-file(GLOB ALL_SOURCES
-    "${CMAKE_SOURCE_DIR}/src/Wallets/Core/*.cpp"
-    "${CMAKE_SOURCE_DIR}/src/Wallets/Utils/*.cpp"
-    "${CMAKE_SOURCE_DIR}/src/Wallets/Monitor/*.cpp"
-    "${CMAKE_SOURCE_DIR}/src/Wallets/Monitor/Bitcoin/*.cpp"
-    "${CMAKE_SOURCE_DIR}/src/Utils/Encryption.cpp"
-)
-
 set(TEST_SOURCES
+    ${CMAKE_SOURCE_DIR}/src/Clients/Core/Hydra.cpp
     ${CMAKE_SOURCE_DIR}/src/tests/Test_Monitor.cpp
 )
 
-add_executable(${PROJECT_NAME} ${ALL_SOURCES} ${TEST_SOURCES})
+add_executable(${PROJECT_NAME} ${TEST_SOURCES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_SOURCE_DIR}/src
@@ -42,7 +35,8 @@ target_link_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_SOURCE_DIR}/src/3rd/lib
 )
 
-target_compile_definitions(${PROJECT_NAME} PRIVATE    SECP256K1_STATIC
+target_compile_definitions(${PROJECT_NAME} PRIVATE
+    SECP256K1_STATIC
     QT_STATIC
     QT_NO_KEYWORDS
 )
@@ -67,7 +61,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt5::Network
     Qt5::WebSockets
     Qt5::Concurrent
-    QCoro5Core
     QCoro5Network
     QCoro5WebSockets
+    QCoro5Core # order matters
 )

@@ -91,8 +91,9 @@ QCoro::Task<void> SplashImageDownloader::download()
     LOG_INFO(formatted);*/
 
     QNetworkRequest request { url_ };
-    auto reply = std::unique_ptr<QNetworkReply>(manager_.get(request));
-    co_await qCoro(reply.get()).waitForFinished();
+    auto reply = std::unique_ptr<QNetworkReply>(co_await manager_.get(request));
+    // co_await qCoro(reply.get()).waitForFinished();
+    // co_await QCoro::sleepFor(std::chrono::seconds(10));
     if (reply->isFinished() && reply->error() == QNetworkReply::NoError) {
         QByteArray data = co_await qCoro(reply.get()).readAll();
         QFile file(savePath_.string().c_str());

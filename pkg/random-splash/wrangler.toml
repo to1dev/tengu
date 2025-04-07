@@ -1,0 +1,10 @@
+name = "splash-image-updater"
+compatibility_date = "2025-04-01"
+main = "index.ts"
+
+[triggers]
+crons = ["0 * * * *"]
+
+[[r2_buckets]]
+binding = "MY_R2_BUCKET"
+bucket_name = "tengu"

@@ -21,9 +21,12 @@
 
 #include <cstdint>
 #include <cstring>
+#include <iomanip>
 #include <iostream>
+#include <locale>
 #include <random>
 #include <regex>
+#include <sstream>
 #include <string>
 
 #include <QLocale>
@@ -96,6 +99,24 @@ inline std::string simplified(const std::string& s)
         }
     }
     return result;
+}
+
+namespace QFormat {
+    inline QString formatPrice(double value, int precision = 8)
+    {
+        QLocale locale(QLocale::English);
+        return locale.toString(value, 'f', precision);
+    }
+}
+
+namespace CFormat {
+    inline std::string formatPrice(double value, int precision = 8)
+    {
+        std::ostringstream oss;
+        oss.imbue(std::locale("en_US.UTF-8"));
+        oss << std::fixed << std::setprecision(precision) << value;
+        return oss.str();
+    }
 }
 
 }

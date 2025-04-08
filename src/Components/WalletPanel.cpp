@@ -77,11 +77,24 @@ UserCard::UserCard(QWidget* parent)
     selectButton->setMaximumHeight(30);
     connect(selectButton, &QPushButton::clicked, this, &UserCard::doSelect);
 
-    bottomLayout->setSpacing(6);
+    QPushButton* sendButton = new QPushButton(STR_SEND_BUTTON_TEXT, this);
+    sendButton->setObjectName(STR_SEND_BUTTON);
+    sendButton->setMinimumHeight(30);
+    sendButton->setMaximumHeight(30);
+
+    QPushButton* createButton = new QPushButton(STR_CREATE_BUTTON_TEXT, this);
+    createButton->setObjectName(STR_CREATE_BUTTON);
+    createButton->setMinimumHeight(30);
+    createButton->setMaximumHeight(30);
+
+    bottomLayout->setSpacing(9);
     bottomLayout->addWidget(selectButton);
+    bottomLayout->addWidget(sendButton);
+    bottomLayout->addWidget(createButton);
 
     mainLayout->setSpacing(20);
     mainLayout->addLayout(topLayout);
+    mainLayout->addSpacing(10);
     mainLayout->addLayout(bottomLayout);
 
     // setLayout(mainLayout);
@@ -152,7 +165,7 @@ ValueCard::ValueCard(QWidget* parent)
     valueLabel_->setObjectName(STR_VALUE_LABEL);
     valueLabel_->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
 
-     valueLabel_->setText("0.00000000");
+    valueLabel_->setText("0.00000000");
 
     valueLayout->addWidget(valueLabel_);
     mainLayout->addLayout(valueLayout);

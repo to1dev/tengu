@@ -35,6 +35,8 @@
 #include <windows.h>
 #endif
 
+#include <spdlog/spdlog.h>
+
 #include <qcoro/QCoro>
 
 #include "Consts.h"
@@ -46,8 +48,8 @@ using namespace Daitengu::Utils;
 
 namespace Daitengu::Components {
 
-#define LOG_ERROR(msg) std::cerr << "[Splash Error] " << msg << std::endl;
-#define LOG_INFO(msg) std::cout << "[Splash Info] " << msg << std::endl;
+#define LOG_ERROR(msg) spdlog::error("[Splash Error] {}", msg);
+#define LOG_INFO(msg) spdlog::info("[Splash Info] {}", msg);
 
 struct SplashConfig {
     bool download = true;

@@ -243,12 +243,47 @@ QPlainTextEdit:focus {
     border-radius: 15;
 }
 
+#userCard #sendButton {
+    color: white;
+    background-color: #E74C3C;
+    border-radius: 15;
+}
+
+#userCard #createButton {
+    color: white;
+    background-color: #1ABC9C;
+    border-radius: 15;
+}
+
 #userCard #selectButton:hover {
     background-color: #309cf9;
 }
 
+#userCard #sendButton:hover {
+    background-color: #DB4334;
+}
+
+#userCard #createButton:hover {
+    background-color: #12AB8D;
+}
+
 #userCard #selectButton:pressed {
     background-color: #0874d1;
+}
+
+#userCard #sendButton:pressed {
+    background-color: #E74C3C;
+}
+
+#userCard #createButton:pressed {
+    background-color: #1ABC9C;
+}
+
+#userCard #selectButton:disabled,
+#userCard #sendButton:disabled,
+#userCard #createButton:disabled {
+    color: #787878;
+    background-color: #454545;
 }
 
 #userCard #infoButton {

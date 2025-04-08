@@ -38,7 +38,7 @@ public:
     {
         networkManager_ = std::make_unique<QNetworkAccessManager>();
         refreshTimer_ = std::make_unique<QTimer>();
-        refreshTimer_->setInterval(DEFAUlT_INTERVAL);
+        refreshTimer_->setInterval(DEFAULT_INTERVAL);
 
         QObject::connect(refreshTimer_.get(), &QTimer::timeout, q, [this]() {
             if (currentChain_ != ChainType::UNKNOWN) {
@@ -125,42 +125,64 @@ QCoro::Task<std::optional<Monitor::BalanceResult>> Monitor::fetchBalance(
                 QString("%1%2").arg(MEMPOOL_API).arg(address)) };
             auto reply = std::unique_ptr<QNetworkReply>(
                 d->networkManager_->get(request));
-            co_await qCoro(reply.get())
-                .waitForFinished(std::chrono::milliseconds(5000));
-            if (!reply->error()) {
-                auto data = reply->readAll();
-                try {
-                    json j = json::parse(data.toStdString());
-                    if (j.is_object() && j.contains("chain_stats")
-                        && j["chain_stats"].contains("funded_txo_sum")) {
-                        uint64_t confirmed
-                            = j["chain_stats"]["funded_txo_sum"].get<uint64_t>()
-                            - j["chain_stats"]["spent_txo_sum"].get<uint64_t>();
+            bool finished
+                = co_await qCoro(reply.get())
+                      .waitForFinished(std::chrono::milliseconds(5000));
 
-                        uint64_t unconfirmed
-                            = j["mempool_stats"]["funded_txo_sum"]
-                                  .get<uint64_t>()
-                            - j["mempool_stats"]["spent_txo_sum"]
-                                  .get<uint64_t>();
-                        double btcAmount
-                            = static_cast<double>(confirmed + unconfirmed)
-                            / 1e8;
-                        /*auto chain_stats = j.at("chain_stats");
-                        auto funded
-                            = chain_stats.at("funded_txo_sum").get<double>();
-                        auto spent
-                            = chain_stats.at("spent_txo_sum").get<double>();
-                        result.balance = (funded - spent) / 1e8;*/
-                        result.balance = btcAmount;
-                        result.success = true;
+            if (!finished) {
+                result.errorMessage = "Network request timed out";
+                spdlog::error(
+                    "Network timeout for address {}: request took too long",
+                    address.toStdString());
+                Q_EMIT errorOccurred(result.errorMessage);
+                break;
+            }
 
-                        spdlog::info("BTC balance for {}: {}",
-                            address.toStdString(), result.balance);
-                    }
-                } catch (const json::exception& e) {
-                    result.errorMessage = QString::fromStdString(e.what());
-                    spdlog::error("JSON parsing error for BTC: {}", e.what());
+            if (reply->error() != QNetworkReply::NoError) {
+                result.errorMessage = reply->errorString();
+                if (reply->error() == QNetworkReply::HostNotFoundError) {
+                    spdlog::critical("Host not found for address {}: {}",
+                        address.toStdString(),
+                        result.errorMessage.toStdString());
+                } else {
+                    spdlog::warn("Network error for address {}: {} (Code: {})",
+                        address.toStdString(),
+                        result.errorMessage.toStdString(),
+                        static_cast<int>(reply->error()));
                 }
+                Q_EMIT errorOccurred(result.errorMessage);
+                break;
+            }
+
+            auto data = reply->readAll();
+            try {
+                json j = json::parse(data.toStdString());
+                if (j.is_object() && j.contains("chain_stats")
+                    && j["chain_stats"].contains("funded_txo_sum")) {
+                    uint64_t confirmed
+                        = j["chain_stats"]["funded_txo_sum"].get<uint64_t>()
+                        - j["chain_stats"]["spent_txo_sum"].get<uint64_t>();
+
+                    uint64_t unconfirmed
+                        = j["mempool_stats"]["funded_txo_sum"].get<uint64_t>()
+                        - j["mempool_stats"]["spent_txo_sum"].get<uint64_t>();
+                    double btcAmount
+                        = static_cast<double>(confirmed + unconfirmed) / 1e8;
+                    /*auto chain_stats = j.at("chain_stats");
+                    auto funded
+                        = chain_stats.at("funded_txo_sum").get<double>();
+                    auto spent
+                        = chain_stats.at("spent_txo_sum").get<double>();
+                    result.balance = (funded - spent) / 1e8;*/
+                    result.balance = btcAmount;
+                    result.success = true;
+
+                    spdlog::info("BTC balance for {}: {}",
+                        address.toStdString(), result.balance);
+                }
+            } catch (const json::exception& e) {
+                result.errorMessage = QString::fromStdString(e.what());
+                spdlog::error("JSON parsing error for BTC: {}", e.what());
             }
 
             break;

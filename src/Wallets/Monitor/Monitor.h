@@ -33,7 +33,7 @@ namespace Daitengu::Wallets {
 class MonitorPrivate;
 
 inline constexpr char MEMPOOL_API[] = "https://mempool.space/api/address/";
-inline constexpr int DEFAUlT_INTERVAL = 60000;
+inline constexpr int DEFAULT_INTERVAL = 60000;
 
 class Monitor : public QObject {
     Q_OBJECT

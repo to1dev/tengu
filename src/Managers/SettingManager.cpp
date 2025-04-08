@@ -304,7 +304,6 @@ void SettingManager::initLogging()
 {
     try {
         auto logDir = dataPath_ / "logs";
-        auto logFilePath = logDir / "tengu.log";
         if (!fs::exists(logDir)) {
             if (!PathUtils::createDirectories(logDir)) {
                 throw std::runtime_error(
@@ -336,11 +335,6 @@ void SettingManager::initLogging()
                 (logDir / "critical.log").string(), 512 * 1024, 3);
         critical_sink->set_level(spdlog::level::critical);
 
-        /*auto file_sink =
-        std::make_shared<spdlog::sinks::rotating_file_sink_mt>(
-            logFilePath.string(), 512 * 1024, 3);
-        file_sink->set_level(spdlog::level::trace);*/
-
         std::vector<spdlog::sink_ptr> sinks {
             console_sink,
             info_sink,
@@ -356,7 +350,7 @@ void SettingManager::initLogging()
         spdlog::set_default_logger(async_logger);
         spdlog::set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%^%l%$] [%t] %v");
 
-        spdlog::info("Logging initialized at: {}", logFilePath.string());
+        spdlog::info("Logging initialized under: {}", logDir.string());
     } catch (const spdlog::spdlog_ex& ex) {
         throw std::runtime_error(
             "Log initialization failed: " + std::string(ex.what()));

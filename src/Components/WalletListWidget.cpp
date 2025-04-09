@@ -214,6 +214,19 @@ WalletListView::WalletListView(QWidget* parent)
 
     model_ = new WalletListModel(this);
     setModel(model_);
+
+    connect(this, &QListView::doubleClicked, [this](const QModelIndex&) {
+        QModelIndex index = currentIndex();
+        if (!index.isValid())
+            return;
+
+        int id
+            = model_
+                  ->data(index, static_cast<int>(WalletListModel::ItemData::Id))
+                  .toInt();
+
+        Q_EMIT walletDoubleClicked(id);
+    });
 }
 
 void WalletListView::load(const std::vector<Wallet>& wallets)

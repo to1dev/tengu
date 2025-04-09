@@ -145,9 +145,9 @@ void WalletForm::delWallet()
               ->data(index, static_cast<int>(WalletListModel::ItemData::Name))
               .toString();
 
-    MessageForm mf(nullptr, 14, CONFIRM_WALLET_DELETE.arg(name),
+    MessageForm mf { this, 14, CONFIRM_WALLET_DELETE.arg(name),
         CONFIRM_WALLET_DELETE_TITLE, true,
-        MessageButton::Ok | MessageButton::Cancel);
+        MessageButton::Ok | MessageButton::Cancel };
     if (mf.exec()) {
         try {
             globalManager_->settingManager()->database()->walletRepo()->remove(

@@ -89,6 +89,8 @@ MessageForm::MessageForm(QWidget* parent, int emoji, const QString& text,
     } else {
         ui->ButtonCancel->setVisible(false);
     }
+
+    WindowManager::center(this);
 }
 
 MessageForm::~MessageForm()

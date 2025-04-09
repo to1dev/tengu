@@ -113,7 +113,7 @@ std::shared_ptr<Address> NewAddressForm::addressRecord() const
 void NewAddressForm::ok()
 {
     if (editName_->text().isEmpty()) {
-        MessageForm { nullptr, 5, NO_VALID_ADDRESS_NAME }.exec();
+        MessageForm { this, 5, NO_VALID_ADDRESS_NAME }.exec();
         return;
     }
 
@@ -136,7 +136,7 @@ void NewAddressForm::ok()
         DBErrorType error = checkNameAndReturnError();
         if (error != DBErrorType::none) {
             if (error == DBErrorType::haveName) {
-                MessageForm { nullptr, 16, SAME_ADDRESS_NAME }.exec();
+                MessageForm { this, 16, SAME_ADDRESS_NAME }.exec();
             }
             return;
         }
@@ -156,7 +156,7 @@ void NewAddressForm::ok()
                 wallet = std::make_unique<SolanaWallet>();
                 break;
             default:
-                MessageForm { nullptr, 16, "Unsupported chain type" }.exec();
+                MessageForm { this, 16, "Unsupported chain type" }.exec();
                 return;
             }
 
@@ -212,7 +212,7 @@ void NewAddressForm::ok()
             DBErrorType error = checkNameAndReturnError();
             if (error != DBErrorType::none) {
                 if (error == DBErrorType::haveName) {
-                    MessageForm { nullptr, 16, SAME_WALLET_NAME }.exec();
+                    MessageForm { this, 16, SAME_WALLET_NAME }.exec();
                 }
                 return;
             }

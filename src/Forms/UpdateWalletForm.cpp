@@ -198,7 +198,7 @@ void UpdateWalletForm::delAddress(const QModelIndex& index)
         return;
 
     if (index.row() == 0) {
-        MessageForm mf(nullptr, 14, CONFIRM_FIRST_WALLET_DELETE,
+        MessageForm mf(this, 14, CONFIRM_FIRST_WALLET_DELETE,
             CONFIRM_WALLET_DELETE_TITLE, false, MessageButton::Ok);
         mf.exec();
         return;
@@ -211,7 +211,7 @@ void UpdateWalletForm::delAddress(const QModelIndex& index)
         = index.data(static_cast<int>(AddressListModel::ItemData::Name))
               .toString();
 
-    MessageForm mf(nullptr, 14, CONFIRM_ADDRESS_DELETE.arg(name),
+    MessageForm mf(this, 14, CONFIRM_ADDRESS_DELETE.arg(name),
         CONFIRM_WALLET_DELETE_TITLE, false,
         MessageButton::Ok | MessageButton::Cancel);
 
@@ -235,7 +235,7 @@ void UpdateWalletForm::delAddress(const QModelIndex& index)
 void UpdateWalletForm::ok()
 {
     if (editName_->text().isEmpty()) {
-        MessageForm { nullptr, 5, NO_VALID_WALLET_NAME }.exec();
+        MessageForm { this, 5, NO_VALID_WALLET_NAME }.exec();
         return;
     }
 
@@ -260,10 +260,10 @@ void UpdateWalletForm::ok()
         if (error != DBErrorType::none) {
             switch (error) {
             case DBErrorType::haveName:
-                MessageForm { nullptr, 16, SAME_WALLET_NAME }.exec();
+                MessageForm { this, 16, SAME_WALLET_NAME }.exec();
                 break;
             case DBErrorType::haveMnemonic:
-                MessageForm { nullptr, 16, SAME_MNEMONIC }.exec();
+                MessageForm { this, 16, SAME_MNEMONIC }.exec();
                 break;
             default:
                 break;

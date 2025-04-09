@@ -200,7 +200,7 @@ void WalletSelectorForm::ok()
 
         accept();
     } else {
-        MessageForm { nullptr, 5, NO_ADDRESS_SELECTED }.exec();
+        MessageForm { this, 5, NO_ADDRESS_SELECTED }.exec();
     }
 }
 

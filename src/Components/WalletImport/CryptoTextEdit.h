@@ -51,6 +51,7 @@ extern "C" {
 namespace Daitengu::Components {
 
 inline constexpr int MAX_WORDS = 24;
+inline constexpr int MAX_LENGTH = 128;
 inline constexpr char PLAINTEXTEDIT_NAME[] = "plainTextEdit";
 
 inline constexpr std::array<Qt::Key, 3> DefaultKeys = {

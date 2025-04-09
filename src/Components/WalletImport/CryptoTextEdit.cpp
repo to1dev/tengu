@@ -68,6 +68,11 @@ void CryptoTextEdit::focusOutEvent(QFocusEvent* e)
 
 void CryptoTextEdit::analyzeCurrentText()
 {
+    QString currentText = toPlainText();
+    if (currentText.length() > MAX_LENGTH) {
+        setPlainText(currentText.left(MAX_LENGTH));
+    }
+
     QString text = toPlainText().trimmed();
 
     if (text == lastAnalyzedText_) {

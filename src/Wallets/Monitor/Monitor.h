@@ -20,6 +20,7 @@
 
 #include <memory>
 #include <optional>
+#include <unordered_map>
 
 #include <QNetworkAccessManager>
 #include <QObject>
@@ -31,9 +32,12 @@
 namespace Daitengu::Wallets {
 
 class MonitorPrivate;
+class Manager;
 
-inline constexpr char MEMPOOL_API[] = "https://mempool.space/api/address/";
-inline constexpr int DEFAULT_INTERVAL = 60000;
+namespace {
+    inline constexpr char MEMPOOL_API[] = "https://mempool.space/api/address/";
+    inline constexpr int DEFAULT_INTERVAL = 60000;
+}
 
 class Monitor : public QObject {
     Q_OBJECT
@@ -45,6 +49,7 @@ public:
         double balance { 0.0 };
         bool success { false };
         QString errorMessage;
+        QString dataSource;
     };
 
     explicit Monitor(QObject* parent = nullptr);
@@ -53,6 +58,7 @@ public:
     void setAddress(ChainType chain, const QString& address);
     std::pair<ChainType, QString> getAddress() const;
     void setRefreshInterval(int interval);
+    void setPreferredApiSource(ChainType chain, const QString& apiEndpoint);
     void refresh();
 
     QCoro::Task<std::optional<BalanceResult>> fetchBalance(

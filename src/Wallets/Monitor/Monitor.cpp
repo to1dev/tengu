@@ -17,6 +17,7 @@
  */
 
 #include "Monitor.h"
+#include "Manager.h"
 
 #include <QNetworkReply>
 #include <QTimer>
@@ -39,6 +40,7 @@ public:
         networkManager_ = std::make_unique<QNetworkAccessManager>();
         refreshTimer_ = std::make_unique<QTimer>();
         refreshTimer_->setInterval(DEFAULT_INTERVAL);
+        manager_ = std::make_unique<Manager>();
 
         QObject::connect(refreshTimer_.get(), &QTimer::timeout, q, [this]() {
             if (currentChain_ != ChainType::UNKNOWN) {
@@ -52,6 +54,7 @@ public:
     Monitor* q_ptr;
     std::unique_ptr<QNetworkAccessManager> networkManager_;
     std::unique_ptr<QTimer> refreshTimer_;
+    std::unique_ptr<Manager> manager_;
     ChainType currentChain_ { ChainType::UNKNOWN };
     QString currentAddress_;
 };
@@ -97,6 +100,12 @@ void Monitor::setRefreshInterval(int interval)
     spdlog::info("Refresh interval set to {} ms", interval);
 }
 
+void Monitor::setPreferredApiSource(ChainType chain, const QString& apiEndpoint)
+{
+    Q_D(Monitor);
+    d->manager_->setPreferredApiSource(chain, apiEndpoint);
+}
+
 void Monitor::refresh()
 {
     Q_D(Monitor);
@@ -113,119 +122,28 @@ QCoro::Task<std::optional<Monitor::BalanceResult>> Monitor::fetchBalance(
 {
     Q_D(Monitor);
 
-    BalanceResult result {
-        .address = address,
-        .chain = chain,
-    };
-
-    try {
-        switch (chain) {
-        case ChainType::BITCOIN: {
-            QNetworkRequest request { QUrl(
-                QString("%1%2").arg(MEMPOOL_API).arg(address)) };
-            auto reply = std::unique_ptr<QNetworkReply>(
-                d->networkManager_->get(request));
-            bool finished
-                = co_await qCoro(reply.get())
-                      .waitForFinished(std::chrono::milliseconds(5000));
-
-            if (!finished) {
-                result.errorMessage = "Network request timed out";
-                spdlog::error(
-                    "Network timeout for address {}: request took too long",
-                    address.toStdString());
-                Q_EMIT errorOccurred(result.errorMessage);
-                break;
-            }
-
-            if (reply->error() != QNetworkReply::NoError) {
-                result.errorMessage = reply->errorString();
-                if (reply->error() == QNetworkReply::HostNotFoundError) {
-                    spdlog::critical("Host not found for address {}: {}",
-                        address.toStdString(),
-                        result.errorMessage.toStdString());
-                } else {
-                    spdlog::warn("Network error for address {}: {} (Code: {})",
-                        address.toStdString(),
-                        result.errorMessage.toStdString(),
-                        static_cast<int>(reply->error()));
-                }
-                Q_EMIT errorOccurred(result.errorMessage);
-                break;
-            }
-
-            auto data = reply->readAll();
-            try {
-                json j = json::parse(data.toStdString());
-                if (j.is_object() && j.contains("chain_stats")
-                    && j["chain_stats"].contains("funded_txo_sum")) {
-                    uint64_t confirmed
-                        = j["chain_stats"]["funded_txo_sum"].get<uint64_t>()
-                        - j["chain_stats"]["spent_txo_sum"].get<uint64_t>();
-
-                    uint64_t unconfirmed
-                        = j["mempool_stats"]["funded_txo_sum"].get<uint64_t>()
-                        - j["mempool_stats"]["spent_txo_sum"].get<uint64_t>();
-                    double btcAmount
-                        = static_cast<double>(confirmed + unconfirmed) / 1e8;
-                    /*auto chain_stats = j.at("chain_stats");
-                    auto funded
-                        = chain_stats.at("funded_txo_sum").get<double>();
-                    auto spent
-                        = chain_stats.at("spent_txo_sum").get<double>();
-                    result.balance = (funded - spent) / 1e8;*/
-                    result.balance = btcAmount;
-                    result.success = true;
-
-                    spdlog::info("BTC balance for {}: {}",
-                        address.toStdString(), result.balance);
-                }
-            } catch (const json::exception& e) {
-                result.errorMessage = QString::fromStdString(e.what());
-                spdlog::error("JSON parsing error for BTC: {}", e.what());
-            }
-
-            break;
-        }
-
-        case ChainType::ETHEREUM: {
-            d->refreshTimer_->stop();
-            result.errorMessage = "Ethereum monitoring not implemented yet";
-            spdlog::warn("ETH not implemented for {}", address.toStdString());
-            co_await QCoro::sleepFor(std::chrono::seconds(1));
-            break;
-        }
-
-        case ChainType::SOLANA: {
-            d->refreshTimer_->stop();
-            result.errorMessage = "Solana monitoring not implemented yet";
-            spdlog::warn("SOL not implemented for {}", address.toStdString());
-            co_await QCoro::sleepFor(std::chrono::seconds(1));
-            break;
-        }
-
-        case ChainType::SUI: {
-            d->refreshTimer_->stop();
-            result.errorMessage = "Sui monitoring not implemented yet";
-            spdlog::warn("SUI not implemented for {}", address.toStdString());
-            co_await QCoro::sleepFor(std::chrono::seconds(1));
-            break;
-        }
-
-        case ChainType::UNKNOWN:
-        default:
-            d->refreshTimer_->stop();
-            result.errorMessage = "No chain specified";
-            spdlog::warn("Attempted to fetch balance with unknown chain");
-            break;
-        }
-    } catch (const std::exception& e) {
-        result.errorMessage = e.what();
-        spdlog::error("Exception during balance fetch: {}", e.what());
+    auto handlerOpt = d->manager_->getHandler(chain);
+    if (!handlerOpt) {
+        BalanceResult result {
+            .address = address,
+            .chain = chain,
+            .errorMessage = "No handler registered for this chain",
+        };
+        d->refreshTimer_->stop();
+        spdlog::error(
+            "No handler registered for chain: {}", static_cast<int>(chain));
+        Q_EMIT balanceUpdated(result);
+        co_return std::nullopt;
     }
 
-    Q_EMIT balanceUpdated(result);
+    auto result = co_await handlerOpt.value()->fetchBalance(
+        d->networkManager_.get(), address);
+    if (result) {
+        Q_EMIT balanceUpdated(*result);
+    } else {
+        Q_EMIT balanceUpdated(BalanceResult { .success = false });
+    }
 
-    co_return result.success ? std::make_optional(result) : std::nullopt;
+    co_return result;
 }
 }

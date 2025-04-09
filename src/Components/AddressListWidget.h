@@ -124,6 +124,7 @@ public:
 
 Q_SIGNALS:
     void deleteRequested(const QModelIndex& index);
+    void addressDoubleClicked(int id);
 
 protected:
     void paintEvent(QPaintEvent* event) override;

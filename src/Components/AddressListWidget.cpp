@@ -306,6 +306,19 @@ AddressListView::AddressListView(QWidget* parent, bool deletable)
 
     connect(delegate, &BoldFirstLineDelegate::deleteRequested, this,
         [this](const QModelIndex& index) { Q_EMIT deleteRequested(index); });
+
+    connect(this, &QListView::doubleClicked, [this](const QModelIndex&) {
+        QModelIndex index = currentIndex();
+        if (!index.isValid())
+            return;
+
+        int id = model_
+                     ->data(index,
+                         static_cast<int>(AddressListModel::ItemData::Id))
+                     .toInt();
+
+        Q_EMIT addressDoubleClicked(id);
+    });
 }
 
 void AddressListView::add(const Address& address)

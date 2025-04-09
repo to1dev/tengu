@@ -32,6 +32,7 @@
 
 #include "Forms/ImportWalletForm.h"
 #include "Forms/NewWalletForm.h"
+#include "Forms/SmartWalletForm.h"
 #include "Forms/UpdateWalletForm.h"
 
 using namespace Daitengu::Components;
@@ -68,8 +69,9 @@ private Q_SLOTS:
 private:
     void newWallet();
     void importWallet();
-    void editWallet();
+    void editWallet(int id);
     void delWallet();
+    void smartWallet();
 
 private:
     Ui::WalletForm* ui;

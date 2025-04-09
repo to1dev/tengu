@@ -65,6 +65,9 @@ WalletForm::WalletForm(
     connect(frameless_.get(), &Frameless::onMax, this,
         [this]() { globalManager_->windowManager()->reset(this, 0.8); });
 
+    connect(walletView_, &WalletListView::walletDoubleClicked, this,
+        &WalletForm::editWallet);
+
     connect(ui->ButtonOK, &QPushButton::clicked, this, &WalletForm::ok);
     connect(ui->ButtonNewWallet, &QPushButton::clicked, this,
         &WalletForm::newWallet);
@@ -72,8 +75,6 @@ WalletForm::WalletForm(
         &WalletForm::importWallet);
     connect(ui->ButtonEditWallet, &QPushButton::clicked, this,
         &WalletForm::editWallet);
-    connect(walletView_, &WalletListView::doubleClicked,
-        [this](const QModelIndex&) { editWallet(); });
     connect(ui->ButtonDeleteWallet, &QPushButton::clicked, this,
         &WalletForm::delWallet);
 }
@@ -109,15 +110,15 @@ void WalletForm::importWallet()
     }
 }
 
-void WalletForm::editWallet()
+void WalletForm::editWallet(int id)
 {
-    QModelIndex index = walletView_->currentIndex();
+    /*QModelIndex index = walletView_->currentIndex();
     if (!index.isValid())
         return;
 
     int id = walletView_->model()
                  ->data(index, static_cast<int>(WalletListModel::ItemData::Id))
-                 .toInt();
+                 .toInt();*/
 
     UpdateWalletForm::UpdateWallet wallet {
         .id = id,
@@ -156,5 +157,14 @@ void WalletForm::delWallet()
         } catch (const DatabaseException& e) {
             std::cerr << "Failed to remove wallet: " << e.what() << std::endl;
         }
+    }
+}
+
+void WalletForm::smartWallet()
+{
+    SmartWalletForm swf(this, globalManager_);
+    int ret = swf.exec();
+    if (ret) {
+    } else {
     }
 }

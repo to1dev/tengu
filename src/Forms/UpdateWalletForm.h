@@ -123,7 +123,7 @@ public:
 private Q_SLOTS:
     void ok();
     void newAddress();
-    void editAddress();
+    void editAddress(int id);
     void delAddress(const QModelIndex& index);
 
 private:

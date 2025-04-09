@@ -101,8 +101,8 @@ UpdateWalletForm::UpdateWalletForm(const UpdateWallet& wallet, QWidget* parent,
     connect(ui->ButtonEditAddress, &QPushButton::clicked, this,
         &UpdateWalletForm::editAddress);
 
-    connect(addressView_, &QListView::doubleClicked,
-        [this](const QModelIndex&) { editAddress(); });
+    connect(addressView_, &AddressListView::addressDoubleClicked, this,
+        &UpdateWalletForm::editAddress);
 
     connect(addressView_, &AddressListView::deleteRequested, this,
         &UpdateWalletForm::delAddress);
@@ -170,15 +170,15 @@ void UpdateWalletForm::newAddress()
     }
 }
 
-void UpdateWalletForm::editAddress()
+void UpdateWalletForm::editAddress(int id)
 {
-    QModelIndex index = addressView_->currentIndex();
+    /*QModelIndex index = addressView_->currentIndex();
     if (!index.isValid())
         return;
 
     int id = addressView_->model()
                  ->data(index, static_cast<int>(AddressListModel::ItemData::Id))
-                 .toInt();
+                 .toInt();*/
 
     NewAddressForm::NewAddress address {
         .op = NewAddressForm::Op::EDIT,

@@ -539,7 +539,7 @@ QPlainTextEdit:focus {
 #viewMnemonic {
     border-radius: 0;
     border-color: #32414b;
-    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(20, 20, 20, 150), stop:.03 palette(window));
+    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:0.5, stop:0 rgba(20, 20, 20, 50), stop:.03 palette(window));
 }
 
 #labelMnemonic {

@@ -39,3 +39,4 @@
 /Security/Security.h
 *.user
 *.zst
+.wrangler

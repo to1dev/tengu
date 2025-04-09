@@ -125,6 +125,9 @@ public:
 Q_SIGNALS:
     void deleteRequested(const QModelIndex& index);
 
+protected:
+    void paintEvent(QPaintEvent* event) override;
+
 private:
     AddressListModel* model_;
 };

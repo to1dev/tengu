@@ -236,4 +236,19 @@ void WalletListView::remove(const QList<int>& rows)
     model_->remove(rows);
 }
 
+void WalletListView::paintEvent(QPaintEvent* event)
+{
+    QPainter painter(this->viewport());
+    painter.setRenderHint(QPainter::Antialiasing);
+
+    QRect rect = this->viewport()->rect();
+
+    QListView::paintEvent(event);
+
+    QLinearGradient gradient(rect.topLeft(), QPoint(rect.x(), rect.y() + 10));
+    gradient.setColorAt(0, QColor(0, 0, 0, 30));
+    gradient.setColorAt(1, QColor(0, 0, 0, 0));
+
+    painter.fillRect(QRect(rect.x(), rect.y(), rect.width(), 50), gradient);
+}
 }

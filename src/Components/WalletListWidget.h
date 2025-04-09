@@ -179,6 +179,9 @@ public:
         return model_;
     }
 
+protected:
+    void paintEvent(QPaintEvent* event) override;
+
 private:
     WalletListModel* model_;
 };

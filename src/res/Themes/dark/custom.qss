@@ -123,7 +123,7 @@ QPlainTextEdit:focus {
 #listWidgetAddress {
     border-radius: 0;
     border-color: #32414b;
-    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(20, 20, 20, 150), stop:.03 palette(window));
+    /*background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(20, 20, 20, 150), stop:.03 palette(window));*/
 }
 
 #listWidgetAddress::item {
@@ -436,7 +436,7 @@ QPlainTextEdit:focus {
 #listWidgetWallet {
     border-radius: 0;
     border-color: #32414b;
-    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(20, 20, 20, 150), stop:.03 palette(window));
+    /*background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(20, 20, 20, 150), stop:.03 palette(window));*/
 }
 
 #listWidgetWallet::item {
@@ -947,14 +947,6 @@ QScrollBar::handle:vertical:hover {
 #ButtonRunGroup:disabled, #ButtonBindGroup:disabled, #ButtonReleaseGroup:disabled, #ButtonBindProfile:disabled, #ButtonBindLayout:disabled {
     color: #787878;
     background-color: #454545;
-}
-
-#labelGroup, #labelProcess {
-    color: #aaaaaa;
-    padding: 6;
-    border: 1 solid #32414b;
-    border-radius: 0;
-    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(20, 20, 20, 150), stop:0.2 palette(window));
 }
 
 QTextEdit {

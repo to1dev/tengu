@@ -48,7 +48,7 @@ public:
     WindowManager();
     ~WindowManager();
 
-    void center(QWidget* window = nullptr);
+    static void center(QWidget* window = nullptr);
     void reset(QWidget* window = nullptr, double percent = HORIZONTAL_RATIO,
         WindowShape shape = WindowShape::HORIZONTAL);
 

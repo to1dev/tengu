@@ -1,0 +1,10 @@
+name = "price-fetcher"
+compatibility_date = "2025-04-10"
+main = "index.ts"
+
+[triggers]
+crons = ["* * * * *"]
+
+[[kv_namespaces]]
+binding = "CRYPTO_PRICES"
+id = "0576d0826d23418a8d522849bc2a021c"

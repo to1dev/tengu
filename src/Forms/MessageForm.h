@@ -65,6 +65,9 @@ public:
         int buttons = MessageButton::Ok);
     ~MessageForm();
 
+protected:
+    void showEvent(QShowEvent* event) override;
+
 private Q_SLOTS:
     void ok();
 

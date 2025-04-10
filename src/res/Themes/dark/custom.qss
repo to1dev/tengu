@@ -38,33 +38,6 @@
     background: none;
 }
 
-#popupList QScrollBar:horizontal {
-    background: #2A3A4A;
-    height: 12px;
-    margin: 0px;
-}
-
-#popupList QScrollBar::handle:horizontal {
-    background: #455364;
-    min-width: 20px;
-    border-radius: 0;
-    margin: 3px;
-}
-
-#popupList QScrollBar::handle:horizontal:hover {
-    background: #346792;
-}
-
-#popupList QScrollBar::add-line:horizontal,
-#popupList QScrollBar::sub-line:horizontal {
-    width: 0px;
-}
-
-#popupList QScrollBar::add-page:horizontal,
-#popupList QScrollBar::sub-page:horizontal {
-    background: none;
-}
-
 QMenuBar {
     border: 0;
     padding: 3px 6px 3px 3px;
@@ -123,7 +96,6 @@ QPlainTextEdit:focus {
 #listWidgetAddress {
     border-radius: 0;
     border-color: #32414b;
-    /*background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(20, 20, 20, 150), stop:.03 palette(window));*/
 }
 
 #listWidgetAddress::item {
@@ -142,33 +114,6 @@ QPlainTextEdit:focus {
 
 #listWidgetAddress::item:selected {
     background-color: #1B4F72;
-}
-
-#listWidgetAddress QScrollBar:vertical {
-    background: #2A3A4A;
-    width: 16px;
-    margin: 0px;
-}
-
-#listWidgetAddress QScrollBar::handle:vertical {
-    background: #455364;
-    min-height: 20px;
-    border-radius: 0;
-    margin: 3px;
-}
-
-#listWidgetAddress QScrollBar::handle:vertical:hover {
-    background: #264a63;
-}
-
-#listWidgetAddress QScrollBar::add-line:vertical,
-#listWidgetAddress QScrollBar::sub-line:vertical {
-    height: 0px;
-}
-
-#listWidgetAddress QScrollBar::add-page:vertical,
-#listWidgetAddress QScrollBar::sub-page:vertical {
-    background: none;
 }
 
 #tokenWidget {
@@ -436,7 +381,6 @@ QPlainTextEdit:focus {
 #listWidgetWallet {
     border-radius: 0;
     border-color: #32414b;
-    /*background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(20, 20, 20, 150), stop:.03 palette(window));*/
 }
 
 #listWidgetWallet::item {
@@ -459,33 +403,6 @@ QPlainTextEdit:focus {
 
 #listWidgetWallet::item:selected {
     background-color: #1B4F72;
-}
-
-#listWidgetWallet QScrollBar:vertical {
-    background: #2A3A4A;
-    width: 16px;
-    margin: 0px;
-}
-
-#listWidgetWallet QScrollBar::handle:vertical {
-    background: #455364;
-    min-height: 20px;
-    border-radius: 0;
-    margin: 3px;
-}
-
-#listWidgetWallet QScrollBar::handle:vertical:hover {
-    background: #264a63;
-}
-
-#listWidgetWallet QScrollBar::add-line:vertical,
-#listWidgetWallet QScrollBar::sub-line:vertical {
-    height: 0px;
-}
-
-#listWidgetWallet QScrollBar::add-page:vertical,
-#listWidgetWallet QScrollBar::sub-page:vertical {
-    background: none;
 }
 
 #walletPanel {
@@ -813,40 +730,37 @@ QPlainTextEdit:focus {
     height: 120;
 }
 
-QScrollBar:horizontal {
-    border-radius: 0;
-    border: 0;
-}
-
-QScrollBar::handle:horizontal {
-    border-radius: 2;
-    border: 0;
-    background: #174c6d;
-}
-
-QScrollBar::handle:horizontal:hover {
-    border-radius: 2;
-    border: 0;
-    background: #174c6d;
-}
-
 QScrollBar:vertical {
     border-radius: 0;
     border: 0;
-    width: 14px;
-    margin: 16px 3px 16px 3px;
+    background: palette(window);
+    width: 18px;
+    margin: 0px;
+    /*border-left: 1px solid black;*/
+    padding: 3px;
 }
 
 QScrollBar::handle:vertical {
-    border-radius: 2;
-    border: 0;
-    background: #174c6d;
+    background: #455364;
+    min-height: 20px;
+    border-radius: 0;
+    margin: 0;
+    padding: 0;
 }
 
 QScrollBar::handle:vertical:hover {
-    border-radius: 2;
-    border: 0;
-    background: #174c6d;
+    background: #264a63;
+    border-radius: 0;
+}
+
+QScrollBar::add-line:vertical,
+QScrollBar::sub-line:vertical {
+    height: 0px;
+}
+
+QScrollBar::add-page:vertical,
+QScrollBar::sub-page:vertical {
+    background: none;
 }
 
 #ButtonClipboard {

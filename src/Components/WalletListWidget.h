@@ -179,9 +179,6 @@ public:
         return model_;
     }
 
-Q_SIGNALS:
-    void walletDoubleClicked(int id);
-
 protected:
     void paintEvent(QPaintEvent* event) override;
 

@@ -65,7 +65,7 @@ WalletForm::WalletForm(
     connect(frameless_.get(), &Frameless::onMax, this,
         [this]() { globalManager_->windowManager()->reset(this, 0.8); });
 
-    connect(walletView_, &WalletListView::walletDoubleClicked, this,
+    connect(walletView_, &WalletListView::doubleClicked, this,
         &WalletForm::editWallet);
 
     connect(ui->ButtonOK, &QPushButton::clicked, this, &WalletForm::ok);
@@ -77,6 +77,8 @@ WalletForm::WalletForm(
         &WalletForm::editWallet);
     connect(ui->ButtonDeleteWallet, &QPushButton::clicked, this,
         &WalletForm::delWallet);
+    connect(ui->ButtonSmartWallet, &QPushButton::clicked, this,
+        &WalletForm::smartWallet);
 }
 
 WalletForm::~WalletForm()
@@ -110,15 +112,15 @@ void WalletForm::importWallet()
     }
 }
 
-void WalletForm::editWallet(int id)
+void WalletForm::editWallet()
 {
-    /*QModelIndex index = walletView_->currentIndex();
+    QModelIndex index = walletView_->currentIndex();
     if (!index.isValid())
         return;
 
     int id = walletView_->model()
                  ->data(index, static_cast<int>(WalletListModel::ItemData::Id))
-                 .toInt();*/
+                 .toInt();
 
     UpdateWalletForm::UpdateWallet wallet {
         .id = id,

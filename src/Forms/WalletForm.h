@@ -69,7 +69,7 @@ private Q_SLOTS:
 private:
     void newWallet();
     void importWallet();
-    void editWallet(int id);
+    void editWallet();
     void delWallet();
     void smartWallet();
 

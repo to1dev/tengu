@@ -30,7 +30,9 @@ class QNetworkAccessManager;
 
 namespace Daitengu::Clients {
 
-inline constexpr char defaultApi[] = "https://mempool.space/api/v1/prices";
+// inline constexpr char defaultApi[] = "https://mempool.space/api/v1/prices";
+inline constexpr char defaultApi[] = "https://min-api.cryptocompare.com/data/"
+                                     "pricemulti?fsyms=%1&tsyms=USD,EUR";
 
 class Hydra : public QObject {
     Q_OBJECT
@@ -46,7 +48,7 @@ public:
     QMap<QString, double> getPrices() const;
 
 Q_SIGNALS:
-    void priceUpdated(const QString& ticker, double price);
+    void pricesUpdated(const QMap<QString, double>& prices);
 
 private:
     QCoro::Task<void> updatePrices();

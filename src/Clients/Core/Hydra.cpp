@@ -34,7 +34,7 @@ Hydra::Hydra(QObject* parent, int interval)
     , interval_(interval)
 {
     networkManager_ = std::make_unique<QNetworkAccessManager>();
-    tickerList_ = QStringList { "btc", "eth" };
+    tickerList_ = QStringList { "BTC", "ETH", "SOL", "SUI" };
 }
 
 Hydra::~Hydra()
@@ -75,33 +75,45 @@ QMap<QString, double> Hydra::getPrices() const
 QCoro::Task<void> Hydra::updatePrices()
 {
     while (running_) {
-        for (const auto& ticker : tickerList_) {
-            if (ticker == "btc") {
-                QNetworkRequest request { QUrl(defaultApi) };
-                auto reply = std::unique_ptr<QNetworkReply>(
-                    networkManager_->get(request));
-                // co_await reply.get();
-                co_await qCoro(reply.get())
-                    .waitForFinished(std::chrono::milliseconds(5000));
-                if (!reply->error()) {
-                    QByteArray data = reply->readAll();
-                    std::string jsonStr = data.toStdString();
+        if (tickerList_.isEmpty()) {
+            spdlog::warn("Ticker list is empty, skipping price update");
+            co_await QCoro::sleepFor(std::chrono::seconds(interval_));
+            continue;
+        }
 
-                    try {
-                        json j = json::parse(jsonStr);
-                        if (!j.is_null() && j.is_object()) {
-                            double price = j["USD"].get<double>();
-                            {
-                                QMutexLocker locker(&priceMutex_);
+        QString tickers = tickerList_.join(",");
+        QString url = QString(defaultApi).arg(tickers);
+        QNetworkRequest request { QUrl(url) };
+        auto reply
+            = std::unique_ptr<QNetworkReply>(networkManager_->get(request));
+        co_await qCoro(reply.get())
+            .waitForFinished(std::chrono::milliseconds(5000));
+        if (!reply->error()) {
+            QByteArray data = reply->readAll();
+            std::string jsonStr = data.toStdString();
+
+            try {
+                json j = json::parse(jsonStr);
+                if (!j.is_null() && j.is_object()) {
+                    {
+                        QMutexLocker locker(&priceMutex_);
+                        for (const auto& ticker : tickerList_) {
+                            std::string tickerStr = ticker.toStdString();
+                            if (j.contains(tickerStr)) {
+                                double price
+                                    = j[tickerStr]["USD"].get<double>();
                                 prices_[ticker] = price;
                             }
-                            Q_EMIT priceUpdated(ticker, price);
                         }
-                    } catch (const json::exception& e) {
-                        spdlog::warn("JSON parsing error: {}", e.what());
                     }
+                    Q_EMIT pricesUpdated(prices_);
                 }
+            } catch (const json::exception& e) {
+                spdlog::warn("JSON parsing error: {}", e.what());
             }
+        } else {
+            spdlog::warn("Network request failed: {}",
+                reply->errorString().toStdString());
         }
 
         co_await QCoro::sleepFor(std::chrono::seconds(interval_));

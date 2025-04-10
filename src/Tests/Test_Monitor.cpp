@@ -33,9 +33,11 @@ int main(int argc, char* argv[])
     QCoreApplication app(argc, argv);
 
     std::unique_ptr<Hydra> hydra = std::make_unique<Hydra>(nullptr, 30);
-    QObject::connect(hydra.get(), &Hydra::priceUpdated,
-        [](const QString& ticker, double price) {
-            spdlog::info("{} Price: ${}", ticker.toStdString(), price);
+    QObject::connect(hydra.get(), &Hydra::pricesUpdated,
+        [](const QMap<QString, double>& prices) {
+            for (auto it = prices.constBegin(); it != prices.constEnd(); ++it) {
+                qDebug() << it.key() << ":" << it.value();
+            }
         });
     hydra->start();
 

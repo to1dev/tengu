@@ -118,19 +118,34 @@ void WalletForm::editWallet()
     if (!index.isValid())
         return;
 
-    int id = walletView_->model()
-                 ->data(index, static_cast<int>(WalletListModel::ItemData::Id))
+    auto model = walletView_->model();
+
+    int id = model->data(index, static_cast<int>(WalletListModel::ItemData::Id))
                  .toInt();
 
-    UpdateWalletForm::UpdateWallet wallet {
-        .id = id,
-    };
-    UpdateWalletForm uwf(wallet, this, globalManager_);
+    int groupType
+        = model
+              ->data(
+                  index, static_cast<int>(WalletListModel::ItemData::GroupType))
+              .toInt();
 
-    int ret = uwf.exec();
-    if (ret) {
-        walletView_->update(*uwf.walletRecord());
+    if (groupType == static_cast<int>(WalletGroupType::Smart)) {
+        SmartWalletForm swf(this, globalManager_);
+        int ret = swf.exec();
+        if (ret) {
+        } else {
+        }
     } else {
+        UpdateWalletForm::UpdateWallet wallet {
+            .id = id,
+        };
+        UpdateWalletForm uwf(wallet, this, globalManager_);
+
+        int ret = uwf.exec();
+        if (ret) {
+            walletView_->update(*uwf.walletRecord());
+        } else {
+        }
     }
 }
 

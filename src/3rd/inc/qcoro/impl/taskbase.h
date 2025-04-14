@@ -64,7 +64,7 @@ inline auto TaskBase<T, TaskImpl, PromiseType>::operator co_await() const noexce
          * \return the result from the coroutine's promise, factically the
          * value co_returned by the coroutine. */
         auto await_resume() {
-            Q_ASSERT(this->mAwaitedCoroutine != nullptr);
+            Q_ASSERT(this->mAwaitedCoroutine);
             if constexpr (!std::is_void_v<T>) {
                 return std::move(this->mAwaitedCoroutine.promise().result());
             } else {

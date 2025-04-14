@@ -51,7 +51,7 @@ inline auto LazyTask<T>::operator co_await() const noexcept {
         }
 
         auto await_resume() {
-            Q_ASSERT(this->mAwaitedCoroutine != nullptr);
+            Q_ASSERT(this->mAwaitedCoroutine);
             if constexpr (!std::is_void_v<T>) {
                 return std::move(this->mAwaitedCoroutine.promise().result());
             } else {

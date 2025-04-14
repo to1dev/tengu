@@ -38,13 +38,7 @@ inline void TaskPromise<T>::return_value(const T &value) noexcept {
 template<typename T>
 template<typename U> requires QCoro::concepts::constructible_from<T, U>
 inline void TaskPromise<T>::return_value(U &&value) noexcept {
-    mValue = std::move(value);
-}
-
-template<typename T>
-template<typename U> requires QCoro::concepts::constructible_from<T, U>
-inline void TaskPromise<T>::return_value(const U &value) noexcept {
-    mValue = value;
+    mValue = T(std::move(value));
 }
 
 template<typename T>

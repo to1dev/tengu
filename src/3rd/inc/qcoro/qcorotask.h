@@ -220,9 +220,6 @@ public:
     template<typename U> requires QCoro::concepts::constructible_from<T, U>
     void return_value(U &&value) noexcept;
 
-    template<typename U> requires QCoro::concepts::constructible_from<T, U>
-    void return_value(const U &value) noexcept;
-
     //! Retrieves the result of the coroutine.
     /*!
      *  \return the value co_returned by the finished coroutine. If the coroutine has

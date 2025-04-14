@@ -10,24 +10,6 @@ NewAddressForm::NewAddressForm(const NewAddress& address, QWidget* parent,
 {
     ui->setupUi(this);
 
-    switch (address_.op) {
-    case Op::NEW: {
-        setWindowTitle(DEFAULT_TITLE_NEW);
-        break;
-    }
-    case Op::EDIT: {
-        setWindowTitle(DEFAULT_TITLE_EDIT);
-        break;
-    }
-    default:
-        break;
-    }
-
-    frameless_ = std::make_unique<Frameless>(this);
-    frameless_->setMainFrame(ui->frameMain);
-    frameless_->setContentFrame(ui->frameContent);
-    frameless_->init(Frameless::Mode::DIALOG);
-
     QVBoxLayout* layoutOptions = new QVBoxLayout(ui->groupBox);
     layoutOptions->setContentsMargins(DEFAULT_GROUP_MARGINS);
     layoutOptions->setSpacing(DEFAULT_SPACING);
@@ -56,19 +38,10 @@ NewAddressForm::NewAddressForm(const NewAddress& address, QWidget* parent,
     layoutOptions->addWidget(text_, 1);
     // ui->groupBox->setLayout(layoutOptions);
 
-    globalManager_->windowManager()->reset(
-        this, 0.6, WindowManager::WindowShape::SQUARE);
-    connect(frameless_.get(), &Frameless::onMax, this, [this]() {
-        globalManager_->windowManager()->reset(
-            this, 0.6, WindowManager::WindowShape::SQUARE);
-    });
-
-    connect(ui->ButtonOK, &QPushButton::clicked, this, &NewAddressForm::ok);
-    connect(
-        ui->ButtonCancel, &QPushButton::clicked, this, &NewAddressForm::reject);
-
     switch (address_.op) {
     case Op::NEW:
+        setWindowTitle(DEFAULT_TITLE_NEW);
+
         editName_->setText(QString(STR_ADDRESS_NAME).arg(address_.index + 1));
 
         {
@@ -80,6 +53,8 @@ NewAddressForm::NewAddressForm(const NewAddress& address, QWidget* parent,
         break;
 
     case Op::EDIT: {
+        setWindowTitle(DEFAULT_TITLE_EDIT);
+
         auto opt
             = globalManager_->settingManager()->database()->addressRepo()->get(
                 address_.id);
@@ -98,6 +73,22 @@ NewAddressForm::NewAddressForm(const NewAddress& address, QWidget* parent,
     default:
         break;
     }
+
+    frameless_ = std::make_unique<Frameless>(this);
+    frameless_->setMainFrame(ui->frameMain);
+    frameless_->setContentFrame(ui->frameContent);
+    frameless_->init(Frameless::Mode::DIALOG);
+
+    globalManager_->windowManager()->reset(
+        this, 0.6, WindowManager::WindowShape::SQUARE);
+    connect(frameless_.get(), &Frameless::onMax, this, [this]() {
+        globalManager_->windowManager()->reset(
+            this, 0.6, WindowManager::WindowShape::SQUARE);
+    });
+
+    connect(ui->ButtonOK, &QPushButton::clicked, this, &NewAddressForm::ok);
+    connect(
+        ui->ButtonCancel, &QPushButton::clicked, this, &NewAddressForm::reject);
 }
 
 NewAddressForm::~NewAddressForm()

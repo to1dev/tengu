@@ -155,16 +155,39 @@ void WalletForm::delWallet()
     if (!index.isValid())
         return;
 
-    int id = walletView_->model()
-                 ->data(index, static_cast<int>(WalletListModel::ItemData::Id))
+    auto model = walletView_->model();
+
+    int id = model->data(index, static_cast<int>(WalletListModel::ItemData::Id))
                  .toInt();
     QString name
-        = walletView_->model()
-              ->data(index, static_cast<int>(WalletListModel::ItemData::Name))
+        = model->data(index, static_cast<int>(WalletListModel::ItemData::Name))
               .toString();
+    int groupType
+        = model
+              ->data(
+                  index, static_cast<int>(WalletListModel::ItemData::GroupType))
+              .toInt();
+    int type
+        = model->data(index, static_cast<int>(WalletListModel::ItemData::Type))
+              .toInt();
 
-    MessageForm mf { this, 14, CONFIRM_WALLET_DELETE.arg(name),
-        CONFIRM_WALLET_DELETE_TITLE, true,
+    bool doubleCheck = false;
+    QString msg;
+    if (groupType == static_cast<int>(WalletGroupType::User)) {
+        msg = CONFIRM_WALLET_DELETE.arg(name);
+        doubleCheck = true;
+    } else {
+        if (type == static_cast<int>(WalletType::Mnemonic)
+            || type == static_cast<int>(WalletType::Priv)
+            || type == static_cast<int>(WalletType::Wif)) {
+            msg = CONFIRM_WALLET_DELETE.arg(name);
+            doubleCheck = true;
+        } else {
+            msg = CONFIRM_IMPORT_DELETE.arg(name);
+        }
+    }
+
+    MessageForm mf { this, 14, msg, CONFIRM_WALLET_DELETE_TITLE, doubleCheck,
         MessageButton::Ok | MessageButton::Cancel };
     if (mf.exec()) {
         try {

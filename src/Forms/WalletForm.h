@@ -53,6 +53,11 @@ inline const QString CONFIRM_WALLET_DELETE = QObject::tr(
     "么做吗？</p><p>请在下方输入大写 <strong "
     "style='color:olive'>DELETE</strong> 以确认：</p>");
 
+inline const QString CONFIRM_IMPORT_DELETE = QObject::tr(
+    "<font style='color:orange'>警告！</font><p>你即将永久删除<font "
+    "color='orange'>[%1]</font>"
+    "这个钱包，此操作无法撤销！请务必谨慎！</p>");
+
 class WalletForm : public QDialog {
     Q_OBJECT
 

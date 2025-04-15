@@ -30,11 +30,6 @@ UpdateWalletForm::UpdateWalletForm(const UpdateWallet& wallet, QWidget* parent,
 
     setWindowTitle(DEFAULT_TITLE);
 
-    frameless_ = std::make_unique<Frameless>(this);
-    frameless_->setMainFrame(ui->frameMain);
-    frameless_->setContentFrame(ui->frameContent);
-    frameless_->init(Frameless::Mode::DIALOG);
-
     QVBoxLayout* layoutAddressList = new QVBoxLayout(ui->groupBoxAddress);
     layoutAddressList->setContentsMargins(DEFAULT_GROUP_MARGINS);
     layoutAddressList->setSpacing(DEFAULT_SPACING);
@@ -88,6 +83,11 @@ UpdateWalletForm::UpdateWalletForm(const UpdateWallet& wallet, QWidget* parent,
     // ui->groupBox->setLayout(layoutOptions);
 
     ui->ButtonOK->setDefault(true);
+
+    frameless_ = std::make_unique<Frameless>(this);
+    frameless_->setMainFrame(ui->frameMain);
+    frameless_->setContentFrame(ui->frameContent);
+    frameless_->init(Frameless::Mode::DIALOG);
 
     globalManager_->windowManager()->reset(this, 0.7);
     connect(frameless_.get(), &Frameless::onMax, this,

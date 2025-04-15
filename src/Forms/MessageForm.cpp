@@ -31,11 +31,6 @@ MessageForm::MessageForm(QWidget* parent, int emoji, const QString& text,
 
     setWindowTitle(title);
 
-    frameless_ = std::make_unique<Frameless>(this);
-    frameless_->setMainFrame(ui->frameMain);
-    frameless_->setContentFrame(ui->frameContent);
-    frameless_->init(Frameless::Mode::MESSAGEBOX);
-
     SVGWidget* icon = nullptr;
     if (emoji > 0) {
         icon = new SVGWidget(QString(":/Emoji/%1").arg(emoji), this);
@@ -89,6 +84,11 @@ MessageForm::MessageForm(QWidget* parent, int emoji, const QString& text,
     } else {
         ui->ButtonCancel->setVisible(false);
     }
+
+    frameless_ = std::make_unique<Frameless>(this);
+    frameless_->setMainFrame(ui->frameMain);
+    frameless_->setContentFrame(ui->frameContent);
+    frameless_->init(Frameless::Mode::MESSAGEBOX);
 }
 
 MessageForm::~MessageForm()

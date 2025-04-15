@@ -35,11 +35,6 @@ WalletDock::WalletDock(
 
     setWindowTitle(DEFAULT_TITLE);
 
-    frameless_ = std::make_unique<Frameless>(this);
-    frameless_->setMainFrame(ui->frameMain);
-    frameless_->setContentFrame(ui->frameContent);
-    frameless_->init(Frameless::Mode::PANEL);
-
     QVBoxLayout* layout = new QVBoxLayout(ui->frameContent);
 
     walletPanel_ = new WalletPanel(this);
@@ -49,6 +44,11 @@ WalletDock::WalletDock(
 
     walletPanel_->userCard()->setRecord(
         globalManager_->settingManager()->record());
+
+    frameless_ = std::make_unique<Frameless>(this);
+    frameless_->setMainFrame(ui->frameMain);
+    frameless_->setContentFrame(ui->frameContent);
+    frameless_->init(Frameless::Mode::PANEL);
 
     globalManager_->windowManager()->addWindow(
         WindowManager::WindowShape::RIGHT_PANEL, this);

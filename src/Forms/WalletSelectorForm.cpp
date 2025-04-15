@@ -29,11 +29,6 @@ WalletSelectorForm::WalletSelectorForm(
 
     setWindowTitle(DEFAULT_TITLE);
 
-    frameless_ = std::make_unique<Frameless>(this);
-    frameless_->setMainFrame(ui->frameMain);
-    frameless_->setContentFrame(ui->frameContent);
-    frameless_->init(Frameless::Mode::DIALOG);
-
     QHBoxLayout* layout = new QHBoxLayout(ui->groupBox);
     layout->setContentsMargins(DEFAULT_GROUP_MARGINS);
     layout->setSpacing(20);
@@ -47,6 +42,11 @@ WalletSelectorForm::WalletSelectorForm(
     layout->addWidget(walletView_);
     layout->addWidget(addressView_);
     // ui->groupBox->setLayout(layout);
+
+    frameless_ = std::make_unique<Frameless>(this);
+    frameless_->setMainFrame(ui->frameMain);
+    frameless_->setContentFrame(ui->frameContent);
+    frameless_->init(Frameless::Mode::DIALOG);
 
     globalManager_->windowManager()->reset(this, 0.7);
     connect(frameless_.get(), &Frameless::onMax, this,

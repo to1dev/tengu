@@ -49,8 +49,8 @@ inline std::string hideAddress(std::string_view address)
         return std::string(address);
     }
 
-    return std::string(address.substr(0, 5)) + "..."
-        + std::string(address.substr(address.size() - 5, 5));
+    return std::string(address.substr(0, 6)) + "..."
+        + std::string(address.substr(address.size() - 6, 6));
 }
 
 inline QString hideAddress(const QString& address)
@@ -59,7 +59,7 @@ inline QString hideAddress(const QString& address)
         return address;
     }
 
-    return address.left(5) + "..." + address.right(5);
+    return address.left(6) + "..." + address.right(6);
 }
 
 inline std::string trim(const std::string& s)

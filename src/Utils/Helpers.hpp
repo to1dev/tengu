@@ -43,23 +43,23 @@ inline int randomIndex(int start, int end)
     return distribution(generator);
 }
 
-inline std::string hideAddress(std::string_view address)
+inline std::string hideAddress(std::string_view address, int digits = 5)
 {
     if (address.length() <= 10) {
         return std::string(address);
     }
 
-    return std::string(address.substr(0, 6)) + "..."
-        + std::string(address.substr(address.size() - 6, 6));
+    return std::string(address.substr(0, digits)) + "..."
+        + std::string(address.substr(address.size() - digits, digits));
 }
 
-inline QString hideAddress(const QString& address)
+inline QString hideAddress(const QString& address, int digits = 5)
 {
     if (address.length() <= 10) {
         return address;
     }
 
-    return address.left(6) + "..." + address.right(6);
+    return address.left(digits) + "..." + address.right(digits);
 }
 
 inline std::string trim(const std::string& s)

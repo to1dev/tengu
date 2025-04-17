@@ -36,6 +36,11 @@
 #include "Components/LineEditEx.h"
 #include "Components/PlainTextEditEx.h"
 
+#include "Wallets/Core/BaseMnemonic.h"
+#include "Wallets/Core/BitcoinWallet.h"
+#include "Wallets/Core/EthereumWallet.h"
+#include "Wallets/Core/SolanaWallet.h"
+
 #include "Databases/Database.h"
 
 #include "Forms/MessageForm.h"
@@ -49,6 +54,10 @@ using namespace Daitengu::Wallets;
 
 namespace Ui {
 class SmartWalletForm;
+}
+
+namespace {
+inline const QString NO_VALID_ADDRESSES = QObject::tr("请输入有效的地址列表！");
 }
 
 class SmartWalletForm : public QDialog {

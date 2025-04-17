@@ -28,6 +28,18 @@ Tengu::Tengu(
     ui->setupUi(this);
     setWindowTitle(DEFAULT_TITLE);
 
+#ifdef RELEASE
+    ui->ButtonNews->setEnabled(false);
+    ui->ButtonChart->setEnabled(false);
+    ui->ButtonTrade->setEnabled(false);
+    ui->ButtonSwap->setEnabled(false);
+    ui->ButtonBridge->setEnabled(false);
+    ui->ButtonArbitrage->setEnabled(false);
+    ui->ButtonDefi->setEnabled(false);
+    ui->ButtonScript->setEnabled(false);
+    ui->ButtonAI->setEnabled(false);
+#endif
+
     frameless_ = std::make_unique<Frameless>(this);
     frameless_->setMainFrame(ui->frameMain);
     frameless_->setTopFrame(ui->topFrame);

@@ -48,10 +48,13 @@ inline constexpr char BADGE_ICON[] = ":/Badges/import%1.svg";
 
 inline constexpr char WALLET_ICON_BITCOIN[] = ":/List/bitcoin.svg";
 inline constexpr char WALLET_ICON_BITCOIN_IMPORT[] = ":/List/bitcoini.svg";
+inline constexpr char WALLET_ICON_BITCOIN_SMART[] = ":/List/bitcoins.svg";
 inline constexpr char WALLET_ICON_ETHEREUM[] = ":/List/ethereum.svg";
 inline constexpr char WALLET_ICON_ETHEREUM_IMPORT[] = ":/List/ethereumi.svg";
+inline constexpr char WALLET_ICON_ETHEREUM_SMART[] = ":/List/ethereums.svg";
 inline constexpr char WALLET_ICON_SOLANA[] = ":/List/solana.svg";
 inline constexpr char WALLET_ICON_SOLANA_IMPORT[] = ":/List/solanai.svg";
+inline constexpr char WALLET_ICON_SOLANA_SMART[] = ":/List/solanas.svg";
 inline constexpr char WALLET_ICON_TRON[] = ":/List/tron.svg";
 inline constexpr char WALLET_ICON_TRON_IMPORT[] = ":/List/troni.svg";
 inline constexpr char WALLET_ICON_BNB[] = ":/List/bnb.svg";
@@ -72,15 +75,16 @@ struct IconItems {
     std::array<IconItem, 3> items;
 };
 
-inline constexpr std::array<IconItems, 2> WalletListIcons
-    = { { {
-              0,
-              { {
-                  { 0, WALLET_ICON_BITCOIN },
-                  { 1, WALLET_ICON_ETHEREUM },
-                  { 2, WALLET_ICON_SOLANA },
-              } },
-          },
+inline constexpr std::array<IconItems, 3> WalletListIcons = {
+    {
+        {
+            0,
+            { {
+                { 0, WALLET_ICON_BITCOIN },
+                { 1, WALLET_ICON_ETHEREUM },
+                { 2, WALLET_ICON_SOLANA },
+            } },
+        },
         {
             1,
             { {
@@ -88,7 +92,17 @@ inline constexpr std::array<IconItems, 2> WalletListIcons
                 { 1, WALLET_ICON_ETHEREUM_IMPORT },
                 { 2, WALLET_ICON_SOLANA_IMPORT },
             } },
-        } } };
+        },
+        {
+            2,
+            { {
+                { 0, WALLET_ICON_BITCOIN_SMART },
+                { 1, WALLET_ICON_ETHEREUM_SMART },
+                { 2, WALLET_ICON_SOLANA_SMART },
+            } },
+        },
+    },
+};
 
 inline const auto WalletTypeText = std::unordered_map<int, std::string_view> {
     { 1, "M" },
@@ -147,9 +161,9 @@ namespace {
     static const QIcon& getCachedIcon(int group, int chain)
     {
         static bool initialized = false;
-        static QIcon iconCache[2][3];
+        static QIcon iconCache[3][3];
         if (!initialized) {
-            for (int g = 0; g < 2; ++g) {
+            for (int g = 0; g < 3; ++g) {
                 for (int c = 0; c < 3; ++c) {
                     iconCache[g][c] = QIcon(QString::fromUtf8(
                         WalletListIcons[g].items[c].icon.data(),

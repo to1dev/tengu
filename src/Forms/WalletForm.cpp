@@ -130,8 +130,11 @@ void WalletForm::editWallet()
               .toInt();
 
     if (groupType == static_cast<int>(WalletGroupType::Smart)) {
-        SmartWalletForm swf(this, globalManager_);
-        int ret = swf.exec();
+        UpdateSmartWalletForm::UpdateSmartWallet wallet {
+            .id = id,
+        };
+        UpdateSmartWalletForm uswf(wallet, this, globalManager_);
+        int ret = uswf.exec();
         if (ret) {
         } else {
         }
@@ -205,6 +208,7 @@ void WalletForm::smartWallet()
     SmartWalletForm swf(this, globalManager_);
     int ret = swf.exec();
     if (ret) {
+        walletView_->add(*swf.walletRecord());
     } else {
     }
 }

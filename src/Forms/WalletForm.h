@@ -33,6 +33,7 @@
 #include "Forms/ImportWalletForm.h"
 #include "Forms/NewWalletForm.h"
 #include "Forms/SmartWalletForm.h"
+#include "Forms/UpdateSmartWalletForm.h"
 #include "Forms/UpdateWalletForm.h"
 
 using namespace Daitengu::Components;

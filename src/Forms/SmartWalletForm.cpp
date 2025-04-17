@@ -134,6 +134,9 @@ void SmartWalletForm::ok()
     const auto nameHash = Encryption::easyHash(name);
 
     walletRecord_->nameHash = nameHash.toStdString();
+
+    walletRecord_->mnemonicHash = Encryption::genRandomHash();
+
     DBErrorType error
         = globalManager_->settingManager()->database()->walletRepo()->before(
             *walletRecord_);
@@ -185,7 +188,8 @@ void SmartWalletForm::ok()
             walletRecord_->id = walletId;
             size_t index = 1;
             for (const auto& address : addresses) {
-                const std::string addressName = "Address " + index;
+                const std::string addressName
+                    = std::format("Address {}", index++);
                 const auto addressNameHash = Encryption::easyHash(addressName);
                 const auto addressHash = Encryption::easyHash(address);
 

@@ -84,29 +84,6 @@ UpdateWalletForm::UpdateWalletForm(const UpdateWallet& wallet, QWidget* parent,
 
     ui->ButtonOK->setDefault(true);
 
-    frameless_ = std::make_unique<Frameless>(this);
-    frameless_->setMainFrame(ui->frameMain);
-    frameless_->setContentFrame(ui->frameContent);
-    frameless_->init(Frameless::Mode::DIALOG);
-
-    globalManager_->windowManager()->reset(this, 0.7);
-    connect(frameless_.get(), &Frameless::onMax, this,
-        [this]() { globalManager_->windowManager()->reset(this, 0.7); });
-
-    connect(ui->ButtonOK, &QPushButton::clicked, this, &UpdateWalletForm::ok);
-    connect(ui->ButtonCancel, &QPushButton::clicked, this,
-        &UpdateWalletForm::reject);
-    connect(ui->ButtonNewAddress, &QPushButton::clicked, this,
-        &UpdateWalletForm::newAddress);
-    connect(ui->ButtonEditAddress, &QPushButton::clicked, this,
-        &UpdateWalletForm::editAddress);
-
-    connect(addressView_, &AddressListView::doubleClicked, this,
-        &UpdateWalletForm::editAddress);
-
-    connect(addressView_, &AddressListView::deleteRequested, this,
-        &UpdateWalletForm::delAddress);
-
     auto opt = globalManager_->settingManager()->database()->walletRepo()->get(
         wallet_.id);
     if (opt.has_value()) {
@@ -133,6 +110,29 @@ UpdateWalletForm::UpdateWalletForm(const UpdateWallet& wallet, QWidget* parent,
     } else {
         std::cerr << "No wallet found." << std::endl;
     }
+
+    frameless_ = std::make_unique<Frameless>(this);
+    frameless_->setMainFrame(ui->frameMain);
+    frameless_->setContentFrame(ui->frameContent);
+    frameless_->init(Frameless::Mode::DIALOG);
+
+    globalManager_->windowManager()->reset(this, 0.7);
+    connect(frameless_.get(), &Frameless::onMax, this,
+        [this]() { globalManager_->windowManager()->reset(this, 0.7); });
+
+    connect(ui->ButtonOK, &QPushButton::clicked, this, &UpdateWalletForm::ok);
+    connect(ui->ButtonCancel, &QPushButton::clicked, this,
+        &UpdateWalletForm::reject);
+    connect(ui->ButtonNewAddress, &QPushButton::clicked, this,
+        &UpdateWalletForm::newAddress);
+    connect(ui->ButtonEditAddress, &QPushButton::clicked, this,
+        &UpdateWalletForm::editAddress);
+
+    connect(addressView_, &AddressListView::doubleClicked, this,
+        &UpdateWalletForm::editAddress);
+
+    connect(addressView_, &AddressListView::deleteRequested, this,
+        &UpdateWalletForm::delAddress);
 }
 
 UpdateWalletForm::~UpdateWalletForm()

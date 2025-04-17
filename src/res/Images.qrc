@@ -39,10 +39,13 @@
         <file alias="token.svg">Images/List/token.svg</file>
         <file alias="bitcoin.svg">Images/List/bitcoin.svg</file>
         <file alias="bitcoini.svg">Images/List/bitcoini.svg</file>
+        <file alias="bitcoins.svg">Images/List/bitcoins.svg</file>
         <file alias="ethereum.svg">Images/List/ethereum.svg</file>
         <file alias="ethereumi.svg">Images/List/ethereumi.svg</file>
+        <file alias="ethereums.svg">Images/List/ethereums.svg</file>
         <file alias="solana.svg">Images/List/solana.svg</file>
         <file alias="solanai.svg">Images/List/solanai.svg</file>
+        <file alias="solanas.svg">Images/List/solanas.svg</file>
         <file alias="tron.svg">Images/List/tron.svg</file>
         <file alias="troni.svg">Images/List/troni.svg</file>
         <file alias="bnb.svg">Images/List/bnb.svg</file>

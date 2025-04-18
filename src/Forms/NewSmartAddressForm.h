@@ -29,10 +29,15 @@
 #include "UI/Frameless.h"
 
 #include "Utils/Encryption.h"
-#include "Utils/NameGenerator.h"
 
+#include "Components/AddressImport/CryptoAddressEdit.h"
 #include "Components/LineEditEx.h"
 #include "Components/PlainTextEditEx.h"
+
+#include "Wallets/Core/BaseMnemonic.h"
+#include "Wallets/Core/BitcoinWallet.h"
+#include "Wallets/Core/EthereumWallet.h"
+#include "Wallets/Core/SolanaWallet.h"
 
 #include "Databases/Database.h"
 
@@ -43,6 +48,7 @@ using namespace Daitengu::Core;
 using namespace Daitengu::Databases;
 using namespace Daitengu::UI;
 using namespace Daitengu::Utils;
+using namespace Daitengu::Wallets;
 
 namespace Ui {
 class NewSmartAddressForm;
@@ -87,11 +93,12 @@ private:
     std::shared_ptr<const GlobalManager> globalManager_;
     std::unique_ptr<Frameless> frameless_;
 
-    LineEditEx* editName_;
-    LineEditEx* editAddress_;
-    PlainTextEditEx* text_;
+    LineEditEx* editName_ { nullptr };
+    LineEditEx* editAddress_ { nullptr };
+    CryptoAddressEdit* text_ { nullptr };
+    PlainTextEditEx* desc_ { nullptr };
 
     NewAddress address_ {};
 
-    std::shared_ptr<Address> addressRecord_;
+    std::shared_ptr<Address> addressRecord_ { nullptr };
 };

@@ -1,6 +1,10 @@
 #include "NewSmartAddressForm.h"
 #include "ui_NewSmartAddressForm.h"
 
+namespace {
+inline const QString NO_VALID_ADDRESSES = QObject::tr("请输入有效的地址列表！");
+}
+
 NewSmartAddressForm::NewSmartAddressForm(const NewAddress& address,
     QWidget* parent, const std::shared_ptr<const GlobalManager>& globalManager)
     : QDialog(parent)
@@ -10,57 +14,54 @@ NewSmartAddressForm::NewSmartAddressForm(const NewAddress& address,
 {
     ui->setupUi(this);
 
-    QVBoxLayout* layoutOptions = new QVBoxLayout(ui->groupBox);
+    bool isEdit = address_.op == Op::EDIT;
+
+    QVBoxLayout* layoutOptions = new QVBoxLayout(ui->groupBoxOptions);
     layoutOptions->setContentsMargins(DEFAULT_GROUP_MARGINS);
     layoutOptions->setSpacing(DEFAULT_SPACING);
 
-    QLabel* labelName = new QLabel(this);
-    labelName->setText(STR_LABEL_NAME);
+    QLabel* labelName = nullptr;
+    QLabel* labelAddress = nullptr;
+    if (isEdit) {
+        labelName = new QLabel(this);
+        labelName->setText(STR_LABEL_NAME);
 
-    editName_ = new LineEditEx(this);
-    editName_->setMaxLength(DEFAULT_MAXLENGTH);
-    editName_->setPlaceholderText(STR_LINEEDIT_ADDRESS_NAME_PLACEHOLDER);
-    editName_->setCursorPosition(0);
+        editName_ = new LineEditEx(this);
+        editName_->setMaxLength(DEFAULT_MAXLENGTH);
+        editName_->setPlaceholderText(STR_LINEEDIT_ADDRESS_NAME_PLACEHOLDER);
+        editName_->setCursorPosition(0);
 
-    QLabel* labelAddress = new QLabel(this);
-    labelAddress->setText(STR_LABEL_ADDRESS);
+        labelAddress = new QLabel(this);
+        labelAddress->setText(STR_LABEL_ADDRESS);
 
-    editAddress_ = new LineEditEx(this);
-    editAddress_->setMaxLength(DEFAULT_ADDRESS_MAXLENGTH);
-    editAddress_->setPlaceholderText(STR_LINEEDIT_ADDRESS_PLACEHOLDER);
-    editAddress_->setCursorPosition(0);
+        editAddress_ = new LineEditEx(this);
+        editAddress_->setMaxLength(DEFAULT_ADDRESS_MAXLENGTH);
+        editAddress_->setPlaceholderText(STR_LINEEDIT_ADDRESS_PLACEHOLDER);
+        editAddress_->setCursorPosition(0);
+    }
 
     QLabel* labelDesc = new QLabel(this);
     labelDesc->setText(STR_LABEL_DESC);
 
-    text_ = new PlainTextEditEx(this);
-    text_->setObjectName("plainDesc");
+    desc_ = new PlainTextEditEx(this);
+    desc_->setObjectName("plainDesc");
 
-    layoutOptions->addWidget(labelName);
-    layoutOptions->addWidget(editName_);
-    layoutOptions->addWidget(labelAddress);
-    layoutOptions->addWidget(editAddress_);
+    if (isEdit) {
+        layoutOptions->addWidget(labelName);
+        layoutOptions->addWidget(editName_);
+
+        layoutOptions->addWidget(labelAddress);
+        layoutOptions->addWidget(editAddress_);
+    }
+
     layoutOptions->addWidget(labelDesc);
-    layoutOptions->addWidget(text_, 1);
+    layoutOptions->addWidget(desc_, 1);
     // ui->groupBox->setLayout(layoutOptions);
 
-    switch (address_.op) {
-    case Op::NEW:
-        setWindowTitle(DEFAULT_TITLE_NEW);
-
-        editName_->setText(
-            QString::fromStdString(NameGenerator(NAME_PATTERN).toString()));
-
-        {
-            addressRecord_ = std::make_shared<Address>();
-            addressRecord_->walletId = address_.walletId;
-            addressRecord_->index = address_.index;
-        }
-
-        break;
-
-    case Op::EDIT: {
+    if (isEdit) {
         setWindowTitle(DEFAULT_TITLE_EDIT);
+
+        ui->groupBoxAddresses->setVisible(false);
 
         auto opt
             = globalManager_->settingManager()->database()->addressRepo()->get(
@@ -71,16 +72,29 @@ NewSmartAddressForm::NewSmartAddressForm(const NewAddress& address,
             editName_->setText(QString::fromStdString(addressRecord_->name));
             editAddress_->setText(
                 QString::fromStdString(addressRecord_->address));
-            text_->setPlainText(
+            desc_->setPlainText(
                 QString::fromStdString(addressRecord_->description));
         } else {
             std::cerr << "No address found." << std::endl;
         }
-        break;
-    }
 
-    default:
-        break;
+    } else {
+        setWindowTitle(DEFAULT_TITLE_NEW);
+
+        QVBoxLayout* layout = new QVBoxLayout(ui->groupBoxAddresses);
+        layout->setContentsMargins(DEFAULT_GROUP_MARGINS);
+        layout->setSpacing(DEFAULT_SPACING);
+
+        text_ = new CryptoAddressEdit(this);
+        text_->setFocus();
+
+        layout->addWidget(text_);
+
+        {
+            addressRecord_ = std::make_shared<Address>();
+            addressRecord_->walletId = address_.walletId;
+            addressRecord_->index = address_.index;
+        }
     }
 
     frameless_ = std::make_unique<Frameless>(this);
@@ -88,12 +102,13 @@ NewSmartAddressForm::NewSmartAddressForm(const NewAddress& address,
     frameless_->setContentFrame(ui->frameContent);
     frameless_->init(Frameless::Mode::DIALOG);
 
-    globalManager_->windowManager()->reset(
-        this, 0.6, WindowManager::WindowShape::SQUARE);
-    connect(frameless_.get(), &Frameless::onMax, this, [this]() {
-        globalManager_->windowManager()->reset(
-            this, 0.6, WindowManager::WindowShape::SQUARE);
-    });
+    WindowManager::WindowShape shape = isEdit
+        ? WindowManager::WindowShape::SQUARE
+        : WindowManager::WindowShape::HORIZONTAL;
+
+    globalManager_->windowManager()->reset(this, 0.6, shape);
+    connect(frameless_.get(), &Frameless::onMax, this,
+        [&]() { globalManager_->windowManager()->reset(this, 0.6, shape); });
 
     connect(
         ui->ButtonOK, &QPushButton::clicked, this, &NewSmartAddressForm::ok);
@@ -113,64 +128,93 @@ std::shared_ptr<Address> NewSmartAddressForm::addressRecord() const
 
 void NewSmartAddressForm::ok()
 {
-    if (editName_->text().isEmpty()) {
-        MessageForm { this, 5, NO_VALID_ADDRESS_NAME }.exec();
-        return;
-    }
+    bool isEdit = address_.op == Op::EDIT;
+    ChainType type = static_cast<ChainType>(address_.chainType);
 
-    if (editAddress_->text().isEmpty()) {
-        MessageForm { this, 5, NO_VALID_ADDRESS }.exec();
-        return;
-    }
+    auto addressRepo = dynamic_cast<AddressRepo*>(
+        globalManager_->settingManager()->database()->addressRepo());
 
-    const auto name = simplified(editName_->text().toStdString());
-    const auto oldName = simplified(addressRecord_->name);
-
-    const auto desc = trim(text_->toPlainText().toStdString());
-    const auto oldDesc = trim(addressRecord_->description);
-
-    auto addressRepo
-        = globalManager_->settingManager()->database()->addressRepo();
-
-    auto checkNameAndReturnError = [&]() -> DBErrorType {
-        addressRecord_->nameHash = Encryption::easyHash(name);
-        return addressRepo->before(*addressRecord_, true);
-    };
-
-    switch (address_.op) {
-    case Op::NEW: {
-        DBErrorType error = checkNameAndReturnError();
-        if (error != DBErrorType::none) {
-            if (error == DBErrorType::haveName) {
-                MessageForm { this, 16, SAME_ADDRESS_NAME }.exec();
-            }
+    if (isEdit) {
+        if (editName_->text().isEmpty()) {
+            MessageForm { this, 5, NO_VALID_ADDRESS_NAME }.exec();
             return;
         }
 
-        break;
-    }
+        const auto name = simplified(editName_->text().toStdString());
+        const auto oldName = simplified(addressRecord_->name);
 
-    case Op::EDIT: {
-        if (name == oldName && desc == oldDesc) {
+        const auto desc = trim(desc_->toPlainText().toStdString());
+        const auto oldDesc = trim(addressRecord_->description);
+
+        if (editAddress_->text().isEmpty()) {
+            MessageForm { this, 5, NO_VALID_ADDRESS }.exec();
+            return;
+        }
+
+        const auto address = simplified(editAddress_->text().toStdString());
+        const auto oldAddress = simplified(addressRecord_->address);
+
+        if (name == oldName && desc == oldDesc && address == oldAddress) {
             reject();
             return;
         }
+
+        addressRecord_->nameHash = Encryption::easyHash(name);
+        addressRecord_->addressHash = Encryption::easyHash(address);
+
         if (name != oldName) {
-            DBErrorType error = checkNameAndReturnError();
-            if (error != DBErrorType::none) {
-                if (error == DBErrorType::haveName) {
-                    MessageForm { this, 16, SAME_WALLET_NAME }.exec();
-                }
+            if (addressRepo->haveName(*addressRecord_)) {
+                MessageForm { this, 16, SAME_WALLET_NAME }.exec();
                 return;
             }
         }
+
+        if (address != oldAddress) {
+            if (addressRepo->haveAddress(*addressRecord_)) {
+                MessageForm { this, 16, SAME_ADDRESS }.exec();
+                return;
+            }
+        }
+
+        auto isValidAddress = [&]() -> bool {
+            bool valid = false;
+            switch (type) {
+            case ChainType::BITCOIN:
+                valid = BitcoinWallet::isValid(address);
+                break;
+            case ChainType::ETHEREUM:
+                valid = EthereumWallet::isValid(address);
+                break;
+            case ChainType::SOLANA:
+                valid = SolanaWallet::isValid(address);
+                break;
+            default:
+                break;
+            }
+
+            return valid;
+        };
+
+        if (!isValidAddress()) {
+            MessageForm { this, 16, NO_VALID_ADDRESS }.exec();
+            return;
+        }
+
         addressRecord_->name = name;
+        addressRecord_->address = address;
         addressRecord_->description = desc;
         addressRepo->update(*addressRecord_);
         accept();
-        break;
-    }
-    default:
-        break;
+    } else {
+        text_->setChainType(type);
+
+        auto addresses = text_->getValidAddresses();
+
+        if (addresses.isEmpty()) {
+            MessageForm { this, 5, NO_VALID_ADDRESSES }.exec();
+            return;
+        }
+
+        return;
     }
 }

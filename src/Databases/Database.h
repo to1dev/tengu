@@ -76,6 +76,7 @@ enum class DBErrorType {
     none = 0,
     haveName,
     haveMnemonic,
+    haveAddress,
 };
 
 enum class OrderType {
@@ -500,6 +501,8 @@ class AddressRepo : public IAddressRepo {
 public:
     AddressRepo(Storage* storage);
     DBErrorType before(const Address& address, bool update) override;
+    bool haveName(const Address& address);
+    bool haveAddress(const Address& address);
     int insert(const Address& address) override;
     void update(const Address& address) override;
     void remove(int id) override;

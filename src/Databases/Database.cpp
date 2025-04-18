@@ -388,6 +388,32 @@ DBErrorType AddressRepo::before(const Address& address, bool update)
     return DBErrorType::none;
 }
 
+bool AddressRepo::haveName(const Address& address)
+{
+    int countName = storage_->count<Address>(
+        where(c(&Address::nameHash) == address.nameHash)
+        && c(&Address::walletId) == address.walletId);
+
+    if (countName > 0) {
+        return true;
+    }
+
+    return false;
+}
+
+bool AddressRepo::haveAddress(const Address& address)
+{
+    int countName = storage_->count<Address>(
+        where(c(&Address::addressHash) == address.addressHash)
+        && c(&Address::walletId) == address.walletId);
+
+    if (countName > 0) {
+        return true;
+    }
+
+    return false;
+}
+
 int AddressRepo::insert(const Address& address)
 {
     int id = storage_->insert(address);

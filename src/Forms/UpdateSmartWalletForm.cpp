@@ -169,6 +169,25 @@ void UpdateSmartWalletForm::newAddress()
 
 void UpdateSmartWalletForm::editAddress()
 {
+    QModelIndex index = addressView_->currentIndex();
+    if (!index.isValid())
+        return;
+
+    int id = addressView_->model()
+                 ->data(index, static_cast<int>(AddressListModel::ItemData::Id))
+                 .toInt();
+
+    NewSmartAddressForm::NewAddress address {
+        .op = NewSmartAddressForm::Op::EDIT,
+        .id = id,
+        .groupType = walletRecord_->groupType,
+    };
+    NewSmartAddressForm naf(address, this, globalManager_);
+
+    int ret = naf.exec();
+    if (ret) {
+        addressView_->update(*naf.addressRecord());
+    }
 }
 
 void UpdateSmartWalletForm::delAddress(const QModelIndex& index)

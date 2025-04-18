@@ -171,35 +171,31 @@ void ImportWalletForm::ok()
         return;
     }
 
-    DBErrorType error
-        = globalManager_->settingManager()->database()->walletRepo()->before(
-            *walletRecord_);
-    if (error != DBErrorType::none) {
-        switch (error) {
-        case DBErrorType::haveName:
-            MessageForm { this, 16, SAME_WALLET_NAME }.exec();
+    auto walletRepo = dynamic_cast<WalletRepo*>(
+        globalManager_->settingManager()->database()->walletRepo());
+
+    if (walletRepo->haveName(*walletRecord_)) {
+        MessageForm { this, 16, SAME_WALLET_NAME }.exec();
+        return;
+    }
+
+    if (walletRepo->haveMnemonic(*walletRecord_)) {
+        switch (currentContent_.type) {
+        case WalletType::Priv:
+        case WalletType::Wif:
+            MessageForm { this, 16, SAME_PRIV }.exec();
             break;
-        case DBErrorType::haveMnemonic:
-            switch (currentContent_.type) {
-            case WalletType::Priv:
-            case WalletType::Wif:
-                MessageForm { this, 16, SAME_PRIV }.exec();
-                break;
 
-            case WalletType::Address:
-                MessageForm { this, 16, SAME_ADDRESS }.exec();
-                break;
-
-            case WalletType::Mnemonic:
-            default:
-                MessageForm { this, 16, SAME_MNEMONIC }.exec();
-                break;
-            }
-
+        case WalletType::Address:
+            MessageForm { this, 16, SAME_ADDRESS }.exec();
             break;
+
+        case WalletType::Mnemonic:
         default:
+            MessageForm { this, 16, SAME_MNEMONIC }.exec();
             break;
         }
+
         return;
     }
 

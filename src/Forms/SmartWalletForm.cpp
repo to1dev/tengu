@@ -134,21 +134,13 @@ void SmartWalletForm::ok()
     const auto nameHash = Encryption::easyHash(name);
 
     walletRecord_->nameHash = nameHash.toStdString();
-
     walletRecord_->mnemonicHash = Encryption::genRandomHash();
 
-    DBErrorType error
-        = globalManager_->settingManager()->database()->walletRepo()->before(
-            *walletRecord_);
+    auto walletRepo = dynamic_cast<WalletRepo*>(
+        globalManager_->settingManager()->database()->walletRepo());
 
-    if (error != DBErrorType::none) {
-        switch (error) {
-        case DBErrorType::haveName:
-            MessageForm { this, 16, SAME_WALLET_NAME }.exec();
-            break;
-        default:
-            break;
-        }
+    if (walletRepo->haveName(*walletRecord_)) {
+        MessageForm { this, 16, SAME_WALLET_NAME }.exec();
         return;
     }
 

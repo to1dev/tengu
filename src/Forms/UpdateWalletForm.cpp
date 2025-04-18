@@ -261,24 +261,19 @@ void UpdateWalletForm::ok()
 
     if (name != oldName) {
         walletRecord_->nameHash = Encryption::easyHash(name);
-        DBErrorType error = globalManager_->settingManager()
-                                ->database()
-                                ->walletRepo()
-                                ->before(*walletRecord_, true);
 
-        if (error != DBErrorType::none) {
-            switch (error) {
-            case DBErrorType::haveName:
-                MessageForm { this, 16, SAME_WALLET_NAME }.exec();
-                break;
-            case DBErrorType::haveMnemonic:
-                MessageForm { this, 16, SAME_MNEMONIC }.exec();
-                break;
-            default:
-                break;
-            }
+        auto walletRepo = dynamic_cast<WalletRepo*>(
+            globalManager_->settingManager()->database()->walletRepo());
+
+        if (walletRepo->haveName(*walletRecord_)) {
+            MessageForm { this, 16, SAME_WALLET_NAME }.exec();
             return;
         }
+
+        /*if (walletRepo->haveMnemonic(*walletRecord_)) {
+            MessageForm { this, 16, SAME_MNEMONIC }.exec();
+            return;
+        }*/
     }
 
     walletRecord_->name = name;

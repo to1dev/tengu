@@ -22,9 +22,13 @@ NewSmartAddressForm::NewSmartAddressForm(const NewAddress& address,
     editName_->setPlaceholderText(STR_LINEEDIT_ADDRESS_NAME_PLACEHOLDER);
     editName_->setCursorPosition(0);
 
-    if (address_.groupType == static_cast<int>(WalletGroupType::Import)) {
-        // TODO
-    }
+    QLabel* labelAddress = new QLabel(this);
+    labelAddress->setText(STR_LABEL_ADDRESS);
+
+    editAddress_ = new LineEditEx(this);
+    editAddress_->setMaxLength(DEFAULT_ADDRESS_MAXLENGTH);
+    editAddress_->setPlaceholderText(STR_LINEEDIT_ADDRESS_PLACEHOLDER);
+    editAddress_->setCursorPosition(0);
 
     QLabel* labelDesc = new QLabel(this);
     labelDesc->setText(STR_LABEL_DESC);
@@ -34,6 +38,8 @@ NewSmartAddressForm::NewSmartAddressForm(const NewAddress& address,
 
     layoutOptions->addWidget(labelName);
     layoutOptions->addWidget(editName_);
+    layoutOptions->addWidget(labelAddress);
+    layoutOptions->addWidget(editAddress_);
     layoutOptions->addWidget(labelDesc);
     layoutOptions->addWidget(text_, 1);
     // ui->groupBox->setLayout(layoutOptions);
@@ -63,6 +69,8 @@ NewSmartAddressForm::NewSmartAddressForm(const NewAddress& address,
             addressRecord_ = std::make_shared<Address>(*opt);
 
             editName_->setText(QString::fromStdString(addressRecord_->name));
+            editAddress_->setText(
+                QString::fromStdString(addressRecord_->address));
             text_->setPlainText(
                 QString::fromStdString(addressRecord_->description));
         } else {
@@ -107,6 +115,11 @@ void NewSmartAddressForm::ok()
 {
     if (editName_->text().isEmpty()) {
         MessageForm { this, 5, NO_VALID_ADDRESS_NAME }.exec();
+        return;
+    }
+
+    if (editAddress_->text().isEmpty()) {
+        MessageForm { this, 5, NO_VALID_ADDRESS }.exec();
         return;
     }
 

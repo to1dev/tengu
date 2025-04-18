@@ -88,6 +88,7 @@ private:
     std::unique_ptr<Frameless> frameless_;
 
     LineEditEx* editName_;
+    LineEditEx* editAddress_;
     PlainTextEditEx* text_;
 
     NewAddress address_ {};

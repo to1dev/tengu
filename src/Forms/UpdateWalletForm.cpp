@@ -19,6 +19,15 @@
 #include "UpdateWalletForm.h"
 #include "ui_UpdateWalletForm.h"
 
+namespace {
+inline const QString CONFIRM_FIRST_WALLET_DELETE
+    = QObject::tr("无法删除此地址！<p>请注意：保留地址无法删除！</p>");
+inline const QString CONFIRM_ADDRESS_DELETE
+    = QObject::tr("是否确定删除<font "
+                  "color='orange'>[%1]</"
+                  "font>这个地址！<p>本操作有可能引起不便！请务必谨慎！</p>");
+}
+
 UpdateWalletForm::UpdateWalletForm(const UpdateWallet& wallet, QWidget* parent,
     const std::shared_ptr<const GlobalManager>& globalManager)
     : QDialog(parent)

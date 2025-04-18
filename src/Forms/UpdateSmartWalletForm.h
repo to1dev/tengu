@@ -38,7 +38,7 @@
 #include "Databases/Database.h"
 
 #include "Forms/MessageForm.h"
-#include "Forms/NewAddressForm.h"
+#include "Forms/NewSmartAddressForm.h"
 
 using namespace Daitengu::Components;
 using namespace Daitengu::Core;
@@ -53,7 +53,7 @@ class UpdateSmartWalletForm;
 class UpdateSmartWalletForm : public QDialog {
     Q_OBJECT
 
-    const QString DEFAULT_TITLE = QObject::tr("Smart Wallet");
+    const QString DEFAULT_TITLE = QObject::tr("Edit Smart Wallet");
 
 public:
     struct UpdateSmartWallet {
@@ -69,6 +69,9 @@ public:
 
 private Q_SLOTS:
     void ok();
+    void newAddress();
+    void editAddress();
+    void delAddress(const QModelIndex& index);
 
 private:
     Ui::UpdateSmartWalletForm* ui;

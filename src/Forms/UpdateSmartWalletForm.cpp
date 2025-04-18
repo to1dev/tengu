@@ -19,6 +19,15 @@
 #include "UpdateSmartWalletForm.h"
 #include "ui_UpdateSmartWalletForm.h"
 
+namespace {
+inline const QString CONFIRM_FIRST_WALLET_DELETE
+    = QObject::tr("无法删除此地址！<p>请注意：保留地址无法删除！</p>");
+inline const QString CONFIRM_ADDRESS_DELETE
+    = QObject::tr("是否确定删除<font "
+                  "color='orange'>[%1]</"
+                  "font>这个地址！<p>本操作有可能引起不便！请务必谨慎！</p>");
+}
+
 UpdateSmartWalletForm::UpdateSmartWalletForm(const UpdateSmartWallet& wallet,
     QWidget* parent, const std::shared_ptr<const GlobalManager>& globalManager)
     : QDialog(parent)
@@ -114,6 +123,16 @@ UpdateSmartWalletForm::UpdateSmartWalletForm(const UpdateSmartWallet& wallet,
         ui->ButtonOK, &QPushButton::clicked, this, &UpdateSmartWalletForm::ok);
     connect(ui->ButtonCancel, &QPushButton::clicked, this,
         &UpdateSmartWalletForm::reject);
+
+    connect(ui->ButtonNewAddress, &QPushButton::clicked, this,
+        &UpdateSmartWalletForm::newAddress);
+    connect(ui->ButtonEditAddress, &QPushButton::clicked, this,
+        &UpdateSmartWalletForm::editAddress);
+
+    connect(addressView_, &AddressListView::doubleClicked, this,
+        &UpdateSmartWalletForm::editAddress);
+    connect(addressView_, &AddressListView::deleteRequested, this,
+        &UpdateSmartWalletForm::delAddress);
 }
 
 UpdateSmartWalletForm::~UpdateSmartWalletForm()
@@ -128,4 +147,65 @@ std::shared_ptr<Wallet> UpdateSmartWalletForm::walletRecord() const
 
 void UpdateSmartWalletForm::ok()
 {
+}
+
+void UpdateSmartWalletForm::newAddress()
+{
+    NewSmartAddressForm::NewAddress address {
+        .walletId = walletRecord_->id,
+        .groupType = walletRecord_->groupType,
+        .chainType = walletRecord_->chainType,
+        .index = 0,
+        .mnemonic = walletRecord_->mnemonic,
+    };
+    NewSmartAddressForm naf(address, this, globalManager_);
+    int ret = naf.exec();
+    if (ret) {
+        auto newAddr = *naf.addressRecord();
+        addressView_->add(newAddr);
+    } else {
+    }
+}
+
+void UpdateSmartWalletForm::editAddress()
+{
+}
+
+void UpdateSmartWalletForm::delAddress(const QModelIndex& index)
+{
+    if (!index.isValid())
+        return;
+
+    if (index.row() == 0) {
+        MessageForm mf(this, 14, CONFIRM_FIRST_WALLET_DELETE,
+            CONFIRM_WALLET_DELETE_TITLE, false, MessageButton::Ok);
+        mf.exec();
+        return;
+    }
+
+    int id
+        = index.data(static_cast<int>(AddressListModel::ItemData::Id)).toInt();
+
+    QString name
+        = index.data(static_cast<int>(AddressListModel::ItemData::Name))
+              .toString();
+
+    MessageForm mf(this, 14, CONFIRM_ADDRESS_DELETE.arg(name),
+        CONFIRM_WALLET_DELETE_TITLE, false,
+        MessageButton::Ok | MessageButton::Cancel);
+
+    if (mf.exec()) {
+        try {
+            int addrIndex
+                = index
+                      .data(static_cast<int>(AddressListModel::ItemData::Index))
+                      .toInt();
+
+            globalManager_->settingManager()->database()->addressRepo()->remove(
+                id);
+            addressView_->remove(QList<int>() << index.row());
+        } catch (const DatabaseException& e) {
+            std::cerr << "Failed to remove address: " << e.what() << std::endl;
+        }
+    }
 }

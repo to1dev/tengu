@@ -54,9 +54,11 @@ inline constexpr char STR_DEFAULT_ADDRESS_NAME[] = "Address 1";
 inline constexpr QMargins DEFAULT_GROUP_MARGINS = QMargins(20, 24, 20, 20);
 inline constexpr int DEFAULT_SPACING = 9;
 inline constexpr int DEFAULT_MAXLENGTH = 42;
+inline constexpr int DEFAULT_ADDRESS_MAXLENGTH = 128;
 
 inline const QString STR_LABEL_NAME = QObject::tr("名称");
 inline const QString STR_LABEL_PATH = QObject::tr("路径");
+inline const QString STR_LABEL_ADDRESS = QObject::tr("地址");
 inline const QString STR_LABEL_CHAIN = QObject::tr("公链");
 inline const QString STR_LABEL_DESC = QObject::tr("备注");
 inline const QString STR_LABEL_NETWORK = QObject::tr("网络");
@@ -64,6 +66,7 @@ inline const QString STR_LINEEDIT_WALLET_NAME_PLACEHOLDER
     = QObject::tr("输入钱包名称");
 inline const QString STR_LINEEDIT_ADDRESS_NAME_PLACEHOLDER
     = QObject::tr("输入地址名称");
+inline const QString STR_LINEEDIT_ADDRESS_PLACEHOLDER = QObject::tr("输入地址");
 inline const QString STR_BUTTON_CLIPBOARD = QObject::tr("复制助记词到剪贴板");
 inline const QString CONFIRM_WALLET_DELETE_TITLE
     = QObject::tr("Confirm Deletion");

@@ -114,21 +114,15 @@ void NewAddressForm::ok()
     const auto desc = trim(text_->toPlainText().toStdString());
     const auto oldDesc = trim(addressRecord_->description);
 
-    auto addressRepo
-        = globalManager_->settingManager()->database()->addressRepo();
+    auto addressRepo = dynamic_cast<AddressRepo*>(
+        globalManager_->settingManager()->database()->addressRepo());
 
-    auto checkNameAndReturnError = [&]() -> DBErrorType {
-        addressRecord_->nameHash = Encryption::easyHash(name);
-        return addressRepo->before(*addressRecord_, true);
-    };
+    addressRecord_->nameHash = Encryption::easyHash(name);
 
     switch (address_.op) {
     case Op::NEW: {
-        DBErrorType error = checkNameAndReturnError();
-        if (error != DBErrorType::none) {
-            if (error == DBErrorType::haveName) {
-                MessageForm { this, 16, SAME_ADDRESS_NAME }.exec();
-            }
+        if (addressRepo->haveName(*addressRecord_)) {
+            MessageForm { this, 16, SAME_ADDRESS_NAME }.exec();
             return;
         }
 
@@ -200,11 +194,8 @@ void NewAddressForm::ok()
             return;
         }
         if (name != oldName) {
-            DBErrorType error = checkNameAndReturnError();
-            if (error != DBErrorType::none) {
-                if (error == DBErrorType::haveName) {
-                    MessageForm { this, 16, SAME_WALLET_NAME }.exec();
-                }
+            if (addressRepo->haveName(*addressRecord_)) {
+                MessageForm { this, 16, SAME_WALLET_NAME }.exec();
                 return;
             }
         }

@@ -155,8 +155,6 @@ void UpdateSmartWalletForm::newAddress()
         .walletId = walletRecord_->id,
         .groupType = walletRecord_->groupType,
         .chainType = walletRecord_->chainType,
-        .index = 0,
-        .mnemonic = walletRecord_->mnemonic,
     };
     NewSmartAddressForm naf(address, this, globalManager_);
     int ret = naf.exec();
@@ -181,6 +179,7 @@ void UpdateSmartWalletForm::editAddress()
         .op = NewSmartAddressForm::Op::EDIT,
         .id = id,
         .groupType = walletRecord_->groupType,
+        .chainType = walletRecord_->chainType,
     };
     NewSmartAddressForm naf(address, this, globalManager_);
 

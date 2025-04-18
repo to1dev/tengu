@@ -278,6 +278,22 @@ DBErrorType WalletRepo::before(const Wallet& wallet, bool update)
     return DBErrorType::none;
 }
 
+bool WalletRepo::haveName(const Wallet& wallet)
+{
+    int countName = storage_->count<Wallet>(
+        where(c(&Wallet::nameHash) == wallet.nameHash));
+
+    return (countName > 0);
+}
+
+bool WalletRepo::haveMnemonic(const Wallet& wallet)
+{
+    int countMnemonic = storage_->count<Wallet>(
+        where(c(&Wallet::mnemonicHash) == wallet.mnemonicHash));
+
+    return (countMnemonic > 0);
+}
+
 int WalletRepo::insert(const Wallet& wallet)
 {
     int id = storage_->insert(wallet);
@@ -394,24 +410,16 @@ bool AddressRepo::haveName(const Address& address)
         where(c(&Address::nameHash) == address.nameHash)
         && c(&Address::walletId) == address.walletId);
 
-    if (countName > 0) {
-        return true;
-    }
-
-    return false;
+    return (countName > 0);
 }
 
 bool AddressRepo::haveAddress(const Address& address)
 {
-    int countName = storage_->count<Address>(
+    int countAddress = storage_->count<Address>(
         where(c(&Address::addressHash) == address.addressHash)
         && c(&Address::walletId) == address.walletId);
 
-    if (countName > 0) {
-        return true;
-    }
-
-    return false;
+    return (countAddress > 0);
 }
 
 int AddressRepo::insert(const Address& address)

@@ -456,6 +456,8 @@ class WalletRepo : public IWalletRepo {
 public:
     WalletRepo(Storage* storage);
     DBErrorType before(const Wallet& wallet, bool update) override;
+    bool haveName(const Wallet& wallet);
+    bool haveMnemonic(const Wallet& wallet);
     int insert(const Wallet& wallet) override;
     void update(const Wallet& wallet) override;
     void remove(int id) override;

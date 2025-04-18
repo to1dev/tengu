@@ -74,6 +74,7 @@ inline const QString NO_VALID_WALLET_NAME
     = QObject::tr("请输入有效的钱包名称！");
 inline const QString NO_VALID_ADDRESS_NAME
     = QObject::tr("请输入有效的地址名称！");
+inline const QString NO_VALID_ADDRESS = QObject::tr("请输入有效的地址！");
 inline const QString NO_VALID_DERIVATION_PATH
     = QObject::tr("请输入有效的派生路径！");
 inline const QString SAME_WALLET_NAME

@@ -107,8 +107,9 @@ NewSmartAddressForm::NewSmartAddressForm(const NewAddress& address,
         : WindowManager::WindowShape::HORIZONTAL;
 
     globalManager_->windowManager()->reset(this, 0.6, shape);
-    connect(frameless_.get(), &Frameless::onMax, this,
-        [&]() { globalManager_->windowManager()->reset(this, 0.6, shape); });
+    connect(frameless_.get(), &Frameless::onMax, this, [&, shape]() {
+        globalManager_->windowManager()->reset(this, 0.6, shape);
+    });
 
     connect(
         ui->ButtonOK, &QPushButton::clicked, this, &NewSmartAddressForm::ok);

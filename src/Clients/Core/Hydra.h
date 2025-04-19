@@ -30,32 +30,35 @@ class QNetworkAccessManager;
 
 namespace Daitengu::Clients {
 
-// inline constexpr char defaultApi[] = "https://mempool.space/api/v1/prices";
-inline constexpr char defaultApi[] = "https://min-api.cryptocompare.com/data/"
-                                     "pricemulti?fsyms=%1&tsyms=USD,EUR";
-
 class Hydra : public QObject {
     Q_OBJECT
 public:
-    explicit Hydra(QObject* parent = nullptr, int interval = 60);
+    explicit Hydra(
+        QObject* parent = nullptr, int interval = 60, int timeoutMs = 5000);
     ~Hydra();
 
     void start();
     void stop();
     void setTickerList(const QStringList& tickers);
+    void setApiUrl(const QString& apiUrl);
 
-    double getPrice(const QString& ticker) const;
+    double getPrice(
+        const QString& ticker, const QString& currency = "USD") const;
     QMap<QString, double> getPrices() const;
 
 Q_SIGNALS:
     void pricesUpdated(const QMap<QString, double>& prices);
+    void errorOccurred(const QString& error);
 
 private:
     QCoro::Task<void> updatePrices();
     bool running_ { false };
     int interval_;
+    int timeoutMs_;
+    QString apiUrl_;
     QStringList tickerList_;
     std::unique_ptr<QNetworkAccessManager> networkManager_;
+    QTimer* timer_ { nullptr };
 
     mutable QMutex priceMutex_;
     QMap<QString, double> prices_;

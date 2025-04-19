@@ -83,6 +83,11 @@ void Monitor::setAddress(ChainType chain, const QString& address)
         if (chain != ChainType::UNKNOWN) {
             d->refreshTimer_->start();
             fetchBalance(d->currentChain_, d->currentAddress_);
+        } else {
+            Q_EMIT balanceUpdated(BalanceResult {
+                .chain = ChainType::UNKNOWN,
+                .success = false,
+            });
         }
     }
 }

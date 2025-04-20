@@ -29,13 +29,14 @@
 
 #include "Components/WalletPanel.h"
 
-#include "Clients/Core/Hydra.h"
+#include "Clients/Core/Hydra/Hydra.h"
+#include "Clients/Core/Hydra/PriceDataSource.h"
 
 #include "Wallets/Monitor/Monitor.h"
 
 #include "Forms/WalletSelectorForm.h"
 
-using namespace Daitengu::Clients;
+using namespace Daitengu::Clients::Hydra;
 using namespace Daitengu::Core;
 using namespace Daitengu::UI;
 using namespace Daitengu::Wallets;
@@ -80,7 +81,6 @@ private:
     std::shared_ptr<const GlobalManager> globalManager_;
     std::unique_ptr<Frameless> frameless_;
 
-    Hydra* hydra_;
     Monitor* monitor_;
 
     WalletPanel* walletPanel_;

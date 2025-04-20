@@ -87,9 +87,6 @@ WalletDock::WalletDock(
     monitor_->setRefreshInterval(30000);
     connect(monitor_, &Monitor::balanceUpdated, this,
         &WalletDock::onBalanceUpdated);
-
-    hydra_ = new Hydra(this, 60);
-    hydra_->start();
 }
 
 WalletDock::~WalletDock()

@@ -112,6 +112,7 @@ struct Network {
 
 struct Wallet {
     int id = 0;
+    int weight = 0;
     int type = static_cast<int>(WalletType::Unknown);
     int groupType = static_cast<int>(WalletGroupType::User);
     int chainType = static_cast<int>(ChainType::UNKNOWN);
@@ -129,6 +130,7 @@ struct Wallet {
 
 struct Address {
     int id = 0;
+    int weight = 0;
     int type = 0;
     int walletId = 0;
     int index = 0;
@@ -254,8 +256,13 @@ inline auto initStorage(const QString& dataPath)
             make_column("name", &Network::name),
             make_column("ticker", &Network::ticker)),
 
+        make_index("idx_wallets_groupType", &Wallet::groupType),
+        make_unique_index("idx_wallets_nameHash", &Wallet::nameHash),
+        make_index("idx_wallets_mnemonicHash", &Wallet::mnemonicHash),
+
         make_table("wallets",
             make_column("id", &Wallet::id, primary_key().autoincrement()),
+            make_column("weight", &Wallet::weight),
             make_column("type", &Wallet::type),
             make_column("groupType", &Wallet::groupType),
             make_column("chainType", &Wallet::chainType),
@@ -270,8 +277,13 @@ inline auto initStorage(const QString& dataPath)
             make_column("extendedPublicKey", &Wallet::extendedPublicKey),
             make_column("description", &Wallet::description)),
 
+        make_index("idx_addresses_walletId", &Address::walletId),
+        make_index("idx_addresses_nameHash", &Address::nameHash),
+        make_index("idx_addresses_addressHash", &Address::addressHash),
+
         make_table("addresses",
             make_column("id", &Address::id, primary_key().autoincrement()),
+            make_column("weight", &Address::weight),
             make_column("type", &Address::type),
             make_column("walletId", &Address::walletId),
             make_column("index", &Address::index),
@@ -283,7 +295,10 @@ inline auto initStorage(const QString& dataPath)
             make_column("derivationPath", &Address::derivationPath),
             make_column("privateKey", &Address::privateKey),
             make_column("publicKey", &Address::publicKey),
-            make_column("description", &Address::description)),
+            make_column("description", &Address::description),
+            foreign_key(&Address::walletId)
+                .references(&Wallet::id)
+                .on_delete.cascade()),
 
         make_table("tags",
             make_column("id", &Tag::id, primary_key().autoincrement()),

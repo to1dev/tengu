@@ -27,7 +27,7 @@
 #include "Clients/Core/Hydra/Hydra.h"
 #include "Clients/Core/Hydra/PriceDataSource.h"
 
-using namespace Daitengu::Clients;
+using namespace Daitengu::Clients::Hydra;
 
 int main(int argc, char* argv[])
 {

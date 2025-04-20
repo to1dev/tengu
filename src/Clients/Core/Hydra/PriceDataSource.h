@@ -20,38 +20,39 @@
 
 #include <QMap>
 #include <QMutex>
-#include <QObject>
+#include <QNetworkAccessManager>
 #include <QStringList>
+#include <QTimer>
 
 #include <qcoro/QCoro>
-#include <qcoro/QCoroNetworkReply>
 
-class QNetworkAccessManager;
+#include "DataSource.h"
 
 namespace Daitengu::Clients {
 
-class Hydra : public QObject {
+class PriceDataSource : public DataSource {
     Q_OBJECT
-public:
-    explicit Hydra(
-        QObject* parent = nullptr, int interval = 60, int timeoutMs = 5000);
-    ~Hydra();
 
-    void start();
-    void stop();
+public:
+    explicit PriceDataSource(const QString& name, int interval, int timeoutMs,
+        QObject* parent = nullptr);
+    ~PriceDataSource() override;
+
+    void start() override;
+    void stop() override;
+    QVariantMap getData() const override;
+
+    QString getName() const override
+    {
+        return name_;
+    }
+
     void setTickerList(const QStringList& tickers);
     void setApiUrl(const QString& apiUrl);
 
-    double getPrice(
-        const QString& ticker, const QString& currency = "USD") const;
-    QMap<QString, double> getPrices() const;
-
-Q_SIGNALS:
-    void pricesUpdated(const QMap<QString, double>& prices);
-    void errorOccurred(const QString& error);
-
 private:
     QCoro::Task<void> updatePrices();
+    QString name_;
     bool running_ { false };
     int interval_;
     int timeoutMs_;
@@ -60,7 +61,7 @@ private:
     std::unique_ptr<QNetworkAccessManager> networkManager_;
     QTimer* timer_ { nullptr };
 
-    mutable QMutex priceMutex_;
-    QMap<QString, double> prices_;
+    mutable QMutex dataMutex_;
+    QVariantMap prices_;
 };
 }

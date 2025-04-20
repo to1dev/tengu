@@ -16,10 +16,10 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "Hydra.h"
+#include "PriceDataSource.h"
 
-#include <QNetworkAccessManager>
 #include <QNetworkReply>
+#include <QTimer>
 
 #include <spdlog/spdlog.h>
 
@@ -32,8 +32,10 @@ namespace Daitengu::Clients {
 inline constexpr char defaultApi[] = "https://min-api.cryptocompare.com/data/"
                                      "pricemulti?fsyms=%1&tsyms=USD,EUR";
 
-Hydra::Hydra(QObject* parent, int interval, int timeoutMs)
-    : QObject(parent)
+PriceDataSource::PriceDataSource(
+    const QString& name, int interval, int timeoutMs, QObject* parent)
+    : DataSource(parent)
+    , name_(name)
     , interval_(interval)
     , timeoutMs_(timeoutMs)
     , apiUrl_(defaultApi)
@@ -44,68 +46,63 @@ Hydra::Hydra(QObject* parent, int interval, int timeoutMs)
     connect(timer_, &QTimer::timeout, this, [this]() { updatePrices(); });
 }
 
-Hydra::~Hydra()
+PriceDataSource::~PriceDataSource()
 {
     stop();
 }
 
-void Hydra::start()
+void PriceDataSource::start()
 {
     if (running_)
         return;
     running_ = true;
-    spdlog::info("Hydra started with interval {}s", interval_);
-
+    spdlog::info("PriceDataSource {} started with interval {}s",
+        name_.toStdString(), interval_);
     QTimer::singleShot(0, this, [this]() { updatePrices(); });
-
     timer_->start(interval_ * 1000);
 }
 
-void Hydra::stop()
+void PriceDataSource::stop()
 {
     if (!running_)
         return;
     running_ = false;
     timer_->stop();
-    spdlog::info("Hydra stopped");
+    spdlog::info("PriceDataSource {} stopped", name_.toStdString());
 }
 
-void Hydra::setTickerList(const QStringList& tickers)
+QVariantMap PriceDataSource::getData() const
 {
-    QMutexLocker locker(&priceMutex_);
-    tickerList_ = tickers;
-    prices_.clear();
-    spdlog::info("Ticker list updated: {}", tickers.join(",").toStdString());
-}
-
-void Hydra::setApiUrl(const QString& apiUrl)
-{
-    QMutexLocker locker(&priceMutex_);
-    apiUrl_ = apiUrl.isEmpty() ? defaultApi : apiUrl;
-    spdlog::info("API URL set to: {}", apiUrl_.toStdString());
-}
-
-double Hydra::getPrice(const QString& ticker, const QString& currency) const
-{
-    QMutexLocker locker(&priceMutex_);
-    QString key = QString("%1_%2").arg(ticker, currency);
-    return prices_.value(key, 0.0);
-}
-
-QMap<QString, double> Hydra::getPrices() const
-{
-    QMutexLocker locker(&priceMutex_);
+    QMutexLocker locker(&dataMutex_);
     return prices_;
 }
 
-QCoro::Task<void> Hydra::updatePrices()
+void PriceDataSource::setTickerList(const QStringList& tickers)
+{
+    QMutexLocker locker(&dataMutex_);
+    tickerList_ = tickers;
+    prices_.clear();
+    spdlog::info("PriceDataSource {} ticker list updated: {}",
+        name_.toStdString(), tickers.join(",").toStdString());
+}
+
+void PriceDataSource::setApiUrl(const QString& apiUrl)
+{
+    QMutexLocker locker(&dataMutex_);
+    apiUrl_ = apiUrl.isEmpty() ? defaultApi : apiUrl;
+    spdlog::info("PriceDataSource {} API URL set to: {}", name_.toStdString(),
+        apiUrl_.toStdString());
+}
+
+QCoro::Task<void> PriceDataSource::updatePrices()
 {
     try {
         if (!running_)
             co_return;
         if (tickerList_.isEmpty()) {
-            spdlog::warn("Ticker list is empty, skipping price update");
-            Q_EMIT errorOccurred("Empty ticker list");
+            spdlog::warn("PriceDataSource {}: Ticker list is empty",
+                name_.toStdString());
+            Q_EMIT errorOccurred(name_, "Empty ticker list");
             co_return;
         }
 
@@ -121,7 +118,9 @@ QCoro::Task<void> Hydra::updatePrices()
                 .waitForFinished(std::chrono::milliseconds(timeoutMs_));
             if (!reply->error())
                 break;
-            spdlog::warn("Network request failed (retry {}/3): {}", retry + 1,
+            spdlog::warn(
+                "PriceDataSource {}: Network request failed (retry {}/3): {}",
+                name_.toStdString(), retry + 1,
                 reply->errorString().toStdString());
             co_await QCoro::sleepFor(
                 std::chrono::milliseconds(1000 * (retry + 1)));
@@ -130,23 +129,26 @@ QCoro::Task<void> Hydra::updatePrices()
         if (reply->error()) {
             QString error = QString("Network request failed after retries: %1")
                                 .arg(reply->errorString());
-            spdlog::error("{}", error.toStdString());
-            Q_EMIT errorOccurred(error);
+            spdlog::error("PriceDataSource {}: {}", name_.toStdString(),
+                error.toStdString());
+            Q_EMIT errorOccurred(name_, error);
             co_return;
         }
 
         QByteArray data = reply->readAll();
         std::string jsonStr = data.toStdString();
-        spdlog::debug("Received data: {}", jsonStr);
+        spdlog::debug("PriceDataSource {}: Received data: {}",
+            name_.toStdString(), jsonStr);
 
         json j = json::parse(jsonStr);
         if (j.is_null() || !j.is_object()) {
-            spdlog::warn("Invalid JSON response");
-            Q_EMIT errorOccurred("Invalid JSON response");
+            spdlog::warn("PriceDataSource {}: Invalid JSON response",
+                name_.toStdString());
+            Q_EMIT errorOccurred(name_, "Invalid JSON response");
             co_return;
         }
 
-        QMap<QString, double> newPrices;
+        QVariantMap newPrices;
         for (const auto& ticker : tickerList_) {
             std::string tickerStr = ticker.toStdString();
             if (j.contains(tickerStr)) {
@@ -162,22 +164,28 @@ QCoro::Task<void> Hydra::updatePrices()
         }
 
         {
-            QMutexLocker locker(&priceMutex_);
+            QMutexLocker locker(&dataMutex_);
             if (newPrices != prices_) {
                 prices_ = newPrices;
                 spdlog::info(
-                    "Prices updated for tickers: {}", tickers.toStdString());
-                Q_EMIT pricesUpdated(prices_);
+                    "PriceDataSource {}: Prices updated for tickers: {}",
+                    name_.toStdString(), tickers.toStdString());
+                Q_EMIT dataUpdated(name_, prices_);
             } else {
-                spdlog::debug("No price changes detected");
+                spdlog::debug("PriceDataSource {}: No price changes detected",
+                    name_.toStdString());
             }
         }
     } catch (const json::exception& e) {
-        spdlog::warn("JSON parsing error: {}", e.what());
-        Q_EMIT errorOccurred(QString("JSON parsing error: %1").arg(e.what()));
+        spdlog::warn("PriceDataSource {}: JSON parsing error: {}",
+            name_.toStdString(), e.what());
+        Q_EMIT errorOccurred(
+            name_, QString("JSON parsing error: %1").arg(e.what()));
     } catch (const std::exception& e) {
-        spdlog::error("Unexpected error in updatePrices: {}", e.what());
-        Q_EMIT errorOccurred(QString("Unexpected error: %1").arg(e.what()));
+        spdlog::error("PriceDataSource {}: Unexpected error: {}",
+            name_.toStdString(), e.what());
+        Q_EMIT errorOccurred(
+            name_, QString("Unexpected error: %1").arg(e.what()));
     }
 }
 }

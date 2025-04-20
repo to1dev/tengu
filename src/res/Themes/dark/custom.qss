@@ -805,7 +805,7 @@ QScrollBar::sub-page:vertical {
 
 #ButtonSmartWallet:hover {
     border: 0;
-    background-color: #8E44AD;
+    background-color: #8e4aa9;
 }
 
 #ButtonNewWallet:hover,

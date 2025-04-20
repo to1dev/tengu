@@ -24,7 +24,8 @@
 
 #include <spdlog/spdlog.h>
 
-#include "Clients/Core/Hydra.h"
+#include "Clients/Core/Hydra/Hydra.h"
+#include "Clients/Core/Hydra/PriceDataSource.h"
 
 using namespace Daitengu::Clients;
 
@@ -32,14 +33,22 @@ int main(int argc, char* argv[])
 {
     QCoreApplication app(argc, argv);
 
-    std::unique_ptr<Hydra> hydra = std::make_unique<Hydra>(nullptr, 30);
-    QObject::connect(hydra.get(), &Hydra::pricesUpdated,
-        [](const QMap<QString, double>& prices) {
-            for (auto it = prices.constBegin(); it != prices.constEnd(); ++it) {
-                qDebug() << it.key() << ":" << it.value();
-            }
+    Hydra hydra;
+
+    auto priceSource
+        = std::make_unique<PriceDataSource>("CryptoPrices", 60, 5000);
+    hydra.addSource(std::move(priceSource));
+
+    QObject::connect(&hydra, &Hydra::dataUpdated,
+        [](const QString& sourceName, const QVariantMap& data) {
+            qDebug() << "Data updated for" << sourceName << ":" << data;
         });
-    hydra->start();
+    QObject::connect(&hydra, &Hydra::errorOccurred,
+        [](const QString& sourceName, const QString& error) {
+            qDebug() << "Error in" << sourceName << ":" << error;
+        });
+
+    hydra.startAll();
 
     return app.exec();
 }

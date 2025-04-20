@@ -19,11 +19,16 @@ find_package(Qt5 REQUIRED COMPONENTS
 )
 
 set(TEST_SOURCES
-    ${CMAKE_SOURCE_DIR}/src/Clients/Core/Hydra.cpp
+    ${CMAKE_SOURCE_DIR}/src/Clients/Core/Hydra/Hydra.cpp
+    ${CMAKE_SOURCE_DIR}/src/Clients/Core/Hydra/PriceDataSource.cpp
     ${CMAKE_SOURCE_DIR}/src/tests/Test_Monitor.cpp
 )
 
-add_executable(${PROJECT_NAME} ${TEST_SOURCES})
+set(HEADER_FILES
+    ${CMAKE_SOURCE_DIR}/src/Clients/Core/Hydra/DataSource.h
+)
+
+add_executable(${PROJECT_NAME} ${HEADER_FILES} ${TEST_SOURCES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_SOURCE_DIR}/src

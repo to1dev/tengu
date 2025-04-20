@@ -21,7 +21,7 @@
 #include <QObject>
 #include <QVariantMap>
 
-namespace Daitengu::Clients {
+namespace Daitengu::Clients::Hydra {
 
 class DataSource : public QObject {
     Q_OBJECT

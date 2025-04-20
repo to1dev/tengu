@@ -27,7 +27,7 @@
 
 using json = nlohmann::json;
 
-namespace Daitengu::Clients {
+namespace Daitengu::Clients::Hydra {
 
 inline constexpr char defaultApi[] = "https://min-api.cryptocompare.com/data/"
                                      "pricemulti?fsyms=%1&tsyms=USD,EUR";

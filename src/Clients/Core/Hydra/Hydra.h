@@ -25,7 +25,7 @@
 
 #include <QObject>
 
-namespace Daitengu::Clients {
+namespace Daitengu::Clients::Hydra {
 
 class Hydra : public QObject {
     Q_OBJECT

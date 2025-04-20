@@ -20,7 +20,7 @@
 
 #include <spdlog/spdlog.h>
 
-namespace Daitengu::Clients {
+namespace Daitengu::Clients::Hydra {
 
 Hydra::Hydra(QObject* parent)
     : QObject(parent)

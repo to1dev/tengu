@@ -28,7 +28,7 @@
 
 #include "DataSource.h"
 
-namespace Daitengu::Clients {
+namespace Daitengu::Clients::Hydra {
 
 class PriceDataSource : public DataSource {
     Q_OBJECT

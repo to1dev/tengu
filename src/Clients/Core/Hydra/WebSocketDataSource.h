@@ -79,10 +79,10 @@ private:
 
     mutable QMutex dataMutex_;
     QVariantMap prices_;
-    QVariantMap pendingPrices_;                          // 批量更新的临时存储
+    QVariantMap pendingPrices_;
     int reconnectAttempts_ { 0 };
     static constexpr int MAX_RECONNECT_ATTEMPTS = 10;
-    static constexpr int MAX_RECONNECT_DELAY_MS = 32000; // 32 秒
-    static constexpr int CONNECT_TIMEOUT_MS = 10000;     // 10 秒
+    static constexpr int MAX_RECONNECT_DELAY_MS = 32000;
+    static constexpr int CONNECT_TIMEOUT_MS = 10000;
 };
 }

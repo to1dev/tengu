@@ -27,6 +27,12 @@ GlobalManager::GlobalManager()
     themeManager_ = std::make_unique<ThemeManager>();
     resourceManager_ = std::make_unique<ResourceManager>();
     windowManager_ = std::make_unique<WindowManager>();
+
+    hydra_ = std::make_unique<Hydra>();
+    auto priceSource
+        = std::make_unique<PriceDataSource>("CryptoPrices", 30, 5000);
+    hydra_->addSource(std::move(priceSource));
+    hydra_->startAll();
 }
 
 ResourceManager* GlobalManager::resourceManager() const
@@ -49,4 +55,8 @@ WindowManager* GlobalManager::windowManager() const
     return windowManager_.get();
 }
 
+Hydra* GlobalManager::hydra() const
+{
+    return hydra_.get();
+}
 }

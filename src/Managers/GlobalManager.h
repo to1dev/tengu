@@ -24,6 +24,11 @@
 #include "Managers/ThemeManager.h"
 #include "Managers/WindowManager.h"
 
+#include "Clients/Core/Hydra/Hydra.h"
+#include "Clients/Core/Hydra/PriceDataSource.h"
+
+using namespace Daitengu::Clients::Hydra;
+
 namespace Daitengu::Core {
 
 class GlobalManager {
@@ -35,12 +40,16 @@ public:
     ThemeManager* themeManager() const;
     WindowManager* windowManager() const;
 
+    Hydra* hydra() const;
+
 private:
     QApplication* app_;
     std::unique_ptr<ResourceManager> resourceManager_;
     std::unique_ptr<SettingManager> settingManager_;
     std::unique_ptr<ThemeManager> themeManager_;
     std::unique_ptr<WindowManager> windowManager_;
+
+    std::unique_ptr<Hydra> hydra_;
 };
 
 }

@@ -26,6 +26,7 @@
 
 #include <QAbstractListModel>
 #include <QListView>
+#include <QMouseEvent>
 #include <QPainter>
 #include <QScrollBar>
 #include <QStyledItemDelegate>
@@ -194,6 +195,7 @@ public:
     }
 
 protected:
+    void mouseMoveEvent(QMouseEvent* event) override;
     void paintEvent(QPaintEvent* event) override;
 
 private:

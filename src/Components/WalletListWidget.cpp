@@ -236,6 +236,16 @@ void WalletListView::remove(const QList<int>& rows)
     model_->remove(rows);
 }
 
+void WalletListView::mouseMoveEvent(QMouseEvent* event)
+{
+    QModelIndex index = indexAt(event->pos());
+    if (!index.isValid() && event->buttons() & Qt::LeftButton) {
+        event->ignore();
+        return;
+    }
+    QListView::mouseMoveEvent(event);
+}
+
 void WalletListView::paintEvent(QPaintEvent* event)
 {
     QPainter painter(this->viewport());

@@ -205,11 +205,13 @@ void ImportWalletForm::ok()
     walletRecord_->name = name.toStdString();
     walletRecord_->description = trim(desc_->toPlainText().toStdString());
 
+    Encryption enc;
+
     switch (currentContent_.type) {
     case (WalletType::Mnemonic): {
         try {
             wallet->fromMnemonic(currentContent_.content.toStdString());
-            const auto encrypted = Encryption::encryptText(wallet->mnemonic());
+            const auto encrypted = enc.encryptText(wallet->mnemonic());
             {
                 walletRecord_->chainType = comboChain_->currentIndex();
                 walletRecord_->mnemonic = encrypted;
@@ -239,8 +241,7 @@ void ImportWalletForm::ok()
                     .address = address,
                     .addressHash = addressHash,
                     .derivationPath = std::string(wallet->getDerivationPath()),
-                    .privateKey
-                    = Encryption::encryptText(wallet->getPrivateKey()),
+                    .privateKey = enc.encryptText(wallet->getPrivateKey()),
                     .publicKey = wallet->getAddress(),
                 };
 
@@ -271,8 +272,7 @@ void ImportWalletForm::ok()
     case WalletType::Wif: {
         try {
             wallet->fromPrivateKey(currentContent_.content.toStdString());
-            const auto encrypted
-                = Encryption::encryptText(currentContent_.content);
+            const auto encrypted = enc.encryptText(currentContent_.content);
             {
                 walletRecord_->chainType
                     = static_cast<int>(currentContent_.chain);

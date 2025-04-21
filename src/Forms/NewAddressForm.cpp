@@ -146,8 +146,10 @@ void NewAddressForm::ok()
             }
 
             try {
+                Encryption enc;
+
                 const std::string decrypted
-                    = Encryption::decryptText(address_.mnemonic);
+                    = enc.decryptText(address_.mnemonic);
                 wallet->fromMnemonic(decrypted);
                 const auto address = wallet->getAddress(address_.index);
                 const std::string addressHash = Encryption::easyHash(address);
@@ -160,7 +162,7 @@ void NewAddressForm::ok()
                     addressRecord_->addressHash = addressHash;
                     addressRecord_->derivationPath
                         = std::string(wallet->getDerivationPath());
-                    addressRecord_->privateKey = Encryption::encryptText(
+                    addressRecord_->privateKey = enc.encryptText(
                         wallet->getPrivateKey(address_.index));
                     addressRecord_->publicKey
                         = wallet->getAddress(address_.index);

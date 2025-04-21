@@ -21,6 +21,7 @@
 namespace Daitengu::Utils {
 
 Encryption::Encryption()
+    : keyStore("Tengu")
 {
 }
 
@@ -31,7 +32,6 @@ bool Encryption::init()
 
 std::string Encryption::genRandomHash()
 {
-
     if (sodium_init() < 0) {
         throw std::runtime_error("Failed to initialize libsodium");
     }
@@ -59,7 +59,6 @@ std::string Encryption::genRandomHash()
 QString Encryption::easyHash(const QString& input, unsigned long long seed)
 {
     QByteArray inputData = input.toUtf8();
-
     XXH64_hash_t hash = XXH64(inputData.constData(), inputData.size(), seed);
 
     return QString::number(hash, 16);
@@ -70,9 +69,7 @@ std::string Encryption::easyHash(
 {
     XXH64_hash_t hash = XXH64(input.c_str(), input.size(), seed);
 
-    std::string result = std::format("{:x}", hash);
-
-    return result;
+    return std::format("{:x}", hash);
 }
 
 std::string Encryption::generateStrongPassword(size_t length)
@@ -111,17 +108,35 @@ QString Encryption::encryptText(
     }
 
     QByteArray plainTextBytes = plainText.toUtf8();
-    QByteArray passwordBytes = password.toUtf8();
-
-    unsigned char salt[crypto_pwhash_SALTBYTES];
-    randombytes_buf(salt, sizeof salt);
-
     unsigned char key[crypto_secretbox_KEYBYTES];
-    if (crypto_pwhash(key, sizeof key, passwordBytes.constData(),
-            passwordBytes.size(), salt, crypto_pwhash_OPSLIMIT_INTERACTIVE,
-            crypto_pwhash_MEMLIMIT_INTERACTIVE, crypto_pwhash_ALG_DEFAULT)
-        != 0) {
-        throw std::runtime_error("Password hashing failed");
+
+    if (password.isEmpty()) {
+        QByteArray keyData;
+        try {
+            keyData = keyStore.readKey(true);
+        } catch (const std::exception& e) {
+            qDebug() << "Credential Manager failed:" << e.what();
+            try {
+                keyData = keyStore.readKey(false);
+            } catch (const std::exception& e2) {
+                qDebug() << "DPAPI failed, generating new key:" << e2.what();
+                keyData = keyStore.generateAndStoreKey(true);
+            }
+        }
+        if (keyData.size() != crypto_secretbox_KEYBYTES) {
+            throw std::runtime_error("Invalid key size");
+        }
+        std::memcpy(key, keyData.constData(), crypto_secretbox_KEYBYTES);
+    } else {
+        QByteArray passwordBytes = password.toUtf8();
+        unsigned char salt[crypto_pwhash_SALTBYTES];
+        randombytes_buf(salt, sizeof salt);
+        if (crypto_pwhash(key, sizeof key, passwordBytes.constData(),
+                passwordBytes.size(), salt, crypto_pwhash_OPSLIMIT_INTERACTIVE,
+                crypto_pwhash_MEMLIMIT_INTERACTIVE, crypto_pwhash_ALG_DEFAULT)
+            != 0) {
+            throw std::runtime_error("Password hashing failed");
+        }
     }
 
     unsigned char nonce[crypto_secretbox_NONCEBYTES];
@@ -134,13 +149,20 @@ QString Encryption::encryptText(
 
     sodium_memzero(key, sizeof key);
 
-    QByteArray encryptedData = QByteArray((char*)nonce, sizeof nonce)
-        + QByteArray((char*)salt, sizeof salt) + cipherText;
+    QByteArray encryptedData = QByteArray((char*)nonce, sizeof nonce);
+    if (password.isEmpty()) {
+        encryptedData.append(QByteArray(crypto_pwhash_SALTBYTES, 0));
+    } else {
+        unsigned char salt[crypto_pwhash_SALTBYTES];
+        randombytes_buf(salt, sizeof salt);
+        encryptedData.append((char*)salt, sizeof salt);
+    }
+    encryptedData.append(cipherText);
 
     return QString(encryptedData.toBase64());
 }
 
-inline std::string base64Encode(const std::string& input)
+std::string Encryption::base64Encode(const std::string& input)
 {
     size_t encodedLength = sodium_base64_ENCODED_LEN(
         input.size(), sodium_base64_VARIANT_ORIGINAL);
@@ -155,7 +177,7 @@ inline std::string base64Encode(const std::string& input)
     return encoded;
 }
 
-inline std::string base64Decode(const std::string& input)
+std::string Encryption::base64Decode(const std::string& input)
 {
     size_t decodedLength = input.size();
     std::vector<unsigned char> decoded(decodedLength);
@@ -181,34 +203,59 @@ std::string Encryption::encryptText(
         throw std::runtime_error("Failed to initialize libsodium");
     }
 
-    const size_t plainTextSize = plainText.size();
-    const size_t passwordSize = password.size();
-
-    unsigned char salt[crypto_pwhash_SALTBYTES];
-    randombytes_buf(salt, sizeof salt);
-
     unsigned char key[crypto_secretbox_KEYBYTES];
-    if (crypto_pwhash(key, sizeof key, password.data(), passwordSize, salt,
-            crypto_pwhash_OPSLIMIT_INTERACTIVE,
-            crypto_pwhash_MEMLIMIT_INTERACTIVE, crypto_pwhash_ALG_DEFAULT)
-        != 0) {
-        throw std::runtime_error("Password hashing failed");
+
+    if (password.empty()) {
+        QByteArray keyData;
+        try {
+            keyData = keyStore.readKey(true);
+        } catch (const std::exception& e) {
+            qDebug() << "Credential Manager failed:" << e.what();
+            try {
+                keyData = keyStore.readKey(false);
+            } catch (const std::exception& e2) {
+                qDebug() << "DPAPI failed, generating new key:" << e2.what();
+                keyData = keyStore.generateAndStoreKey(true);
+            }
+        }
+        if (keyData.size() != crypto_secretbox_KEYBYTES) {
+            throw std::runtime_error("Invalid key size");
+        }
+        std::memcpy(key, keyData.constData(), crypto_secretbox_KEYBYTES);
+    } else {
+        unsigned char salt[crypto_pwhash_SALTBYTES];
+        randombytes_buf(salt, sizeof salt);
+        if (crypto_pwhash(key, sizeof key, password.data(), password.size(),
+                salt, crypto_pwhash_OPSLIMIT_INTERACTIVE,
+                crypto_pwhash_MEMLIMIT_INTERACTIVE, crypto_pwhash_ALG_DEFAULT)
+            != 0) {
+            throw std::runtime_error("Password hashing failed");
+        }
     }
 
     unsigned char nonce[crypto_secretbox_NONCEBYTES];
     randombytes_buf(nonce, sizeof nonce);
 
     std::vector<unsigned char> cipherText(
-        plainTextSize + crypto_secretbox_MACBYTES);
+        plainText.size() + crypto_secretbox_MACBYTES);
     crypto_secretbox_easy(cipherText.data(),
-        (const unsigned char*)plainText.data(), plainTextSize, nonce, key);
+        (const unsigned char*)plainText.data(), plainText.size(), nonce, key);
 
     sodium_memzero(key, sizeof key);
 
     std::string encryptedData;
-    encryptedData.reserve(sizeof nonce + sizeof salt + cipherText.size());
+    encryptedData.reserve(
+        sizeof nonce + crypto_pwhash_SALTBYTES + cipherText.size());
     encryptedData.append(reinterpret_cast<char*>(nonce), sizeof nonce);
-    encryptedData.append(reinterpret_cast<char*>(salt), sizeof salt);
+
+    if (password.empty()) {
+        encryptedData.append(crypto_pwhash_SALTBYTES, '\0');
+    } else {
+        unsigned char salt[crypto_pwhash_SALTBYTES];
+        randombytes_buf(salt, sizeof salt);
+        encryptedData.append(reinterpret_cast<char*>(salt), sizeof salt);
+    }
+
     encryptedData.append(
         reinterpret_cast<char*>(cipherText.data()), cipherText.size());
 
@@ -227,6 +274,10 @@ QString Encryption::decryptText(
     }
 
     QByteArray decodedData = QByteArray::fromBase64(encodedText.toUtf8());
+    if (decodedData.size() < crypto_secretbox_NONCEBYTES
+            + crypto_pwhash_SALTBYTES + crypto_secretbox_MACBYTES) {
+        throw std::runtime_error("Invalid encoded data");
+    }
 
     unsigned char nonce[crypto_secretbox_NONCEBYTES];
     unsigned char salt[crypto_pwhash_SALTBYTES];
@@ -237,18 +288,29 @@ QString Encryption::decryptText(
     QByteArray cipherText = decodedData.mid(sizeof nonce + sizeof salt);
 
     unsigned char key[crypto_secretbox_KEYBYTES];
-    if (crypto_pwhash(key, sizeof key, password.toUtf8().constData(),
-            password.toUtf8().size(), salt, crypto_pwhash_OPSLIMIT_INTERACTIVE,
-            crypto_pwhash_MEMLIMIT_INTERACTIVE, crypto_pwhash_ALG_DEFAULT)
-        != 0) {
-        throw std::runtime_error("Password hashing failed");
+
+    if (password.isEmpty()) {
+        QByteArray keyData = keyStore.readKey(true);
+        if (keyData.isEmpty()) {
+            keyData = keyStore.readKey(false);
+        }
+        if (keyData.size() != crypto_secretbox_KEYBYTES) {
+            throw std::runtime_error("Invalid key size");
+        }
+        std::memcpy(key, keyData.constData(), crypto_secretbox_KEYBYTES);
+    } else {
+        if (crypto_pwhash(key, sizeof key, password.toUtf8().constData(),
+                password.size(), salt, crypto_pwhash_OPSLIMIT_INTERACTIVE,
+                crypto_pwhash_MEMLIMIT_INTERACTIVE, crypto_pwhash_ALG_DEFAULT)
+            != 0) {
+            throw std::runtime_error("Password hashing failed");
+        }
     }
 
     QByteArray decryptedText(cipherText.size() - crypto_secretbox_MACBYTES, 0);
-    if (crypto_secretbox_open_easy(
-            reinterpret_cast<unsigned char*>(decryptedText.data()),
-            reinterpret_cast<const unsigned char*>(cipherText.data()),
-            cipherText.size(), nonce, key)
+    if (crypto_secretbox_open_easy((unsigned char*)decryptedText.data(),
+            (unsigned char*)cipherText.constData(), cipherText.size(), nonce,
+            key)
         != 0) {
         throw std::runtime_error(
             "Decryption failed: invalid password or corrupted data");
@@ -271,6 +333,10 @@ std::string Encryption::decryptText(
     }
 
     std::string decodedData = base64Decode(encodedText);
+    if (decodedData.size() < crypto_secretbox_NONCEBYTES
+            + crypto_pwhash_SALTBYTES + crypto_secretbox_MACBYTES) {
+        throw std::runtime_error("Invalid encoded data");
+    }
 
     unsigned char nonce[crypto_secretbox_NONCEBYTES];
     unsigned char salt[crypto_pwhash_SALTBYTES];
@@ -282,11 +348,23 @@ std::string Encryption::decryptText(
         decodedData.begin() + sizeof nonce + sizeof salt, decodedData.end());
 
     unsigned char key[crypto_secretbox_KEYBYTES];
-    if (crypto_pwhash(key, sizeof key, password.data(), password.size(), salt,
-            crypto_pwhash_OPSLIMIT_INTERACTIVE,
-            crypto_pwhash_MEMLIMIT_INTERACTIVE, crypto_pwhash_ALG_DEFAULT)
-        != 0) {
-        throw std::runtime_error("Password hashing failed");
+
+    if (password.empty()) {
+        QByteArray keyData = keyStore.readKey(true);
+        if (keyData.isEmpty()) {
+            keyData = keyStore.readKey(false);
+        }
+        if (keyData.size() != crypto_secretbox_KEYBYTES) {
+            throw std::runtime_error("Invalid key size");
+        }
+        std::memcpy(key, keyData.constData(), crypto_secretbox_KEYBYTES);
+    } else {
+        if (crypto_pwhash(key, sizeof key, password.data(), password.size(),
+                salt, crypto_pwhash_OPSLIMIT_INTERACTIVE,
+                crypto_pwhash_MEMLIMIT_INTERACTIVE, crypto_pwhash_ALG_DEFAULT)
+            != 0) {
+            throw std::runtime_error("Password hashing failed");
+        }
     }
 
     std::vector<unsigned char> decryptedText(
@@ -304,4 +382,55 @@ std::string Encryption::decryptText(
         reinterpret_cast<char*>(decryptedText.data()), decryptedText.size());
 }
 
+bool Encryption::exportKey(const QString& filePath, const QString& password)
+{
+    if (!validatePassword(password)) {
+        return false;
+    }
+
+    return keyStore.exportKey(filePath, password);
+}
+
+bool Encryption::importKey(const QString& filePath, const QString& password)
+{
+    if (!validatePassword(password)) {
+        return false;
+    }
+
+    return keyStore.importKey(filePath, password);
+}
+
+bool Encryption::validatePassword(const QString& password)
+{
+    if (password.isEmpty()) {
+        return true;
+    }
+
+    if (password.length() < 8) {
+        qDebug() << "Password too short (< 8 characters)";
+        return false;
+    }
+
+    bool hasUpper = false, hasLower = false, hasDigit = false,
+         hasSpecial = false;
+
+    for (const QChar& c : password) {
+        if (c.isUpper())
+            hasUpper = true;
+        else if (c.isLower())
+            hasLower = true;
+        else if (c.isDigit())
+            hasDigit = true;
+        else if (!c.isLetterOrNumber())
+            hasSpecial = true;
+    }
+
+    bool valid = hasUpper && hasLower && hasDigit && hasSpecial;
+    if (!valid) {
+        qDebug() << "Password must include uppercase, lowercase, digit, and "
+                    "special character";
+    }
+
+    return valid;
+}
 }

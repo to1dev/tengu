@@ -24,14 +24,13 @@
 #include <stdexcept>
 #include <vector>
 
+#include <QDebug>
 #include <QString>
 
 #include <sodium.h>
 #include <xxhash.h>
 
-#include "Security/Security.h"
-
-using namespace Daitengu::Security;
+#include "KeyStore.h"
 
 namespace Daitengu::Utils {
 
@@ -39,27 +38,39 @@ inline constexpr int DEFAULT_EASYHASH_SEED = 6978;
 
 class Encryption {
 public:
-    Encryption();
+    explicit Encryption();
     virtual ~Encryption() = default;
 
     static bool init();
 
     static std::string genRandomHash();
+
     static QString easyHash(
         const QString& input, unsigned long long seed = DEFAULT_EASYHASH_SEED);
     static std::string easyHash(const std::string& input,
         unsigned long long seed = DEFAULT_EASYHASH_SEED);
+
     static std::string generateStrongPassword(size_t length);
 
-    static QString encryptText(
-        const QString& plainText, const QString& password = defaultKey);
-    static std::string encryptText(const std::string& plainText,
-        const std::string& password = defaultKey);
+    QString encryptText(
+        const QString& plainText, const QString& password = QString());
+    std::string encryptText(const std::string& plainText,
+        const std::string& password = std::string());
 
-    static QString decryptText(
-        const QString& encodedText, const QString& password = defaultKey);
-    static std::string decryptText(const std::string& encodedText,
-        const std::string& password = defaultKey);
+    QString decryptText(
+        const QString& encodedText, const QString& password = QString());
+    std::string decryptText(const std::string& encodedText,
+        const std::string& password = std::string());
+
+    bool exportKey(const QString& filePath, const QString& password);
+    bool importKey(const QString& filePath, const QString& password);
+
+private:
+    std::string base64Encode(const std::string& input);
+    std::string base64Decode(const std::string& input);
+    bool validatePassword(const QString& password);
+
+    KeyStore keyStore;
 };
 
 }

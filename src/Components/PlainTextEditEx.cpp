@@ -22,7 +22,7 @@ namespace Daitengu::Components {
 
 PlainTextEditEx::PlainTextEditEx(QWidget* parent)
     : QPlainTextEdit(parent)
-    , maxLength_(128)
+    , maxLength_(160)
 {
     setObjectName("plainTextEdit");
 

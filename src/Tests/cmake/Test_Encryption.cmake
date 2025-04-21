@@ -6,6 +6,7 @@ find_package(Qt5 REQUIRED COMPONENTS
 
 set(ALL_SOURCES
     ${CMAKE_SOURCE_DIR}/src/Utils/Encryption.cpp
+    ${CMAKE_SOURCE_DIR}/src/Utils/KeyStore.cpp
 )
 
 set(TEST_SOURCES
@@ -43,4 +44,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     sodium
     catch2
     Qt5::Core
+
+    Crypt32
 )

@@ -8,6 +8,7 @@ file(GLOB ALL_SOURCES
     "${CMAKE_SOURCE_DIR}/src/Wallets/Core/*.cpp"
     "${CMAKE_SOURCE_DIR}/src/Wallets/Utils/*.cpp"
     "${CMAKE_SOURCE_DIR}/src/Utils/Encryption.cpp"
+    "${CMAKE_SOURCE_DIR}/src/Utils/KeyStore.cpp"
 )
 
 set(TEST_SOURCES
@@ -49,4 +50,5 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     secp256k1
     catch2
     Qt5::Core
+    Crypt32
 )

@@ -23,6 +23,7 @@
 #include "catch_amalgamated.hpp"
 
 #include "Utils/Encryption.h"
+#include "Utils/KeyStore.h"
 
 using namespace Daitengu::Utils;
 
@@ -40,14 +41,21 @@ TEST_CASE("Encryption functions")
 {
     SECTION("Encrypt and decrypt text")
     {
+        KeyStore ks;
+
+        QByteArray keyData = ks.readKey(true);
+        REQUIRE(!keyData.isEmpty());
+
+        Encryption enc;
+
         QString plain = "Hello World!";
-        QString encoded = Encryption::encryptText(plain);
-        QString decoded = Encryption::decryptText(encoded);
+        QString encoded = enc.encryptText(plain);
+        QString decoded = enc.decryptText(encoded);
 
         std::string plain2 = Encryption::genRandomHash()
             + Encryption::generateStrongPassword(32);
-        std::string encoded2 = Encryption::encryptText(plain2);
-        std::string decoded2 = Encryption::decryptText(encoded2);
+        std::string encoded2 = enc.encryptText(plain2);
+        std::string decoded2 = enc.decryptText(encoded2);
 
         REQUIRE(decoded == plain);
         REQUIRE(decoded2 == plain2);

@@ -280,6 +280,61 @@ std::string BitcoinWallet::getAddress(std::uint32_t index)
     }
 }
 
+std::string BitcoinWallet::getExtendedAddress(std::uint32_t index,
+    AddressType type, const std::vector<std::array<unsigned char, 33>>& pubkeys,
+    uint8_t m, const TaprootScriptTree& script_tree)
+{
+    if (!mnemonic_.empty())
+        initNode(index);
+
+    switch (type) {
+    case AddressType::P2PKH:
+        return generateP2PKHAddress();
+
+    case AddressType::P2SH: {
+        if (pubkeys.empty() || m == 0) {
+            throw std::invalid_argument("P2SH requires multisig params");
+        }
+
+        return generateP2SHAddress(createMultiSigRedeemScript(pubkeys, m));
+    }
+
+    case AddressType::P2WPKH:
+        return generateP2WPKHAddress();
+
+    case AddressType::P2WSH: {
+        if (pubkeys.empty() || m == 0) {
+            throw std::invalid_argument("P2WSH requires pubkeys and m");
+        }
+
+        return generateP2WSHAddress(pubkeys, m);
+    }
+
+    case AddressType::P2SH_P2WSH: {
+        if (pubkeys.empty() || m == 0) {
+            throw std::invalid_argument("P2SH-P2WSH requires pubkeys and m");
+        }
+
+        return generateP2SHP2WSHAddress(pubkeys, m);
+    }
+
+    case AddressType::Taproot:
+        return generateTaprootAddress();
+
+    case AddressType::TaprootMultiSig: {
+        if (pubkeys.empty() || m == 0) {
+            throw std::invalid_argument(
+                "Taproot multisig requires pubkeys and m");
+        }
+
+        return generateTaprootMultiSigAddress(pubkeys, m, script_tree);
+    }
+
+    default:
+        throw std::invalid_argument("Unsupported address type");
+    }
+}
+
 std::string BitcoinWallet::getPrivateKey(std::uint32_t index)
 {
     if (!mnemonic_.empty())
@@ -361,6 +416,302 @@ std::string BitcoinWallet::getScriptHash(std::uint32_t index)
     return BytesToHex(hash.data(), hash.size());
 }
 
+std::string BitcoinWallet::getP2PKScriptHex(std::uint32_t index)
+{
+    if (!mnemonic_.empty()) {
+        initNode(index);
+    }
+
+    auto script = createP2PKScript();
+    return BytesToHex(script.data(), script.size());
+}
+
+std::array<unsigned char, 32> BitcoinWallet::generateMuSig2AggregatePubkey(
+    const std::vector<std::array<unsigned char, 33>>& pubkeys,
+    secp256k1_musig_keyagg_cache* keyagg_cache) const
+{
+    if (pubkeys.empty()) {
+        throw std::invalid_argument("No public keys provided");
+    }
+
+    secp256k1_context* ctx = getSecpContext();
+    std::vector<secp256k1_pubkey> pubkey_vec;
+    std::vector<const secp256k1_pubkey*> pubkey_ptrs;
+
+    // Convert and validate public keys
+    pubkey_vec.reserve(pubkeys.size());
+    pubkey_ptrs.reserve(pubkeys.size());
+    for (const auto& pk : pubkeys) {
+        pubkey_vec.push_back(parsePubkey(pk));
+        pubkey_ptrs.push_back(&pubkey_vec.back());
+    }
+
+    // Sort public keys for consistency
+    if (!secp256k1_ec_pubkey_sort(
+            ctx, pubkey_ptrs.data(), pubkey_ptrs.size())) {
+        throw std::runtime_error("Failed to sort public keys");
+    }
+
+    // Initialize MuSig2 key aggregation
+    secp256k1_xonly_pubkey agg_pk;
+    secp256k1_musig_keyagg_cache local_cache;
+    if (!keyagg_cache) {
+        keyagg_cache = &local_cache;
+    }
+
+    if (!secp256k1_musig_pubkey_agg(ctx, &agg_pk, keyagg_cache,
+            pubkey_ptrs.data(), pubkey_ptrs.size())) {
+        throw std::runtime_error("Failed to aggregate public keys");
+    }
+
+    // Serialize aggregated public key
+    std::array<unsigned char, 32> agg_pk_serialized;
+    if (!secp256k1_xonly_pubkey_serialize(
+            ctx, agg_pk_serialized.data(), &agg_pk)) {
+        throw std::runtime_error("Failed to serialize aggregated public key");
+    }
+
+    return agg_pk_serialized;
+}
+
+bool BitcoinWallet::aggregateMuSig2Nonces(
+    const std::vector<secp256k1_musig_pubnonce>& pubnonces,
+    secp256k1_musig_aggnonce* aggnonce) const
+{
+    if (pubnonces.empty()) {
+        return false;
+    }
+
+    secp256k1_context* ctx = getSecpContext();
+    std::vector<const secp256k1_musig_pubnonce*> nonce_ptrs;
+    nonce_ptrs.reserve(pubnonces.size());
+    for (const auto& nonce : pubnonces) {
+        nonce_ptrs.push_back(&nonce);
+    }
+
+    return secp256k1_musig_nonce_agg(
+        ctx, aggnonce, nonce_ptrs.data(), nonce_ptrs.size());
+}
+
+bool BitcoinWallet::generateMuSig2Nonce(secp256k1_musig_secnonce* secnonce,
+    secp256k1_musig_pubnonce* pubnonce,
+    const std::array<unsigned char, 32>& seckey,
+    const std::array<unsigned char, 33>& pubkey,
+    const std::vector<unsigned char>& message,
+    const secp256k1_musig_keyagg_cache* keyagg_cache,
+    const std::array<unsigned char, 32>& extra_input) const
+{
+    secp256k1_context* ctx = getSecpContext();
+
+    // Validate private key
+    if (!secp256k1_ec_seckey_verify(ctx, seckey.data())) {
+        throw std::runtime_error("Invalid secret key");
+    }
+
+    // Parse public key
+    secp256k1_pubkey pk = parsePubkey(pubkey);
+
+    // Generate random session ID
+    std::array<unsigned char, 32> session_secrand;
+    randombytes_buf(session_secrand.data(), 32);
+
+    // Generate nonce
+    const unsigned char* msg_ptr = message.empty() ? nullptr : message.data();
+    const unsigned char* extra_ptr
+        = extra_input.empty() ? nullptr : extra_input.data();
+    if (!secp256k1_musig_nonce_gen(ctx, secnonce, pubnonce,
+            session_secrand.data(), seckey.data(), &pk, msg_ptr, keyagg_cache,
+            extra_ptr)) {
+        throw std::runtime_error("Failed to generate MuSig2 nonce");
+    }
+
+    // Clear session_secrand to prevent reuse
+    sodium_memzero(session_secrand.data(), session_secrand.size());
+    return true;
+}
+
+std::vector<unsigned char> BitcoinWallet::generateMuSig2PartialSignature(
+    const std::array<unsigned char, 32>& seckey,
+    const std::array<unsigned char, 33>& pubkey,
+    secp256k1_musig_secnonce* secnonce,
+    const std::vector<secp256k1_musig_pubnonce>& pubnonces,
+    const secp256k1_musig_keyagg_cache* keyagg_cache,
+    const std::vector<unsigned char>& message) const
+{
+    secp256k1_context* ctx = getSecpContext();
+
+    // Validate inputs
+    if (!secp256k1_ec_seckey_verify(ctx, seckey.data())) {
+        throw std::runtime_error("Invalid secret key");
+    }
+    if (pubnonces.empty()) {
+        throw std::invalid_argument("No public nonces provided");
+    }
+    if (!keyagg_cache) {
+        throw std::invalid_argument("Key aggregation cache required");
+    }
+    if (message.empty()) {
+        throw std::invalid_argument("Message required");
+    }
+
+    // Parse public key and create keypair
+    secp256k1_pubkey pk = parsePubkey(pubkey);
+    secp256k1_keypair keypair;
+    if (!secp256k1_keypair_create(ctx, &keypair, seckey.data())) {
+        throw std::runtime_error("Failed to create keypair");
+    }
+
+    // Aggregate nonces
+    // Note: In a real application, pubnonces must be collected from all signers
+    // via network communication (e.g., TCP, WebSocket) or file exchange.
+    secp256k1_musig_aggnonce aggnonce;
+    if (!aggregateMuSig2Nonces(pubnonces, &aggnonce)) {
+        throw std::runtime_error("Failed to aggregate nonces");
+    }
+
+    // Create signing session
+    secp256k1_musig_session session;
+    if (!secp256k1_musig_nonce_process(
+            ctx, &session, &aggnonce, message.data(), keyagg_cache)) {
+        throw std::runtime_error("Failed to process nonce");
+    }
+
+    // Generate partial signature
+    secp256k1_musig_partial_sig partial_sig;
+    if (!secp256k1_musig_partial_sign(
+            ctx, &partial_sig, secnonce, &keypair, keyagg_cache, &session)) {
+        throw std::runtime_error("Failed to generate partial signature");
+    }
+
+    // Serialize partial signature
+    std::array<unsigned char, 32> sig_serialized;
+    if (!secp256k1_musig_partial_sig_serialize(
+            ctx, sig_serialized.data(), &partial_sig)) {
+        throw std::runtime_error("Failed to serialize partial signature");
+    }
+
+    // Clear secnonce to prevent reuse
+    sodium_memzero(secnonce, sizeof(*secnonce));
+    return std::vector<unsigned char>(
+        sig_serialized.begin(), sig_serialized.end());
+}
+
+std::vector<unsigned char> BitcoinWallet::aggregateMuSig2Signatures(
+    const std::vector<std::vector<unsigned char>>& partial_sigs,
+    const std::vector<secp256k1_musig_pubnonce>& pubnonces,
+    const std::vector<unsigned char>& message,
+    const secp256k1_musig_keyagg_cache* keyagg_cache) const
+{
+    secp256k1_context* ctx = getSecpContext();
+
+    // Validate inputs
+    if (partial_sigs.empty()) {
+        throw std::invalid_argument("No partial signatures provided");
+    }
+    if (pubnonces.empty()) {
+        throw std::invalid_argument("No public nonces provided");
+    }
+    if (!keyagg_cache) {
+        throw std::invalid_argument("Key aggregation cache required");
+    }
+    if (message.empty()) {
+        throw std::invalid_argument("Message required");
+    }
+
+    // Parse partial signatures
+    // Note: In a real application, partial_sigs must be collected from all
+    // signers via network communication (e.g., TCP, WebSocket) or file
+    // exchange.
+    std::vector<secp256k1_musig_partial_sig> sigs;
+    std::vector<const secp256k1_musig_partial_sig*> sig_ptrs;
+    sigs.reserve(partial_sigs.size());
+    sig_ptrs.reserve(partial_sigs.size());
+    for (const auto& sig : partial_sigs) {
+        if (sig.size() != 32) {
+            throw std::runtime_error("Invalid partial signature size");
+        }
+        secp256k1_musig_partial_sig partial_sig;
+        if (!secp256k1_musig_partial_sig_parse(ctx, &partial_sig, sig.data())) {
+            throw std::runtime_error("Invalid partial signature");
+        }
+        sigs.push_back(partial_sig);
+        sig_ptrs.push_back(&sigs.back());
+    }
+
+    // Aggregate nonces
+    secp256k1_musig_aggnonce aggnonce;
+    if (!aggregateMuSig2Nonces(pubnonces, &aggnonce)) {
+        throw std::runtime_error("Failed to aggregate nonces");
+    }
+
+    // Create signing session
+    secp256k1_musig_session session;
+    if (!secp256k1_musig_nonce_process(
+            ctx, &session, &aggnonce, message.data(), keyagg_cache)) {
+        throw std::runtime_error("Failed to process nonce");
+    }
+
+    // Aggregate signatures
+    std::array<unsigned char, 64> final_sig;
+    if (!secp256k1_musig_partial_sig_agg(ctx, final_sig.data(), &session,
+            sig_ptrs.data(), sig_ptrs.size())) {
+        throw std::runtime_error("Failed to aggregate signatures");
+    }
+
+    return std::vector<unsigned char>(final_sig.begin(), final_sig.end());
+}
+
+bool BitcoinWallet::verifyMuSig2PartialSignature(
+    const std::vector<unsigned char>& partial_sig,
+    const std::array<unsigned char, 33>& pubkey,
+    const secp256k1_musig_pubnonce* pubnonce,
+    const std::vector<secp256k1_musig_pubnonce>& pubnonces,
+    const secp256k1_musig_keyagg_cache* keyagg_cache,
+    const std::vector<unsigned char>& message) const
+{
+    secp256k1_context* ctx = getSecpContext();
+
+    // Validate inputs
+    if (partial_sig.size() != 32) {
+        return false;
+    }
+    if (!pubnonce || pubnonces.empty()) {
+        return false;
+    }
+    if (!keyagg_cache) {
+        return false;
+    }
+    if (message.empty()) {
+        return false;
+    }
+
+    // Parse partial signature
+    secp256k1_musig_partial_sig sig;
+    if (!secp256k1_musig_partial_sig_parse(ctx, &sig, partial_sig.data())) {
+        return false;
+    }
+
+    // Parse public key
+    secp256k1_pubkey pk = parsePubkey(pubkey);
+
+    // Aggregate nonces
+    secp256k1_musig_aggnonce aggnonce;
+    if (!aggregateMuSig2Nonces(pubnonces, &aggnonce)) {
+        return false;
+    }
+
+    // Create signing session
+    secp256k1_musig_session session;
+    if (!secp256k1_musig_nonce_process(
+            ctx, &session, &aggnonce, message.data(), keyagg_cache)) {
+        return false;
+    }
+
+    // Verify partial signature
+    return secp256k1_musig_partial_sig_verify(
+        ctx, &sig, pubnonce, &pk, keyagg_cache, &session);
+}
+
 void BitcoinWallet::onNetworkChanged()
 {
 }
@@ -399,14 +750,16 @@ std::string BitcoinWallet::generateTaprootAddress() const
 
     std::array<uint8_t, 32> tweakedXonly = bip86Tweak(pubkey33);
 
-    std::string hrp = "bc";
+    // std::string hrp = "bc";
+    const char* hrp = (currentNetwork_ == Network::Type::MAINNET) ? "bc" : "tb";
 
     char out[128] = { 0 };
     if (!segwit_addr_encode(
-            out, hrp.c_str(), 1, tweakedXonly.data(), tweakedXonly.size())) {
+            out, hrp, 1, tweakedXonly.data(), tweakedXonly.size())) {
         throw std::runtime_error(
             "Failed to encode taproot address via segwit_addr_encode");
     }
+
     return std::string(out);
 }
 
@@ -417,9 +770,170 @@ std::string BitcoinWallet::generateP2WPKHAddress() const
     ripemd160(h1, 32, h2);
 
     char addr[128] = { 0 };
-    const char* hrp = "bc";
+    // const char* hrp = "bc";
+    const char* hrp = (currentNetwork_ == Network::Type::MAINNET) ? "bc" : "tb";
     if (!segwit_addr_encode(addr, hrp, 0, h2, 20)) {
         throw std::runtime_error("segwit_addr_encode fail for p2wpkh");
+    }
+
+    return std::string(addr);
+}
+
+std::string BitcoinWallet::generateP2PKHAddress() const
+{
+    unsigned char sha256_hash[32];
+    sha256_Raw(node_.public_key, 33, sha256_hash);
+
+    unsigned char ripemd160_hash[20];
+    ripemd160(sha256_hash, 32, ripemd160_hash);
+
+    std::vector<unsigned char> payload;
+    payload.reserve(1 + 20);
+    uint8_t version_byte
+        = (currentNetwork_ == Network::Type::MAINNET) ? 0x00 : 0x6F;
+    payload.push_back(version_byte);
+    payload.insert(payload.end(), ripemd160_hash, ripemd160_hash + 20);
+
+    std::vector<unsigned char> checksum = doubleSha256(payload);
+
+    std::vector<unsigned char> full_data;
+    full_data.reserve(payload.size() + 4);
+    full_data.insert(full_data.end(), payload.begin(), payload.end());
+    full_data.insert(full_data.end(), checksum.begin(), checksum.begin() + 4);
+
+    return EncodeBase58(full_data);
+}
+
+std::string BitcoinWallet::generateP2SHAddress(
+    const std::vector<unsigned char>& redeemScript) const
+{
+    unsigned char sha256_hash[32];
+    sha256_Raw(redeemScript.data(), redeemScript.size(), sha256_hash);
+
+    unsigned char ripemd160_hash[20];
+    ripemd160(sha256_hash, 32, ripemd160_hash);
+
+    std::vector<unsigned char> payload;
+    payload.reserve(1 + 20);
+    uint8_t version_byte
+        = (currentNetwork_ == Network::Type::MAINNET) ? 0x05 : 0xC4;
+    payload.push_back(version_byte);
+    payload.insert(payload.end(), ripemd160_hash, ripemd160_hash + 20);
+
+    std::vector<unsigned char> checksum = doubleSha256(payload);
+
+    std::vector<unsigned char> full_data;
+    full_data.reserve(payload.size() + 4);
+    full_data.insert(full_data.end(), payload.begin(), payload.end());
+    full_data.insert(full_data.end(), checksum.begin(), checksum.begin() + 4);
+
+    return EncodeBase58(full_data);
+}
+
+std::string BitcoinWallet::generateP2WSHAddress(
+    const std::vector<std::array<unsigned char, 33>>& pubkeys, uint8_t m) const
+{
+    auto redeem_script = createMultiSigRedeemScript(pubkeys, m);
+
+    std::array<unsigned char, 32> script_hash
+        = sha256(redeem_script.data(), redeem_script.size());
+
+    char addr[128] = { 0 };
+    const char* hrp = (currentNetwork_ == Network::Type::MAINNET) ? "bc" : "tb";
+    if (!segwit_addr_encode(addr, hrp, 0, script_hash.data(), 32)) {
+        throw std::runtime_error("Failed to encode P2WSH address");
+    }
+
+    return std::string(addr);
+}
+
+std::string BitcoinWallet::generateP2SHP2WSHAddress(
+    const std::vector<std::array<unsigned char, 33>>& pubkeys, uint8_t m) const
+{
+    auto redeem_script = createMultiSigRedeemScript(pubkeys, m);
+
+    std::array<unsigned char, 32> script_hash
+        = sha256(redeem_script.data(), redeem_script.size());
+
+    std::vector<unsigned char> p2wsh_script;
+    p2wsh_script.push_back(0x00); // OP_0
+    p2wsh_script.push_back(0x20); // Push 32 bytes
+    p2wsh_script.insert(
+        p2wsh_script.end(), script_hash.begin(), script_hash.end());
+
+    unsigned char sha256_hash[32];
+    sha256_Raw(p2wsh_script.data(), p2wsh_script.size(), sha256_hash);
+    unsigned char ripemd160_hash[20];
+    ripemd160(sha256_hash, 32, ripemd160_hash);
+
+    std::vector<unsigned char> payload;
+    payload.reserve(1 + 20);
+    uint8_t version_byte
+        = (currentNetwork_ == Network::Type::MAINNET) ? 0x05 : 0xC4;
+    payload.push_back(version_byte);
+    payload.insert(payload.end(), ripemd160_hash, ripemd160_hash + 20);
+
+    std::vector<unsigned char> checksum = doubleSha256(payload);
+
+    std::vector<unsigned char> full_data;
+    full_data.reserve(payload.size() + 4);
+    full_data.insert(full_data.end(), payload.begin(), payload.end());
+    full_data.insert(full_data.end(), checksum.begin(), checksum.begin() + 4);
+
+    return EncodeBase58(full_data);
+}
+
+std::string BitcoinWallet::generateTaprootMultiSigAddress(
+    const std::vector<std::array<unsigned char, 33>>& pubkeys, uint8_t m,
+    const TaprootScriptTree& script_tree) const
+{
+    if (pubkeys.empty() || m == 0 || m > pubkeys.size()) {
+        throw std::invalid_argument(
+            "Invalid pubkeys or m for Taproot multisig");
+    }
+
+    secp256k1_context* secp_ctx = getSecpContext();
+
+    // Generate MuSig2 aggregated public key
+    secp256k1_musig_keyagg_cache keyagg_cache;
+    auto agg_pubkey = generateMuSig2AggregatePubkey(pubkeys, &keyagg_cache);
+
+    // Convert aggregated public key to x-only format
+    secp256k1_xonly_pubkey internal_xonly;
+    if (!secp256k1_xonly_pubkey_parse(
+            secp_ctx, &internal_xonly, agg_pubkey.data())) {
+        throw std::runtime_error("Failed to parse aggregated pubkey");
+    }
+
+    // Compute Merkle root from script tree
+    auto merkle_root = computeMerkleRoot(script_tree);
+
+    // Tweak the aggregated public key with the Merkle root
+    secp256k1_pubkey tweaked_pubkey;
+    if (!secp256k1_musig_pubkey_xonly_tweak_add(
+            secp_ctx, &tweaked_pubkey, &keyagg_cache, merkle_root.data())) {
+        throw std::runtime_error("Failed to tweak aggregated pubkey");
+    }
+
+    // Convert tweaked public key to x-only format
+    secp256k1_xonly_pubkey tweaked_xonly;
+    if (!secp256k1_xonly_pubkey_from_pubkey(
+            secp_ctx, &tweaked_xonly, nullptr, &tweaked_pubkey)) {
+        throw std::runtime_error("Failed to convert tweaked pubkey to x-only");
+    }
+
+    // Serialize tweaked public key
+    std::array<uint8_t, 32> output_key;
+    if (!secp256k1_xonly_pubkey_serialize(
+            secp_ctx, output_key.data(), &tweaked_xonly)) {
+        throw std::runtime_error("Failed to serialize tweaked pubkey");
+    }
+
+    // Encode as Bech32m address
+    char addr[128] = { 0 };
+    const char* hrp = (currentNetwork_ == Network::Type::MAINNET) ? "bc" : "tb";
+    if (!segwit_addr_encode(addr, hrp, 1, output_key.data(), 32)) {
+        throw std::runtime_error("Failed to encode Taproot multisig address");
     }
 
     return std::string(addr);
@@ -460,6 +974,110 @@ std::vector<unsigned char> BitcoinWallet::createTaprootScriptPubKey() const
     script.insert(script.end(), tweaked.begin(), tweaked.end());
 
     return script;
+}
+
+std::vector<unsigned char> BitcoinWallet::createP2PKScript() const
+{
+    if (!node_.is_public_key_set) {
+        throw std::runtime_error("Public key not set");
+    }
+
+    std::vector<unsigned char> script;
+    script.reserve(1 + 33 + 1);
+    script.push_back(0x21); // Push 33 bytes (compressed pubkey)
+    script.insert(script.end(), node_.public_key, node_.public_key + 33);
+    script.push_back(0xAC); // OP_CHECKSIG
+    return script;
+}
+
+std::vector<unsigned char> BitcoinWallet::createMultiSigRedeemScript(
+    const std::vector<std::array<unsigned char, 33>>& pubkeys, uint8_t m) const
+{
+    if (m < 1 || m > pubkeys.size() || pubkeys.size() > 16) {
+        throw std::invalid_argument("Invalid m or pubkeys size");
+    }
+
+    std::vector<std::array<unsigned char, 33>> sorted_pubkeys = pubkeys;
+    std::sort(sorted_pubkeys.begin(), sorted_pubkeys.end());
+
+    std::vector<unsigned char> script;
+    script.push_back(0x50 + m);              // OP_m
+    for (const auto& pubkey : sorted_pubkeys) {
+        script.push_back(0x21);              // Push 33 bytes
+        script.insert(script.end(), pubkey.begin(), pubkey.end());
+    }
+    script.push_back(0x50 + pubkeys.size()); // OP_n
+    script.push_back(0xAE);                  // OP_CHECKMULTISIG
+
+    return script;
+}
+
+std::array<uint8_t, 32> BitcoinWallet::computeTapLeafHash(
+    const TaprootScript& leaf) const
+{
+    static const char* TAPLEAF_TAG = "TapLeaf";
+    auto taghash = sha256(reinterpret_cast<const uint8_t*>(TAPLEAF_TAG),
+        std::strlen(TAPLEAF_TAG));
+
+    std::vector<uint8_t> buf;
+    buf.insert(buf.end(), taghash.begin(), taghash.end());
+    buf.insert(buf.end(), taghash.begin(), taghash.end());
+    buf.push_back(leaf.version);
+    buf.insert(buf.end(), leaf.script.begin(), leaf.script.end());
+
+    return sha256(buf.data(), buf.size());
+}
+
+std::array<uint8_t, 32> BitcoinWallet::computeTapBranchHash(
+    const std::array<uint8_t, 32>& left,
+    const std::array<uint8_t, 32>& right) const
+{
+    static const char* TAPBRANCH_TAG = "TapBranch";
+    auto taghash = sha256(reinterpret_cast<const uint8_t*>(TAPBRANCH_TAG),
+        std::strlen(TAPBRANCH_TAG));
+
+    std::vector<uint8_t> buf;
+    buf.insert(buf.end(), taghash.begin(), taghash.end());
+    buf.insert(buf.end(), taghash.begin(), taghash.end());
+
+    if (std::lexicographical_compare(
+            left.begin(), left.end(), right.begin(), right.end())) {
+        buf.insert(buf.end(), left.begin(), left.end());
+        buf.insert(buf.end(), right.begin(), right.end());
+    } else {
+        buf.insert(buf.end(), right.begin(), right.end());
+        buf.insert(buf.end(), left.begin(), left.end());
+    }
+
+    return sha256(buf.data(), buf.size());
+}
+
+std::array<uint8_t, 32> BitcoinWallet::computeMerkleRoot(
+    const TaprootScriptTree& tree) const
+{
+    if (tree.leaves.empty()) {
+        return std::array<uint8_t, 32> {};
+    }
+
+    std::vector<std::array<uint8_t, 32>> hashes;
+    for (const auto& leaf : tree.leaves) {
+        hashes.push_back(computeTapLeafHash(leaf));
+    }
+
+    while (hashes.size() > 1) {
+        std::vector<std::array<uint8_t, 32>> new_hashes;
+        for (size_t i = 0; i < hashes.size(); i += 2) {
+            if (i + 1 < hashes.size()) {
+                new_hashes.push_back(
+                    computeTapBranchHash(hashes[i], hashes[i + 1]));
+            } else {
+                new_hashes.push_back(hashes[i]);
+            }
+        }
+        hashes = std::move(new_hashes);
+    }
+
+    return hashes[0];
 }
 
 std::array<uint8_t, 32> BitcoinWallet::bip86Tweak(
@@ -524,4 +1142,98 @@ std::array<uint8_t, 32> BitcoinWallet::sha256(const uint8_t* data, size_t len)
     return hash;
 }
 
+secp256k1_pubkey BitcoinWallet::parsePubkey(
+    const std::array<unsigned char, 33>& pubkey) const
+{
+    secp256k1_context* ctx = getSecpContext();
+    secp256k1_pubkey pk;
+    if (!secp256k1_ec_pubkey_parse(ctx, &pk, pubkey.data(), 33)) {
+        throw std::runtime_error("Invalid public key");
+    }
+
+    return pk;
 }
+}
+
+#ifdef __demo
+
+int main()
+{
+    using namespace Daitengu::Wallets;
+
+    // Initialize wallet
+    BitcoinWallet wallet(true, Network::Type::TESTNET);
+
+    // Example public keys (33-byte compressed format)
+    std::vector<std::array<unsigned char, 33>> pubkeys
+        = { // Replace with actual public keys (33 bytes each)
+              { /* Dummy pubkey 1: fill with 33-byte compressed key */ },
+              { /* Dummy pubkey 2: fill with 33-byte compressed key */ },
+              { /* Dummy pubkey 3: fill with 33-byte compressed key */ }
+          };
+    std::array<unsigned char, 32> seckey = { /* 32-byte private key */ };
+    std::array<unsigned char, 33> pubkey
+        = { /* 33-byte public key corresponding to seckey */ };
+    std::vector<unsigned char> message(32, 0); // Example 32-byte message hash
+
+    // Step 1: Generate aggregated public key
+    secp256k1_musig_keyagg_cache keyagg_cache;
+    auto agg_pk = wallet.generateMuSig2AggregatePubkey(pubkeys, &keyagg_cache);
+
+    // Step 2: Generate nonce (first round)
+    secp256k1_musig_secnonce secnonce;
+    secp256k1_musig_pubnonce pubnonce;
+    wallet.generateMuSig2Nonce(
+        &secnonce, &pubnonce, seckey, pubkey, message, &keyagg_cache);
+
+    // Collect nonces from all signers (via network)
+    std::vector<secp256k1_musig_pubnonce> pubnonces
+        = { pubnonce /* more nonces */ };
+    // TODO: Implement network communication to collect pubnonces
+    // e.g., pubnonces = collectNonces(peer_addresses);
+
+    // Step 3: Generate partial signature
+    auto partial_sig = wallet.generateMuSig2PartialSignature(
+        seckey, pubkey, &secnonce, pubnonces, &keyagg_cache, message);
+
+    // Verify partial signature (optional)
+    if (wallet.verifyMuSig2PartialSignature(partial_sig, pubkey, &pubnonce,
+            pubnonces, &keyagg_cache, message)) {
+        std::cout << "Partial signature verified\n";
+    } else {
+        std::cout << "Partial signature verification failed\n";
+        return 1;
+    }
+
+    // Collect partial signatures from all signers (via network)
+    std::vector<std::vector<unsigned char>> partial_sigs
+        = { partial_sig /* more sigs */ };
+    // TODO: Implement network communication to collect partial_sigs
+    // e.g., partial_sigs = collectPartialSignatures(peer_addresses);
+
+    // Step 4: Aggregate signatures
+    auto final_sig = wallet.aggregateMuSig2Signatures(
+        partial_sigs, pubnonces, message, &keyagg_cache);
+
+    // Verify final signature
+    secp256k1_context* ctx = getSecpContext();
+    secp256k1_xonly_pubkey xonly_agg_pk;
+    secp256k1_xonly_pubkey_parse(ctx, &xonly_agg_pk, agg_pk.data());
+    if (secp256k1_schnorrsig_verify(ctx, final_sig.data(), message.data(),
+            message.size(), &xonly_agg_pk)) {
+        std::cout << "Final signature verified\n";
+    } else {
+        std::cout << "Final signature verification failed\n";
+        return 1;
+    }
+
+    // Generate Taproot multisig address
+    TaprootScriptTree script_tree; // Optional script tree
+    uint8_t m = 2; // Example: 2-of-3 multisig (adjust as needed)
+    std::string address = wallet.getExtendedAddress(
+        0, AddressType::TaprootMultiSig, pubkeys, m, script_tree);
+    std::cout << "Taproot multisig address: " << address << "\n";
+
+    return 0;
+}
+#endif

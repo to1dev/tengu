@@ -131,8 +131,8 @@ QVariant WalletListModel::data(const QModelIndex& index, int role) const
         int chain = wallet.chainType;
         return getCachedIcon(group, chain);
     }
-    case Qt::ToolTipRole:
-        return QString::fromStdString(wallet.name);
+    /*case Qt::ToolTipRole:
+        return QString::fromStdString(wallet.name);*/
     case Id:
         return wallet.id;
     case Type:

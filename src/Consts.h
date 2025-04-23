@@ -44,7 +44,7 @@ inline constexpr char BUILD_METADATA[] = "20250301";
 inline constexpr char EMPTY_STRING[] = "";
 inline constexpr char SPACE_CHAR[] = " ";
 
-inline constexpr auto NAME_PATTERN = "<<i|s>v(mon|chu|zard|rtle) the X>";
+inline constexpr auto NAME_PATTERN = "<<i|s>v(mon|chu|zard|rtle) the W>";
 
 inline constexpr char SPLASH_PATH[] = ":/Splash/%1";
 

@@ -128,6 +128,7 @@ public:
     ~NewSmartAddressForm();
 
     std::shared_ptr<Address> addressRecord() const;
+    const std::vector<Address>& addresses() const;
 
 private Q_SLOTS:
     void ok();
@@ -146,4 +147,5 @@ private:
     NewAddress address_ {};
 
     std::shared_ptr<Address> addressRecord_ { nullptr };
+    std::vector<Address> addresses_;
 };

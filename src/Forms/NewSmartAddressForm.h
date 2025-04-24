@@ -54,6 +54,50 @@ namespace Ui {
 class NewSmartAddressForm;
 }
 
+namespace Smart {
+
+class AddressManager {
+public:
+    void addAddress(const Address& addr)
+    {
+        addresses_.push_back(addr);
+    }
+
+    void removeAddress(int index)
+    {
+        auto it = std::remove_if(addresses_.begin(), addresses_.end(),
+            [index](const Address& addr) { return addr.index == index; });
+        addresses_.erase(it, addresses_.end());
+    }
+
+    const std::vector<Address>& getAddresses() const
+    {
+        return addresses_;
+    }
+
+    int nextAvailableIndex() const
+    {
+        std::vector<int> indices;
+        indices.reserve(addresses_.size());
+        for (const auto& addr : addresses_) {
+            indices.push_back(addr.index);
+        }
+        std::ranges::sort(indices);
+        int freeIndex = 0;
+        for (int idx : indices) {
+            if (idx == freeIndex)
+                ++freeIndex;
+            else if (idx > freeIndex)
+                break;
+        }
+        return freeIndex;
+    }
+
+private:
+    std::vector<Address> addresses_;
+};
+}
+
 class NewSmartAddressForm : public QDialog {
     Q_OBJECT
 
@@ -74,6 +118,7 @@ public:
         int chainType = -1;
         int index = 0;
         std::string mnemonic = "";
+        Smart::AddressManager* manager = nullptr;
     };
 
     explicit NewSmartAddressForm(const NewAddress& address,

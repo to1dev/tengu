@@ -84,6 +84,8 @@ private:
     ComboBoxEx* comboChain_;
     PlainTextEditEx* desc_;
 
+    Smart::AddressManager addressManager_;
+
     UpdateSmartWallet wallet_ {};
 
     std::shared_ptr<Wallet> walletRecord_;

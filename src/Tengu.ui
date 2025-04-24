@@ -1,325 +1,346 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Tengu</class>
- <widget class="QMainWindow" name="Tengu">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>368</width>
-    <height>100</height>
-   </rect>
-  </property>
-  <property name="sizePolicy">
-   <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-    <horstretch>0</horstretch>
-    <verstretch>0</verstretch>
-   </sizepolicy>
-  </property>
-  <property name="windowTitle">
-   <string>Tengu</string>
-  </property>
-  <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout">
-    <item>
-     <widget class="QFrame" name="frameMain">
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <widget class="QFrame" name="topFrame">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>0</y>
-         <width>331</width>
-         <height>74</height>
-        </rect>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Raised</enum>
-       </property>
-       <layout class="QHBoxLayout" name="horizontalLayout">
-        <item>
-         <widget class="QToolButton" name="ButtonWallet">
-          <property name="text">
-           <string>钱包</string>
-          </property>
-          <property name="icon">
-           <iconset resource="res/Images.qrc">
-            <normaloff>:/Buttons/wallet.svg</normaloff>:/Buttons/wallet.svg</iconset>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>32</width>
-            <height>32</height>
-           </size>
-          </property>
-          <property name="toolButtonStyle">
-           <enum>Qt::ToolButtonTextUnderIcon</enum>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QToolButton" name="ButtonBell">
-          <property name="text">
-           <string>监控</string>
-          </property>
-          <property name="icon">
-           <iconset resource="res/Images.qrc">
-            <normaloff>:/Buttons/bell.svg</normaloff>:/Buttons/bell.svg</iconset>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>32</width>
-            <height>32</height>
-           </size>
-          </property>
-          <property name="toolButtonStyle">
-           <enum>Qt::ToolButtonTextUnderIcon</enum>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QToolButton" name="ButtonNews">
-          <property name="text">
-           <string>资讯</string>
-          </property>
-          <property name="icon">
-           <iconset resource="res/Images.qrc">
-            <normaloff>:/Buttons/news.svg</normaloff>:/Buttons/news.svg</iconset>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>32</width>
-            <height>32</height>
-           </size>
-          </property>
-          <property name="toolButtonStyle">
-           <enum>Qt::ToolButtonTextUnderIcon</enum>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QToolButton" name="ButtonChart">
-          <property name="text">
-           <string>图表</string>
-          </property>
-          <property name="icon">
-           <iconset resource="res/Images.qrc">
-            <normaloff>:/Buttons/chart.svg</normaloff>:/Buttons/chart.svg</iconset>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>32</width>
-            <height>32</height>
-           </size>
-          </property>
-          <property name="toolButtonStyle">
-           <enum>Qt::ToolButtonTextUnderIcon</enum>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QToolButton" name="ButtonTrade">
-          <property name="text">
-           <string>交易</string>
-          </property>
-          <property name="icon">
-           <iconset resource="res/Images.qrc">
-            <normaloff>:/Buttons/trade.svg</normaloff>:/Buttons/trade.svg</iconset>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>32</width>
-            <height>32</height>
-           </size>
-          </property>
-          <property name="toolButtonStyle">
-           <enum>Qt::ToolButtonTextUnderIcon</enum>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QToolButton" name="ButtonSwap">
-          <property name="text">
-           <string>兑换</string>
-          </property>
-          <property name="icon">
-           <iconset resource="res/Images.qrc">
-            <normaloff>:/Buttons/swap.svg</normaloff>:/Buttons/swap.svg</iconset>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>32</width>
-            <height>32</height>
-           </size>
-          </property>
-          <property name="toolButtonStyle">
-           <enum>Qt::ToolButtonTextUnderIcon</enum>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QToolButton" name="ButtonBridge">
-          <property name="text">
-           <string>跨链</string>
-          </property>
-          <property name="icon">
-           <iconset resource="res/Images.qrc">
-            <normaloff>:/Buttons/bridge.svg</normaloff>:/Buttons/bridge.svg</iconset>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>32</width>
-            <height>32</height>
-           </size>
-          </property>
-          <property name="toolButtonStyle">
-           <enum>Qt::ToolButtonTextUnderIcon</enum>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QToolButton" name="ButtonArbitrage">
-          <property name="text">
-           <string>套利</string>
-          </property>
-          <property name="icon">
-           <iconset resource="res/Images.qrc">
-            <normaloff>:/Buttons/arbitrage.svg</normaloff>:/Buttons/arbitrage.svg</iconset>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>32</width>
-            <height>32</height>
-           </size>
-          </property>
-          <property name="toolButtonStyle">
-           <enum>Qt::ToolButtonTextUnderIcon</enum>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QToolButton" name="ButtonDefi">
-          <property name="text">
-           <string>金融</string>
-          </property>
-          <property name="icon">
-           <iconset resource="res/Images.qrc">
-            <normaloff>:/Buttons/defi.svg</normaloff>:/Buttons/defi.svg</iconset>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>32</width>
-            <height>32</height>
-           </size>
-          </property>
-          <property name="toolButtonStyle">
-           <enum>Qt::ToolButtonTextUnderIcon</enum>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QToolButton" name="ButtonScript">
-          <property name="text">
-           <string>脚本</string>
-          </property>
-          <property name="icon">
-           <iconset resource="res/Images.qrc">
-            <normaloff>:/Buttons/script.svg</normaloff>:/Buttons/script.svg</iconset>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>32</width>
-            <height>32</height>
-           </size>
-          </property>
-          <property name="toolButtonStyle">
-           <enum>Qt::ToolButtonTextUnderIcon</enum>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QToolButton" name="ButtonAI">
-          <property name="text">
-           <string>智能</string>
-          </property>
-          <property name="icon">
-           <iconset resource="res/Images.qrc">
-            <normaloff>:/Buttons/ai.svg</normaloff>:/Buttons/ai.svg</iconset>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>32</width>
-            <height>32</height>
-           </size>
-          </property>
-          <property name="toolButtonStyle">
-           <enum>Qt::ToolButtonTextUnderIcon</enum>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </widget>
-    </item>
-   </layout>
-  </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>368</width>
-     <height>22</height>
-    </rect>
-   </property>
-   <widget class="QMenu" name="menu_File">
-    <property name="title">
-     <string>文件(&amp;F)</string>
-    </property>
-    <addaction name="actionOpen"/>
-    <addaction name="actionReboot"/>
-   </widget>
-   <widget class="QMenu" name="menu_H">
-    <property name="title">
-     <string>帮助(&amp;H)</string>
-    </property>
-    <addaction name="actionAbout"/>
-   </widget>
-   <addaction name="menu_File"/>
-   <addaction name="menu_H"/>
-  </widget>
-  <action name="actionOpen">
-   <property name="text">
-    <string>打开</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+O</string>
-   </property>
-  </action>
-  <action name="actionReboot">
-   <property name="text">
-    <string>重启</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+R</string>
-   </property>
-  </action>
-  <action name="actionAbout">
-   <property name="text">
-    <string>关于</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+A</string>
-   </property>
-  </action>
- </widget>
- <resources>
-  <include location="res/Images.qrc"/>
- </resources>
- <connections/>
+    <class>Tengu</class>
+    <widget class="QMainWindow" name="Tengu">
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>368</width>
+                <height>100</height>
+            </rect>
+        </property>
+        <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+            </sizepolicy>
+        </property>
+        <property name="windowTitle">
+            <string>Tengu</string>
+        </property>
+        <widget class="QWidget" name="centralwidget">
+            <layout class="QVBoxLayout" name="verticalLayout">
+                <item>
+                    <widget class="QFrame" name="frameMain">
+                        <property name="frameShape">
+                            <enum>QFrame::StyledPanel</enum>
+                        </property>
+                        <widget class="QFrame" name="topFrame">
+                            <property name="geometry">
+                                <rect>
+                                    <x>10</x>
+                                    <y>0</y>
+                                    <width>331</width>
+                                    <height>74</height>
+                                </rect>
+                            </property>
+                            <property name="frameShape">
+                                <enum>QFrame::StyledPanel</enum>
+                            </property>
+                            <property name="frameShadow">
+                                <enum>QFrame::Raised</enum>
+                            </property>
+                            <layout class="QHBoxLayout" name="horizontalLayout">
+                                <item>
+                                    <widget class="QToolButton" name="ButtonWallet">
+                                        <property name="text">
+                                            <string>钱包</string>
+                                        </property>
+                                        <property name="icon">
+                                            <iconset resource="res/Images.qrc">
+                                                <normaloff>:/Buttons/wallet.svg</normaloff>
+                                                :/Buttons/wallet.svg</iconset>
+                                        </property>
+                                        <property name="iconSize">
+                                            <size>
+                                                <width>32</width>
+                                                <height>32</height>
+                                            </size>
+                                        </property>
+                                        <property name="toolButtonStyle">
+                                            <enum>Qt::ToolButtonTextUnderIcon</enum>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <widget class="QToolButton" name="ButtonBell">
+                                        <property name="text">
+                                            <string>监控</string>
+                                        </property>
+                                        <property name="icon">
+                                            <iconset resource="res/Images.qrc">
+                                                <normaloff>:/Buttons/bell.svg</normaloff>
+                                                :/Buttons/bell.svg</iconset>
+                                        </property>
+                                        <property name="iconSize">
+                                            <size>
+                                                <width>32</width>
+                                                <height>32</height>
+                                            </size>
+                                        </property>
+                                        <property name="toolButtonStyle">
+                                            <enum>Qt::ToolButtonTextUnderIcon</enum>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <widget class="QToolButton" name="ButtonNews">
+                                        <property name="text">
+                                            <string>资讯</string>
+                                        </property>
+                                        <property name="icon">
+                                            <iconset resource="res/Images.qrc">
+                                                <normaloff>:/Buttons/news.svg</normaloff>
+                                                :/Buttons/news.svg</iconset>
+                                        </property>
+                                        <property name="iconSize">
+                                            <size>
+                                                <width>32</width>
+                                                <height>32</height>
+                                            </size>
+                                        </property>
+                                        <property name="toolButtonStyle">
+                                            <enum>Qt::ToolButtonTextUnderIcon</enum>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <widget class="QToolButton" name="ButtonChart">
+                                        <property name="text">
+                                            <string>图表</string>
+                                        </property>
+                                        <property name="icon">
+                                            <iconset resource="res/Images.qrc">
+                                                <normaloff>:/Buttons/chart.svg</normaloff>
+                                                :/Buttons/chart.svg</iconset>
+                                        </property>
+                                        <property name="iconSize">
+                                            <size>
+                                                <width>32</width>
+                                                <height>32</height>
+                                            </size>
+                                        </property>
+                                        <property name="toolButtonStyle">
+                                            <enum>Qt::ToolButtonTextUnderIcon</enum>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <widget class="QToolButton" name="ButtonTrade">
+                                        <property name="text">
+                                            <string>交易</string>
+                                        </property>
+                                        <property name="icon">
+                                            <iconset resource="res/Images.qrc">
+                                                <normaloff>:/Buttons/trade.svg</normaloff>
+                                                :/Buttons/trade.svg</iconset>
+                                        </property>
+                                        <property name="iconSize">
+                                            <size>
+                                                <width>32</width>
+                                                <height>32</height>
+                                            </size>
+                                        </property>
+                                        <property name="toolButtonStyle">
+                                            <enum>Qt::ToolButtonTextUnderIcon</enum>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <widget class="QToolButton" name="ButtonSwap">
+                                        <property name="text">
+                                            <string>兑换</string>
+                                        </property>
+                                        <property name="icon">
+                                            <iconset resource="res/Images.qrc">
+                                                <normaloff>:/Buttons/swap.svg</normaloff>
+                                                :/Buttons/swap.svg</iconset>
+                                        </property>
+                                        <property name="iconSize">
+                                            <size>
+                                                <width>32</width>
+                                                <height>32</height>
+                                            </size>
+                                        </property>
+                                        <property name="toolButtonStyle">
+                                            <enum>Qt::ToolButtonTextUnderIcon</enum>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <widget class="QToolButton" name="ButtonBridge">
+                                        <property name="text">
+                                            <string>跨链</string>
+                                        </property>
+                                        <property name="icon">
+                                            <iconset resource="res/Images.qrc">
+                                                <normaloff>:/Buttons/bridge.svg</normaloff>
+                                                :/Buttons/bridge.svg</iconset>
+                                        </property>
+                                        <property name="iconSize">
+                                            <size>
+                                                <width>32</width>
+                                                <height>32</height>
+                                            </size>
+                                        </property>
+                                        <property name="toolButtonStyle">
+                                            <enum>Qt::ToolButtonTextUnderIcon</enum>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <widget class="QToolButton" name="ButtonArbitrage">
+                                        <property name="text">
+                                            <string>套利</string>
+                                        </property>
+                                        <property name="icon">
+                                            <iconset resource="res/Images.qrc">
+                                                <normaloff>:/Buttons/arbitrage.svg</normaloff>
+                                                :/Buttons/arbitrage.svg</iconset>
+                                        </property>
+                                        <property name="iconSize">
+                                            <size>
+                                                <width>32</width>
+                                                <height>32</height>
+                                            </size>
+                                        </property>
+                                        <property name="toolButtonStyle">
+                                            <enum>Qt::ToolButtonTextUnderIcon</enum>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <widget class="QToolButton" name="ButtonDefi">
+                                        <property name="text">
+                                            <string>金融</string>
+                                        </property>
+                                        <property name="icon">
+                                            <iconset resource="res/Images.qrc">
+                                                <normaloff>:/Buttons/defi.svg</normaloff>
+                                                :/Buttons/defi.svg</iconset>
+                                        </property>
+                                        <property name="iconSize">
+                                            <size>
+                                                <width>32</width>
+                                                <height>32</height>
+                                            </size>
+                                        </property>
+                                        <property name="toolButtonStyle">
+                                            <enum>Qt::ToolButtonTextUnderIcon</enum>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <widget class="QToolButton" name="ButtonScript">
+                                        <property name="text">
+                                            <string>脚本</string>
+                                        </property>
+                                        <property name="icon">
+                                            <iconset resource="res/Images.qrc">
+                                                <normaloff>:/Buttons/script.svg</normaloff>
+                                                :/Buttons/script.svg</iconset>
+                                        </property>
+                                        <property name="iconSize">
+                                            <size>
+                                                <width>32</width>
+                                                <height>32</height>
+                                            </size>
+                                        </property>
+                                        <property name="toolButtonStyle">
+                                            <enum>Qt::ToolButtonTextUnderIcon</enum>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <widget class="QToolButton" name="ButtonAI">
+                                        <property name="text">
+                                            <string>智能</string>
+                                        </property>
+                                        <property name="icon">
+                                            <iconset resource="res/Images.qrc">
+                                                <normaloff>:/Buttons/ai.svg</normaloff>
+                                                :/Buttons/ai.svg</iconset>
+                                        </property>
+                                        <property name="iconSize">
+                                            <size>
+                                                <width>32</width>
+                                                <height>32</height>
+                                            </size>
+                                        </property>
+                                        <property name="toolButtonStyle">
+                                            <enum>Qt::ToolButtonTextUnderIcon</enum>
+                                        </property>
+                                    </widget>
+                                </item>
+                            </layout>
+                        </widget>
+                    </widget>
+                </item>
+            </layout>
+        </widget>
+        <widget class="QMenuBar" name="menubar">
+            <property name="geometry">
+                <rect>
+                    <x>0</x>
+                    <y>0</y>
+                    <width>368</width>
+                    <height>22</height>
+                </rect>
+            </property>
+            <widget class="QMenu" name="menu_File">
+                <property name="title">
+                    <string>文件(&amp;F)</string>
+                </property>
+                <addaction name="actionOpen" />
+                <addaction name="actionReboot" />
+                <addaction name="separator" />
+                <addaction name="actionQuit" />
+            </widget>
+            <widget class="QMenu" name="menu_H">
+                <property name="title">
+                    <string>帮助(&amp;H)</string>
+                </property>
+                <addaction name="actionAbout" />
+            </widget>
+            <addaction name="menu_File" />
+            <addaction name="menu_H" />
+        </widget>
+        <action name="actionOpen">
+            <property name="text">
+                <string>打开</string>
+            </property>
+            <property name="shortcut">
+                <string>Ctrl+O</string>
+            </property>
+        </action>
+        <action name="actionReboot">
+            <property name="text">
+                <string>重启</string>
+            </property>
+            <property name="shortcut">
+                <string>Ctrl+R</string>
+            </property>
+        </action>
+        <action name="actionQuit">
+            <property name="text">
+                <string>退出</string>
+            </property>
+            <property name="shortcut">
+                <string>Ctrl+Q</string>
+            </property>
+        </action>
+        <action name="actionAbout">
+            <property name="text">
+                <string>关于</string>
+            </property>
+            <property name="shortcut">
+                <string>Ctrl+A</string>
+            </property>
+        </action>
+    </widget>
+    <resources>
+        <include location="res/Images.qrc" />
+    </resources>
+    <connections />
 </ui>

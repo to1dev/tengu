@@ -55,6 +55,8 @@ namespace Ui {
 class UpdateWalletForm;
 }
 
+namespace User {
+
 class AddressManager {
 public:
     void addAddress(const Address& addr)
@@ -95,6 +97,7 @@ public:
 private:
     std::vector<Address> addresses_;
 };
+}
 
 class UpdateWalletForm : public QDialog {
     Q_OBJECT
@@ -130,7 +133,7 @@ private:
     ComboBoxEx* comboChain_;
     PlainTextEditEx* text_;
 
-    AddressManager addressManager_;
+    User::AddressManager addressManager_;
 
     UpdateWallet wallet_ {};
 

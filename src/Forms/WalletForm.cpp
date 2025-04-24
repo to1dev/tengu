@@ -136,6 +136,7 @@ void WalletForm::editWallet()
         UpdateSmartWalletForm uswf(wallet, this, globalManager_);
         int ret = uswf.exec();
         if (ret) {
+            walletView_->update(*uswf.walletRecord());
         } else {
         }
     } else {

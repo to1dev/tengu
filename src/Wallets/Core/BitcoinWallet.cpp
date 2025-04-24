@@ -188,9 +188,9 @@ static inline bool isValidBech32Address(std::string_view address)
     }
 }
 
-BitcoinWallet::BitcoinWallet(bool useTaproot, Network::Type network)
+BitcoinWallet::BitcoinWallet(AddressType addressType, Network::Type network)
     : ChainWallet(ChainType::BITCOIN, network)
-    , useTaproot_(useTaproot)
+    , addressType_(addressType)
 {
 }
 
@@ -273,17 +273,26 @@ std::string BitcoinWallet::getAddress(std::uint32_t index)
     if (!mnemonic_.empty())
         initNode(index);
 
-    if (useTaproot_) {
+    switch (addressType_) {
+    case AddressType::Taproot:
         return generateTaprootAddress();
-    } else {
+
+    case AddressType::P2WPKH:
         return generateP2WPKHAddress();
+
+    default:
+        break;
     }
+
+    return std::string();
 }
 
 std::string BitcoinWallet::getExtendedAddress(std::uint32_t index,
     AddressType type, const std::vector<std::array<unsigned char, 33>>& pubkeys,
     uint8_t m, const TaprootScriptTree& script_tree)
 {
+    addressType_ = type;
+
     if (!mnemonic_.empty())
         initNode(index);
 
@@ -377,10 +386,15 @@ std::string BitcoinWallet::getScriptPubKey(std::uint32_t index)
     }
 
     std::vector<unsigned char> script;
-    if (useTaproot_) {
+    switch (addressType_) {
+    case AddressType::Taproot:
         script = createTaprootScriptPubKey();
-    } else {
+
+    case AddressType::P2WPKH:
         script = createP2WPKHScriptPubKey();
+
+    default:
+        break;
     }
 
     return BytesToHex(script.data(), script.size());
@@ -722,7 +736,27 @@ void BitcoinWallet::initNode(std::uint32_t index)
         throw std::runtime_error("Failed to create HD node from seed.");
     }
 
-    uint32_t purpose = useTaproot_ ? 86 : 44;
+    uint32_t purpose = 44; // BIP-44
+
+    switch (addressType_) {
+    case AddressType::P2PKH:
+    case AddressType::P2SH:
+        purpose = 44; // BIP-44
+        break;
+    case AddressType::P2SH_P2WSH:
+        purpose = 49; // BIP-49
+        break;
+    case AddressType::P2WPKH:
+    case AddressType::P2WSH:
+        purpose = 84; // BIP-84
+        break;
+    case AddressType::Taproot:
+    case AddressType::TaprootMultiSig:
+        purpose = 86; // BIP-86
+        break;
+    default:
+        break;
+    }
 
     std::uint32_t path[] = {
         purpose | HARDENED, // purpose: BIP86 (Taproot)

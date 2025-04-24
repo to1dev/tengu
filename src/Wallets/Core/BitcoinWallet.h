@@ -90,8 +90,8 @@ public:
         return DEFAULT_DERIVATION_PATH;
     }
 
-    explicit BitcoinWallet(
-        bool useTaproot = true, Network::Type network = Network::Type::MAINNET);
+    explicit BitcoinWallet(AddressType addressType = AddressType::Taproot,
+        Network::Type network = Network::Type::MAINNET);
 
     static bool isValid(std::string_view address);
 
@@ -247,6 +247,7 @@ private:
 
 private:
     bool useTaproot_ { true };
+    AddressType addressType_ { AddressType::Taproot };
 };
 
 }

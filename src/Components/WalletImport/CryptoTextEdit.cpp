@@ -25,6 +25,7 @@ CryptoTextEdit::CryptoTextEdit(QWidget* parent)
 {
     setObjectName(PLAINTEXTEDIT_NAME);
     setPlaceholderText(PLACEHOLDER_TEXT);
+    setContextMenuPolicy(Qt::NoContextMenu);
 
     connect(this, &QPlainTextEdit::textChanged, this, [this]() {
         QTimer::singleShot(300, this, &CryptoTextEdit::analyzeCurrentText);

@@ -23,6 +23,7 @@ namespace Daitengu::Components {
 LineEditEx::LineEditEx(QWidget* parent)
     : QLineEdit(parent)
 {
+    setContextMenuPolicy(Qt::NoContextMenu);
     setClearButtonEnabled(true);
 
     QToolButton* clearButton = findChild<QToolButton*>();

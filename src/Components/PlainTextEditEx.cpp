@@ -25,6 +25,7 @@ PlainTextEditEx::PlainTextEditEx(QWidget* parent)
     , maxLength_(160)
 {
     setObjectName("plainTextEdit");
+    setContextMenuPolicy(Qt::NoContextMenu);
 
     connect(this, &QPlainTextEdit::textChanged, this,
         &PlainTextEditEx::checkLength);

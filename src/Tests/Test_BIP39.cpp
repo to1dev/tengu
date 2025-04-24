@@ -34,32 +34,12 @@ using namespace Daitengu::Wallets;
 
 TEST_CASE("Generate bip39 mnemonic")
 {
-    SECTION("New wallet")
+    auto currentPath = PathUtils::getExecutableDir();
+    auto& parser = DotEnv::getInstance();
+    parser.load((currentPath / ".env").string());
+
+    SECTION("New Bitcoin wallet")
     {
-        SolanaWallet solWallet1;
-        std::cout << std::format(
-            "Decent solana mnemonic: {}\n", solWallet1.generateMnemonic());
-        std::cout << std::format(
-            "Here is the new solana pubkey: {}\n", solWallet1.getAddress());
-        std::cout << std::format(
-            "Here is the new solana privkey: {}\n", solWallet1.getPrivateKey());
-
-        auto currentPath = PathUtils::getExecutableDir();
-        auto& parser = DotEnv::getInstance();
-        parser.load((currentPath / ".env").string());
-
-        SolanaWallet solWallet2;
-
-        solWallet2.fromMnemonic(*parser.get("SOL_MNEMONIC"));
-        std::cout << std::format("solana fromMnemonic address: {}\nsolana "
-                                 "fromMnemonic privkey: {}\n",
-            solWallet2.getAddress(), solWallet2.getPrivateKey());
-
-        SolanaWallet solWallet3;
-        solWallet3.fromPrivateKey(*parser.get("SOL_PRIVATE_KEY"));
-        std::cout << "solana fromPrivateKey address: "
-                  << solWallet3.getAddress() << std::endl;
-
         BitcoinWallet btcWallet1;
         std::cout << std::format(
             "Decent bitcoin mnemonic: {}\n", btcWallet1.generateMnemonic());
@@ -76,6 +56,9 @@ TEST_CASE("Generate bip39 mnemonic")
         btcWallet2.fromMnemonic(*parser.get("BTC_MNEMONIC"));
         std::cout << "bitcoin fromMnemonic address: " << btcWallet2.getAddress()
                   << std::endl;
+        std::cout << std::format("P2PKH Address: {}\nP2WPKH Address: {}\n",
+            btcWallet2.getExtendedAddress(0, AddressType::P2PKH),
+            btcWallet2.getExtendedAddress(0, AddressType::P2WPKH));
         std::cout << "bitcoin fromMnemonic privkey: "
                   << btcWallet2.getPrivateKey() << std::endl;
 
@@ -84,6 +67,43 @@ TEST_CASE("Generate bip39 mnemonic")
         std::cout << "bitcoin fromPrivateKey address: "
                   << btcWallet3.getAddress() << std::endl;
 
+        /*REQUIRE(wallet.deriveAddress(0)
+            == "9uvC3PMMzX4DgGrxDmheXNkMRWVfYqLsVpQjAaTD2uAp");
+        REQUIRE(wallet.deriveAddress(1)
+            == "AW48yjkZVi8JrTAywbC2DQA8hri44bmJfTZErK9FWRvU");
+        REQUIRE(wallet.deriveAddress(2)
+            == "HG1PSKC2SNGpHaramM3uXW7f8gZZ4cFA93PwG1RFfX8z");
+        REQUIRE(wallet.deriveAddress(3)
+            == "2Qi9BTPUNUxWD7jXBs9rU63YyusRQciVVfRF29pgr9Z6");
+        REQUIRE(wallet.deriveAddress(4)
+            == "4K83qTDQjEfSwj1qGjNoGxUydHyWhfoeLhuRzB9Kkp3t");*/
+    }
+
+    SECTION("New Solana wallet")
+    {
+        SolanaWallet solWallet1;
+        std::cout << std::format(
+            "Decent solana mnemonic: {}\n", solWallet1.generateMnemonic());
+        std::cout << std::format(
+            "Here is the new solana pubkey: {}\n", solWallet1.getAddress());
+        std::cout << std::format(
+            "Here is the new solana privkey: {}\n", solWallet1.getPrivateKey());
+
+        SolanaWallet solWallet2;
+
+        solWallet2.fromMnemonic(*parser.get("SOL_MNEMONIC"));
+        std::cout << std::format("solana fromMnemonic address: {}\nsolana "
+                                 "fromMnemonic privkey: {}\n",
+            solWallet2.getAddress(), solWallet2.getPrivateKey());
+
+        SolanaWallet solWallet3;
+        solWallet3.fromPrivateKey(*parser.get("SOL_PRIVATE_KEY"));
+        std::cout << "solana fromPrivateKey address: "
+                  << solWallet3.getAddress() << std::endl;
+    }
+
+    SECTION("New Ethereum wallet")
+    {
         EthereumWallet ethWallet1;
         ethWallet1.fromMnemonic(*parser.get("ETH_MNEMONIC"));
         std::cout << "ethereum fromMnemonic address: "
@@ -95,7 +115,10 @@ TEST_CASE("Generate bip39 mnemonic")
         ethWallet2.fromPrivateKey(*parser.get("ETH_PRIVATE_KEY"));
         std::cout << "ethereum fromPrivateKey address: "
                   << ethWallet2.getAddress() << std::endl;
+    }
 
+    SECTION("New Sui wallet")
+    {
         SuiWallet suiWallet1;
         std::cout << std::format(
             "Decent sui mnemonic: {}\n", suiWallet1.generateMnemonic());
@@ -115,17 +138,6 @@ TEST_CASE("Generate bip39 mnemonic")
         suiWallet2.fromPrivateKey(*parser.get("SUI_PRIVATE_KEY"));
         std::cout << "sui fromPrivateKey address: " << suiWallet3.getAddress()
                   << std::endl;
-
-        /*REQUIRE(wallet.deriveAddress(0)
-            == "9uvC3PMMzX4DgGrxDmheXNkMRWVfYqLsVpQjAaTD2uAp");
-        REQUIRE(wallet.deriveAddress(1)
-            == "AW48yjkZVi8JrTAywbC2DQA8hri44bmJfTZErK9FWRvU");
-        REQUIRE(wallet.deriveAddress(2)
-            == "HG1PSKC2SNGpHaramM3uXW7f8gZZ4cFA93PwG1RFfX8z");
-        REQUIRE(wallet.deriveAddress(3)
-            == "2Qi9BTPUNUxWD7jXBs9rU63YyusRQciVVfRF29pgr9Z6");
-        REQUIRE(wallet.deriveAddress(4)
-            == "4K83qTDQjEfSwj1qGjNoGxUydHyWhfoeLhuRzB9Kkp3t");*/
     }
 }
 

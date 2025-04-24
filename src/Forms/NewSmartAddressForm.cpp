@@ -127,6 +127,11 @@ std::shared_ptr<Address> NewSmartAddressForm::addressRecord() const
     return addressRecord_;
 }
 
+const std::vector<Address>& NewSmartAddressForm::addresses() const
+{
+    return addresses_;
+}
+
 void NewSmartAddressForm::ok()
 {
     bool isEdit = address_.op == Op::EDIT;
@@ -216,6 +221,65 @@ void NewSmartAddressForm::ok()
             return;
         }
 
-        return;
+        try {
+
+            Smart::AddressManager* manager = address_.manager;
+            auto oldAddresses = manager->getAddresses();
+
+            bool success
+                = globalManager_->settingManager()
+                      ->database()
+                      ->storage()
+                      ->transaction([&]() {
+                          for (const QString& str : addresses) {
+                              std::string addrValue = str.toStdString();
+
+                              auto addrIt = std::find_if(oldAddresses.begin(),
+                                  oldAddresses.end(),
+                                  [&addrValue](const Address& addr) {
+                                      return addr.address == addrValue;
+                                  });
+
+                              if (addrIt == oldAddresses.end()) {
+                                  const std::string addressName
+                                      = std::format("Address");
+                                  const auto addressNameHash
+                                      = Encryption::easyHash(addressName);
+                                  const auto addressHash
+                                      = Encryption::easyHash(addrValue);
+
+                                  Address newAddr {
+                                      .walletId = address_.walletId,
+                                      .hash = Encryption::genRandomHash(),
+                                      .name = addressName,
+                                      .nameHash = addressNameHash,
+                                      .address = addrValue,
+                                      .addressHash = addressHash,
+                                  };
+
+                                  if (addressRepo->insert(newAddr) <= 0) {
+                                      return false;
+                                  }
+
+                                  addresses_.push_back(newAddr);
+                                  manager->addAddress(newAddr);
+                              }
+                          }
+
+                          return true;
+                      });
+
+            if (!success) {
+                MessageForm { this, 16, "Failed to create addresses" }.exec();
+                return;
+            }
+
+            accept();
+        } catch (const std::exception& e) {
+            std::cerr << "Failed to import addresses: " << e.what()
+                      << std::endl;
+            MessageForm { this, 5, NO_VALID_ADDRESSES }.exec();
+            return;
+        }
     }
 }

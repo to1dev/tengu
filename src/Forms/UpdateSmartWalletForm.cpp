@@ -105,7 +105,12 @@ UpdateSmartWalletForm::UpdateSmartWalletForm(const UpdateSmartWallet& wallet,
                   ->addressRepo()
                   ->getAllByWallet(static_cast<int>(walletRecord_->id));
 
-        addressView_->load(addresses);
+        // addressView_->load(addresses);
+        for (const auto& addr : addresses) {
+            addressManager_.addAddress(addr);
+            addressView_->add(addr);
+        }
+
     } else {
         std::cerr << "No wallet found." << std::endl;
     }
@@ -147,6 +152,40 @@ std::shared_ptr<Wallet> UpdateSmartWalletForm::walletRecord() const
 
 void UpdateSmartWalletForm::ok()
 {
+    if (editName_->text().isEmpty()) {
+        MessageForm { this, 5, NO_VALID_WALLET_NAME }.exec();
+        return;
+    }
+
+    const auto name = simplified(editName_->text().toStdString());
+    const auto oldName = simplified(walletRecord_->name);
+
+    const auto desc = trim(desc_->toPlainText().toStdString());
+    const auto oldDesc = trim(walletRecord_->description);
+
+    if (name == oldName && desc == oldDesc) {
+        reject();
+        return;
+    }
+
+    if (name != oldName) {
+        walletRecord_->nameHash = Encryption::easyHash(name);
+
+        auto walletRepo = dynamic_cast<WalletRepo*>(
+            globalManager_->settingManager()->database()->walletRepo());
+
+        if (walletRepo->haveName(*walletRecord_)) {
+            MessageForm { this, 16, SAME_WALLET_NAME }.exec();
+            return;
+        }
+    }
+
+    walletRecord_->name = name;
+    walletRecord_->description = desc;
+    globalManager_->settingManager()->database()->walletRepo()->update(
+        *walletRecord_);
+
+    accept();
 }
 
 void UpdateSmartWalletForm::newAddress()
@@ -155,12 +194,14 @@ void UpdateSmartWalletForm::newAddress()
         .walletId = walletRecord_->id,
         .groupType = walletRecord_->groupType,
         .chainType = walletRecord_->chainType,
+        .manager = &addressManager_,
     };
     NewSmartAddressForm naf(address, this, globalManager_);
     int ret = naf.exec();
     if (ret) {
-        auto newAddr = *naf.addressRecord();
-        addressView_->add(newAddr);
+        for (const auto& addr : naf.addresses()) {
+            addressView_->add(addr);
+        }
     } else {
     }
 }
@@ -219,6 +260,7 @@ void UpdateSmartWalletForm::delAddress(const QModelIndex& index)
                       .data(static_cast<int>(AddressListModel::ItemData::Index))
                       .toInt();
 
+            addressManager_.removeAddress(addrIndex);
             globalManager_->settingManager()->database()->addressRepo()->remove(
                 id);
             addressView_->remove(QList<int>() << index.row());

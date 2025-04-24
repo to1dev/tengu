@@ -90,6 +90,48 @@ public:
         return DEFAULT_DERIVATION_PATH;
     }
 
+    AddressType getAddressType() const
+    {
+        return addressType_;
+    }
+
+    void setAddressType(AddressType type)
+    {
+        addressType_ = type;
+    }
+
+    void setDerivationPath(AddressType type, uint32_t coin_type,
+        uint32_t account, uint32_t change, uint32_t index, uint32_t* path)
+    {
+        uint32_t purpose = 44;
+
+        switch (type) {
+        case AddressType::P2PKH:
+        case AddressType::P2SH:
+            purpose = 44; // BIP-44
+            break;
+        case AddressType::P2SH_P2WSH:
+            purpose = 49; // BIP-49
+            break;
+        case AddressType::P2WPKH:
+        case AddressType::P2WSH:
+            purpose = 84; // BIP-84
+            break;
+        case AddressType::Taproot:
+        case AddressType::TaprootMultiSig:
+            purpose = 86; // BIP-86
+            break;
+        default:
+            break;
+        }
+
+        path[0] = purpose | HARDENED;   // purpose
+        path[1] = coin_type | HARDENED; // coin type
+        path[2] = account | HARDENED;   // account
+        path[3] = change;               // change (external/internal chain)
+        path[4] = index;                // address index
+    }
+
     explicit BitcoinWallet(AddressType addressType = AddressType::Taproot,
         Network::Type network = Network::Type::MAINNET);
 

@@ -21,6 +21,10 @@
 
 #include <spdlog/spdlog.h>
 
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
+
 #include "Clients/Solana/gRPC/Core/ConfigManager.hpp"
 #include "Clients/Solana/gRPC/HTTP/HttpServer.hpp"
 
@@ -28,9 +32,70 @@ using namespace solana;
 
 int main()
 {
-    spdlog::info("Hello world");
+    try {
+        spdlog::info("Hello world");
 
-    ConfigManager config("config.toml");
+        ConfigManager config("config.toml");
+
+        spdlog::info(config.getDbPath());
+        spdlog::info(config.getHttpPort());
+
+        HttpServer httpServer(config);
+        httpServer.addRoute("/stats",
+            [&](const auto& req, const auto& path, const auto& query) {
+                http::response<http::string_body> res { http::status::ok,
+                    req.version() };
+                res.set(http::field::content_type, "application/json");
+                json stats;
+                stats["data_sources"] = "data sources";
+                stats["filters"] = "filters";
+                stats["notifications"] = "notifications";
+                stats["storage"]
+                    = { { "total_transactions", "total transactions" },
+                          { "total_batches", "total batches" } };
+                res.body() = stats.dump();
+                res.prepare_payload();
+                return res;
+            });
+
+        httpServer.addRoute("/recent_dex",
+            [&](const auto& req, const auto& path, const auto& query) {
+                http::response<http::string_body> res { http::status::ok,
+                    req.version() };
+                res.set(http::field::content_type, "application/json");
+                size_t maxEntries = 10;
+                if (query.count("max")) {
+                    maxEntries = std::stoul(query.at("max"));
+                }
+                res.body() = "dexFilter body";
+                res.prepare_payload();
+                return res;
+            });
+
+        httpServer.addRoute("/recent_swaps",
+            [&](const auto& req, const auto& path, const auto& query) {
+                http::response<http::string_body> res { http::status::ok,
+                    req.version() };
+                res.set(http::field::content_type, "application/json");
+                size_t maxEntries = 10;
+                if (query.count("max")) {
+                    maxEntries = std::stoul(query.at("max"));
+                }
+                res.body() = "swapFilter body";
+                res.prepare_payload();
+                return res;
+            });
+
+        httpServer.start();
+
+        spdlog::info("Solana Monitor System running. Press Ctrl+C to stop.");
+        while (true) {
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+        }
+    } catch (const std::exception& e) {
+        spdlog::error("System error: {}", e.what());
+        return 1;
+    }
 
     return 0;
 }

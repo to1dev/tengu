@@ -36,6 +36,20 @@ if (ENABLE_GRPC)
     )
 
     set(GRPC_SOURCE_FILES
+        src/Clients/Solana/gRPC/Core/ConfigManager.cpp
+        src/Clients/Solana/gRPC/Core/DataSourceManager.cpp
+        src/Clients/Solana/gRPC/Core/DexFilter.cpp
+        src/Clients/Solana/gRPC/Core/FilterManager.cpp
+        src/Clients/Solana/gRPC/Core/MetricsManager.cpp
+        src/Clients/Solana/gRPC/Core/NotificationManager.cpp
+        src/Clients/Solana/gRPC/Core/StorageManager.cpp
+        src/Clients/Solana/gRPC/Core/SwapFilter.cpp
+
+        src/Clients/Solana/gRPC/Core/TransactionFilter.hpp
+
+        src/Clients/Solana/gRPC/HTTP/HttpServer.cpp
+
+        src/Clients/Solana/gRPC/Utils/Logger.hpp
     )
 else()
     message(STATUS "gRPC is DISABLED")
@@ -50,7 +64,8 @@ set(SOLANA_WEBSOCKET_FILES
 set(SOURCE_FILES
     ${GRPC_SOURCE_FILES}
     ${SOLANA_WEBSOCKET_FILES}
-    src/Clients/Core/Hydra.cpp
+    src/Clients/Core/Hydra/Hydra.cpp
+    src/Clients/Core/Hydra/PriceDataSource.cpp
     src/Components/AddressListWidget.cpp
     src/Components/AnimatedTabWidget.cpp
     src/Components/ClickableLabel.cpp
@@ -64,6 +79,8 @@ set(SOURCE_FILES
     src/Components/TitleBar.cpp
     src/Components/Toast/Toast.cpp
     src/Components/TxListWidget.cpp
+    src/Components/AddressImport/CryptoAddressEdit.cpp
+    src/Components/Dialogs/ToolDialog.cpp
     src/Components/WalletImport/CryptoTextEdit.cpp
     src/Components/WalletListWidget.cpp
     src/Components/WalletPanel.cpp
@@ -71,7 +88,10 @@ set(SOURCE_FILES
     src/Forms/ImportWalletForm.cpp
     src/Forms/MessageForm.cpp
     src/Forms/NewAddressForm.cpp
+    src/Forms/NewSmartAddressForm.cpp
     src/Forms/NewWalletForm.cpp
+    src/Forms/SmartWalletForm.cpp
+    src/Forms/UpdateSmartWalletForm.cpp
     src/Forms/UpdateWalletForm.cpp
     src/Forms/WalletDock.cpp
     src/Forms/WalletForm.cpp
@@ -95,6 +115,7 @@ set(SOURCE_FILES
     src/UI/Frameless.cpp
     src/Utils/AutoUpdater.cpp
     src/Utils/Encryption.cpp
+    src/Utils/KeyStore.cpp
     src/Utils/NameGenerator.cpp
     src/Utils/RunGuard.cpp
     src/Wallets/Core/BaseMnemonic.cpp
@@ -105,7 +126,21 @@ set(SOURCE_FILES
     src/Wallets/Core/EthereumWallet.cpp
     src/Wallets/Core/SolanaWallet.cpp
     src/Wallets/Core/SuiWallet.cpp
+    src/Wallets/Monitor/Factory.cpp
+    src/Wallets/Monitor/Manager.cpp
     src/Wallets/Monitor/Monitor.cpp
+    src/Wallets/Monitor/Handlers/BitcoinHandler.cpp
+    src/Wallets/Monitor/Handlers/EthereumHandler.cpp
+    src/Wallets/Monitor/Handlers/SolanaHandler.cpp
+    src/Wallets/Monitor/Providers/BitcoinBlockchainProvider.cpp
+    src/Wallets/Monitor/Providers/BitcoinMempoolProvider.cpp
+    src/Wallets/Monitor/Providers/EthereumBlockscoutProvider.cpp
+    src/Wallets/Monitor/Providers/EthereumPublicNodeProvider.cpp
+    src/Wallets/Monitor/Providers/SolanaMainnetProvider.cpp
+    src/Wallets/Monitor/Providers/SolanaPublicNodeProvider.cpp
+    src/Wallets/Transaction/Bitcoin/PSBT.cpp
+    src/Wallets/Transaction/Bitcoin/Transaction.cpp
+    src/Wallets/Transaction/Bitcoin/TransactionSigner.cpp
     src/Wallets/Transaction/Solana/Builder.cpp
     src/Wallets/Transaction/Solana/Transaction.cpp
     src/Wallets/Utils/SecureBytes.cpp
@@ -113,13 +148,17 @@ set(SOURCE_FILES
 
 set(HEADER_FILES
     ${GRPC_HEADER_FILES}
+    src/Clients/Core/Hydra/DataSource.h
 )
 
 set(UI_FILES
     src/Forms/ImportWalletForm.ui
     src/Forms/MessageForm.ui
     src/Forms/NewAddressForm.ui
+    src/Forms/NewSmartAddressForm.ui
     src/Forms/NewWalletForm.ui
+    src/Forms/SmartWalletForm.ui
+    src/Forms/UpdateSmartWalletForm.ui
     src/Forms/UpdateWalletForm.ui
     src/Forms/WalletDock.ui
     src/Forms/WalletForm.ui
@@ -205,15 +244,19 @@ set(THIRD_PARTY_LIBS
     snappy
     lz4
     luajit
+
     qjs
     izanagi
     secp256k1
-    fmt
     clip
     spdlog
     QCoro5Core
     QCoro5Network
     QCoro5WebSockets
+
+    prometheus-cpp-core
+    prometheus-cpp-push
+    prometheus-cpp-pull
 
     Rpcrt4
     Mswsock
@@ -228,12 +271,12 @@ if (ENABLE_GRPC)
         grpc_authorization_provider
         grpc_unsecure
         grpc_plugin_support
+        grpcpp_channelz
         grpc
         gpr
-        protobuf
-        protobuf-lite
-        protoc
+
         cares
+
         absl_bad_any_cast_impl
         absl_bad_optional_access
         absl_bad_variant_access
@@ -333,15 +376,20 @@ if (ENABLE_GRPC)
         upb_mini_descriptor_lib
         upb_textformat_lib
         upb_wire_lib
+        utf8_range_lib
+
+        cares
+        protobuf
+        protobuf-lite
+        protoc
         utf8_range
         utf8_validity
-        utf8_range_lib
-        cares
         ssl
         crypto
         bcrypt
         re2
         imagehlp
+        Crypt32
     )
 endif()
 

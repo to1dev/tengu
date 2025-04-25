@@ -29,4 +29,8 @@ using namespace solana;
 int main()
 {
     spdlog::info("Hello world");
+
+    ConfigManager config("config.toml");
+
+    return 0;
 }

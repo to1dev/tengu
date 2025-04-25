@@ -22,7 +22,31 @@ set(TEST_SOURCES
     ${CMAKE_SOURCE_DIR}/src/tests/Test_gRPC.cpp
 )
 
-add_executable(${PROJECT_NAME} ${TEST_SOURCES})
+set(GRPC_PKG_FILES
+    ${CMAKE_SOURCE_DIR}/pkg/geyser/src/geyser.grpc.pb.cc
+    ${CMAKE_SOURCE_DIR}/pkg/geyser/src/geyser.pb.cc
+    ${CMAKE_SOURCE_DIR}/pkg/geyser/src/solana-storage.grpc.pb.cc
+    ${CMAKE_SOURCE_DIR}/pkg/geyser/src/solana-storage.pb.cc
+)
+
+set(GRPC_SOURCE_FILES
+    ${CMAKE_SOURCE_DIR}/src/Clients/Solana/gRPC/Core/ConfigManager.cpp
+    ${CMAKE_SOURCE_DIR}/src/Clients/Solana/gRPC/Core/DataSourceManager.cpp
+    ${CMAKE_SOURCE_DIR}/src/Clients/Solana/gRPC/Core/DexFilter.cpp
+    ${CMAKE_SOURCE_DIR}/src/Clients/Solana/gRPC/Core/FilterManager.cpp
+    ${CMAKE_SOURCE_DIR}/src/Clients/Solana/gRPC/Core/MetricsManager.cpp
+    ${CMAKE_SOURCE_DIR}/src/Clients/Solana/gRPC/Core/NotificationManager.cpp
+    ${CMAKE_SOURCE_DIR}/src/Clients/Solana/gRPC/Core/StorageManager.cpp
+    ${CMAKE_SOURCE_DIR}/src/Clients/Solana/gRPC/Core/SwapFilter.cpp
+
+    ${CMAKE_SOURCE_DIR}/src/Clients/Solana/gRPC/Core/TransactionFilter.hpp
+
+    ${CMAKE_SOURCE_DIR}/src/Clients/Solana/gRPC/HTTP/HttpServer.cpp
+
+    ${CMAKE_SOURCE_DIR}/src/Clients/Solana/gRPC/Utils/Logger.hpp
+)
+
+add_executable(${PROJECT_NAME} ${GRPC_PKG_FILES} ${GRPC_SOURCE_FILES} ${TEST_SOURCES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_SOURCE_DIR}/src
@@ -47,6 +71,7 @@ target_compile_options(${PROJECT_NAME} PRIVATE
     -Wno-volatile
     -Wno-misleading-indentation
     -Wno-unused-but-set-parameter
+    -Wno-attributes
 )
 
 set(THIRD_PARTY_LIBS

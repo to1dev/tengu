@@ -52,7 +52,7 @@ ConfigManager::~ConfigManager()
 
 void ConfigManager::loadConfig()
 {
-    fs::path configPath = PathUtils::toAbsolutePath(configFile_);
+    auto configPath = dataPath_ / configFile_;
     if (!PathUtils::exists(configPath)) {
         throw std::runtime_error(
             "Config file not found: " + configPath.string());

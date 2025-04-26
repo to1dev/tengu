@@ -82,6 +82,8 @@ WalletDock::WalletDock(
 
     connect(walletPanel_->userCard(), &UserCard::onSelect, this,
         &WalletDock::select);
+    connect(walletPanel_->userCard(), &UserCard::onPopup,
+        []() { qInfo() << "onPopup pressed"; });
 
     monitor_ = new Monitor(this);
     monitor_->setRefreshInterval(30000);

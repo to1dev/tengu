@@ -68,6 +68,7 @@ set(SOURCE_FILES
     src/Clients/Core/Hydra/PriceDataSource.cpp
     src/Components/AddressListWidget.cpp
     src/Components/AnimatedTabWidget.cpp
+    src/Components/CircularButton.cpp
     src/Components/ClickableLabel.cpp
     src/Components/ComboBoxEx.cpp
     src/Components/FlowLayout.cpp

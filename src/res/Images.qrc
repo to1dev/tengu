@@ -9,7 +9,6 @@
     </qresource>
     <qresource prefix="/Buttons">
         <file alias="dots.svg">Images/Buttons/dots.svg</file>
-        <file alias="point.svg">Images/Buttons/point.svg</file>
 
         <file alias="wallet.svg">Images/Buttons/wallet.svg</file>
         <file alias="bell.svg">Images/Buttons/bell.svg</file>

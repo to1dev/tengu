@@ -65,6 +65,20 @@ QMenu::item {
     margin: 2px;
 }
 
+QMenu::indicator:exclusive:checked:hover,
+QMenu::indicator:exclusive:checked:pressed,
+QMenu::indicator:exclusive:checked {
+    image: url(:/Media/Check);
+    min-width: 32px;
+    min-height: 32px;
+}
+
+QMenu::indicator:exclusive:unchecked:hover,
+QMenu::indicator:exclusive:unchecked:pressed,
+QMenu::indicator:exclusive:unchecked {
+    image: none;
+}
+
 QToolTip {
     background-color: #333333;
     color: #ffffff;

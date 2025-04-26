@@ -18,6 +18,7 @@
 
 #pragma once
 
+#include <QMenu>
 #include <QShowEvent>
 #include <QVBoxLayout>
 #include <QWidget>
@@ -73,6 +74,8 @@ private Q_SLOTS:
     void onBalanceUpdated(const Monitor::BalanceResult& result);
 
 private:
+    void initPopup();
+    void updateActions();
     void changeAddress();
 
 private:
@@ -80,6 +83,10 @@ private:
 
     std::shared_ptr<const GlobalManager> globalManager_;
     std::unique_ptr<Frameless> frameless_;
+
+    QMenu* popup_;
+    QMenu* netMenu_;
+    QActionGroup* actions_;
 
     Monitor* monitor_;
 

@@ -25,6 +25,12 @@
 
 using namespace Daitengu::Utils;
 
+inline const QString STR_MENU_NETWORK = QObject::tr("当前网络");
+inline const QString STR_MENU_MAINNET = QObject::tr("主网");
+inline const QString STR_MENU_DEVNET = QObject::tr("开发网");
+inline const QString STR_MENU_REFRESH = QObject::tr("刷新余额");
+inline const QString STR_MENU_INFOR = QObject::tr("地址信息");
+
 WalletDock::WalletDock(
     QWidget* parent, const std::shared_ptr<const GlobalManager>& globalManager)
     : QWidget(parent)
@@ -34,6 +40,9 @@ WalletDock::WalletDock(
     ui->setupUi(this);
 
     setWindowTitle(DEFAULT_TITLE);
+
+    initPopup();
+    updateActions();
 
     QVBoxLayout* layout = new QVBoxLayout(ui->frameContent);
 
@@ -82,8 +91,11 @@ WalletDock::WalletDock(
 
     connect(walletPanel_->userCard(), &UserCard::onSelect, this,
         &WalletDock::select);
-    connect(walletPanel_->userCard(), &UserCard::onPopup,
-        []() { qInfo() << "onPopup pressed"; });
+    connect(
+        walletPanel_->userCard(), &UserCard::onPopup, [this](const QPoint& pt) {
+            QPoint p2 = QPoint(pt.x() - popup_->width(), pt.y());
+            popup_->exec(p2);
+        });
 
     monitor_ = new Monitor(this);
     monitor_->setRefreshInterval(30000);
@@ -121,6 +133,57 @@ void WalletDock::onBalanceUpdated(const Monitor::BalanceResult& result)
         walletPanel_->valueCard()->setValue(
             QString("%1 %2").arg(QFormat::formatPrice(0.0)).arg(suffix.data()));
     }
+}
+
+void WalletDock::initPopup()
+{
+    popup_ = new QMenu(this);
+    netMenu_ = popup_->addMenu(STR_MENU_NETWORK);
+
+    actions_ = new QActionGroup(this);
+    actions_->setExclusive(true);
+
+    popup_->addAction(STR_MENU_REFRESH);
+    popup_->addSeparator();
+    popup_->addAction(STR_MENU_INFOR)->setChecked(true);
+
+    popup_->ensurePolished();
+    popup_->adjustSize();
+
+    // popup_->setWindowOpacity(0.95);
+}
+
+void WalletDock::updateActions()
+{
+    netMenu_->clear();
+    for (QAction* action : actions_->actions()) {
+        actions_->removeAction(action);
+        delete action;
+    }
+
+    QAction* action1 = netMenu_->addAction(STR_MENU_MAINNET);
+    action1->setCheckable(true);
+    actions_->addAction(action1);
+    action1->setChecked(true);
+
+    QAction* action2 = netMenu_->addAction(STR_MENU_DEVNET);
+    action2->setCheckable(true);
+    actions_->addAction(action2);
+
+    /*bool first = true;
+    for (const QString& network : networks) {
+        QAction* action = netMenu_->addAction(network);
+        action->setCheckable(true);
+        actions_->addAction(action);
+
+        if (first && defaultNetwork.isEmpty() || network == defaultNetwork) {
+            action->setChecked(true);
+            first = false;
+        }
+    }*/
+
+    netMenu_->ensurePolished();
+    netMenu_->adjustSize();
 }
 
 void WalletDock::changeAddress()

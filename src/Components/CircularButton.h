@@ -47,6 +47,7 @@ protected:
     void leaveEvent(QEvent* event) override;
 
 private:
+    void updateSize();
     void updateRegion();
 
     QSvgRenderer* svgRenderer_;

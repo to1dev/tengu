@@ -34,7 +34,7 @@ CircularButton::CircularButton(QWidget* parent)
     , hoverColor_(QColor(200, 200, 200))
     , isHovered_(false)
 {
-    setFixedSize(size_, size_);
+    updateSize();
     setMouseTracking(true);
     updateRegion();
 }
@@ -53,13 +53,14 @@ void CircularButton::setSvgIcon(const QString& svgPath)
 void CircularButton::setPadding(int padding)
 {
     padding_ = padding;
+    updateSize();
     update();
 }
 
 void CircularButton::setButtonSize(int size)
 {
     size_ = size;
-    setFixedSize(size, size);
+    updateSize();
     updateRegion();
     update();
 }
@@ -112,6 +113,12 @@ void CircularButton::leaveEvent(QEvent* event)
 {
     isHovered_ = false;
     update();
+}
+
+void CircularButton::updateSize()
+{
+    int totalSize = size_ + 2 * padding_;
+    setFixedSize(totalSize, totalSize);
 }
 
 void CircularButton::updateRegion()

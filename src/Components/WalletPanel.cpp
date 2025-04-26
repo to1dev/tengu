@@ -75,10 +75,10 @@ UserCard::UserCard(QWidget* parent)
 
     CircularButton* menuButton = new CircularButton(this);
     menuButton->setButtonSize(32);
-    menuButton->setPadding(3);
+    menuButton->setPadding(6);
     menuButton->setSvgIcon(":/Buttons/dots.svg");
     menuButton->setHoverColor(QColor("#22303C"));
-    connect(menuButton, &QPushButton::pressed, this, &UserCard::onSelect);
+    connect(menuButton, &QPushButton::pressed, this, &UserCard::onPopup);
 
     menuLayout->addWidget(menuButton);
     menuLayout->addStretch(1);

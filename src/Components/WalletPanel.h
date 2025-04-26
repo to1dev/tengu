@@ -35,6 +35,7 @@
 #include "Databases/Database.h"
 
 #include "AnimatedTabWidget.h"
+#include "CircularButton.h"
 #include "ClickableLabel.h"
 #include "LineEditEx.h"
 #include "SVGWidget.h"

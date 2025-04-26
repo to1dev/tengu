@@ -71,6 +71,19 @@ UserCard::UserCard(QWidget* parent)
 
     topLayout->addLayout(textLayout);
 
+    QVBoxLayout* menuLayout = new QVBoxLayout();
+
+    CircularButton* menuButton = new CircularButton(this);
+    menuButton->setButtonSize(32);
+    menuButton->setPadding(3);
+    menuButton->setSvgIcon(":/Buttons/dots.svg");
+    menuButton->setHoverColor(QColor("#22303C"));
+
+    menuLayout->addWidget(menuButton);
+    menuLayout->addStretch(1);
+
+    topLayout->addLayout(menuLayout);
+
     QPushButton* selectButton = new QPushButton(STR_SELECT_BUTTON_TEXT, this);
     selectButton->setObjectName(STR_SELECT_BUTTON);
     selectButton->setMinimumHeight(30);

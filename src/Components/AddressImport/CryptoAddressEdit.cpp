@@ -46,7 +46,7 @@ CryptoAddressEdit::CryptoAddressEdit(QWidget* parent)
 {
     setAcceptDrops(true);
     setPlaceholderText(PLACEHOLDER_TEXT);
-    setContextMenuPolicy(Qt::NoContextMenu);
+    // setContextMenuPolicy(Qt::NoContextMenu);
 
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     verticalScrollBar()->setContextMenuPolicy(Qt::NoContextMenu);

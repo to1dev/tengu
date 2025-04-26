@@ -78,6 +78,7 @@ UserCard::UserCard(QWidget* parent)
     menuButton->setPadding(3);
     menuButton->setSvgIcon(":/Buttons/dots.svg");
     menuButton->setHoverColor(QColor("#22303C"));
+    connect(menuButton, &QPushButton::pressed, this, &UserCard::onSelect);
 
     menuLayout->addWidget(menuButton);
     menuLayout->addStretch(1);
@@ -88,7 +89,7 @@ UserCard::UserCard(QWidget* parent)
     selectButton->setObjectName(STR_SELECT_BUTTON);
     selectButton->setMinimumHeight(30);
     selectButton->setMaximumHeight(30);
-    connect(selectButton, &QPushButton::clicked, this, &UserCard::doSelect);
+    connect(selectButton, &QPushButton::clicked, this, &UserCard::onSelect);
 
     QPushButton* sendButton = new QPushButton(STR_SEND_BUTTON_TEXT, this);
     sendButton->setObjectName(STR_SEND_BUTTON);

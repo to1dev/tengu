@@ -80,7 +80,7 @@ WalletDock::WalletDock(
             changeAddress();
         });
 
-    connect(walletPanel_->userCard(), &UserCard::doSelect, this,
+    connect(walletPanel_->userCard(), &UserCard::onSelect, this,
         &WalletDock::select);
 
     monitor_ = new Monitor(this);

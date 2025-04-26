@@ -71,7 +71,8 @@ public:
     Record record() const;
 
 Q_SIGNALS:
-    void doSelect();
+    void onSelect();
+    void onPopup();
 
 private:
     QLabel* nameLabel_;

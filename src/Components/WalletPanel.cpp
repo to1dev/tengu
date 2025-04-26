@@ -78,7 +78,11 @@ UserCard::UserCard(QWidget* parent)
     menuButton->setPadding(6);
     menuButton->setSvgIcon(":/Buttons/dots.svg");
     menuButton->setHoverColor(QColor("#22303C"));
-    connect(menuButton, &QPushButton::pressed, this, &UserCard::onPopup);
+    connect(menuButton, &QPushButton::released, [this, menuButton]() {
+        QPoint globalPos = menuButton->mapToGlobal(
+            QPoint(menuButton->width(), menuButton->height()));
+        Q_EMIT onPopup(globalPos);
+    });
 
     menuLayout->addWidget(menuButton);
     menuLayout->addStretch(1);

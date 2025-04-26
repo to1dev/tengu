@@ -72,7 +72,7 @@ public:
 
 Q_SIGNALS:
     void onSelect();
-    void onPopup();
+    void onPopup(const QPoint& pt);
 
 private:
     QLabel* nameLabel_;

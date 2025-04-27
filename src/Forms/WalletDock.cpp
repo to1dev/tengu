@@ -28,6 +28,7 @@ using namespace Daitengu::Utils;
 inline const QString STR_MENU_NETWORK = QObject::tr("当前网络");
 inline const QString STR_MENU_MAINNET = QObject::tr("主网");
 inline const QString STR_MENU_DEVNET = QObject::tr("开发网");
+inline const QString STR_MENU_TESTNET = QObject::tr("测试网");
 inline const QString STR_MENU_REFRESH = QObject::tr("刷新余额");
 inline const QString STR_MENU_INFOR = QObject::tr("地址信息");
 
@@ -169,6 +170,10 @@ void WalletDock::updateActions()
     QAction* action2 = netMenu_->addAction(STR_MENU_DEVNET);
     action2->setCheckable(true);
     actions_->addAction(action2);
+
+    QAction* action3 = netMenu_->addAction(STR_MENU_TESTNET);
+    action3->setCheckable(true);
+    actions_->addAction(action3);
 
     /*bool first = true;
     for (const QString& network : networks) {

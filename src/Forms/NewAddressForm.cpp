@@ -169,6 +169,12 @@ void NewAddressForm::ok()
                     addressRecord_->description = desc;
                 }
 
+                if (ChainType::BITCOIN
+                    == static_cast<ChainType>(address_.chainType)) {
+                    addressRecord_->type
+                        = static_cast<int>(AddressType::Taproot);
+                }
+
                 const auto addressId = globalManager_->settingManager()
                                            ->database()
                                            ->addressRepo()

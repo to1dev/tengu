@@ -245,6 +245,10 @@ void ImportWalletForm::ok()
                     .publicKey = wallet->getAddress(),
                 };
 
+                if (ChainType::BITCOIN == currentContent_.chain) {
+                    addressRecord.type = static_cast<int>(AddressType::Taproot);
+                }
+
                 if (database->addressRepo()->insert(addressRecord) <= 0) {
                     return false;
                 }

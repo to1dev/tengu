@@ -143,8 +143,8 @@ QCoro::Task<void> testReply()
 QCoro::Task<void> testUpdater()
 {
     AutoUpdater updater;
-    updater.setGitHubRepo("cculianu", "Fulcrum");
-    updater.setCurrentVersion("1.0.0");
+    updater.setGitHubRepo("to1dev", "tengu");
+    updater.setCurrentVersion("0.0.0");
     updater.setLogCallback(
         [](AutoUpdater::Error error, const std::string& msg) {
             std::cerr << "Error " << static_cast<int>(error) << ": " << msg

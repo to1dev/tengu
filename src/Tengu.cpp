@@ -51,8 +51,11 @@ Tengu::Tengu(
     });
 
     connect(ui->ButtonWallet, &QToolButton::clicked, this, &Tengu::wallet);
-    connect(ui->actionOpen, &QAction::triggered, this, &Tengu::showWalletDock);
+
     connect(ui->actionReboot, &QAction::triggered, this, &Tengu::reboot);
+    connect(ui->actionQuit, &QAction::triggered, this, &Tengu::quit);
+    connect(ui->actionViewWallet, &QAction::triggered, this,
+        &Tengu::showWalletDock);
 }
 
 Tengu::~Tengu()
@@ -77,6 +80,11 @@ void Tengu::showWalletDock()
 void Tengu::reboot()
 {
     QApplication::exit(Daitengu::Core::EXIT_CODE_REBOOT);
+}
+
+void Tengu::quit()
+{
+    close();
 }
 
 void Tengu::about()

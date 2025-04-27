@@ -192,6 +192,9 @@ void UpdateWalletForm::editAddress()
     NewAddressForm::NewAddress address {
         .op = NewAddressForm::Op::EDIT,
         .id = id,
+        .walletId = walletRecord_->id,
+        .groupType = walletRecord_->groupType,
+        .chainType = walletRecord_->chainType,
     };
     NewAddressForm naf(address, this, globalManager_);
 

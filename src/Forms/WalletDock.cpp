@@ -143,9 +143,9 @@ void WalletDock::initPopup()
     actions_ = new QActionGroup(this);
     actions_->setExclusive(true);
 
-    popup_->addAction(STR_MENU_REFRESH);
+    popup_->addAction(STR_MENU_REFRESH, [this]() { monitor_->refresh(); });
     popup_->addSeparator();
-    popup_->addAction(STR_MENU_INFOR)->setChecked(true);
+    popup_->addAction(STR_MENU_INFOR, []() { qInfo() << "info"; });
 
     popup_->ensurePolished();
     popup_->adjustSize();

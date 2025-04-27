@@ -174,7 +174,6 @@ set(RESOURCE_FILES
     src/res/Logos.qrc
     src/res/Toast.qrc
     src/res/Themes/dark/dark.qrc
-    src/res/Themes/light/light.qrc
 )
 
 if(WIN32)

@@ -18,27 +18,15 @@
 
 #include "ThemeManager.h"
 
-#include <QProxyStyle>
+#include <filesystem>
+
+namespace fs = std::filesystem;
+
+#include "Utils/PathUtils.hpp"
+
+using namespace Daitengu::Utils;
 
 namespace Daitengu::Core {
-
-#ifdef custom_style
-class MyProxyStyle : public QProxyStyle {
-public:
-    using QProxyStyle::QProxyStyle;
-
-    int styleHint(StyleHint hint, const QStyleOption* option = nullptr,
-        const QWidget* widget = nullptr,
-        QStyleHintReturn* returnData = nullptr) const override
-    {
-        if (hint == QStyle::SH_ToolTip_WakeUpDelay) {
-            return 0;
-        }
-
-        return QProxyStyle::styleHint(hint, option, widget, returnData);
-    }
-};
-#endif
 
 ThemeManager::ThemeManager()
     : app_(qApp)
@@ -63,27 +51,41 @@ ThemeManager::ThemeManager()
     QApplication::setFont(font);*/
 }
 
-ThemeManager::~ThemeManager()
-{
-}
-
-void ThemeManager::setCursor(
-    const QVector<QWidget*> widgets, const CursorName name)
-{
-    for (const auto& obj : widgets) {
-        obj->setCursor(cursors_[name]);
-    }
-}
-
 void ThemeManager::initFonts()
 {
-    for (std::size_t i = 0; i < Fonts.size(); i++) {
-        if (Fonts.at(i).second.name.empty())
+    for (const auto& font : Fonts) {
+        if (font.second.name.empty())
             continue;
-        QFontDatabase::addApplicationFont(QString(STR_FONT).arg(
-            QString::fromUtf8(Fonts.at(i).second.name.data(),
-                Fonts.at(i).second.name.size())));
+
+        if (fontDb_.addApplicationFont(QString(STR_FONT).arg(QString::fromUtf8(
+                font.second.name.data(), font.second.name.size())))
+            == -1) {
+            qWarning() << "Failed to load font:" << font.first.data();
+        }
     }
+}
+
+std::optional<QString> ThemeManager::loadCustomFont()
+{
+    auto path = PathUtils::getAppDataPath(COMPANY) / NAME / "main.ttf";
+
+    if (!fs::exists(path)) {
+        return std::nullopt;
+    }
+
+    int fid = fontDb_.addApplicationFont(path.string().c_str());
+    if (fid == -1) {
+        qWarning() << "Failed to load custom font from";
+        return std::nullopt;
+    }
+
+    auto list = fontDb_.applicationFontFamilies(fid);
+    if (list.isEmpty()) {
+        qWarning() << "No font families loaded from";
+        return std::nullopt;
+    }
+
+    return list.first();
 }
 
 void ThemeManager::initThemes()
@@ -169,30 +171,32 @@ void ThemeManager::initStyle()
 {
     QString styles;
 
-    QString qss = QString(STR_THEME_QSS).arg(theme_.name);
-    QFile file(qss);
+    QFile file(QString(STR_THEME_QSS).arg(theme_.name));
+    if (file.exists() && file.open(QFile::ReadOnly | QFile::Text)) {
+        QTextStream ts(&file);
+        QString extraStyles;
 
-    if (file.exists()) {
-        if (file.open(QFile::ReadOnly | QFile::Text)) {
-            QTextStream ts(&file);
+        auto customFont = loadCustomFont();
+        if (customFont) {
+            extraStyles = QString(STR_GLOBAL_STYLE)
+                              .arg(*customFont)
+                              .arg(qRound(scale_ * DEFAULT_FONT_SIZE))
+                              .arg("");
+        } else {
             int i = DEFAULT_FONT_ID;
-            QString extraStyles
-                = QString(STR_GLOBAL_STYLE)
-                      .arg(Fonts[i].first)
-                      .arg(qRound(scale_ * DEFAULT_FONT_SIZE))
-                      .arg(Fonts[i].second.italic ? "font-style:italic;"
-                                                  : EMPTY_STRING);
-            styles = extraStyles + ts.readAll();
+            extraStyles = QString(STR_GLOBAL_STYLE)
+                              .arg(Fonts[i].first.data())
+                              .arg(qRound(scale_ * DEFAULT_FONT_SIZE))
+                              .arg(Fonts[i].second.italic ? "font-style:italic;"
+                                                          : EMPTY_STRING);
         }
+        styles = extraStyles + ts.readAll();
     }
 
-    QString qss2 = QString(STR_THEME_QSS2).arg(theme_.name);
-    QFile file2(qss2);
-    if (file2.exists()) {
-        if (file2.open(QFile::ReadOnly | QFile::Text)) {
-            QTextStream ts(&file2);
-            styles += ts.readAll();
-        }
+    QFile file2(QString(STR_THEME_QSS2).arg(theme_.name));
+    if (file2.exists() && file2.open(QFile::ReadOnly | QFile::Text)) {
+        QTextStream ts(&file2);
+        styles += ts.readAll();
     }
 
     app_->setStyleSheet(styles);

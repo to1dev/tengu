@@ -23,6 +23,7 @@
 #include <iostream>
 
 #include <QApplication>
+#include <QDebug>
 #include <QFile>
 #include <QFontDatabase>
 #include <QPalette>
@@ -32,7 +33,6 @@
 
 #include "Consts.h"
 
-#include "ankerl/unordered_dense.h"
 #include "nlohmann/json.hpp"
 
 using json = nlohmann::json;
@@ -80,24 +80,15 @@ inline constexpr char STR_JSON_PALETTE_DISABLED[] = "disabled";
 
 inline constexpr char DEFAULT_THEME_NAME[] = "Dark";
 
-enum class CursorName {
-    CUR_DEFAULT = 0,
-    CUR_GOLD,
-    CUR_WHITE,
-    CUR_TEXT,
-    CUR_POINTER,
-    CUR_HAND,
-    CUR_DRAG,
-};
-
 struct FontData {
     bool system;
     bool italic;
     std::string_view name;
 };
 
-inline const ankerl::unordered_dense::map<std::string, QPalette::ColorRole>
-    ColorRoles1 = {
+inline constexpr std::array<std::pair<std::string_view, QPalette::ColorRole>,
+    20>
+    ColorRoles1 = { {
         { "windowText", QPalette::WindowText },
         { "button", QPalette::Button },
         { "light", QPalette::Light },
@@ -118,16 +109,15 @@ inline const ankerl::unordered_dense::map<std::string, QPalette::ColorRole>
         { "toolTipBase", QPalette::ToolTipBase },
         { "toolTipText", QPalette::ToolTipText },
         { "placeholderText", QPalette::PlaceholderText },
-    };
+    } };
 
-inline constexpr std::array<std::pair<const char*, FontData>, 4> Fonts = { {
-    { "TsangerLiyuan", { false, false, "TsangerLiyuan" } },
-    { "Lobster Two", { false, false, "LobsterTwo" } },
-    { "Pirata One", { false, false, "PirataOne" } },
-    { "Jockey One", { false, false, "JockeyOne" } },
-} };
-
-typedef ankerl::unordered_dense::map<CursorName, QCursor> CursorList;
+inline constexpr std::array<std::pair<std::string_view, FontData>, 4> Fonts
+    = { {
+        { "TsangerLiyuan", { false, false, "TsangerLiyuan" } },
+        { "Lobster Two", { false, false, "LobsterTwo" } },
+        { "Pirata One", { false, false, "PirataOne" } },
+        { "Jockey One", { false, false, "JockeyOne" } },
+    } };
 
 class ThemeManager {
 
@@ -139,12 +129,12 @@ class ThemeManager {
 
 public:
     ThemeManager();
-    ~ThemeManager();
-
-    void setCursor(const QVector<QWidget*> widgets, const CursorName name);
+    ~ThemeManager() = default;
 
 private:
     void initFonts();
+    std::optional<QString> loadCustomFont();
+
     void initThemes();
     void parseTheme();
     void initCursors(const json& cursors);
@@ -153,10 +143,10 @@ private:
 
 private:
     QApplication* app_;
-    CursorList cursors_;
     QStringList themes_;
     Theme theme_;
     double scale_;
+    QFontDatabase fontDb_;
 };
 
 }

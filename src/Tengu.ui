@@ -297,14 +297,21 @@
                 <addaction name="separator" />
                 <addaction name="actionQuit" />
             </widget>
-            <widget class="QMenu" name="menu_H">
+            <widget class="QMenu" name="menu_View">
+                <property name="title">
+                    <string>查看(&amp;V)</string>
+                </property>
+                <addaction name="actionViewWallet" />
+            </widget>
+            <widget class="QMenu" name="menu_Help">
                 <property name="title">
                     <string>帮助(&amp;H)</string>
                 </property>
                 <addaction name="actionAbout" />
             </widget>
             <addaction name="menu_File" />
-            <addaction name="menu_H" />
+            <addaction name="menu_View" />
+            <addaction name="menu_Help" />
         </widget>
         <action name="actionOpen">
             <property name="text">
@@ -328,6 +335,14 @@
             </property>
             <property name="shortcut">
                 <string>Ctrl+Q</string>
+            </property>
+        </action>
+        <action name="actionViewWallet">
+            <property name="text">
+                <string>钱包</string>
+            </property>
+            <property name="shortcut">
+                <string>Ctrl+Shift+W</string>
             </property>
         </action>
         <action name="actionAbout">

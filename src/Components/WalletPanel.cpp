@@ -20,6 +20,17 @@
 
 namespace Daitengu::Components {
 
+inline constexpr char STR_NAME_LABEL[] = "nameLabel";
+inline constexpr char STR_ADDRESS_LABEL[] = "addressLabel";
+inline constexpr char STR_SELECT_BUTTON[] = "selectButton";
+inline constexpr char STR_SEND_BUTTON[] = "sendButton";
+inline constexpr char STR_CREATE_BUTTON[] = "createButton";
+inline constexpr char STR_VALUE_LABEL[] = "valueLabel";
+
+inline const QString STR_SELECT_BUTTON_TEXT = QObject::tr("切换");
+inline const QString STR_SEND_BUTTON_TEXT = QObject::tr("付款");
+inline const QString STR_CREATE_BUTTON_TEXT = QObject::tr("充值");
+
 UserCard::UserCard(QWidget* parent)
     : QWidget(parent)
 {

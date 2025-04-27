@@ -46,17 +46,6 @@ using namespace Daitengu::Utils;
 
 namespace Daitengu::Components {
 
-inline constexpr char STR_NAME_LABEL[] = "nameLabel";
-inline constexpr char STR_ADDRESS_LABEL[] = "addressLabel";
-inline constexpr char STR_SELECT_BUTTON[] = "selectButton";
-inline constexpr char STR_SEND_BUTTON[] = "sendButton";
-inline constexpr char STR_CREATE_BUTTON[] = "createButton";
-inline constexpr char STR_VALUE_LABEL[] = "valueLabel";
-
-inline const QString STR_SELECT_BUTTON_TEXT = QObject::tr("切换");
-inline const QString STR_SEND_BUTTON_TEXT = QObject::tr("发送");
-inline const QString STR_CREATE_BUTTON_TEXT = QObject::tr("创建");
-
 class UserCard : public QWidget {
     Q_OBJECT
 

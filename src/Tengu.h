@@ -65,6 +65,7 @@ private Q_SLOTS:
     void showWalletDock();
 
     void reboot();
+    void quit();
     void about();
     void wallet();
 

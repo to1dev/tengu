@@ -28,8 +28,8 @@ inline constexpr char STR_CREATE_BUTTON[] = "createButton";
 inline constexpr char STR_VALUE_LABEL[] = "valueLabel";
 
 inline const QString STR_SELECT_BUTTON_TEXT = QObject::tr("切换");
-inline const QString STR_SEND_BUTTON_TEXT = QObject::tr("付款");
-inline const QString STR_CREATE_BUTTON_TEXT = QObject::tr("购买");
+inline const QString STR_SEND_BUTTON_TEXT = QObject::tr("发送");
+inline const QString STR_CREATE_BUTTON_TEXT = QObject::tr("创建");
 
 UserCard::UserCard(QWidget* parent)
     : QWidget(parent)

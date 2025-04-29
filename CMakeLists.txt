@@ -31,6 +31,7 @@ find_package(QCoro5 REQUIRED COMPONENTS
 find_package(gRPC CONFIG REQUIRED)
 find_package(Protobuf REQUIRED)
 find_package(RocksDB REQUIRED)
+find_package(prometheus-cpp REQUIRED)
 
 option(ENABLE_GRPC "Enable gRPC support" ON)
 
@@ -49,7 +50,7 @@ if (ENABLE_GRPC)
         src/Clients/Solana/gRPC/Core/DataSourceManager.cpp
         src/Clients/Solana/gRPC/Core/DexFilter.cpp
         src/Clients/Solana/gRPC/Core/FilterManager.cpp
-        #src/Clients/Solana/gRPC/Core/MetricsManager.cpp
+        src/Clients/Solana/gRPC/Core/MetricsManager.cpp
         src/Clients/Solana/gRPC/Core/NotificationManager.cpp
         src/Clients/Solana/gRPC/Core/StorageManager.cpp
         src/Clients/Solana/gRPC/Core/SwapFilter.cpp
@@ -253,10 +254,6 @@ set(THIRD_PARTY_LIBS
     izanagi
     secp256k1
     clip
-
-    #prometheus-cpp-core
-    #prometheus-cpp-push
-    #prometheus-cpp-pull
 )
 
 set(SYSTEM_LIBS
@@ -285,6 +282,8 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     QCoro5::WebSockets
 
     RocksDB
+    prometheus-cpp::core
+    prometheus-cpp::pull
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE

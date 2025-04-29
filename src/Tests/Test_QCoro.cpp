@@ -34,10 +34,10 @@
 
 using json = nlohmann::json;
 
-#include "qcoro/QCoroCore"
-#include "qcoro/QCoroNetworkReply"
-#include "qcoro/QCoroTask"
-#include "qcoro/QCoroWebSocket"
+#include "qcoro5/qcoro/QCoroCore"
+#include "qcoro5/qcoro/QCoroNetworkReply"
+#include "qcoro5/qcoro/QCoroTask"
+#include "qcoro5/qcoro/QCoroWebSocket"
 
 #include "semver.hpp"
 

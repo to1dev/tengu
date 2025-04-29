@@ -35,7 +35,7 @@
 #include <windows.h>
 #endif
 
-#include <qcoro/QCoro>
+#include <qcoro5/qcoro/QCoro>
 
 #include "Consts.h"
 

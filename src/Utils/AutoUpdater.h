@@ -41,8 +41,8 @@ namespace fs = std::filesystem;
 #include "nlohmann/json.hpp"
 using json = nlohmann::json;
 
-#include <qcoro/QCoroNetworkReply>
-#include <qcoro/QCoroTask>
+#include <qcoro5/qcoro/QCoroNetworkReply>
+#include <qcoro5/qcoro/QCoroTask>
 
 #include "semver.hpp"
 

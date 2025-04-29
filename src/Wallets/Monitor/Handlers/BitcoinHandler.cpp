@@ -23,7 +23,7 @@
 
 #include <QNetworkReply>
 
-#include <qcoro/QCoro>
+#include <qcoro5/qcoro/QCoro>
 
 #include <spdlog/spdlog.h>
 

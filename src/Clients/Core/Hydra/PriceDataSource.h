@@ -24,7 +24,7 @@
 #include <QStringList>
 #include <QTimer>
 
-#include <qcoro/QCoro>
+#include <qcoro5/qcoro/QCoro>
 
 #include "DataSource.h"
 

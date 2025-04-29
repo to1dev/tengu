@@ -23,7 +23,7 @@
 
 #include <QNetworkAccessManager>
 
-#include <qcoro/QCoro>
+#include <qcoro5/qcoro/QCoro>
 
 #include "Monitor.h"
 #include "Wallets/Core/Types.h"

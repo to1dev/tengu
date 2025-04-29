@@ -25,8 +25,8 @@
 #include <QTimer>
 #include <QWebSocket>
 
-#include <qcoro/QCoro>
-#include <qcoro/QCoroWebSocket>
+#include <qcoro5/qcoro/QCoro>
+#include <qcoro5/qcoro/QCoroWebSocket>
 
 #include "DataSource.h"
 

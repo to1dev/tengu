@@ -98,14 +98,6 @@ set(THIRD_PARTY_LIBS
 target_link_libraries(${PROJECT_NAME} PRIVATE
     gRPC::grpc++
     protobuf::libprotobuf
-
-    ssl
-    crypto
-    bcrypt
-    re2
-
-    imagehlp
-    Crypt32
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE ${THIRD_PARTY_LIBS})

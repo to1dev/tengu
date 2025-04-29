@@ -18,13 +18,19 @@ find_package(Qt5 REQUIRED COMPONENTS
     Widgets
     Network
     Svg
-    Charts
     WebSockets
     Concurrent
 )
 
+find_package(QCoro5 REQUIRED COMPONENTS
+    Core
+    Network
+    WebSockets
+)
+
 find_package(gRPC CONFIG REQUIRED)
 find_package(Protobuf REQUIRED)
+find_package(RocksDB REQUIRED)
 
 option(ENABLE_GRPC "Enable gRPC support" ON)
 
@@ -47,11 +53,8 @@ if (ENABLE_GRPC)
         src/Clients/Solana/gRPC/Core/NotificationManager.cpp
         src/Clients/Solana/gRPC/Core/StorageManager.cpp
         src/Clients/Solana/gRPC/Core/SwapFilter.cpp
-
         src/Clients/Solana/gRPC/Core/TransactionFilter.hpp
-
         src/Clients/Solana/gRPC/HTTP/HttpServer.cpp
-
         src/Clients/Solana/gRPC/Utils/Logger.hpp
     )
 else()
@@ -238,28 +241,25 @@ target_link_directories(${PROJECT_NAME}
 
 set(THIRD_PARTY_LIBS
     xxhash
-    pugixml
+    #pugixml
     sodium
     sqlite3
-    rocksdb
-    bz2
-    snappy
-    lz4
+    #bz2
+    #snappy
+    #lz4
     luajit-5.1
 
     qjs
     izanagi
     secp256k1
     clip
-    spdlog
-    QCoro5Core
-    QCoro5Network
-    QCoro5WebSockets
 
     #prometheus-cpp-core
     #prometheus-cpp-push
     #prometheus-cpp-pull
+)
 
+set(SYSTEM_LIBS
     Rpcrt4
     Mswsock
 )
@@ -268,18 +268,8 @@ if (ENABLE_GRPC)
     target_link_libraries(${PROJECT_NAME} PRIVATE
         gRPC::grpc++
         protobuf::libprotobuf
-
-        #ssl
-        #crypto
-        #bcrypt
-        #re2
-
-        #imagehlp
-        #Crypt32
     )
 endif()
-
-target_link_libraries(${PROJECT_NAME} PRIVATE ${THIRD_PARTY_LIBS})
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt5::Core
@@ -287,9 +277,19 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt5::Widgets
     Qt5::Network
     Qt5::Svg
-    Qt5::Charts
     Qt5::WebSockets
     Qt5::Concurrent
+
+    QCoro5::Core
+    QCoro5::Network
+    QCoro5::WebSockets
+
+    RocksDB
+)
+
+target_link_libraries(${PROJECT_NAME} PRIVATE
+    ${THIRD_PARTY_LIBS}
+    ${SYSTEM_LIBS}
 )
 
 if (WIN32)

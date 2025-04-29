@@ -36,9 +36,6 @@
 #include "nlohmann/json.hpp"
 using json = nlohmann::json;
 
-#include "fmt/color.h"
-#include "fmt/format.h"
-
 #include "ankerl/unordered_dense.h"
 
 #include "Utils/Base58.hpp"

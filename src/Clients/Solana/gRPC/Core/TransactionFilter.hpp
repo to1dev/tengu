@@ -21,7 +21,7 @@
 #include <mutex>
 #include <string>
 
-#include <geyser/geyser.grpc.pb.h>
+#include <geyser.grpc.pb.h>
 
 namespace solana {
 

@@ -30,8 +30,13 @@ find_package(QCoro5 REQUIRED COMPONENTS
 
 find_package(gRPC CONFIG REQUIRED)
 find_package(Protobuf REQUIRED)
+find_package(spdlog REQUIRED)
 find_package(RocksDB REQUIRED)
 find_package(prometheus-cpp REQUIRED)
+find_package(OpenSSL REQUIRED)
+find_package(re2 REQUIRED)
+find_package(xxHash REQUIRED)
+find_package(Clip REQUIRED)
 
 option(ENABLE_GRPC "Enable gRPC support" ON)
 
@@ -241,7 +246,7 @@ target_link_directories(${PROJECT_NAME}
 )
 
 set(THIRD_PARTY_LIBS
-    xxhash
+    #xxhash
     #pugixml
     sodium
     sqlite3
@@ -253,12 +258,14 @@ set(THIRD_PARTY_LIBS
     qjs
     izanagi
     secp256k1
-    clip
+    #clip
 )
 
 set(SYSTEM_LIBS
     Rpcrt4
     Mswsock
+    imagehlp
+    Crypt32
 )
 
 if (ENABLE_GRPC)
@@ -281,9 +288,14 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     QCoro5::Network
     QCoro5::WebSockets
 
-    RocksDB
+    spdlog::spdlog
+    RocksDB::rocksdb
     prometheus-cpp::core
     prometheus-cpp::pull
+    OpenSSL::SSL
+    OpenSSL::Crypto
+    xxHash::xxhash
+    Clip
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE

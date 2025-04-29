@@ -53,7 +53,6 @@ target_compile_options(${PROJECT_NAME} PRIVATE
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
-    fmt
     sodium
     Qt5::Core
     Qt5::Gui

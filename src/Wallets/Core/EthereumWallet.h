@@ -39,7 +39,7 @@ extern "C" {
 #include "izanagi/sha2.h"
 #include "izanagi/sha3.h"
 
-#include "izanagi/secp256k1/secp256k1.h"
+#include "secp256k1.h"
 
 #ifdef __cplusplus
 }

@@ -32,9 +32,9 @@ using namespace Daitengu::Wallets;
 extern "C" {
 #endif
 
-#include "izanagi/secp256k1/secp256k1.h"
-#include "izanagi/secp256k1/secp256k1_musig.h"
-#include "izanagi/secp256k1/secp256k1_schnorrsig.h"
+#include "secp256k1.h"
+#include "secp256k1_musig.h"
+#include "secp256k1_schnorrsig.h"
 
 #ifdef __cplusplus
 }

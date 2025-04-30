@@ -24,7 +24,7 @@
 extern "C" {
 #endif
 
-#include "izanagi/secp256k1/secp256k1_musig.h"
+#include "secp256k1_musig.h"
 
 #ifdef __cplusplus
 }

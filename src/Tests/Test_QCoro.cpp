@@ -40,6 +40,7 @@ using json = nlohmann::json;
 #include "qcoro5/qcoro/QCoroWebSocket"
 
 #include "semver.hpp"
+using semver::operator""_version;
 
 #include "Utils/AutoUpdater.h"
 
@@ -151,11 +152,53 @@ QCoro::Task<void> testUpdater()
                       << std::endl;
         });
 
+    try {
+        semver::version v1 = "0.0.1-alpha.reforge"_version;
+        semver::version v2 = "0.0.1-alpha.1"_version;
+        semver::version v3 = "0.0.1+build.123"_version;
+
+        std::cout << "v1: " << v1 << std::endl; // 0.0.1-alpha.reforge
+        std::cout << "v2: " << v2 << std::endl; // 0.0.1-alpha.1
+        std::cout << "v3: " << v3 << std::endl; // 0.0.1+build.123
+
+        std::cout << std::boolalpha;
+        std::cout << "v1 < v2: " << (v1 < v2) << std::endl;   // true
+        std::cout << "v1 == v3: " << (v1 == v3) << std::endl; // false
+        std::cout
+            << "v1 == v3 (exclude prerelease): "
+            << semver::comparators::equal_to(v1, v3,
+                   semver::comparators::comparators_option::exclude_prerelease)
+            << std::endl; // true
+
+        std::cout << "v1 satisfies ^0.0.1: "
+                  << semver::range::satisfies(v1, "^0.0.1",
+                         semver::range::satisfies_option::include_prerelease)
+                  << std::endl; // true
+        std::cout << "v2 satisfies 0.0.1 - 0.0.2: "
+                  << semver::range::satisfies(v2, "0.0.1 - 0.0.2",
+                         semver::range::satisfies_option::include_prerelease)
+                  << std::endl; // true
+
+        std::cout << "semver_version: " << semver::semver_version
+                  << std::endl; // 1.0.0
+
+        AutoUpdater::Version version;
+        version.version = "0.0.2-beta";
+        auto semver = version.asSemver();
+        if (semver) {
+            std::cout << "Parsed version: " << *semver
+                      << std::endl; // 0.0.2-beta
+            std::cout << "Is newer: " << (*semver > v1) << std::endl; // true
+        }
+    } catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+    }
+
     auto checkTask = updater.checkForUpdates();
-    auto version = co_await checkTask;
-    if (version) {
+    auto v = co_await checkTask;
+    if (v) {
         auto downloadTask = updater.downloadUpdate(
-            *version, [](const AutoUpdater::UpdateProgress& progress) {
+            *v, [](const AutoUpdater::UpdateProgress& progress) {
                 std::cout << "Download: " << progress.percentage() << "%\n";
             });
         auto filePath = co_await downloadTask;

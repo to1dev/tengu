@@ -26,9 +26,15 @@
 #include <sodium.h>
 
 #include "Wallets/Transaction/Solana/Builder.h"
+#include "Wallets/Transaction/Solana/Types.h"
 #include "Wallets/Utils/Hex.hpp"
 
 using namespace solana;
+
+#include "Utils/DotEnv.hpp"
+#include "Utils/PathUtils.hpp"
+
+using namespace Daitengu::Utils;
 
 std::string base64Encode(const uint8_t* data, size_t length)
 {
@@ -48,6 +54,21 @@ int main()
         std::cerr << "Failed to init libsodium" << std::endl;
         return 1;
     }
+
+    auto currentPath = PathUtils::getExecutableDir();
+    auto& parser = DotEnv::getInstance();
+    parser.load((currentPath / ".env").string());
+
+    Pubkey wallet = pubkeyFromBase58(*parser.get("ATA_WALLET"));
+    Pubkey mint = pubkeyFromBase58(*parser.get("ATA_MINT"));
+
+    Pubkey ata = getAssociatedTokenAccount(wallet, mint);
+
+    std::string ataBase58 = pubkeyToBase58(ata);
+
+    std::cout << "Associated Token Account: " << ataBase58 << std::endl;
+
+    std::cout << "------\n";
 
     unsigned char seed[crypto_sign_ed25519_SEEDBYTES];
     unsigned char publicKey[crypto_sign_ed25519_PUBLICKEYBYTES];

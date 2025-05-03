@@ -30,15 +30,19 @@
 
 namespace solana {
 
-const Pubkey SYSTEM_PROGRAM_ID
+constexpr Pubkey SYSTEM_PROGRAM_ID
     = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 
-const Pubkey SPL_TOKEN_PROGRAM_ID
+constexpr Pubkey SPL_TOKEN_PROGRAM_ID
     = { 0x06, 0xdd, 0xf6, 0xe1, 0xd7, 0x65, 0xa1, 0x93, 0xd9, 0xcb, 0xe1, 0x46,
           0xce, 0xeb, 0x79, 0xac, 0x1c, 0xb4, 0x85, 0xed, 0x5f, 0x5b, 0x37,
           0x91, 0x3a, 0x8c, 0xf5, 0x85, 0x7e, 0xff, 0x00, 0xa9 };
+
+// Rent sysvar ID
+static const Pubkey SYSVAR_RENT_PUBKEY
+    = pubkeyFromBase58("SysvarRent111111111111111111111111111111111");
 
 // SPL Token Program ID constant
 static const Pubkey TOKEN_PROGRAM_ID
@@ -252,6 +256,51 @@ void Transaction::multiSign(
     const Blockhash& recentBlockhash)
 {
     // TODO
+}
+
+TransactionInstruction createMintInstruction(const Pubkey& payer,
+    const Pubkey& mint, const Pubkey& mintAuthority, uint8_t decimals)
+{
+    borsh::BorshWriter writer;
+    writer.write_u8(0);
+    writer.write_u8(decimals);
+    writer.write_fixed_bytes(mintAuthority);
+    writer.write_u8(0);
+
+    TransactionInstruction instruction;
+    instruction.programId = SPL_TOKEN_PROGRAM_ID;
+    instruction.data = writer.get_buffer();
+
+    instruction.accounts.push_back(AccountMeta(payer, true, true));
+    instruction.accounts.push_back(AccountMeta(mint, false, true));
+    instruction.accounts.push_back(
+        AccountMeta(SYSTEM_PROGRAM_ID, false, false));
+
+    return instruction;
+}
+
+TransactionInstruction createAssociatedTokenAccountInstruction(
+    const Pubkey& payer, const Pubkey& wallet, const Pubkey& mint)
+{
+    Pubkey ata = getAssociatedTokenAccount(wallet, mint);
+
+    borsh::BorshWriter writer;
+    writer.write_u8(17);
+
+    TransactionInstruction instruction;
+    instruction.programId = SPL_TOKEN_PROGRAM_ID;
+    instruction.data = writer.get_buffer();
+
+    instruction.accounts.push_back(AccountMeta(payer, true, true));
+    instruction.accounts.push_back(AccountMeta(ata, false, true));
+    instruction.accounts.push_back(AccountMeta(wallet, false, false));
+    instruction.accounts.push_back(AccountMeta(mint, false, false));
+    instruction.accounts.push_back(
+        AccountMeta(SYSTEM_PROGRAM_ID, false, false));
+    instruction.accounts.push_back(
+        AccountMeta(SPL_TOKEN_PROGRAM_ID, false, false));
+
+    return instruction;
 }
 
 TransactionInstruction createTransferInstruction(

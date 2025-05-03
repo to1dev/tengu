@@ -126,6 +126,12 @@ Pubkey pubkeyFromBase58(const std::string& base58Str);
 std::string pubkeyToBase58(const Pubkey& pubkey);
 Pubkey getPublicKey(const std::vector<uint8_t>& privateKey);
 
+TransactionInstruction createMintInstruction(const Pubkey& payer,
+    const Pubkey& mint, const Pubkey& mintAuthority, uint8_t decimals);
+
+TransactionInstruction createAssociatedTokenAccountInstruction(
+    const Pubkey& payer, const Pubkey& wallet, const Pubkey& mint);
+
 TransactionInstruction createTransferInstruction(
     const Pubkey& fromPubkey, const Pubkey& toPubkey, uint64_t lamports);
 

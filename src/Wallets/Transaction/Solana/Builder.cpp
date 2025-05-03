@@ -124,6 +124,36 @@ SolanaErrorCode SolanaTxBuilder::buildTransferTransaction(
     }
 }
 
+SolanaErrorCode SolanaTxBuilder::createTokenWithATA(const uint8_t* privateKey,
+    uint8_t decimals, uint8_t* txBuffer, size_t bufferSize, size_t* actualSize,
+    const char* recentBlockhashStr)
+{
+    Pubkey payer
+        = getPublicKey(std::vector<uint8_t>(privateKey, privateKey + 64));
+    Pubkey mint
+        = getPublicKey(std::vector<uint8_t>(privateKey + 32, privateKey + 64));
+    Pubkey ata = getAssociatedTokenAccount(payer, mint);
+
+    TransactionBuilder builder;
+    builder.setPayer(payer);
+    builder.setRecentBlockhash(blockhashFromHexString(recentBlockhashStr));
+    builder.addInstruction(createMintInstruction(payer, mint, payer, decimals));
+    builder.addInstruction(
+        createAssociatedTokenAccountInstruction(payer, payer, mint));
+
+    Transaction tx
+        = builder.build(std::vector<uint8_t>(privateKey, privateKey + 64));
+    std::vector<uint8_t> serialized = tx.serialize();
+
+    if (serialized.size() > bufferSize) {
+        return SolanaErrorCode::BufferTooSmall;
+    }
+    std::memcpy(txBuffer, serialized.data(), serialized.size());
+    *actualSize = serialized.size();
+
+    return SolanaErrorCode::Success;
+}
+
 SolanaErrorCode SolanaTxBuilder::getPublicKeyFromPrivateKey(
     const uint8_t* privateKey, uint8_t* pubkeyBuffer, size_t* actualSize)
 {

@@ -105,6 +105,8 @@ struct PDA {
 PDA findProgramAddress(
     const std::vector<std::vector<uint8_t>>& seeds, const Pubkey& programId);
 
+Pubkey getAssociatedTokenAccount(const Pubkey& wallet, const Pubkey& mint);
+
 enum class SystemInstructionType : uint32_t {
     CreateAccount = 0,
     Assign,

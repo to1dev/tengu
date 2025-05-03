@@ -35,6 +35,11 @@ const Pubkey SYSTEM_PROGRAM_ID
           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 
+const Pubkey SPL_TOKEN_PROGRAM_ID
+    = { 0x06, 0xdd, 0xf6, 0xe1, 0xd7, 0x65, 0xa1, 0x93, 0xd9, 0xcb, 0xe1, 0x46,
+          0xce, 0xeb, 0x79, 0xac, 0x1c, 0xb4, 0x85, 0xed, 0x5f, 0x5b, 0x37,
+          0x91, 0x3a, 0x8c, 0xf5, 0x85, 0x7e, 0xff, 0x00, 0xa9 };
+
 PDA findProgramAddress(
     const std::vector<std::vector<uint8_t>>& seeds, const Pubkey& programId)
 {
@@ -76,6 +81,18 @@ PDA findProgramAddress(
     }
 
     throw std::runtime_error("No valid PDA found within bump range");
+}
+
+Pubkey getAssociatedTokenAccount(const Pubkey& wallet, const Pubkey& mint)
+{
+    std::vector<std::vector<uint8_t>> seeds
+        = { std::vector<uint8_t>(wallet.begin(), wallet.end()),
+              std::vector<uint8_t>(
+                  SPL_TOKEN_PROGRAM_ID.begin(), SPL_TOKEN_PROGRAM_ID.end()),
+              std::vector<uint8_t>(mint.begin(), mint.end()) };
+
+    PDA pda = findProgramAddress(seeds, SPL_TOKEN_PROGRAM_ID);
+    return pda.address;
 }
 
 Pubkey pubkeyFromBase58(const std::string& base58Str)

@@ -40,58 +40,68 @@ const Pubkey SPL_TOKEN_PROGRAM_ID
           0xce, 0xeb, 0x79, 0xac, 0x1c, 0xb4, 0x85, 0xed, 0x5f, 0x5b, 0x37,
           0x91, 0x3a, 0x8c, 0xf5, 0x85, 0x7e, 0xff, 0x00, 0xa9 };
 
+// SPL Token Program ID constant
+static const Pubkey TOKEN_PROGRAM_ID
+    = pubkeyFromBase58("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
+
+// Associated Token Account Program ID constant
+static const Pubkey ASSOCIATED_TOKEN_PROGRAM_ID
+    = pubkeyFromBase58("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL");
+
+// Marker string appended during PDA derivation
+static const std::string PDA_MARKER = "ProgramDerivedAddress";
+
 PDA findProgramAddress(
     const std::vector<std::vector<uint8_t>>& seeds, const Pubkey& programId)
 {
     if (sodium_init() < 0) {
-        throw std::runtime_error("Failed to initialize libsodium");
+        throw std::runtime_error("libsodium 初始化失败");
     }
 
-    std::vector<uint8_t> buffer;
-    size_t total_size = 0;
-    for (const auto& seed : seeds) {
-        total_size += seed.size();
-    }
-    total_size += PUBKEY_SIZE + 1;
-    buffer.reserve(total_size);
+    for (int bump = 255; bump >= 0; --bump) {
+        // Build the input buffer: all seeds, then bump byte, then program ID,
+        // then marker
+        std::vector<uint8_t> buf;
+        buf.reserve(
+            seeds.size() * 32 + 1 + programId.size() + PDA_MARKER.size());
 
-    for (uint8_t bump = 255; bump >= 0; --bump) {
-        buffer.clear();
-
-        for (const auto& seed : seeds) {
-            buffer.insert(buffer.end(), seed.begin(), seed.end());
+        for (auto const& seed : seeds) {
+            buf.insert(buf.end(), seed.begin(), seed.end());
         }
 
-        buffer.insert(buffer.end(), programId.begin(), programId.end());
+        buf.push_back(static_cast<uint8_t>(bump));
+        buf.insert(buf.end(), programId.begin(), programId.end());
+        buf.insert(buf.end(), PDA_MARKER.begin(), PDA_MARKER.end());
 
-        buffer.push_back(bump);
-
-        Pubkey hash;
-        if (crypto_hash_sha256(hash.data(), buffer.data(), buffer.size())
-            != 0) {
+        // Compute SHA-256 hash
+        unsigned char hashOut[crypto_hash_sha256_BYTES];
+        if (crypto_hash_sha256(hashOut, buf.data(), buf.size()) != 0) {
             throw std::runtime_error("SHA-256 computation failed");
         }
 
-        unsigned char scalar[32];
-        std::memcpy(scalar, hash.data(), 32);
-        unsigned char point[32];
-        if (crypto_scalarmult_ed25519_base(point, scalar) != 0) {
-            return { hash, bump };
+        // Check if the hash is a valid ed25519 point.
+        // crypto_core_ed25519_is_valid_point returns 1 if on-curve (invalid
+        // PDA), and 0 if off-curve (valid PDA).
+        if (crypto_core_ed25519_is_valid_point(hashOut) == 0) {
+            std::array<uint8_t, 32> hashArr;
+            std::copy(hashOut, hashOut + 32, hashArr.begin());
+            return { Pubkey(hashArr), static_cast<uint8_t>(bump) };
         }
     }
 
-    throw std::runtime_error("No valid PDA found within bump range");
+    throw std::runtime_error("Unable to find a viable program address bump");
 }
 
-Pubkey getAssociatedTokenAccount(const Pubkey& wallet, const Pubkey& mint)
+// Derives the associated token account (ATA) for a given wallet and mint.
+// Uses the wallet pubkey, SPL Token Program ID, and mint pubkey as seeds.
+Pubkey getAssociatedTokenAccount(
+    const Pubkey& walletPubkey, const Pubkey& mintPubkey)
 {
     std::vector<std::vector<uint8_t>> seeds
-        = { std::vector<uint8_t>(wallet.begin(), wallet.end()),
-              std::vector<uint8_t>(
-                  SPL_TOKEN_PROGRAM_ID.begin(), SPL_TOKEN_PROGRAM_ID.end()),
-              std::vector<uint8_t>(mint.begin(), mint.end()) };
-
-    PDA pda = findProgramAddress(seeds, SPL_TOKEN_PROGRAM_ID);
+        = { { walletPubkey.begin(), walletPubkey.end() },
+              { TOKEN_PROGRAM_ID.begin(), TOKEN_PROGRAM_ID.end() },
+              { mintPubkey.begin(), mintPubkey.end() } };
+    PDA pda = findProgramAddress(seeds, ASSOCIATED_TOKEN_PROGRAM_ID);
     return pda.address;
 }
 

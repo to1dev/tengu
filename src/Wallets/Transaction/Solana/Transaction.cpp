@@ -98,13 +98,14 @@ PDA findProgramAddress(
 
 // Derives the associated token account (ATA) for a given wallet and mint.
 // Uses the wallet pubkey, SPL Token Program ID, and mint pubkey as seeds.
-Pubkey getAssociatedTokenAccount(
-    const Pubkey& walletPubkey, const Pubkey& mintPubkey)
+Pubkey getAssociatedTokenAccount(const Pubkey& wallet, const Pubkey& mint,
+    bool allow_owner_off_curve, std::optional<Pubkey> program_id,
+    std::optional<Pubkey> associated_token_program_id)
 {
     std::vector<std::vector<uint8_t>> seeds
-        = { { walletPubkey.begin(), walletPubkey.end() },
+        = { { wallet.begin(), wallet.end() },
               { TOKEN_PROGRAM_ID.begin(), TOKEN_PROGRAM_ID.end() },
-              { mintPubkey.begin(), mintPubkey.end() } };
+              { mint.begin(), mint.end() } };
     PDA pda = findProgramAddress(seeds, ASSOCIATED_TOKEN_PROGRAM_ID);
     return pda.address;
 }

@@ -23,6 +23,7 @@
 #include <cstdint>
 #include <map>
 #include <memory>
+#include <optional>
 #include <span>
 #include <stdexcept>
 #include <string>
@@ -105,7 +106,10 @@ struct PDA {
 PDA findProgramAddress(
     const std::vector<std::vector<uint8_t>>& seeds, const Pubkey& programId);
 
-Pubkey getAssociatedTokenAccount(const Pubkey& wallet, const Pubkey& mint);
+Pubkey getAssociatedTokenAccount(const Pubkey& wallet, const Pubkey& mint,
+    bool allow_owner_off_curve = false,
+    std::optional<Pubkey> program_id = std::nullopt,
+    std::optional<Pubkey> associated_token_program_id = std::nullopt);
 
 enum class SystemInstructionType : uint32_t {
     CreateAccount = 0,

@@ -257,9 +257,12 @@ void NewSmartAddressForm::ok()
                                       .addressHash = addressHash,
                                   };
 
-                                  if (addressRepo->insert(newAddr) <= 0) {
+                                  const auto id = addressRepo->insert(newAddr);
+                                  if (id <= 0) {
                                       return false;
                                   }
+
+                                  newAddr.id = id;
 
                                   addresses_.push_back(newAddr);
                                   manager->addAddress(newAddr);

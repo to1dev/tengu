@@ -48,6 +48,24 @@ std::string base64Encode(const uint8_t* data, size_t length)
     return encoded;
 }
 
+std::array<uint8_t, 64> generatePrivateKey()
+{
+    unsigned char seed[crypto_sign_ed25519_SEEDBYTES];
+    unsigned char publicKey[crypto_sign_ed25519_PUBLICKEYBYTES];
+    unsigned char secretKey[crypto_sign_ed25519_SECRETKEYBYTES];
+
+    randombytes_buf(seed, sizeof(seed));
+    crypto_sign_ed25519_seed_keypair(publicKey, secretKey, seed);
+
+    std::array<uint8_t, 64> privateKey;
+    std::memcpy(privateKey.data(), secretKey, privateKey.size());
+
+    sodium_memzero(secretKey, sizeof(secretKey));
+    sodium_memzero(seed, sizeof(seed));
+
+    return privateKey;
+}
+
 int main()
 {
     if (sodium_init() < 0) {
@@ -70,18 +88,8 @@ int main()
 
     std::cout << "------\n";
 
-    unsigned char seed[crypto_sign_ed25519_SEEDBYTES];
-    unsigned char publicKey[crypto_sign_ed25519_PUBLICKEYBYTES];
-    unsigned char secretKey[crypto_sign_ed25519_SECRETKEYBYTES];
-
-    randombytes_buf(seed, sizeof(seed));
-    crypto_sign_ed25519_seed_keypair(publicKey, secretKey, seed);
-
-    std::array<uint8_t, 64> privateKey;
-    std::memcpy(privateKey.data(), secretKey, privateKey.size());
-
-    sodium_memzero(secretKey, sizeof(secretKey));
-    sodium_memzero(seed, sizeof(seed));
+    auto privateKey = generatePrivateKey();
+    auto mintPrivateKey = generatePrivateKey();
 
     uint8_t pubkeyData[32];
     size_t pubkeySize = 0;
@@ -122,8 +130,12 @@ int main()
     uint8_t txBuffer[SOLANA_TX_BUFFER_SIZE];
     size_t txSize = 0;
 
-    result = SolanaTxBuilder::buildTransferTransaction(privateKey.data(),
-        recipient, amount, blockhash, txBuffer, sizeof(txBuffer), &txSize);
+    // result = SolanaTxBuilder::buildTransferTransaction(privateKey.data(),
+    // recipient, amount, blockhash, txBuffer, sizeof(txBuffer), &txSize);
+
+    result = SolanaTxBuilder::createTokenWithATA(privateKey.data(),
+        mintPrivateKey.data(), 9, txBuffer, sizeof(txBuffer), &txSize,
+        blockhash);
 
     if (result != SolanaErrorCode::Success) {
         std::cerr << "Failed to build transaction: "

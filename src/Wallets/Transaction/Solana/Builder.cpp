@@ -125,13 +125,13 @@ SolanaErrorCode SolanaTxBuilder::buildTransferTransaction(
 }
 
 SolanaErrorCode SolanaTxBuilder::createTokenWithATA(const uint8_t* privateKey,
-    uint8_t decimals, uint8_t* txBuffer, size_t bufferSize, size_t* actualSize,
-    const char* recentBlockhashStr)
+    const uint8_t* mintPrivateKey, uint8_t decimals, uint8_t* txBuffer,
+    size_t bufferSize, size_t* actualSize, const char* recentBlockhashStr)
 {
     Pubkey payer
         = getPublicKey(std::vector<uint8_t>(privateKey, privateKey + 64));
-    Pubkey mint
-        = getPublicKey(std::vector<uint8_t>(privateKey + 32, privateKey + 64));
+    Pubkey mint = getPublicKey(
+        std::vector<uint8_t>(mintPrivateKey, mintPrivateKey + 64));
     Pubkey ata = getAssociatedTokenAccount(payer, mint);
 
     TransactionBuilder builder;

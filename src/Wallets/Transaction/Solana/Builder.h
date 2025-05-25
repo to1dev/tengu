@@ -50,8 +50,8 @@ public:
         size_t* actualSize);
 
     static SolanaErrorCode createTokenWithATA(const uint8_t* privateKey,
-        uint8_t decimals, uint8_t* txBuffer, size_t bufferSize,
-        size_t* actualSize, const char* recentBlockhashStr);
+        const uint8_t* mintPrivateKey, uint8_t decimals, uint8_t* txBuffer,
+        size_t bufferSize, size_t* actualSize, const char* recentBlockhashStr);
 
     static SolanaErrorCode getPublicKeyFromPrivateKey(
         const uint8_t* privateKey, uint8_t* pubkeyBuffer, size_t* actualSize);

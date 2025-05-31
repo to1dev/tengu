@@ -6,7 +6,8 @@
 # === Compiler & Flags ===
 CXX := g++
 CXXFLAGS := -std=c++20 -Wall -Wextra -O2 -static
-LDFLAGS := -s -static -static-libgcc -static-libstdc++ -lws2_32 -lMswsock
+INCLUDES := -I./deps/include
+LDFLAGS := -s -static -static-libgcc -static-libstdc++ -lssl -lcrypto -lws2_32 -lMswsock -lCrypt32
 
 # === Source & Output Rules ===
 SRC_DIR := .
@@ -21,7 +22,7 @@ all: $(BINS)
 # === Build rule for each .cpp => executable ===
 $(BUILD_DIR)/%: $(SRC_DIR)/%.cpp | $(BUILD_DIR)
 	@echo "🔧 Compiling $< -> $@"
-	$(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -o $@ $< $(LDFLAGS)
 
 # === Ensure bin directory exists ===
 $(BUILD_DIR):
